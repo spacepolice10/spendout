@@ -1,0 +1,58 @@
+<main data-size="lg">
+  <article data-elevation="1">
+    <header>
+      <div>
+        <h1>Budgets</h1>
+        <p>Signed in as <%= Current.user.email_address %>.</p>
+      </div>
+
+      <div>
+        <%= link_to icon_tag("plus"), new_budget_path, aria: { label: "New budget" } %>
+      </div>
+    </header>
+
+    <br>
+
+    <%= tag.p(flash[:notice]) if flash[:notice] %>
+
+    <% if @budgets.any? %>
+      <section class="budgets" data-layout="grid">
+        <% @budgets.each do |budget| %>
+          <%= link_to budget_path(budget), data: { testid: "budget-link" } do %>
+            <article
+              class="budget"
+              data-elevation="1"
+              data-archived="<%= budget.archived? %>"
+              data-testid="budget-card"
+            >
+              <header>
+                <h2><%= budget.name %></h2>
+                <small><%= "Archived" if budget.archived? %></small>
+              </header>
+
+              <main>
+                <% source = budget.base_source %>
+
+                <p>
+                  <strong><%= source_amount(source) %></strong> <%= source.currency.alphabetic_code %>
+                </p>
+              </main>
+
+              <footer>
+                <p>
+                  <%= budget.period_from.to_fs(:long) %> –
+                  <%= budget.period_to.to_fs(:long) %>
+                </p>
+              </footer>
+            </article>
+          <% end %>
+        <% end %>
+      </section>
+    <% else %>
+      <article data-elevation="1">
+        <h2>No budgets yet</h2>
+        <p>Create your first budget to start planning.</p>
+      </article>
+    <% end %>
+  </article>
+</main>

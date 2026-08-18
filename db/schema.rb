@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_18_105427) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_18_120002) do
   create_table "auth_codes", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
@@ -22,6 +22,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_18_105427) do
     t.index ["expires_at"], name: "index_auth_codes_on_expires_at"
   end
 
+  create_table "budgets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "period_from", null: false
+    t.date "period_to", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_budgets_on_user_id"
+  end
+
+  create_table "currencies", force: :cascade do |t|
+    t.string "alphabetic_code", limit: 3, null: false
+    t.integer "budget_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "numeric_code", limit: 3, null: false
+    t.string "symbol", null: false
+    t.datetime "updated_at", null: false
+    t.index ["budget_id", "alphabetic_code"], name: "index_currencies_on_budget_id_and_alphabetic_code", unique: true
+    t.index ["budget_id"], name: "index_currencies_on_budget_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -31,6 +52,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_18_105427) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "sources", force: :cascade do |t|
+    t.decimal "amount", precision: 19, scale: 4, null: false
+    t.integer "budget_id", null: false
+    t.string "colour", default: "hotpink", null: false
+    t.datetime "created_at", null: false
+    t.string "currency_code", limit: 3, null: false
+    t.datetime "deleted_at"
+    t.string "icon", default: "wallet", null: false
+    t.string "name", default: "Main source", null: false
+    t.datetime "updated_at", null: false
+    t.index ["budget_id", "currency_code"], name: "index_sources_on_budget_id_and_currency_code"
+    t.index ["budget_id"], name: "index_sources_on_budget_id"
+    t.index ["deleted_at"], name: "index_sources_on_deleted_at"
+    t.check_constraint "amount >= 0", name: "sources_amount_non_negative"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
@@ -38,5 +75,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_18_105427) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "budgets", "users"
+  add_foreign_key "currencies", "budgets"
   add_foreign_key "sessions", "users"
+  add_foreign_key "sources", "budgets"
 end

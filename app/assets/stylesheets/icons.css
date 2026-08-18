@@ -1,0 +1,34 @@
+@layer components {
+
+    .icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2ch;
+      height: 2ch;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+  
+    .icon {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: currentColor;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      --icon-mask: none;
+      -webkit-mask-image: var(--icon-mask);
+      mask-image: var(--icon-mask);
+      flex-shrink: 0;
+    }
+  
+    :root {
+     --icon-chevron-left: url(/icon-chevron-left.svg);
+     --icon-plus: url(/icon-plus.svg);
+    }
+  }

@@ -1,0 +1,20 @@
+active_usd:
+  budget: active
+  name: US Dollar
+  alphabetic_code: USD
+  numeric_code: "840"
+  symbol: $
+
+archived_eur:
+  budget: archived
+  name: Euro
+  alphabetic_code: EUR
+  numeric_code: "978"
+  symbol: €
+
+other_vnd:
+  budget: other
+  name: Dong
+  alphabetic_code: VND
+  numeric_code: "704"
+  symbol: ₫

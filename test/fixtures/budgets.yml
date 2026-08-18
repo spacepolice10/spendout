@@ -1,0 +1,14 @@
+active:
+  user: one
+  period_from: 2026-08-18
+  period_to: 2026-09-16
+
+archived:
+  user: one
+  period_from: 2026-06-01
+  period_to: 2026-06-14
+
+other:
+  user: two
+  period_from: 2026-08-01
+  period_to: 2026-08-30

@@ -1,0 +1,53 @@
+<%= form_with model: budget, data: { budget_form: true } do |form| %>
+  <% if budget.errors.any? %>
+    <section role="alert" data-form-errors>
+      <h2>
+        <%= pluralize(budget.errors.count, "error") %> prevented this budget
+        from being saved:
+      </h2>
+
+      <ul>
+        <% budget.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <fieldset class="salary" data-layout="grid">
+    <legend>What's your salary?</legend>
+
+    <div>
+      <%= form.label :source_amount, "Amount", hidden: true %>
+
+      <%= form.number_field :source_amount, min: 0, step: 0.0001, required: true, autofocus: true,
+              aria: { label: "Enter your salary amount" } %>
+
+      <%= form.label :currency_code, "Currency", hidden: true %>
+
+      <%= form.select :currency_code, Currency.select_options, { prompt: "Select currency" },
+              required: true, aria: { label: "Choose your salary currency" } %>
+    </div>
+  </fieldset>
+
+  <fieldset data-layout="flex">
+    <legend>How often do you get paid?</legend>
+
+    <div>
+      <%= form.collection_radio_buttons :duration, Budget::DURATIONS.keys, :itself, ->(value) { value.tr("_", " ") } do |radio| %>
+        <%= radio.label { radio.radio_button + radio.text } %>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <%= tag.details do %>
+    <%= tag.summary "Change start date" %>
+
+    <%= tag.div do %>
+      <%= form.label :period_from, "Start date" %>
+      <%= form.date_field :period_from, required: true %>
+    <% end %>
+  <% end %>
+
+  <%= form.submit "Create budget" %>
+<% end %>

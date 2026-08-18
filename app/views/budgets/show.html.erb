@@ -1,0 +1,30 @@
+<main class="budget-page" data-size="sm">
+  <header>
+    <nav>
+      <%= link_to icon_tag("chevron-left"), budgets_path, aria: { label: "Back to budgets" } %>
+      <h1><%= @budget.name %></h1>
+    </nav>
+  </header>
+
+  <%= tag.p(flash[:notice]) if flash[:notice] %>
+
+  <article class="budget" data-elevation="1" data-archived="<%= @budget.archived? %>" data-testid="budget-card">
+    <header>
+      <h2>Budget details</h2>
+      <small><%= "Archived" if @budget.archived? %></small>
+    </header>
+    <main>
+      <% source = @budget.base_source %>
+      <dl>
+        <dt>Starting amount</dt>
+        <dd><%= source_amount(source) %> <%= source.currency.alphabetic_code %></dd>
+        <dt>Period</dt>
+        <dd><%= @budget.period_from.to_fs(:long) %> – <%= @budget.period_to.to_fs(:long) %></dd>
+      </dl>
+    </main>
+    <footer>
+      <%= button_to "Delete budget", budget_path(@budget), method: :delete,
+            data: { turbo_confirm: "Delete this budget and its source permanently?" } %>
+    </footer>
+  </article>
+</main>

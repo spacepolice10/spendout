@@ -1,0 +1,23 @@
+active:
+  budget: active
+  currency_code: USD
+  name: Main source
+  amount: 1500.2500
+  icon: wallet
+  colour: hotpink
+
+archived:
+  budget: archived
+  currency_code: EUR
+  name: Main source
+  amount: 900.0000
+  icon: wallet
+  colour: hotpink
+
+other:
+  budget: other
+  currency_code: VND
+  name: Main source
+  amount: 2500000.0000
+  icon: wallet
+  colour: hotpink

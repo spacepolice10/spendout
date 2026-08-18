@@ -1,0 +1,56 @@
+@layer components {
+    .budget-page {
+        padding-block: var(--space-v-2);
+
+        & > header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-h);
+            margin-bottom: var(--space-v-2);
+
+            & nav {
+                display: flex;
+                align-items: center;
+                gap: var(--space-h);
+            }
+        }
+    }
+
+    .budgets {
+        --grid-column-size: 16rem;
+
+        gap: var(--space-h);
+    }
+
+    .budgets > a {
+        display: block;
+        color: inherit;
+    }
+
+    article.budget {
+        height: 100%;
+
+        &[data-archived="true"] {
+            opacity: var(--opacity-50);
+        }
+    }
+
+    form[data-budget-form] {
+        & > div,
+        & details > div {
+            display: grid;
+            gap: var(--space-v-half);
+        }
+
+        & summary {
+            cursor: pointer;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-small);
+        }
+    }
+
+    section[data-form-errors] {
+        color: var(--color-invert-negative);
+    }
+}

@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :budgets, dependent: :destroy
   has_many :sessions, dependent: :destroy
 
   normalizes :email_address, with: ->(value) { value.to_s.strip.downcase.presence }
