@@ -28,7 +28,19 @@
     }
   
     :root {
+     --icon-briefcase: url(/icon-briefcase.svg);
+     --icon-building-bank: url(/icon-building-bank.svg);
+     --icon-car: url(/icon-car.svg);
+     --icon-cash-banknote: url(/icon-cash-banknote.svg);
      --icon-chevron-left: url(/icon-chevron-left.svg);
+     --icon-coin: url(/icon-coin.svg);
+     --icon-credit-card: url(/icon-credit-card.svg);
+     --icon-gift: url(/icon-gift.svg);
+     --icon-home: url(/icon-home.svg);
+     --icon-pig-money: url(/icon-pig-money.svg);
+     --icon-plane: url(/icon-plane.svg);
      --icon-plus: url(/icon-plus.svg);
+     --icon-shopping-cart: url(/icon-shopping-cart.svg);
+     --icon-wallet: url(/icon-wallet.svg);
     }
   }

@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   root "budgets#index"
 
-  resources :budgets, only: %i[ index new create show destroy ]
+  resources :budgets, only: %i[ index new create show destroy ] do
+    resources :sources, only: %i[ index new create show ], shallow: true
+  end
 
   resource :session, only: %i[ new create destroy ] do
     scope module: :sessions do

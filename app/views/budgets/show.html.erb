@@ -23,6 +23,7 @@
       </dl>
     </main>
     <footer>
+      <%= link_to "Sources", budget_sources_path(@budget) %>
       <%= button_to "Delete budget", budget_path(@budget), method: :delete,
             data: { turbo_confirm: "Delete this budget and its source permanently?" } %>
     </footer>

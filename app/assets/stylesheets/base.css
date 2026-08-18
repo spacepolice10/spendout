@@ -71,7 +71,7 @@
 
     }
 
-    details > summary {
+    details>summary {
         list-style: none;
         padding-block: var(--space-v-half);
 
@@ -163,14 +163,15 @@
 
         & fieldset {
             &[data-layout="flex"] {
-                & > div {
+                &>div {
                     display: flex;
+                    flex-wrap: wrap;
                     gap: var(--form-space-h);
                 }
             }
 
             &[data-layout="grid"] {
-                & > div {
+                &>div {
                     display: grid;
                     gap: var(--form-space-v);
                 }
@@ -213,15 +214,19 @@
             border: var(--border-input);
             border-radius: var(--radius-input);
             padding: var(--form-space-v) var(--form-space-h);
+
             &:has(>input[type="checkbox"]:checked, >input[type="radio"]:checked) {
                 background: var(--background-color-checked);
                 color: var(--color-checked);
                 outline: var(--outline-input);
             }
+
             &:has(>input[type="checkbox"]:focus-visible, >input[type="radio"]:focus-visible) {
                 outline: var(--outline-input);
             }
-            & > input[type="checkbox"], & > input[type="radio"] {
+
+            &>input[type="checkbox"],
+            &>input[type="radio"] {
                 position: absolute;
                 width: 1px;
                 height: 1px;

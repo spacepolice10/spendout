@@ -4,7 +4,7 @@ active:
   name: Main source
   amount: 1500.2500
   icon: wallet
-  colour: hotpink
+  colour: green
 
 archived:
   budget: archived
@@ -12,7 +12,7 @@ archived:
   name: Main source
   amount: 900.0000
   icon: wallet
-  colour: hotpink
+  colour: green
 
 other:
   budget: other
@@ -20,4 +20,4 @@ other:
   name: Main source
   amount: 2500000.0000
   icon: wallet
-  colour: hotpink
+  colour: green

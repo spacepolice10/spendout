@@ -34,7 +34,7 @@ class CurrencyTest < ActiveSupport::TestCase
     assert duplicate.errors.added?(:alphabetic_code, :taken, value: "USD")
   end
 
-  test "select options use the public label and code shape" do
-    assert_includes Currency.select_options, [ "US Dollar (USD)", "USD" ]
+  test "options use the public label and code shape" do
+    assert_includes Currency.options, [ "US Dollar (USD)", "USD" ]
   end
 end

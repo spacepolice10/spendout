@@ -1,7 +1,9 @@
 class Source < ApplicationRecord
+  include Colourable, Iconable
+
   belongs_to :budget, inverse_of: :sources
 
-  validates :name, :icon, :colour, presence: true
+  validates :name, presence: true
   validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
   validate :currency_is_available_in_budget

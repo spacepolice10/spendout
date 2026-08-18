@@ -1,0 +1,9 @@
+@layer variables {
+  :root {
+    --color-palette-green: light-dark(oklch(0.776 0.175 143.8), oklch(0.38 0.10 143.8));
+    --color-palette-red: light-dark(oklch(0.660 0.211 33.0), oklch(0.38 0.12 33.0));
+    --color-palette-blue: light-dark(oklch(0.451 0.179 266.6), oklch(0.35 0.12 266.6));
+    --color-palette-yellow: light-dark(oklch(0.827 0.171 80.5), oklch(0.42 0.10 80.5));
+    --color-palette-violet: light-dark(oklch(0.606 0.219 292.7), oklch(0.38 0.12 292.7));
+  }
+}

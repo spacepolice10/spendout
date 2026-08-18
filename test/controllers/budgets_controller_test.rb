@@ -51,6 +51,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a[aria-label='Back to budgets'][href='#{budgets_path}']"
+    assert_select "a[href='#{budget_sources_path(budgets(:active))}']", text: "Sources"
   end
 
   test "creates the complete aggregate from canonical currency data" do

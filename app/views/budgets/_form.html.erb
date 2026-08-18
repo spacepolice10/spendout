@@ -25,7 +25,7 @@
 
       <%= form.label :currency_code, "Currency", hidden: true %>
 
-      <%= form.select :currency_code, Currency.select_options, { prompt: "Select currency" },
+      <%= form.select :currency_code, Currency.options, { prompt: "Select currency" },
               required: true, aria: { label: "Choose your salary currency" } %>
     </div>
   </fieldset>

@@ -194,7 +194,7 @@ class Currency < ApplicationRecord
       CATALOG
     end
 
-    def select_options
+    def options
       CATALOG.map { |code, data| [ "#{data[:name]} (#{code})", code ] }
     end
 
