@@ -1,0 +1,291 @@
+/* Base — design-level element defaults
+ *
+ * These are intentional design choices, not browser normalization.
+ * Lives in @layer base so it sits between variables and utilities.
+ */
+
+@layer base {
+
+    html {
+        background: var(--color-1);
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-base-read);
+        background: var(--color-1);
+        color: var(--color-invert-1);
+        width: 100%;
+        container: inline-size;
+        max-width: 1280px;
+        margin-inline: auto;
+
+        &>header {
+            margin-inline: auto;
+            width: 100%;
+        }
+
+        &>main {
+            container: inline-size;
+            margin-inline: auto;
+            width: 100%;
+            height: 100%;
+            padding-inline: var(--space-h);
+
+            &[data-size="xs"] { max-width: 376px; }
+            &[data-size="sm"] { max-width: 640px; }
+            &[data-size="lg"] { max-width: 800px; }
+            &[data-size="xl"] { max-width: 1280px; }
+        }
+
+        &>footer {
+            margin-inline: auto;
+            width: 100%;
+        }
+    }
+
+    section {
+
+        &[data-layout="grid"] {
+            --grid-columns: auto-fit;
+            --grid-column-size: 0%;
+
+            display: grid;
+            grid-template-columns: repeat(var(--grid-columns), minmax(var(--grid-column-size), 1fr));
+        }
+
+        &[data-layout="flex"] {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 0;
+            justify-content: center;
+        }
+
+    }
+
+    article {
+        border-radius: var(--radius-2);
+        padding: var(--space-v) var(--space-v);
+
+        &>header,
+        &>main,
+        &>footer {
+            padding: var(--space-v) var(--space-v);
+        }
+
+        &>header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--border-subtle);
+            width: 100%;
+            height: fit-content;
+
+            &>nav {
+                justify-content: start;
+                gap: var(--space-h);
+            }
+        }
+
+        &>main {
+            flex: 1 1 0;
+            width: 100%;
+        }
+
+        &>footer {
+            justify-content: start;
+            gap: var(--space-h);
+        }
+
+        &[data-elevation="1"] {
+            background: var(--color-1);
+            border: var(--border-subtle);
+        }
+
+        &[data-elevation="2"] {
+            background: var(--color-2);
+            border: var(--border-subtle);
+        }
+    }
+
+    form {
+        --font-weight-label: var(--font-weight-bold);
+        --font-weight-small: var(--font-weight-medium);
+        --form-space-v: var(--space-v);
+        --form-space-h: var(--space-h);
+        --border-input: var(--border-subtle);
+        --radius-input: var(--radius-1);
+        --border-button: var(--border-subtle);
+        --radius-button: var(--radius-3);
+        --outline-input: 1px solid var(--color-invert-1);
+        --outline-button: 1px solid var(--color-invert-1);
+        --background-input: var(--color-1);
+        --input-color: var(--color-invert-3);
+        --background-button: var(--color-invert-1);
+        --button-color: var(--color-1);
+        --background-button-hovered: var(--color-invert-2);
+        --background-button-active: var(--color-invert-3);
+
+        display: grid;
+        gap: var(--form-space-v);
+
+        & label {
+            font-weight: var(--font-weight-label);
+        }
+
+        & fieldset {
+            border: var(--border-fieldset);
+            border-radius: var(--radius-fieldset);
+            padding: var(--form-space-v) var(--form-space-h);
+        }
+
+        & legend {
+            font-weight: var(--font-weight-label);
+        }
+
+        & small {
+            color: var(--color-invert-3);
+        }
+
+        & :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]), textarea, select) {
+            border: var(--border-input);
+            border-radius: var(--radius-input);
+            padding: var(--form-space-v) var(--form-space-h);
+
+            &:focus,
+            &:focus-visible {
+                outline: var(--outline-input);
+            }
+
+            &::placeholder {
+                color: var(--input-color);
+            }
+
+            &:disabled {
+                opacity: var(--opacity-50);
+                cursor: not-allowed;
+            }
+        }
+
+        & label:has(>input[type="checkbox"], >input[type="radio"]) {
+            display: flex;
+            align-items: center;
+            border: var(--border-input);
+            border-radius: var(--radius-input);
+            padding: var(--form-space-v) var(--form-space-h);
+        }
+
+        & :is(button, input[type="submit"], input[type="button"], input[type="reset"]) {
+            position: relative;
+            height: fit-content;
+            width: fit-content;
+            color: var(--button-color);
+            background: var(--background-button);
+            border: var(--border-button);
+            border-radius: var(--radius-button);
+            padding: var(--form-space-v) var(--form-space-h);
+            margin-inline: auto;
+            transition: color 150ms ease;
+
+            &:focus-visible { outline: var(--outline-button); }
+
+            &:disabled {
+                opacity: var(--opacity-50);
+                cursor: not-allowed;
+            }
+
+            &:hover { background: var(--background-button-hovered); }
+            &:active { background: var(--background-button-active); }
+        }
+
+        & :is(button[type="submit"], button:not([type]))::after {
+            content: "";
+            position: absolute;
+            inset: 50% auto auto 50%;
+            width: 1.25em
+            aspect-ratio: 1;
+            background: var(--button-color);
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21v-3m6.36.36-2.12-2.12M21 12h-3m.36-6.36-2.12 2.12M12 3v3m-6.36-.36 2.12 2.12M3 12h2m1 4.95.71-.71'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21v-3m6.36.36-2.12-2.12M21 12h-3m.36-6.36-2.12 2.12M12 3v3m-6.36-.36 2.12 2.12M3 12h2m1 4.95.71-.71'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+            opacity: 0;
+            translate: -50% -50%;
+            scale: 0.75;
+            transition: opacity 150ms ease, scale 150ms ease;
+        }
+
+        &[aria-busy="true"] :is(button[type="submit"], button:not([type])) {
+            color: transparent;
+
+            &::after {
+                opacity: 1;
+                scale: 1;
+                animation: form-submit-spin 800ms linear infinite;
+            }
+        }
+
+    }
+
+    @keyframes form-submit-spin {
+        to { transform: rotate(1turn); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        form[aria-busy="true"] :is(button[type="submit"], button:not([type]))::after {
+            animation: none;
+        }
+    }
+
+    /* Typography */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        text-wrap: balance;
+    }
+
+    p,
+    li {
+        text-wrap: pretty;
+    }
+
+    p,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        overflow-wrap: break-word;
+    }
+
+    /* Focus — thin soft ring, offset outward; follows border-radius on controls */
+    *:focus-visible {
+        outline: 0.5px solid color-mix(in oklch,
+                var(--color-invert-1) 80%,
+                transparent);
+        box-shadow: none;
+        transition: none;
+    }
+
+    a {
+        text-decoration-skip-ink: auto;
+        color: hotpink;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    *+ :is(h1, h2, h3, h4, h5, h6) {
+        margin-top: 1em;
+    }
+
+    *+ :is(p, ul, ol, blockquote, table, article, aside, details) {
+        margin-top: 0.5em;
+    }
+}

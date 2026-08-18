@@ -1,0 +1,15 @@
+- A user can own many budgets.
+- A budget has sources, allocations, currencies, and expenses.
+- A source is a money container with a name, amount, icon, colour, and currency.
+- An allocation is a non-binding spending plan with the same fields as a source. It can affect visuals and behavior, but it never blocks an expense.
+- An expense has a name, amount, currency, source, allocation, and user-editable occurrence timestamp.
+- Expense forms provide default source and allocation selections.
+- Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
+- The first source determines the budget's base currency.
+- Each additional currency has a manually entered rate expressed as base-currency units per one unit of that currency.
+- Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
+- Replace the generated password authentication; do not extend it.
+- Store money with precision-safe types. Do not fetch exchange rates externally unless requested.
+- Follow Basecamp conventions and reference projects such as Fizzy and Writebook when writing Ruby or Hotwire code.
+- Reuse the variables and semantic rules in `base.css`. Agents must not create CSS classes; use existing classes only for business semantics, never for layouts or generic components.
+- Update these rules when the project requires it, but keep this file concise and free of unnecessary detail.
