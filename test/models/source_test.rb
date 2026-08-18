@@ -65,11 +65,25 @@ class SourceTest < ActiveSupport::TestCase
   end
 
   test "reports deletion without hiding the record" do
-    source = sources(:active)
+    source = create_secondary_source
     source.update!(deleted_at: Time.current)
 
     assert source.deleted?
     assert_equal source, Source.find(source.id)
+  end
+
+  test "base source cannot be deleted or directly destroyed" do
+    source = sources(:active)
+    source.deleted_at = Time.current
+
+    assert_not source.save
+    assert source.errors.added?(:deleted_at, "cannot delete the base source")
+
+    source.reload
+
+    assert_not source.destroy
+    assert source.errors.added?(:base, "source cannot be destroyed")
+    assert source.persisted?
   end
 
   test "resolves currency horizontally within its budget" do
@@ -82,4 +96,23 @@ class SourceTest < ActiveSupport::TestCase
     assert_not source.valid?
     assert source.errors.added?(:currency_code, "must be available in this budget")
   end
+
+  test "cannot be reduced below its active allocated amount" do
+    source = sources(:active)
+    source.amount = BigDecimal("299.9999")
+
+    assert_not source.valid?
+    assert source.errors.added?(:amount, "must cover active allocations")
+  end
+
+  private
+    def create_secondary_source
+      budgets(:active).sources.create!(
+        name: "Secondary source",
+        amount: 100,
+        currency_code: "USD",
+        icon: "wallet",
+        colour: "green"
+      )
+    end
 end

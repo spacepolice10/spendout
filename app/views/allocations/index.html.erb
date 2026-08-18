@@ -1,0 +1,52 @@
+<main data-size="lg">
+  <article data-elevation="1">
+    <header>
+      <nav>
+        <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
+        <div>
+          <h1>Allocations</h1>
+          <p><%= @budget.name %></p>
+        </div>
+      </nav>
+
+      <%= link_to icon_tag("plus"), new_budget_allocation_path(@budget), aria: { label: "New allocation" } %>
+    </header>
+
+    <%= tag.p(flash[:notice]) if flash[:notice] %>
+
+    <main>
+      <dl>
+        <dt>Remaining</dt>
+        <dd><%= formatted_amount(@budget.amount_summary, @budget.base_currency) %> <%= @budget.base_currency.alphabetic_code %></dd>
+      </dl>
+
+      <% if @allocations.any? %>
+        <% @allocations.each do |allocation| %>
+          <%= link_to allocation_path(allocation), style: "color: inherit;" do %>
+            <article
+              data-elevation="1"
+              data-testid="allocation-card"
+              style="<%= colour_styles(allocation.colour) %>"
+            >
+              <header>
+                <nav>
+                  <%= icon_tag(allocation.icon) %>
+                  <h2><%= allocation.name %></h2>
+                </nav>
+              </header>
+
+              <main>
+                <strong><%= formatted_amount(allocation.amount, allocation.currency) %></strong>
+                <%= allocation.currency_code %>
+                <p>From <%= allocation.source.name %></p>
+              </main>
+            </article>
+          <% end %>
+        <% end %>
+      <% else %>
+        <h2>No allocations yet</h2>
+        <p>Add an allocation to plan spending from your sources.</p>
+      <% end %>
+    </main>
+  </article>
+</main>

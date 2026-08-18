@@ -77,6 +77,7 @@ class BudgetTest < ActiveSupport::TestCase
     end
 
     assert_equal "USD", budget.base_currency.alphabetic_code
+    assert_equal BigDecimal("1"), budget.base_currency.rate
     assert_equal BigDecimal("100"), budget.base_source.amount
   end
 
@@ -89,13 +90,48 @@ class BudgetTest < ActiveSupport::TestCase
     end
   end
 
-  test "returns the base source and currency even when the source is deleted" do
+  test "returns the first source and its currency as the base" do
     budget = budgets(:active)
     source = sources(:active)
-    source.update!(deleted_at: Time.current)
 
     assert_equal currencies(:active_usd), budget.base_currency
     assert_equal source, budget.base_source
+  end
+
+  test "summarizes converted active sources and allocations in base currency" do
+    budget = budgets(:active)
+    euro = budget.currencies.create!(alphabetic_code: "EUR", rate: "1.100000000000")
+    euro_source = budget.sources.create!(
+      name: "Euros",
+      amount: "25.5000",
+      currency_code: "EUR",
+      icon: "wallet",
+      colour: "green"
+    )
+    euro_allocation = budget.allocations.create!(
+      source: euro_source,
+      name: "European trip",
+      amount: "5.2500",
+      icon: "plane",
+      colour: "blue"
+    )
+
+    assert_equal BigDecimal("1528.3000"), budget.sources_amount_in_base
+    assert_equal BigDecimal("305.7750"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1222.5250"), budget.amount_summary
+
+    euro_allocation.update!(deleted_at: Time.current)
+    euro_source.update!(deleted_at: Time.current)
+
+    assert_equal BigDecimal("1500.2500"), budget.sources_amount_in_base
+    assert_equal BigDecimal("300.0000"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1200.2500"), budget.amount_summary
+
+    euro.update!(rate: "1.200000000000")
+    euro_source.update_columns(deleted_at: nil)
+    euro_allocation.update_columns(deleted_at: nil)
+
+    assert_equal BigDecimal("1224.5500"), budget.amount_summary
   end
 
   private

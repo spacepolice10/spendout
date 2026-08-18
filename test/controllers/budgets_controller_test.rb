@@ -52,6 +52,10 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a[aria-label='Back to budgets'][href='#{budgets_path}']"
     assert_select "a[href='#{budget_sources_path(budgets(:active))}']", text: "Sources"
+    assert_select "a[href='#{budget_allocations_path(budgets(:active))}']", text: "Allocations"
+    assert_select "a[href='#{budget_currencies_path(budgets(:active))}']", text: "Currencies"
+    assert_select "dt", text: "Remaining"
+    assert_select "dd", text: /1,200.25 USD/
   end
 
   test "creates the complete aggregate from canonical currency data" do
@@ -72,6 +76,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Date.new(2027, 1, 18), budget.period_to
     assert_equal "Lek", budget.base_currency.name
     assert_equal "008", budget.base_currency.numeric_code
+    assert_equal BigDecimal("1"), budget.base_currency.rate
     assert_equal BigDecimal("123.4567"), budget.base_source.amount
     assert_equal "ALL", budget.base_source.currency_code
   end
@@ -102,7 +107,9 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Budget.count", -1) do
       assert_difference("Currency.count", -1) do
         assert_difference("Source.count", -1) do
-          delete budget_path(budget)
+          assert_difference("Allocation.count", -1) do
+            delete budget_path(budget)
+          end
         end
       end
     end

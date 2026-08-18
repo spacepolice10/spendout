@@ -6,6 +6,7 @@ class Budget < ApplicationRecord
 
   belongs_to :user
   has_many :currencies, dependent: :destroy, inverse_of: :budget
+  has_many :allocations, dependent: :destroy, inverse_of: :budget
   has_many :sources, dependent: :destroy, inverse_of: :budget
 
   attribute :duration, :string, default: "30_days"
@@ -22,7 +23,7 @@ class Budget < ApplicationRecord
   validate :period_starts_before_ends
 
   def save_with_base_source
-    currencies.build(alphabetic_code: currency_code)
+    currencies.build(alphabetic_code: currency_code, rate: 1)
     sources.build(amount: source_amount, currency_code: currency_code)
     save
   end
@@ -51,11 +52,31 @@ class Budget < ApplicationRecord
     sources.order("sources.created_at ASC", "sources.id ASC").first
   end
 
+  def sources_amount_in_base
+    amount_in_base_of(sources.where(deleted_at: nil))
+  end
+
+  def allocations_amount_in_base
+    amount_in_base_of(allocations.where(deleted_at: nil))
+  end
+
+  def amount_summary
+    sources_amount_in_base - allocations_amount_in_base
+  end
+
   def currency_code=(value)
     super(value.to_s.strip.upcase.presence)
   end
 
   private
+    def amount_in_base_of(records)
+      currencies_by_code = currencies.index_by(&:alphabetic_code)
+
+      records.group(:currency_code).sum(:amount).sum(BigDecimal("0")) do |currency_code, amount|
+        currencies_by_code.fetch(currency_code).amount_in_base(amount)
+      end
+    end
+
     def calculate_period_to
       days = DURATIONS[duration]
       self.period_to = period_from + days - 1 if period_from && days

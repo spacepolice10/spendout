@@ -34,7 +34,7 @@
                 <% source = budget.base_source %>
 
                 <p>
-                  <strong><%= source_amount(source) %></strong> <%= source.currency.alphabetic_code %>
+                  <strong><%= formatted_amount(source.amount, source.currency) %></strong> <%= source.currency.alphabetic_code %>
                 </p>
               </main>
 

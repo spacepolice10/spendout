@@ -16,14 +16,18 @@
     <main>
       <% source = @budget.base_source %>
       <dl>
+        <dt>Remaining</dt>
+        <dd><%= formatted_amount(@budget.amount_summary, @budget.base_currency) %> <%= @budget.base_currency.alphabetic_code %></dd>
         <dt>Starting amount</dt>
-        <dd><%= source_amount(source) %> <%= source.currency.alphabetic_code %></dd>
+        <dd><%= formatted_amount(source.amount, source.currency) %> <%= source.currency.alphabetic_code %></dd>
         <dt>Period</dt>
         <dd><%= @budget.period_from.to_fs(:long) %> – <%= @budget.period_to.to_fs(:long) %></dd>
       </dl>
     </main>
     <footer>
       <%= link_to "Sources", budget_sources_path(@budget) %>
+      <%= link_to "Allocations", budget_allocations_path(@budget) %>
+      <%= link_to "Currencies", budget_currencies_path(@budget) %>
       <%= button_to "Delete budget", budget_path(@budget), method: :delete,
             data: { turbo_confirm: "Delete this budget and its source permanently?" } %>
     </footer>

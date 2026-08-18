@@ -1,0 +1,151 @@
+require "test_helper"
+
+class AllocationsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    @budget = budgets(:active)
+    @source = sources(:active)
+    @allocation = allocations(:active)
+  end
+
+  test "requires authentication" do
+    get budget_allocations_path(@budget)
+
+    assert_redirected_to new_session_path
+  end
+
+  test "index lists active allocations and remaining amount" do
+    sign_in_as(@user)
+
+    get budget_allocations_path(@budget)
+
+    assert_response :success
+    assert_select "[data-testid='allocation-card']", count: 1
+    assert_select "[data-testid='allocation-card']", text: /Housing/
+    assert_select "dt", text: "Remaining"
+    assert_select "dd", text: /1,200.25 USD/
+    assert_select "a[aria-label='New allocation'][href='#{new_budget_allocation_path(@budget)}']"
+    assert_select "a[aria-label='Back to budget'][href='#{budget_path(@budget)}']"
+  end
+
+  test "index excludes deleted allocations" do
+    sign_in_as(@user)
+    @allocation.update!(deleted_at: Time.current)
+
+    get budget_allocations_path(@budget)
+
+    assert_response :success
+    assert_select "[data-testid='allocation-card']", count: 0
+  end
+
+  test "new defaults to the active base source and renders shared appearance options" do
+    sign_in_as(@user)
+
+    get new_budget_allocation_path(@budget)
+
+    assert_response :success
+    assert_select "select[name='allocation[source_id]'] option[value='#{@source.id}'][selected]", text: /1,200.25 available \(USD\)/
+    assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
+    assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
+    assert_select "input[name='allocation[colour]'][type='radio']", count: Allocation.colour_options.size
+    assert_select "input[name='allocation[colour]'][value='green'][checked]"
+    assert_select "input[name='allocation[currency_code]']", count: 0
+    assert_select "dt", text: "Remaining", count: 0
+  end
+
+  test "creates an allocation and inherits source currency" do
+    sign_in_as(@user)
+
+    assert_difference("Allocation.count", 1) do
+      post budget_allocations_path(@budget), params: {
+        allocation: {
+          name: "Emergency savings",
+          amount: "100.2500",
+          source_id: @source.id,
+          currency_code: "EUR",
+          icon: "pig-money",
+          colour: "red"
+        }
+      }
+    end
+
+    allocation = @budget.allocations.order(:created_at, :id).last
+    assert_redirected_to allocation_path(allocation)
+    assert_equal "Emergency savings", allocation.name
+    assert_equal BigDecimal("100.2500"), allocation.amount
+    assert_equal "USD", allocation.currency_code
+    assert_equal "pig-money", allocation.icon
+    assert_equal "red", allocation.colour
+  end
+
+  test "over-capacity allocation creates no record and rerenders errors" do
+    sign_in_as(@user)
+
+    assert_no_difference("Allocation.count") do
+      post budget_allocations_path(@budget), params: {
+        allocation: {
+          name: "Too much",
+          amount: "1200.2501",
+          source_id: @source.id,
+          icon: "wallet",
+          colour: "green"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Amount must be less than or equal to 1200.25/
+    assert_select "select[name='allocation[source_id]'] option[value='#{@source.id}'][selected]"
+  end
+
+  test "cannot create against another budget source" do
+    sign_in_as(@user)
+
+    assert_no_difference("Allocation.count") do
+      post budget_allocations_path(@budget), params: {
+        allocation: {
+          name: "Wrong source",
+          amount: "1",
+          source_id: sources(:other).id,
+          icon: "wallet",
+          colour: "green"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Source must exist/
+  end
+
+  test "show displays allocation source and amount" do
+    sign_in_as(@user)
+
+    get allocation_path(@allocation)
+
+    assert_response :success
+    assert_select "h1", text: @allocation.name
+    assert_select "dd", text: /300 USD/
+    assert_select "a[href='#{source_path(@source)}']", text: @source.name
+    assert_select "a[aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']"
+  end
+
+  test "show labels a deleted allocation" do
+    sign_in_as(@user)
+    @allocation.update!(deleted_at: Time.current)
+
+    get allocation_path(@allocation)
+
+    assert_response :success
+    assert_select "small", text: "Deleted"
+  end
+
+  test "cannot access another user's budget or allocation" do
+    sign_in_as(@user)
+
+    get budget_allocations_path(budgets(:other))
+    assert_response :not_found
+
+    get allocation_path(allocations(:other))
+    assert_response :not_found
+  end
+end

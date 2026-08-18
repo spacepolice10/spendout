@@ -10,7 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_020000) do
+  create_table "allocations", force: :cascade do |t|
+    t.decimal "amount", precision: 19, scale: 4, null: false
+    t.integer "budget_id", null: false
+    t.string "colour", default: "green", null: false
+    t.datetime "created_at", null: false
+    t.string "currency_code", limit: 3, null: false
+    t.datetime "deleted_at"
+    t.string "icon", default: "wallet", null: false
+    t.string "name", null: false
+    t.integer "source_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["budget_id", "currency_code"], name: "index_allocations_on_budget_id_and_currency_code"
+    t.index ["budget_id"], name: "index_allocations_on_budget_id"
+    t.index ["deleted_at"], name: "index_allocations_on_deleted_at"
+    t.index ["source_id", "deleted_at"], name: "index_allocations_on_source_id_and_deleted_at"
+    t.index ["source_id"], name: "index_allocations_on_source_id"
+    t.check_constraint "amount >= 0", name: "allocations_amount_non_negative"
+  end
+
   create_table "auth_codes", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
@@ -37,10 +56,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_000000) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "numeric_code", limit: 3, null: false
+    t.decimal "rate", precision: 24, scale: 12, null: false
     t.string "symbol", null: false
     t.datetime "updated_at", null: false
     t.index ["budget_id", "alphabetic_code"], name: "index_currencies_on_budget_id_and_alphabetic_code", unique: true
     t.index ["budget_id"], name: "index_currencies_on_budget_id"
+    t.check_constraint "rate > 0", name: "currencies_rate_positive"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -75,6 +96,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_000000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "allocations", "budgets"
+  add_foreign_key "allocations", "sources"
   add_foreign_key "budgets", "users"
   add_foreign_key "currencies", "budgets"
   add_foreign_key "sessions", "users"

@@ -27,12 +27,15 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "index excludes deleted sources" do
     sign_in_as(@user)
-    @source.update!(deleted_at: Time.current)
+    deleted_source = create_secondary_source
+    deleted_source.update!(deleted_at: Time.current)
 
     get budget_sources_path(@budget)
 
     assert_response :success
-    assert_select "[data-testid='source-card']", count: 0
+    assert_select "[data-testid='source-card']", count: 1
+    assert_select "[data-testid='source-card']", text: /#{@source.name}/
+    assert_select "[data-testid='source-card']", text: /#{deleted_source.name}/, count: 0
     assert_select "[data-deleted]", count: 0
   end
 
@@ -109,9 +112,10 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "show labels deleted historical sources" do
     sign_in_as(@user)
-    @source.update!(deleted_at: Time.current)
+    deleted_source = create_secondary_source
+    deleted_source.update!(deleted_at: Time.current)
 
-    get source_path(@source)
+    get source_path(deleted_source)
 
     assert_response :success
     assert_select "small", text: "Deleted"
@@ -126,4 +130,15 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     get source_path(sources(:other))
     assert_response :not_found
   end
+
+  private
+    def create_secondary_source
+      @budget.sources.create!(
+        name: "Secondary source",
+        amount: 100,
+        currency_code: "USD",
+        icon: "wallet",
+        colour: "green"
+      )
+    end
 end

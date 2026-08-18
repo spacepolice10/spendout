@@ -25,31 +25,7 @@
         budget.currencies.map { |currency| [ "#{currency.name} (#{currency.alphabetic_code})", currency.alphabetic_code ] },
         {}, required: true %>
 
-  <fieldset data-layout="flex">
-    <legend>Icon</legend>
-
-    <div>
-      <%= form.collection_radio_buttons :icon, Source.icon_options, :second, :first do |radio| %>
-        <%= radio.label title: radio.text do %>
-          <%= radio.radio_button aria: { label: radio.text } %>
-          <%= icon_tag(radio.value) %>
-        <% end %>
-      <% end %>
-    </div>
-  </fieldset>
-
-  <fieldset data-layout="flex">
-    <legend>Colour</legend>
-
-    <div>
-      <%= form.collection_radio_buttons :colour, Source.colour_options, :second, :first do |radio| %>
-        <%= radio.label style: "--background-color-checked: var(--color-palette-#{radio.value}); --color-checked: var(--color-invert-1);" do %>
-          <%= radio.radio_button %>
-          <%= radio.text %>
-        <% end %>
-      <% end %>
-    </div>
-  </fieldset>
+  <%= render "shared/appearance_fields", form: form %>
 
   <%= form.submit %>
 <% end %>

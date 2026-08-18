@@ -1,0 +1,25 @@
+<fieldset data-layout="flex">
+  <legend>Icon</legend>
+
+  <div>
+    <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
+      <%= radio.label title: radio.text do %>
+        <%= radio.radio_button aria: { label: radio.text } %>
+        <%= icon_tag(radio.value) %>
+      <% end %>
+    <% end %>
+  </div>
+</fieldset>
+
+<fieldset data-layout="flex">
+  <legend>Colour</legend>
+
+  <div>
+    <%= form.collection_radio_buttons :colour, form.object.class.colour_options, :second, :first do |radio| %>
+      <%= radio.label style: "--background-color-checked: var(--color-palette-#{radio.value}); --color-checked: var(--color-invert-1);" do %>
+        <%= radio.radio_button %>
+        <%= radio.text %>
+      <% end %>
+    <% end %>
+  </div>
+</fieldset>

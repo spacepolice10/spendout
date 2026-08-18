@@ -4,6 +4,7 @@ active_usd:
   alphabetic_code: USD
   numeric_code: "840"
   symbol: $
+  rate: 1
 
 archived_eur:
   budget: archived
@@ -11,6 +12,7 @@ archived_eur:
   alphabetic_code: EUR
   numeric_code: "978"
   symbol: €
+  rate: 1
 
 other_vnd:
   budget: other
@@ -18,3 +20,4 @@ other_vnd:
   alphabetic_code: VND
   numeric_code: "704"
   symbol: ₫
+  rate: 1

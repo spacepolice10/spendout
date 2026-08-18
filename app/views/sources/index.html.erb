@@ -31,7 +31,7 @@
               </header>
 
               <main>
-                <strong><%= source_amount(source) %></strong>
+                <strong><%= formatted_amount(source.amount, source.currency) %></strong>
                 <%= source.currency.alphabetic_code %>
               </main>
             </article>

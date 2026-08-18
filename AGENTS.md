@@ -5,7 +5,7 @@
 - An expense has a name, amount, currency, source, allocation, and user-editable occurrence timestamp.
 - Expense forms provide default source and allocation selections.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
-- The first source determines the budget's base currency.
+- The first source determines the budget's base currency and cannot be deleted independently.
 - Each additional currency has a manually entered rate expressed as base-currency units per one unit of that currency.
 - Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
 - Replace the generated password authentication; do not extend it.

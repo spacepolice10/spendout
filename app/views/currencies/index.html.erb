@@ -1,0 +1,33 @@
+<main data-size="sm">
+  <article data-elevation="1">
+    <header>
+      <nav>
+        <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
+        <div>
+          <h1>Currencies</h1>
+          <p><%= @budget.name %></p>
+        </div>
+      </nav>
+
+      <%= link_to icon_tag("plus"), new_budget_currency_path(@budget), aria: { label: "New currency" } %>
+    </header>
+
+    <%= tag.p(flash[:notice]) if flash[:notice] %>
+
+    <main>
+      <dl>
+        <% @currencies.each do |currency| %>
+          <dt><%= currency.name %> (<%= currency.alphabetic_code %>)</dt>
+          <dd>
+            1 <%= currency.alphabetic_code %> = <%= currency.rate == 1 ? "1" : currency.rate.to_s("F") %> <%= @budget.base_currency.alphabetic_code %>
+            <% if currency.base? %>
+              <small>Base currency</small>
+            <% else %>
+              <%= link_to "Edit rate", edit_currency_path(currency) %>
+            <% end %>
+          </dd>
+        <% end %>
+      </dl>
+    </main>
+  </article>
+</main>

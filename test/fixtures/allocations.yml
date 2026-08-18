@@ -1,0 +1,26 @@
+active:
+  budget: active
+  source: active
+  currency_code: USD
+  name: Housing
+  amount: 300.0000
+  icon: home
+  colour: yellow
+
+archived:
+  budget: archived
+  source: archived
+  currency_code: EUR
+  name: Travel
+  amount: 100.0000
+  icon: plane
+  colour: blue
+
+other:
+  budget: other
+  source: other
+  currency_code: VND
+  name: Shopping
+  amount: 500000.0000
+  icon: shopping-cart
+  colour: violet
