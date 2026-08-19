@@ -90,7 +90,27 @@ class Budget < ApplicationRecord
   def todays_remainder
     return unless period_from <= Date.current && Date.current <= period_to
 
-    (amount_summary - unallocated_expenses_amount_in_base) / (period_to - Date.current + 1).to_i
+    planned_remainder = amount_summary - unallocated_expenses_amount_in_base
+    actual_remainder = available_summary
+
+    [ planned_remainder, actual_remainder ].min / days_until_archived
+  end
+
+  def todays_remainder_percentage
+    remainder = todays_remainder
+    return unless remainder
+
+    period_days = (period_to - period_from + 1).to_i
+    daily_target = amount_summary / period_days
+    return BigDecimal("0") unless daily_target.positive?
+
+    [ [ remainder / daily_target * 100, BigDecimal("0") ].max, BigDecimal("100") ].min
+  end
+
+  def days_until_archived
+    return if archived?
+
+    (period_to - Date.current + 1).to_i
   end
 
   def currency_code=(value)

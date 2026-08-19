@@ -1,4 +1,4 @@
-<%= form_with model: [ budget, expense ] do |form| %>
+<%= form_with model: [ budget, expense ], data: { expense_form: true } do |form| %>
   <% if expense.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
@@ -14,23 +14,29 @@
     </section>
   <% end %>
 
-  <%= form.label :source_id, "Source" %>
-  <%= form.select :source_id,
+  <%= form.label :source_id do %>
+    <legend>From</legend>
+
+    <%= form.select :source_id,
         active_sources.map { |source| [ "#{source.name} — #{formatted_amount(source.spendable_amount, source.currency)} available (#{source.currency_code})", source.id ] },
         {},
         required: true %>
+  <% end %>
 
-  <%= form.label :amount %>
-  <%= form.number_field :amount, min: 0.0001, step: 0.0001, required: true, autofocus: true %>
+  <%= form.label :amount do %>
+    <legend>How much?</legend>
 
-  <%= form.label :occurred_on, "Date" %>
-  <%= form.date_field :occurred_on,
-        min: budget.period_from,
-        max: budget.period_to,
-        required: true %>
+    <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true, autofocus: true,
+        aria: { label: "Amount" },
+        data: {
+          controller: "money-input",
+          money_input_start_value: expense.amount&.to_s("F")
+        } %>
+  <% end %>
 
-  <fieldset data-layout="flex">
-    <legend>Allocation</legend>
+  <fieldset data-expense-allocations>
+    <legend>Spend on</legend>
+
     <div>
       <%= form.label :allocation_id, value: "", for: "expense_allocation_id_none" do %>
         <%= form.radio_button :allocation_id, "", id: "expense_allocation_id_none" %>
@@ -38,16 +44,52 @@
       <% end %>
 
       <% active_allocations.each do |allocation| %>
-        <%= form.label :allocation_id, value: allocation.id do %>
+        <%= form.label :allocation_id, value: allocation.id,
+              style: "--allocation-colour: var(--color-palette-#{allocation.colour});" do %>
           <%= form.radio_button :allocation_id, allocation.id %>
-          <%= allocation.name %>
+          <%= icon_tag(allocation.icon) %>
+
+          <span><%= allocation.name %></span>
         <% end %>
       <% end %>
     </div>
   </fieldset>
 
-  <%= form.label :note %>
-  <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional" %>
+  <fieldset data-expense-options>
+    <div>
+      <div data-optional-item>
+        <%= tag.input type: "checkbox", id: "expense-date-item-toggle",
+              checked: expense.errors[:occurred_on].any?, data: { optional_item_toggle: true }, aria: { label: "Show date field" } %>
 
-  <%= form.submit %>
+        <%= tag.label "+ Date", for: "expense-date-item-toggle" %>
+
+        <div data-optional-item-control>
+          <%= form.label :occurred_on do %>
+            <legend>Date</legend>
+
+            <%= form.date_field :occurred_on,
+                min: budget.period_from,
+                max: budget.period_to,
+                required: true %>
+          <% end %>
+        </div>
+      </div>
+
+      <div data-optional-item>
+        <%= tag.input type: "checkbox", id: "expense-note-toggle",
+              checked: expense.note.present?, data: { optional_item_toggle: true }, aria: { label: "Show note field" } %>
+
+        <%= tag.label "+ Note", for: "expense-note-toggle" %>
+
+        <div data-optional-item-control>
+          <%= form.label :note do %>
+            <legend>Note</legend>
+            <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <%= form.submit "Create", data: { intent: "primary" } %>
 <% end %>

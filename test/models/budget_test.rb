@@ -193,6 +193,60 @@ class BudgetTest < ActiveSupport::TestCase
     end
   end
 
+  test "calculates today's remainder as a percentage of the daily target" do
+    budget = budgets(:active)
+
+    travel_to budget.period_from do
+      assert_equal BigDecimal("100"), budget.todays_remainder_percentage
+
+      budget.expenses.create!(
+        source: sources(:active),
+        amount: 300,
+        occurred_on: Date.current
+      )
+
+      assert_in_delta 75, budget.todays_remainder_percentage.to_f, 0.1
+    end
+
+    travel_to budget.period_to + 1.day do
+      assert_nil budget.todays_remainder_percentage
+    end
+  end
+
+  test "caps today's remainder by the money actually available in sources" do
+    budget = budgets(:active)
+    source = sources(:active)
+
+    travel_to Date.new(2026, 8, 19) do
+      budget.expenses.create!(
+        source: source,
+        allocation: allocations(:active),
+        amount: source.spendable_amount,
+        occurred_on: Date.current
+      )
+
+      assert_equal BigDecimal("0"), budget.available_summary
+      assert_equal BigDecimal("0"), budget.todays_remainder
+      assert_equal BigDecimal("0"), budget.todays_remainder_percentage
+    end
+  end
+
+  test "counts days until the budget is archived" do
+    budget = budgets(:active)
+
+    travel_to Date.new(2026, 8, 19) do
+      assert_equal 29, budget.days_until_archived
+    end
+
+    travel_to budget.period_to do
+      assert_equal 1, budget.days_until_archived
+    end
+
+    travel_to budget.period_to + 1.day do
+      assert_nil budget.days_until_archived
+    end
+  end
+
   private
     def build_budget(period_from: Date.new(2026, 8, 18), duration: nil)
       attributes = { period_from: period_from }

@@ -16,23 +16,28 @@
 
   <fieldset class="salary" data-layout="grid">
     <legend>What's your salary?</legend>
-
+    <small>Or how much do you expect to earn/spend in this budget?</small>
     <div>
       <%= form.label :source_amount, "Amount", hidden: true %>
 
-      <%= form.number_field :source_amount, min: 0, step: 0.0001, required: true, autofocus: true,
-              aria: { label: "Enter your salary amount" } %>
+      <%= form.text_field :source_amount, inputmode: "decimal", placeholder: "0", required: true, autofocus: true,
+              aria: { label: "Enter your salary amount" },
+              data: {
+                controller: "money-input",
+                money_input_start_value: budget.source_amount&.to_s("F")
+              } %>
 
       <%= form.label :currency_code, "Currency", hidden: true %>
 
-      <%= form.select :currency_code, Currency.options, { prompt: "Select currency" },
-              required: true, aria: { label: "Choose your salary currency" } %>
+      <%= form.select :currency_code, Currency.options,
+            { include_blank: "Choose a currency" },
+            required: true, aria: { label: "Choose your salary currency" } %>
     </div>
   </fieldset>
 
   <fieldset data-layout="flex">
     <legend>How often do you get paid?</legend>
-
+    <small>Or how often do you expect to replenish your budget?</small>
     <div>
       <%= form.collection_radio_buttons :duration, Budget::DURATIONS.keys, :itself, ->(value) { value.tr("_", " ") } do |radio| %>
         <%= radio.label { radio.radio_button + radio.text } %>
@@ -40,14 +45,14 @@
     </div>
   </fieldset>
 
-  <%= tag.details do %>
-    <%= tag.summary "Change start date" %>
+  <%#= tag.details do %>
+    <%#= tag.summary "Change start date" %>
 
-    <%= tag.div do %>
-      <%= form.label :period_from, "Start date" %>
-      <%= form.date_field :period_from, required: true %>
-    <% end %>
-  <% end %>
+    <%#= tag.div do %>
+      <%#= form.label :period_from, "Start date" %>
+      <%#= form.date_field :period_from, required: true %>
+    <%# end %>
+  <%# end %>
 
   <%= form.submit "Create budget" %>
 <% end %>

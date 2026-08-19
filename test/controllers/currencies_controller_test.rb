@@ -33,6 +33,8 @@ class CurrenciesControllerTest < ActionDispatch::IntegrationTest
     get new_budget_currency_path(@budget)
 
     assert_response :success
+    assert_select "select[name='currency[alphabetic_code]']"
+    assert_select "input[name='currency[rate]'][data-controller='money-input']", count: 0
     assert_select "select[name='currency[alphabetic_code]'] option[value='USD']", count: 0
     assert_select "select[name='currency[alphabetic_code]'] option[value='EUR']", count: 0
     assert_select "p", text: /base-currency units per one unit/

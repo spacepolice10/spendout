@@ -9,10 +9,21 @@
     body {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        font-family: var(--font-family-sans);
+        font-family: var(--font-family-mono);
         font-size: var(--font-size-base-read);
-        background: var(--color-3);
+        background-color: var(--color-3);
+        background-image:
+            linear-gradient(
+                to right,
+                color-mix(in oklch, var(--color-accent) 5%, transparent) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                to bottom,
+                color-mix(in oklch, var(--color-accent) 5%, transparent) 1px,
+                transparent 1px
+            );
+        background-size: 1rem 1rem;
         color: var(--color-invert-1);
         width: 100%;
         container: inline-size;
@@ -25,11 +36,14 @@
         }
 
         &>main {
+            display: grid;
+            align-content: start;
+            gap: var(--space-v-2);
             container: inline-size;
             margin-inline: auto;
             width: 100%;
             height: 100%;
-            padding-inline: var(--space-h);
+            padding: var(--space-v-2) var(--space-h);
 
             &[data-size="xs"] {
                 max-width: 376px;
@@ -54,13 +68,30 @@
         }
     }
 
+    h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    h2 {
+        font-size: var(--font-size-base-type);
+    }
+
+    h3 {
+        font-size: var(--font-size-base-read);
+    }
+
+    h4 {
+        font-size: var(--font-size-xs);
+    }
+
     section {
 
         &[data-layout="grid"] {
             --grid-columns: auto-fit;
-            --grid-column-size: 0%;
+            --grid-column-size: 200px;
 
             display: grid;
+            gap: var(--space-v);
             grid-template-columns: repeat(var(--grid-columns), minmax(var(--grid-column-size), 1fr));
         }
 
@@ -124,11 +155,19 @@
         }
 
         &>main {
+            display: grid;
+            gap: var(--space-v);
             flex: 1 1 0;
             width: 100%;
+
+            &>article {
+                margin-top: 0;
+            }
         }
 
         &>footer {
+            display: flex;
+            flex-wrap: wrap;
             justify-content: start;
             gap: var(--space-h);
         }
@@ -144,7 +183,7 @@
         }
     }
 
-    :is(button, [role="button"]) {
+    :is(button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"]) {
         --button-background: var(--color-2);
         --button-background-hovered: var(--color-1);
         --button-background-active: var(--color-2);
@@ -196,6 +235,21 @@
             --button-color: var(--color-invert-1);
         }
 
+        &[data-intent="accent"] {
+            --button-background: var(--color-palette-blue);
+            --button-background-hovered: color-mix(
+                in oklch,
+                var(--color-palette-blue) 90%,
+                var(--color-invert-1)
+            );
+            --button-background-active: color-mix(
+                in oklch,
+                var(--color-palette-blue) 80%,
+                var(--color-invert-1)
+            );
+            --button-color: var(--color-invert-1);
+        }
+
         &[data-intent="negative"] {
             --button-background: var(--color-negative);
             --button-background-hovered: color-mix(in oklch, var(--color-negative) 90%, var(--color-invert-negative));
@@ -223,36 +277,38 @@
         &:active:not(:disabled, [aria-disabled="true"]) {
             background: var(--button-background-active);
         }
+
+        &:focus-visible {
+            outline: 1px solid var(--color-accent);
+            outline-offset: 2px;
+        }
     }
 
     form {
-        --font-weight-label: var(--font-weight-bold);
-        --font-weight-small: var(--font-weight-medium);
+        --form-label-font-weight: var(--font-weight-bold);
         --form-space-v: var(--space-v);
         --form-space-h: var(--space-h);
-        --border-input: var(--border-subtle);
-        --radius-input: var(--radius-1);
-        --border-button: var(--border-subtle);
-        --radius-button: var(--radius-3);
-        --outline-input: 1px solid var(--color-invert-1);
-        --outline-button: 1px solid var(--color-invert-1);
-        --background-input: var(--color-1);
-        --input-color: var(--color-invert-3);
-        --background-button: var(--color-2);
-        --button-color: var(--color-invert-1);
-        --background-button-hovered: var(--color-1);
-        --background-button-active: var(--color-2);
-        --background-color-checked: var(--color-2);
-        --color-checked: var(--color-invert-1);
+        --form-control-height: 3rem;
+        --form-input-border: var(--border-subtle);
+        --form-input-radius: var(--radius-1);
+        --form-input-outline: 1px solid var(--color-accent);
+        --form-input-color: var(--color-invert-3);
+        --form-checked-background: var(--color-2);
+        --form-checked-color: var(--color-invert-1);
 
         display: grid;
         gap: var(--form-space-v);
+        min-width: 0;
 
         & label {
-            font-weight: var(--font-weight-label);
+            font-weight: var(--form-label-font-weight);
         }
 
         & fieldset {
+            margin-bottom: var(--space-v);
+            &>div {
+                margin-top: var(--space-v-half);
+            }
             &[data-layout="flex"] {
                 &>div {
                     display: flex;
@@ -270,26 +326,34 @@
         }
 
         & legend {
-            font-weight: var(--font-weight-label);
-            margin-bottom: var(--space-v);
+            padding-block: var(--space-v-half);
+            font-weight: var(--form-label-font-weight);
         }
 
         & small {
             color: var(--color-invert-3);
         }
 
+        & :is(input, textarea, select) {
+            font-size: var(--font-size-base-type);
+        }
+
         & :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]), textarea, select) {
-            border: var(--border-input);
-            border-radius: var(--radius-input);
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            border: var(--form-input-border);
+            border-radius: var(--form-input-radius);
             padding: var(--form-space-v) var(--form-space-h);
+            margin-top: var(--space-v-half);
 
             &:focus,
             &:focus-visible {
-                outline: var(--outline-input);
+                outline: var(--form-input-outline);
             }
 
             &::placeholder {
-                color: var(--input-color);
+                color: var(--form-input-color);
             }
 
             &:disabled {
@@ -298,22 +362,29 @@
             }
         }
 
+        & select {
+            height: var(--form-control-height);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         & label:has(>input[type="checkbox"], >input[type="radio"]) {
             display: flex;
             position: relative;
             align-items: center;
-            border: var(--border-input);
-            border-radius: var(--radius-input);
+            border: var(--form-input-border);
+            border-radius: var(--form-input-radius);
             padding: var(--form-space-v) var(--form-space-h);
 
             &:has(>input[type="checkbox"]:checked, >input[type="radio"]:checked) {
-                background: var(--background-color-checked);
-                color: var(--color-checked);
-                outline: var(--outline-input);
+                background: var(--form-checked-background);
+                color: var(--form-checked-color);
+                outline: var(--form-input-outline);
             }
 
             &:has(>input[type="checkbox"]:focus-visible, >input[type="radio"]:focus-visible) {
-                outline: var(--outline-input);
+                outline: var(--form-input-outline);
             }
 
             &>input[type="checkbox"],
@@ -328,37 +399,12 @@
             }
         }
 
-        & :is(input[type="submit"], input[type="button"], input[type="reset"]) {
-            position: relative;
-            height: fit-content;
-            width: fit-content;
-            color: var(--button-color);
-            background: var(--background-button);
-            border: var(--border-button);
-            border-radius: var(--radius-button);
-            padding: var(--form-space-v) var(--form-space-h);
-            margin-inline: auto;
-            transition: color 150ms ease;
+        & :is(button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"]) {
+            --button-background: var(--color-invert-1);
+            --button-background-hovered: var(--color-invert-2);
+            --button-background-active: var(--color-invert-3);
+            --button-color: var(--color-1);
 
-            &:focus-visible {
-                outline: var(--outline-button);
-            }
-
-            &:disabled {
-                opacity: var(--opacity-50);
-                cursor: not-allowed;
-            }
-
-            &:hover {
-                background: var(--background-button-hovered);
-            }
-
-            &:active {
-                background: var(--background-button-active);
-            }
-        }
-
-        & :is(button, [role="button"]) {
             position: relative;
             margin-inline: auto;
         }
@@ -402,13 +448,15 @@
         }
     }
 
+    section[data-form-errors] {
+        color: var(--color-invert-negative);
+    }
+
     /* Typography */
     h1,
     h2,
     h3,
-    h4,
-    h5,
-    h6 {
+    h4 {
         text-wrap: balance;
     }
 
@@ -422,9 +470,7 @@
     h1,
     h2,
     h3,
-    h4,
-    h5,
-    h6 {
+    h4 {
         overflow-wrap: break-word;
     }
 

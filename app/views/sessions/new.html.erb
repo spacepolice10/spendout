@@ -1,16 +1,24 @@
-<main data-size="sm">
+<main class="session-page" data-size="sm">
+  <header>
+    <h1>Spendout</h1>
+  </header>
+
+  <%= tag.p(flash[:alert], role: "alert") if flash[:alert] %>
+  <%= tag.p(flash[:notice]) if flash[:notice] %>
+
   <article data-elevation="1">
-    <%= tag.p(flash[:alert], role: "alert") if flash[:alert] %>
-    <%= tag.p(flash[:notice]) if flash[:notice] %>
+    <header>
+      <h2>Sign in</h2>
+    </header>
 
-    <h1>Sign in</h1>
+    <main>
+      <p>We’ll email you a six-character sign-in code.</p>
 
-    <p>We’ll email you a six-character sign-in code.</p>
-
-    <%= form_with url: session_path do |form| %>
-      <%= form.label :email_address, "Email address" %>
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
-      <%= form.button "Email me a code", type: "submit" %>
-    <% end %>
+      <%= form_with url: session_path do |form| %>
+        <%= form.label :email_address, "Email address" %>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
+        <%= form.button "Email me a code", type: "submit", data: { appearance: "keycap", colour: "yellow" } %>
+      <% end %>
+    </main>
   </article>
 </main>

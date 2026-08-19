@@ -43,12 +43,15 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     get new_budget_allocation_path(@budget)
 
     assert_response :success
-    assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]", text: "US Dollar (USD)"
+    assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
     assert_select "input[name='allocation[colour]'][type='radio']", count: Allocation.colour_options.size
     assert_select "input[name='allocation[colour]'][value='green'][checked]"
+    assert_select "input[name='allocation[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
+    assert_select "input[name='allocation[amount]'][value]", count: 0
+    assert_select "input[name='allocation[amount]'][data-money-input-start-value]", count: 0
   end
 
   test "creates an allocation with its selected currency" do

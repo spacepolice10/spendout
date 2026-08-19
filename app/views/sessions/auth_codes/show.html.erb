@@ -1,21 +1,27 @@
 <main data-size="sm">
+  <%= tag.p(flash[:alert], role: "alert") if flash[:alert] %>
+  <%= tag.p(flash[:notice]) if flash[:notice] %>
+
   <article data-elevation="1">
-    <%= tag.p(flash[:alert], role: "alert") if flash[:alert] %>
-    <%= tag.p(flash[:notice]) if flash[:notice] %>
+    <header>
+      <h1>Enter your sign-in code</h1>
+    </header>
 
-    <h1>Enter your sign-in code</h1>
+    <main>
+      <p>
+        We sent a six-character code to
+        <%= session[:email_address_pending_authentication] %>.
+      </p>
 
-    <p>
-      We sent a six-character code to
-      <%= session[:email_address_pending_authentication] %>.
-    </p>
+      <%= form_with url: session_auth_code_path do |form| %>
+        <%= form.label :code, "Sign-in code" %>
+        <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code", inputmode: "text", maxlength: 7 %>
+        <%= form.button "Sign in", type: "submit" %>
+      <% end %>
+    </main>
 
-    <%= form_with url: session_auth_code_path do |form| %>
-      <%= form.label :code, "Sign-in code" %>
-      <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code", inputmode: "text", maxlength: 7 %>
-      <%= form.button "Sign in", type: "submit" %>
-    <% end %>
-
-    <p><%= link_to "Use another email address", new_session_path %></p>
+    <footer>
+      <%= link_to "Use another email address", new_session_path %>
+    </footer>
   </article>
 </main>

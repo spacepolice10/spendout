@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "Spendout <no-reply@example.com>"
+  default from: "Spendout <#{Rails.application.credentials.dig(:smtp, :user_name)}>"
   layout "mailer"
 end

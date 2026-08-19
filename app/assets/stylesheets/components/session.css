@@ -1,0 +1,23 @@
+@layer components {
+    main.session-page > header {
+        display: grid;
+        justify-items: center;
+        gap: var(--space-v-half);
+        padding-block: var(--space-v-2);
+        text-align: center;
+
+        & h1 {
+            --session-logo-color: light-dark(
+                oklch(0.68 0.19 248),
+                oklch(0.82 0.14 240)
+            );
+
+            color: var(--session-logo-color);
+            font-family: "Bradley Hand", "Comic Sans MS", cursive;
+            font-size: var(--font-size-2xl);
+            font-style: italic;
+            letter-spacing: 0.04em;
+            rotate: -2deg;
+        }
+    }
+}

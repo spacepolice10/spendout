@@ -16,7 +16,7 @@
 
   <div>
     <%= form.collection_radio_buttons :colour, form.object.class.colour_options, :second, :first do |radio| %>
-      <%= radio.label style: "--background-color-checked: var(--color-palette-#{radio.value}); --color-checked: var(--color-invert-1);" do %>
+      <%= radio.label style: "--form-checked-background: var(--color-palette-#{radio.value}); --form-checked-color: var(--color-invert-1);" do %>
         <%= radio.radio_button %>
         <%= radio.text %>
       <% end %>

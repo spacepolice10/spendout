@@ -1,4 +1,6 @@
 <main data-size="sm">
+  <%= tag.p(flash[:notice]) if flash[:notice] %>
+
   <article data-elevation="1">
     <header>
       <nav>
@@ -12,12 +14,10 @@
       <%= link_to icon_tag("plus"), new_budget_currency_path(@budget), aria: { label: "New currency" } %>
     </header>
 
-    <%= tag.p(flash[:notice]) if flash[:notice] %>
-
     <main>
       <dl>
         <% @currencies.each do |currency| %>
-          <dt><%= currency.name %> (<%= currency.alphabetic_code %>)</dt>
+          <dt><%= currency.option_name %></dt>
           <dd>
             1 <%= currency.alphabetic_code %> = <%= currency.rate == 1 ? "1" : currency.rate.to_s("F") %> <%= @budget.base_currency.alphabetic_code %>
             <% if currency.base? %>

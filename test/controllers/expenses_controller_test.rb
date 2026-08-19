@@ -23,15 +23,26 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
+    assert_select "label[for='expense_source_id'] > legend", text: "From"
     assert_select "select[name='expense[source_id]'] option[value='#{@source.id}'][selected]"
-    assert_select "fieldset[data-layout='flex'] legend", text: "Allocation"
-    assert_select "fieldset[data-layout='flex'] > div > label", count: @budget.allocations.where(deleted_at: nil).count + 1
+    assert_select "fieldset[data-expense-allocations] legend", text: "Spend on"
+    assert_select "fieldset[data-expense-allocations] > div > label", count: @budget.allocations.where(deleted_at: nil).count + 1
+    assert_select "fieldset[data-expense-allocations] .icon-wrap", count: @budget.allocations.where(deleted_at: nil).count
     assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}'][checked]"
     assert_select "input[name='expense[allocation_id]'][value='']"
     assert_select "[data-expense-form-target='allocation']", count: 0
+    assert_select "[data-optional-field-toggle]", count: 2
+    assert_select "fieldset[data-expense-options]"
+    assert_select "label[for='expense-date-toggle']", text: "+ Date"
+    assert_select "label[for='expense-note-toggle']", text: "+ Note"
+    assert_select "[data-optional-field-control] label[for='expense_occurred_on']", text: "Date"
+    assert_select "[data-optional-field-control] label[for='expense_note']", text: "Note"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
     assert_select "input[name='expense[note]'][maxlength='200']"
     assert_select "input[name='expense[note]'][size]", count: 0
+    assert_select "label[for='expense_amount'] > legend", text: "How much?"
+    assert_select "input[name='expense[amount]'][aria-label='Amount'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
+    assert_select "input[name='expense[amount]'][value]", count: 0
     assert_select "input[name='expense[currency_code]']", count: 0
   end
 

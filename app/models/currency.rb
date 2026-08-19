@@ -1,5 +1,40 @@
 class Currency < ApplicationRecord
-  # ISO 4217 List One, published 2026-01-01 by SIX, with English symbols from Unicode CLDR.
+  # A single issuing country or region for each consumer-facing currency.
+  FLAG_COUNTRIES = {
+    "AED" => "AE", "AFN" => "AF", "ALL" => "AL", "AMD" => "AM", "AOA" => "AO",
+    "ARS" => "AR", "AUD" => "AU", "AWG" => "AW", "AZN" => "AZ", "BAM" => "BA",
+    "BBD" => "BB", "BDT" => "BD", "BHD" => "BH", "BIF" => "BI", "BMD" => "BM",
+    "BND" => "BN", "BOB" => "BO", "BRL" => "BR", "BSD" => "BS", "BTN" => "BT",
+    "BWP" => "BW", "BYN" => "BY", "BZD" => "BZ", "CAD" => "CA", "CDF" => "CD",
+    "CHF" => "CH", "CLP" => "CL", "CNY" => "CN", "COP" => "CO", "CRC" => "CR",
+    "CUP" => "CU", "CVE" => "CV", "CZK" => "CZ", "DJF" => "DJ", "DKK" => "DK",
+    "DOP" => "DO", "DZD" => "DZ", "EGP" => "EG", "ERN" => "ER", "ETB" => "ET",
+    "EUR" => "EU", "FJD" => "FJ", "FKP" => "FK", "GBP" => "GB", "GEL" => "GE",
+    "GHS" => "GH", "GIP" => "GI", "GMD" => "GM", "GNF" => "GN", "GTQ" => "GT",
+    "GYD" => "GY", "HKD" => "HK", "HNL" => "HN", "HTG" => "HT", "HUF" => "HU",
+    "IDR" => "ID", "ILS" => "IL", "INR" => "IN", "IQD" => "IQ", "IRR" => "IR",
+    "ISK" => "IS", "JMD" => "JM", "JOD" => "JO", "JPY" => "JP", "KES" => "KE",
+    "KGS" => "KG", "KHR" => "KH", "KMF" => "KM", "KPW" => "KP", "KRW" => "KR",
+    "KWD" => "KW", "KYD" => "KY", "KZT" => "KZ", "LAK" => "LA", "LBP" => "LB",
+    "LKR" => "LK", "LRD" => "LR", "LSL" => "LS", "LYD" => "LY", "MAD" => "MA",
+    "MDL" => "MD", "MGA" => "MG", "MKD" => "MK", "MMK" => "MM", "MNT" => "MN",
+    "MOP" => "MO", "MRU" => "MR", "MUR" => "MU", "MVR" => "MV", "MWK" => "MW",
+    "MXN" => "MX", "MYR" => "MY", "MZN" => "MZ", "NAD" => "NA", "NGN" => "NG",
+    "NIO" => "NI", "NOK" => "NO", "NPR" => "NP", "NZD" => "NZ", "OMR" => "OM",
+    "PAB" => "PA", "PEN" => "PE", "PGK" => "PG", "PHP" => "PH", "PKR" => "PK",
+    "PLN" => "PL", "PYG" => "PY", "QAR" => "QA", "RON" => "RO", "RSD" => "RS",
+    "RUB" => "RU", "RWF" => "RW", "SAR" => "SA", "SBD" => "SB", "SCR" => "SC",
+    "SDG" => "SD", "SEK" => "SE", "SGD" => "SG", "SHP" => "SH", "SLE" => "SL",
+    "SOS" => "SO", "SRD" => "SR", "SSP" => "SS", "STN" => "ST", "SVC" => "SV",
+    "SYP" => "SY", "SZL" => "SZ", "THB" => "TH", "TJS" => "TJ", "TMT" => "TM",
+    "TND" => "TN", "TOP" => "TO", "TRY" => "TR", "TTD" => "TT", "TWD" => "TW",
+    "TZS" => "TZ", "UAH" => "UA", "UGX" => "UG", "USD" => "US", "UYU" => "UY",
+    "UZS" => "UZ", "VED" => "VE", "VES" => "VE", "VND" => "VN", "VUV" => "VU",
+    "WST" => "WS", "YER" => "YE", "ZAR" => "ZA", "ZMW" => "ZM", "ZWG" => "ZW"
+  }.freeze
+
+  # Consumer-facing subset of ISO 4217 List One, published 2026-01-01 by SIX, with English symbols
+  # from Unicode CLDR. Fund, accounting, metal, test, no-currency, and flagless shared X codes are omitted.
   CATALOG = {
   "AED" => { name: "UAE Dirham", numeric_code: "784", symbol: "AED" }.freeze,
   "AFN" => { name: "Afghani", numeric_code: "971", symbol: "AFN" }.freeze,
@@ -18,7 +53,6 @@ class Currency < ApplicationRecord
   "BMD" => { name: "Bermudian Dollar", numeric_code: "060", symbol: "BMD" }.freeze,
   "BND" => { name: "Brunei Dollar", numeric_code: "096", symbol: "BND" }.freeze,
   "BOB" => { name: "Boliviano", numeric_code: "068", symbol: "BOB" }.freeze,
-  "BOV" => { name: "Mvdol", numeric_code: "984", symbol: "BOV" }.freeze,
   "BRL" => { name: "Brazilian Real", numeric_code: "986", symbol: "R$" }.freeze,
   "BSD" => { name: "Bahamian Dollar", numeric_code: "044", symbol: "BSD" }.freeze,
   "BTN" => { name: "Ngultrum", numeric_code: "064", symbol: "BTN" }.freeze,
@@ -27,14 +61,10 @@ class Currency < ApplicationRecord
   "BZD" => { name: "Belize Dollar", numeric_code: "084", symbol: "BZD" }.freeze,
   "CAD" => { name: "Canadian Dollar", numeric_code: "124", symbol: "CA$" }.freeze,
   "CDF" => { name: "Congolese Franc", numeric_code: "976", symbol: "CDF" }.freeze,
-  "CHE" => { name: "WIR Euro", numeric_code: "947", symbol: "CHE" }.freeze,
   "CHF" => { name: "Swiss Franc", numeric_code: "756", symbol: "CHF" }.freeze,
-  "CHW" => { name: "WIR Franc", numeric_code: "948", symbol: "CHW" }.freeze,
-  "CLF" => { name: "Unidad de Fomento", numeric_code: "990", symbol: "CLF" }.freeze,
   "CLP" => { name: "Chilean Peso", numeric_code: "152", symbol: "CLP" }.freeze,
   "CNY" => { name: "Yuan Renminbi", numeric_code: "156", symbol: "CN¥" }.freeze,
   "COP" => { name: "Colombian Peso", numeric_code: "170", symbol: "COP" }.freeze,
-  "COU" => { name: "Unidad de Valor Real", numeric_code: "970", symbol: "COU" }.freeze,
   "CRC" => { name: "Costa Rican Colon", numeric_code: "188", symbol: "CRC" }.freeze,
   "CUP" => { name: "Cuban Peso", numeric_code: "192", symbol: "CUP" }.freeze,
   "CVE" => { name: "Cabo Verde Escudo", numeric_code: "132", symbol: "CVE" }.freeze,
@@ -97,7 +127,6 @@ class Currency < ApplicationRecord
   "MVR" => { name: "Rufiyaa", numeric_code: "462", symbol: "MVR" }.freeze,
   "MWK" => { name: "Malawi Kwacha", numeric_code: "454", symbol: "MWK" }.freeze,
   "MXN" => { name: "Mexican Peso", numeric_code: "484", symbol: "MX$" }.freeze,
-  "MXV" => { name: "Mexican Unidad de Inversion (UDI)", numeric_code: "979", symbol: "MXV" }.freeze,
   "MYR" => { name: "Malaysian Ringgit", numeric_code: "458", symbol: "MYR" }.freeze,
   "MZN" => { name: "Mozambique Metical", numeric_code: "943", symbol: "MZN" }.freeze,
   "NAD" => { name: "Namibia Dollar", numeric_code: "516", symbol: "NAD" }.freeze,
@@ -146,40 +175,23 @@ class Currency < ApplicationRecord
   "UAH" => { name: "Hryvnia", numeric_code: "980", symbol: "UAH" }.freeze,
   "UGX" => { name: "Uganda Shilling", numeric_code: "800", symbol: "UGX" }.freeze,
   "USD" => { name: "US Dollar", numeric_code: "840", symbol: "$" }.freeze,
-  "USN" => { name: "US Dollar (Next day)", numeric_code: "997", symbol: "USN" }.freeze,
-  "UYI" => { name: "Uruguay Peso en Unidades Indexadas (UI)", numeric_code: "940", symbol: "UYI" }.freeze,
   "UYU" => { name: "Peso Uruguayo", numeric_code: "858", symbol: "UYU" }.freeze,
-  "UYW" => { name: "Unidad Previsional", numeric_code: "927", symbol: "UYW" }.freeze,
   "UZS" => { name: "Uzbekistan Sum", numeric_code: "860", symbol: "UZS" }.freeze,
   "VED" => { name: "Bolívar Soberano", numeric_code: "926", symbol: "VED" }.freeze,
   "VES" => { name: "Bolívar Soberano", numeric_code: "928", symbol: "VES" }.freeze,
   "VND" => { name: "Dong", numeric_code: "704", symbol: "₫" }.freeze,
   "VUV" => { name: "Vatu", numeric_code: "548", symbol: "VUV" }.freeze,
   "WST" => { name: "Tala", numeric_code: "882", symbol: "WST" }.freeze,
-  "XAD" => { name: "Arab Accounting Dinar", numeric_code: "396", symbol: "XAD" }.freeze,
-  "XAF" => { name: "CFA Franc BEAC", numeric_code: "950", symbol: "FCFA" }.freeze,
-  "XAG" => { name: "Silver", numeric_code: "961", symbol: "XAG" }.freeze,
-  "XAU" => { name: "Gold", numeric_code: "959", symbol: "XAU" }.freeze,
-  "XBA" => { name: "Bond Markets Unit European Composite Unit (EURCO)", numeric_code: "955", symbol: "XBA" }.freeze,
-  "XBB" => { name: "Bond Markets Unit European Monetary Unit (E.M.U.-6)", numeric_code: "956", symbol: "XBB" }.freeze,
-  "XBC" => { name: "Bond Markets Unit European Unit of Account 9 (E.U.A.-9)", numeric_code: "957", symbol: "XBC" }.freeze,
-  "XBD" => { name: "Bond Markets Unit European Unit of Account 17 (E.U.A.-17)", numeric_code: "958", symbol: "XBD" }.freeze,
-  "XCD" => { name: "East Caribbean Dollar", numeric_code: "951", symbol: "EC$" }.freeze,
-  "XCG" => { name: "Caribbean Guilder", numeric_code: "532", symbol: "XCG" }.freeze,
-  "XDR" => { name: "SDR (Special Drawing Right)", numeric_code: "960", symbol: "XDR" }.freeze,
-  "XOF" => { name: "CFA Franc BCEAO", numeric_code: "952", symbol: "F CFA" }.freeze,
-  "XPD" => { name: "Palladium", numeric_code: "964", symbol: "XPD" }.freeze,
-  "XPF" => { name: "CFP Franc", numeric_code: "953", symbol: "CFPF" }.freeze,
-  "XPT" => { name: "Platinum", numeric_code: "962", symbol: "XPT" }.freeze,
-  "XSU" => { name: "Sucre", numeric_code: "994", symbol: "XSU" }.freeze,
-  "XTS" => { name: "Codes specifically reserved for testing purposes", numeric_code: "963", symbol: "XTS" }.freeze,
-  "XUA" => { name: "ADB Unit of Account", numeric_code: "965", symbol: "XUA" }.freeze,
-  "XXX" => { name: "The codes assigned for transactions where no currency is involved", numeric_code: "999", symbol: "XXX" }.freeze,
   "YER" => { name: "Yemeni Rial", numeric_code: "886", symbol: "YER" }.freeze,
   "ZAR" => { name: "Rand", numeric_code: "710", symbol: "ZAR" }.freeze,
   "ZMW" => { name: "Zambian Kwacha", numeric_code: "967", symbol: "ZMW" }.freeze,
   "ZWG" => { name: "Zimbabwe Gold", numeric_code: "924", symbol: "ZWG" }.freeze
-  }.freeze
+  }.to_h do |code, data|
+    country_code = FLAG_COUNTRIES.fetch(code)
+    flag = country_code.codepoints.map { |point| (point + 127_397).chr(Encoding::UTF_8) }.join
+
+    [ code, data.merge(flag: flag).freeze ]
+  end.freeze
 
   belongs_to :budget, inverse_of: :currencies
 
@@ -198,7 +210,7 @@ class Currency < ApplicationRecord
     end
 
     def options
-      CATALOG.map { |code, data| [ "#{data[:name]} (#{code})", code ] }
+      CATALOG.map { |code, data| [ "#{data[:flag]} #{data[:name]} (#{code})", code ] }
     end
 
     def find_in_catalog(code)
@@ -218,6 +230,14 @@ class Currency < ApplicationRecord
 
   def amount_in_base(amount)
     BigDecimal(amount.to_s) * rate
+  end
+
+  def flag
+    self.class.find_in_catalog(alphabetic_code).fetch(:flag)
+  end
+
+  def option_name
+    "#{flag} #{name} (#{alphabetic_code.upcase})"
   end
 
   def base?

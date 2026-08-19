@@ -31,10 +31,13 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     get new_budget_path
 
     assert_response :success
+    assert_select "select[name='budget[currency_code]'][aria-label='Choose your salary currency']"
     assert_select "select[name='budget[currency_code]'] option[value='USD']"
     assert_select "fieldset.salary legend", text: "What's your salary?"
-    assert_select "input[name='budget[source_amount]'][aria-label='Enter your salary amount']"
-    assert_select "select[name='budget[currency_code]'][aria-label='Choose your salary currency']"
+    assert_select "input[name='budget[source_amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input'][aria-label='Enter your salary amount']"
+    assert_select "input[name='budget[source_amount]'][value]", count: 0
+    assert_select "input[name='budget[source_amount]'][data-money-input-start-value]", count: 0
+    assert_select "input[data-controller='money-input'][data-action]", count: 0
     assert_select "input[name*='[name]']", count: 0
     assert_select "input[name*='[numeric_code]']", count: 0
     assert_select "input[type='radio'][value='14_days']"
@@ -53,11 +56,6 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[aria-label='Back to budgets'][href='#{budgets_path}']"
     assert_select "a[href='#{budget_sources_path(budgets(:active))}']", text: "Sources"
     assert_select "a[href='#{budget_allocations_path(budgets(:active))}']", text: "Allocations"
-    assert_select "a[href='#{budget_currencies_path(budgets(:active))}']", text: "Currencies"
-    assert_select "dt", text: "Remaining"
-    assert_select "dd", text: /1,200.25 USD/
-    assert_select "dt", text: "Available"
-    assert_select "dd", text: /1,375.25 USD/
     assert_select "[data-testid='expense-card']", count: 1, text: /Groceries/
     assert_select "[data-testid='expense-card'] > header" do
       assert_select "a[href='#{source_path(sources(:active))}']", text: sources(:active).name
@@ -68,11 +66,13 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
       assert_select "a[href='#{allocation_path(allocations(:active))}']", text: allocations(:active).name
       assert_select "a[aria-label='View expense'][href='#{expense_path(expenses(:active))}']", text: /\$125 USD/
     end
-    assert_select "a[href='#{new_budget_expense_path(budgets(:active))}']", text: "New expense"
+    assert_select "a[role='button'][aria-label='New expense'][href='#{new_budget_expense_path(budgets(:active))}']" do
+      assert_select ".icon-wrap .icon"
+    end
     assert_select "button", text: "Delete expense", count: 0
   end
 
-  test "show displays rolling remainder only for an active budget" do
+  test "show displays only today's remainder for an active budget" do
     sign_in_as(@user)
 
     travel_to Date.new(2026, 8, 19) do
@@ -80,14 +80,20 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
       assert_select "dt", text: "Today's remainder"
       assert_select "dd", text: /41.39 USD/
+      assert_select "[role='progressbar'][data-remainder-progress][aria-label='Daily budget health'][aria-valuenow='100.0']"
+      assert_select "[data-remainder-progress-fill]"
+      assert_select "[data-remainder-progress-marker]"
+      assert_select "dt", count: 1
+      assert_select "[data-testid='overallocation-warning']", count: 0
 
       get budget_path(budgets(:archived))
 
       assert_select "dt", text: "Today's remainder", count: 0
+      assert_select "[data-remainder-progress]", count: 0
     end
   end
 
-  test "show warns without blocking when allocations exceed sources" do
+  test "show remains available when allocations exceed sources" do
     sign_in_as(@user)
     budget = budgets(:active)
     budget.allocations.create!(
@@ -101,7 +107,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     get budget_path(budget)
 
     assert_response :success
-    assert_select "[data-testid='overallocation-warning']", text: /exceed available sources by \$300 USD/
+    assert_select "[data-testid='overallocation-warning']", count: 0
   end
 
   test "show orders expenses newest occurrence first" do
@@ -126,7 +132,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "[data-testid='expense-card']", count: 0
     assert_select "[data-testid='expense-list']", text: /No expenses yet/
-    assert_select "a[href='#{new_budget_expense_path(budget)}']", text: "New expense"
+    assert_select "a[role='button'][aria-label='New expense'][href='#{new_budget_expense_path(budget)}']"
   end
 
   test "show labels deleted historical expense associations" do

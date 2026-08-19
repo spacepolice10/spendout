@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def current_user
+    Current.user
+  end
+
   def formatted_amount(amount, currency)
     number_to_currency(
       amount,

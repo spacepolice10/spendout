@@ -1,4 +1,6 @@
 <main data-size="lg">
+  <%= tag.p(flash[:notice]) if flash[:notice] %>
+
   <article data-elevation="1">
     <header>
       <div>
@@ -11,48 +13,44 @@
       </div>
     </header>
 
-    <br>
+    <main>
+      <% if @budgets.any? %>
+        <section data-layout="grid">
+          <% @budgets.each do |budget| %>
+            <%= link_to budget_path(budget), data: { testid: "budget-link" } do %>
+              <article
+                class="budget"
+                data-elevation="1"
+                data-archived="<%= budget.archived? %>"
+                data-testid="budget-card"
+              >
+                <header>
+                  <h2><%= budget.name %></h2>
+                  <small><%= "Archived" if budget.archived? %></small>
+                </header>
 
-    <%= tag.p(flash[:notice]) if flash[:notice] %>
+                <main>
+                  <% source = budget.base_source %>
 
-    <% if @budgets.any? %>
-      <section class="budgets" data-layout="grid">
-        <% @budgets.each do |budget| %>
-          <%= link_to budget_path(budget), data: { testid: "budget-link" } do %>
-            <article
-              class="budget"
-              data-elevation="1"
-              data-archived="<%= budget.archived? %>"
-              data-testid="budget-card"
-            >
-              <header>
-                <h2><%= budget.name %></h2>
-                <small><%= "Archived" if budget.archived? %></small>
-              </header>
+                  <p>
+                    <strong><%= formatted_amount(source.amount, source.currency) %></strong> <%= source.currency.alphabetic_code %>
+                  </p>
+                </main>
 
-              <main>
-                <% source = budget.base_source %>
-
-                <p>
-                  <strong><%= formatted_amount(source.amount, source.currency) %></strong> <%= source.currency.alphabetic_code %>
-                </p>
-              </main>
-
-              <footer>
-                <p>
-                  <%= budget.period_from.to_fs(:long) %> –
-                  <%= budget.period_to.to_fs(:long) %>
-                </p>
-              </footer>
-            </article>
+                <footer>
+                  <p>
+                    <%= budget.period_from.to_fs(:long) %> –
+                    <%= budget.period_to.to_fs(:long) %>
+                  </p>
+                </footer>
+              </article>
+            <% end %>
           <% end %>
-        <% end %>
-      </section>
-    <% else %>
-      <article data-elevation="1">
+        </section>
+      <% else %>
         <h2>No budgets yet</h2>
         <p>Create your first budget to start planning.</p>
-      </article>
-    <% end %>
+      <% end %>
+    </main>
   </article>
 </main>

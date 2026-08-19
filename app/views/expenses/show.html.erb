@@ -1,4 +1,6 @@
 <main data-size="sm">
+  <%= tag.p(flash[:notice]) if flash[:notice] %>
+
   <article data-elevation="1">
     <header>
       <nav>
@@ -7,8 +9,6 @@
       </nav>
       <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= @expense.occurred_on.to_fs(:long) %></time>
     </header>
-
-    <%= tag.p(flash[:notice]) if flash[:notice] %>
 
     <main>
       <dl>

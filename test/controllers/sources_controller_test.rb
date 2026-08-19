@@ -51,7 +51,10 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[title='Wallet']", text: ""
     assert_select "input[name='source[colour]'][type='radio']", count: Source.colour_options.size
     assert_select "input[name='source[colour]'][value='green'][checked]"
-    assert_select "select[name='source[currency_code]'] option[value='USD']", text: "US Dollar (USD)"
+    assert_select "input[name='source[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
+    assert_select "input[name='source[amount]'][value]", count: 0
+    assert_select "input[name='source[amount]'][data-money-input-start-value]", count: 0
+    assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='source[currency_code]'] option[value='EUR']", count: 0
   end
 

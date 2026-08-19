@@ -18,12 +18,16 @@
   <%= form.text_field :name, required: true, autofocus: true %>
 
   <%= form.label :amount %>
-  <%= form.number_field :amount, min: 0, step: 0.0001, required: true %>
+  <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true,
+        data: {
+          controller: "money-input",
+          money_input_start_value: allocation.amount&.to_s("F")
+        } %>
 
   <%= form.label :currency_code, "Currency" %>
   <%= form.select :currency_code,
-        budget.currencies.map { |currency| [ "#{currency.name} (#{currency.alphabetic_code})", currency.alphabetic_code ] },
-        {}, required: true %>
+        budget.currencies.map { |currency| [ currency.option_name, currency.alphabetic_code ] },
+        { include_blank: "Choose a currency" }, required: true %>
 
   <%= render "shared/appearance_fields", form: form %>
 

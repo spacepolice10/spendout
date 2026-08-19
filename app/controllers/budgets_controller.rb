@@ -12,7 +12,7 @@ class BudgetsController < ApplicationController
   end
 
   def new
-    @budget = Current.user.budgets.new(period_from: Date.current, source_amount: 0)
+    @budget = Current.user.budgets.new(period_from: Date.current)
   end
 
   def create

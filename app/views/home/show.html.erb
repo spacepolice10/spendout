@@ -1,8 +1,15 @@
 <main data-size="sm">
   <article data-elevation="1">
-    <h1>Spendout</h1>
+    <header>
+      <h1>Spendout</h1>
+    </header>
 
-    <p>Signed in as <%= Current.user.email_address %>.</p>
-    <%= button_to "Sign out", session_path, method: :delete %>
+    <main>
+      <p>Signed in as <%= Current.user.email_address %>.</p>
+    </main>
+
+    <footer>
+      <%= button_to "Sign out", session_path, method: :delete %>
+    </footer>
   </article>
 </main>

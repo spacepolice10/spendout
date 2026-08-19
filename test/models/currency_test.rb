@@ -2,9 +2,15 @@ require "test_helper"
 
 class CurrencyTest < ActiveSupport::TestCase
   test "catalog contains current ISO metadata and is frozen" do
-    assert_operator Currency.catalog.size, :>=, 170
-    assert_equal({ name: "Lek", numeric_code: "008", symbol: "ALL" }, Currency.find_in_catalog("all"))
+    assert_equal 150, Currency.catalog.size
+    lek = Currency.find_in_catalog("all")
+    assert_equal "Lek", lek[:name]
+    assert_equal "008", lek[:numeric_code]
+    assert_equal "ALL", lek[:symbol]
     assert_equal "CA$", Currency.find_in_catalog("CAD")[:symbol]
+    assert_nil Currency.find_in_catalog("XOF")
+    assert_nil Currency.find_in_catalog("XAU")
+    assert_nil Currency.find_in_catalog("XXX")
     assert Currency.catalog.frozen?
     assert Currency.catalog.fetch("USD").frozen?
   end
@@ -34,8 +40,8 @@ class CurrencyTest < ActiveSupport::TestCase
     assert duplicate.errors.added?(:alphabetic_code, :taken, value: "USD")
   end
 
-  test "options use the public label and code shape" do
-    assert_includes Currency.options, [ "US Dollar (USD)", "USD" ]
+  test "options include every catalog code" do
+    assert_equal Currency.catalog.keys, Currency.options.map(&:last)
   end
 
   test "requires a positive rate" do

@@ -1,0 +1,88 @@
+@layer components {
+    :is(button, [role="button"])[data-appearance="keycap"] {
+        --keycap-face: light-dark(
+            color-mix(
+                in oklch,
+                var(--keycap-colour, var(--color-accent)) 82%,
+                var(--color-1)
+            ),
+            color-mix(
+                in oklch,
+                var(--keycap-colour, var(--color-accent)) 82%,
+                var(--color-2)
+            )
+        );
+        --keycap-edge: light-dark(
+            color-mix(in oklch, var(--keycap-face) 82%, var(--color-invert-1)),
+            color-mix(in oklch, var(--keycap-face) 82%, var(--color-1))
+        );
+        --keycap-border: color-mix(
+            in oklch,
+            var(--keycap-edge) 22%,
+            var(--keycap-face)
+        );
+        --button-background: var(--keycap-face);
+        --button-background-hovered: color-mix(
+            in oklch,
+            var(--keycap-face) 88%,
+            var(--color-1)
+        );
+        --button-background-active: var(--keycap-face);
+        --button-color: var(--color-invert-1);
+
+        min-width: fit-content;
+        min-height: var(--keycap-min-height, 2rem);
+        gap: var(--space-h-half);
+        margin-bottom: 0.5rem;
+        border-radius: var(--radius-1);
+        font-weight: var(--font-weight-bold);
+        box-shadow:
+            0 0.5rem 0 var(--keycap-edge),
+            0 0.5rem 0 2px var(--keycap-border);
+        translate: 0 0;
+        transition: background 150ms ease, box-shadow 100ms ease, translate 100ms ease;
+
+        &:hover:not(:disabled, [aria-disabled="true"]) {
+            box-shadow:
+                0 0.625rem 0 var(--keycap-edge),
+                0 0.625rem 0 2px var(--keycap-border);
+            translate: 0 -0.125rem;
+        }
+
+        &:active:not(:disabled, [aria-disabled="true"]) {
+            box-shadow:
+                0 0.125rem 0 var(--keycap-edge),
+                0 0.125rem 0 2px var(--keycap-border);
+            translate: 0 0.375rem;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--keycap-face);
+            outline-offset: 3px;
+        }
+    }
+
+    [data-appearance="keycap"][data-colour="green"] {
+        --keycap-colour: var(--color-palette-green);
+    }
+
+    [data-appearance="keycap"][data-colour="red"] {
+        --keycap-colour: var(--color-palette-red);
+    }
+
+    [data-appearance="keycap"][data-colour="blue"] {
+        --keycap-colour: var(--color-palette-blue);
+    }
+
+    [data-appearance="keycap"][data-colour="yellow"] {
+        --keycap-colour: var(--color-palette-yellow);
+    }
+
+    [data-appearance="keycap"][data-colour="violet"] {
+        --keycap-colour: var(--color-palette-violet);
+    }
+
+    [data-appearance="keycap"][data-colour="pink"] {
+        --keycap-colour: var(--color-palette-pink);
+    }
+}

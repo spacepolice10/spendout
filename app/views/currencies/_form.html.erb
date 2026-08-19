@@ -15,10 +15,11 @@
   <% end %>
 
   <% if currency.persisted? %>
-    <p><strong><%= currency.name %> (<%= currency.alphabetic_code %>)</strong></p>
+    <p><strong><%= currency.option_name %></strong></p>
   <% else %>
     <%= form.label :alphabetic_code, "Currency" %>
-    <%= form.select :alphabetic_code, currency_options, {}, required: true %>
+    <%= form.select :alphabetic_code, currency_options,
+          { include_blank: "Choose a currency" }, required: true %>
   <% end %>
 
   <%= form.label :rate, "Rate" %>
