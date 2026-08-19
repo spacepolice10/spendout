@@ -31,15 +31,18 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}'][checked]"
     assert_select "input[name='expense[allocation_id]'][value='']"
     assert_select "[data-expense-form-target='allocation']", count: 0
-    assert_select "[data-optional-field-toggle]", count: 2
+    assert_select "[data-optional-item-toggle]", count: 3
     assert_select "fieldset[data-expense-options]"
-    assert_select "label[for='expense-date-toggle']", text: "+ Date"
+    assert_select "label[for='expense-date-item-toggle']", text: "+ Date"
     assert_select "label[for='expense-note-toggle']", text: "+ Note"
-    assert_select "[data-optional-field-control] label[for='expense_occurred_on']", text: "Date"
-    assert_select "[data-optional-field-control] label[for='expense_note']", text: "Note"
+    assert_select "label[for='expense-category-toggle']", text: "+ Category"
+    assert_select "[data-optional-item-control] label[for='expense_occurred_on']", text: "Date"
+    assert_select "[data-optional-item-control] label[for='expense_note']", text: "Note"
+    assert_select "[data-optional-item-control] label[for='expense_category_name_to_create']", text: "New category"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
     assert_select "input[name='expense[note]'][maxlength='200']"
     assert_select "input[name='expense[note]'][size]", count: 0
+    assert_select "input[name='expense[category_name_to_create]'][placeholder='Category name']"
     assert_select "label[for='expense_amount'] > legend", text: "How much?"
     assert_select "input[name='expense[amount]'][aria-label='Amount'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
     assert_select "input[name='expense[amount]'][value]", count: 0
@@ -87,6 +90,51 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_nil @budget.expenses.order(:created_at, :id).last.allocation
+  end
+
+  test "creates an unplanned category with an expense" do
+    sign_in_as(@user)
+
+    assert_difference([ "Expense.count", "Allocation.count" ], 1) do
+      post budget_expenses_path(@budget), params: {
+        expense: {
+          source_id: @source.id,
+          allocation_id: @allocation.id,
+          category_name_to_create: "Coffee",
+          amount: "5.25",
+          occurred_on: "2026-08-20"
+        }
+      }
+    end
+
+    expense = @budget.expenses.order(:created_at, :id).last
+    category = expense.allocation
+
+    assert_redirected_to budget_path(@budget)
+    assert_equal "Coffee", category.name
+    assert_not category.planned?
+    assert_equal BigDecimal("0"), category.amount
+    assert_equal @source.currency_code, category.currency_code
+    assert_equal Iconable::DEFAULT_ICON, category.icon
+    assert_equal Colourable::DEFAULT_COLOUR, category.colour
+  end
+
+  test "does not leave a category behind when its expense is invalid" do
+    sign_in_as(@user)
+
+    assert_no_difference([ "Expense.count", "Allocation.count" ]) do
+      post budget_expenses_path(@budget), params: {
+        expense: {
+          source_id: @source.id,
+          category_name_to_create: "Coffee",
+          amount: "2000",
+          occurred_on: "2026-08-20"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "input[name='expense[category_name_to_create]'][value='Coffee']"
   end
 
   test "rejects overspending and tampered associations" do

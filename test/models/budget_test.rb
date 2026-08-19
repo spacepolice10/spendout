@@ -162,6 +162,26 @@ class BudgetTest < ActiveSupport::TestCase
     assert_equal expense, budget.expenses.find(expense.id)
   end
 
+  test "unplanned categories classify spending without reserving funds" do
+    budget = budgets(:active)
+    category = budget.allocations.create!(
+      name: "Coffee",
+      amount: 0,
+      planned: false,
+      currency_code: "USD"
+    )
+    budget.expenses.create!(
+      source: sources(:active),
+      allocation: category,
+      amount: 5,
+      occurred_on: budget.period_from
+    )
+
+    assert_equal BigDecimal("300"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1200.25"), budget.amount_summary
+    assert_equal BigDecimal("5"), budget.unallocated_expenses_amount_in_base
+  end
+
   test "calculates a rolling remainder only during the active period" do
     budget = budgets(:active)
 

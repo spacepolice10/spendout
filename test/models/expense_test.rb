@@ -92,6 +92,36 @@ class ExpenseTest < ActiveSupport::TestCase
     assert_equal BigDecimal("0"), source.spendable_amount
   end
 
+  test "builds a new unplanned category as part of saving" do
+    budget = budgets(:active)
+    expense = budget.expenses.new(
+      source: sources(:active),
+      allocation: allocations(:active),
+      amount: 5,
+      category_name_to_create: "Coffee"
+    )
+
+    assert_difference([ "Expense.count", "Allocation.count" ], 1) do
+      assert expense.save_with_source_capacity
+    end
+
+    assert_equal "Coffee", expense.allocation.name
+    assert_not expense.allocation.planned?
+  end
+
+  test "rolls back a new category when the expense cannot be saved" do
+    budget = budgets(:active)
+    expense = budget.expenses.new(
+      source: sources(:active),
+      amount: 2000,
+      category_name_to_create: "Coffee"
+    )
+
+    assert_no_difference([ "Expense.count", "Allocation.count" ]) do
+      assert_not expense.save_with_source_capacity
+    end
+  end
+
   test "historical expense remains attached to soft-deleted associations" do
     budget = budgets(:active)
     source = budget.sources.create!(

@@ -58,7 +58,7 @@ class Budget < ApplicationRecord
   end
 
   def allocations_amount_in_base
-    amount_in_base_of(allocations.where(deleted_at: nil))
+    amount_in_base_of(allocations.planned.where(deleted_at: nil))
   end
 
   def expenses_amount_in_base
@@ -67,7 +67,11 @@ class Budget < ApplicationRecord
 
   def unallocated_expenses_amount_in_base
     amount_in_base_of(
-      expenses.joins(:source).where(allocation_id: nil, sources: { deleted_at: nil })
+      expenses
+        .joins(:source)
+        .left_outer_joins(:allocation)
+        .where(sources: { deleted_at: nil })
+        .where("expenses.allocation_id IS NULL OR allocations.planned = ?", false)
     )
   end
 

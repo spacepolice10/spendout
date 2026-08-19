@@ -1,6 +1,16 @@
 require "test_helper"
 
 class AllocationTest < ActiveSupport::TestCase
+  test "defaults to a planned allocation" do
+    allocation = budgets(:active).allocations.new(
+      name: "Groceries",
+      amount: 100,
+      currency_code: "USD"
+    )
+
+    assert allocation.planned?
+  end
+
   test "inherits appearance defaults and uses an independent budget currency" do
     allocation = budgets(:active).allocations.build(name: "Savings", amount: 1, currency_code: "USD")
 

@@ -45,6 +45,13 @@ class ExpensesController < ApplicationController
     end
 
     def expense_params
-      params.require(:expense).permit(:source_id, :allocation_id, :amount, :occurred_on, :note)
+      params.require(:expense).permit(
+        :source_id,
+        :allocation_id,
+        :amount,
+        :occurred_on,
+        :note,
+        :category_name_to_create
+      )
     end
 end

@@ -1,7 +1,9 @@
 class Expense < ApplicationRecord
   belongs_to :budget, inverse_of: :expenses
   belongs_to :source, inverse_of: :expenses
-  belongs_to :allocation, optional: true, inverse_of: :expenses
+  belongs_to :allocation, optional: true, inverse_of: :expenses, autosave: true
+
+  attr_accessor :category_name_to_create
 
   before_validation :set_default_occurred_on
   before_validation :inherit_currency_from_source
@@ -17,6 +19,8 @@ class Expense < ApplicationRecord
   validate :amount_fits_source
 
   def save_with_source_capacity
+    build_category_to_create
+
     return save unless source&.persisted?
 
     source.with_lock { save }
@@ -31,6 +35,17 @@ class Expense < ApplicationRecord
   end
 
   private
+    def build_category_to_create
+      return if category_name_to_create.blank? || allocation&.new_record?
+
+      self.allocation = budget.allocations.build(
+        name: category_name_to_create,
+        amount: 0,
+        planned: false,
+        currency_code: source&.currency_code
+      )
+    end
+
     def set_default_occurred_on
       return if occurred_on.present? || budget.nil?
 

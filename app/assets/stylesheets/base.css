@@ -62,6 +62,11 @@
             }
         }
 
+        &>main:has(> article > main > form) {
+            flex: 1 1 0;
+            align-content: center;
+        }
+
         &>footer {
             margin-inline: auto;
             width: 100%;
@@ -205,11 +210,21 @@
         user-select: none;
         transition: background 150ms ease, color 150ms ease;
 
+        &[data-size="xs"] {
+            height: var(--button-height-xs);
+            padding-block: var(--space-v-half);
+        }
+
         &[data-size="sm"] {
             padding-block: var(--space-v-half);
         }
 
         &[data-size="lg"] {
+            padding-block: var(--space-v-2);
+        }
+
+        &[data-size="xl"] {
+            height: var(--button-height-xl);
             padding-block: var(--space-v-2);
         }
 
@@ -450,6 +465,30 @@
 
     section[data-form-errors] {
         color: var(--color-invert-negative);
+    }
+
+    mark {
+        --mark-colour: var(--color-palette-yellow);
+
+        color: var(--color-invert-1);
+
+        &[data-type="pill"] {
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--button-height-xs);
+            padding-inline: var(--space-h-half);
+            border-radius: var(--radius-full);
+            background: var(--mark-colour);
+        }
+
+        &[data-type="highlight"] {
+            padding-inline: 0.1em;
+            background: linear-gradient(
+                to top,
+                var(--mark-colour) 45%,
+                transparent 45%
+            );
+        }
     }
 
     /* Typography */

@@ -18,9 +18,9 @@
     <legend>From</legend>
 
     <%= form.select :source_id,
-        active_sources.map { |source| [ "#{source.name} — #{formatted_amount(source.spendable_amount, source.currency)} available (#{source.currency_code})", source.id ] },
-        {},
-        required: true %>
+          active_sources.map { |source| [ "#{source.name} — #{formatted_amount(source.spendable_amount, source.currency)} available (#{source.currency_code})", source.id ] },
+          {},
+          required: true %>
   <% end %>
 
   <%= form.label :amount do %>
@@ -85,6 +85,20 @@
           <%= form.label :note do %>
             <legend>Note</legend>
             <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div data-optional-item>
+        <%= tag.input type: "checkbox", id: "expense-category-toggle",
+              checked: expense.category_name_to_create.present?, data: { optional_item_toggle: true }, aria: { label: "Show category field" } %>
+
+        <%= tag.label "+ Category", for: "expense-category-toggle" %>
+
+        <div data-optional-item-control>
+          <%= form.label :category_name_to_create do %>
+            <legend>New category</legend>
+            <%= form.text_field :category_name_to_create, size: nil, placeholder: "Category name" %>
           <% end %>
         </div>
       </div>

@@ -4,6 +4,9 @@ class Allocation < ApplicationRecord
   belongs_to :budget, inverse_of: :allocations
   has_many :expenses, inverse_of: :allocation
 
+  scope :planned, -> { where(planned: true) }
+  scope :unplanned, -> { where(planned: false) }
+
   validates :name, presence: true
   validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
   validates :amount, numericality: { greater_than_or_equal_to: 0 }

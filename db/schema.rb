@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_040000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_050000) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -20,6 +20,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_040000) do
     t.datetime "deleted_at"
     t.string "icon", default: "wallet", null: false
     t.string "name", null: false
+    t.boolean "planned", default: true, null: false
     t.datetime "updated_at", null: false
     t.index ["budget_id", "currency_code"], name: "index_allocations_on_budget_id_and_currency_code"
     t.index ["budget_id"], name: "index_allocations_on_budget_id"

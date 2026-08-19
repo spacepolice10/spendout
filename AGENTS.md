@@ -1,7 +1,7 @@
 - A user can own many budgets.
 - A budget has sources, allocations, currencies, and expenses.
 - A source is a money container with a name, amount, icon, colour, and currency.
-- An allocation is a budget-level, non-binding spending plan with the same fields as a source. It is independent of sources, can exceed available funds with a warning, and never blocks an expense.
+- An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; unplanned categories only classify expenses paid from that remainder.
 - An expense has an amount, currency, source, optional allocation, optional 200-character note, and user-editable occurrence date.
 - Expense forms provide default source and allocation selections.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
