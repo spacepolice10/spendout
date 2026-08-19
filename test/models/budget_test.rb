@@ -151,11 +151,13 @@ class BudgetTest < ActiveSupport::TestCase
     )
 
     assert_equal BigDecimal("130.7750"), budget.expenses_amount_in_base
+    assert_equal BigDecimal("5.7750"), budget.unallocated_expenses_amount_in_base
     assert_equal BigDecimal("1397.5250"), budget.available_summary
 
     source.update!(deleted_at: Time.current)
 
     assert_equal BigDecimal("125.0000"), budget.expenses_amount_in_base
+    assert_equal BigDecimal("0"), budget.unallocated_expenses_amount_in_base
     assert_equal BigDecimal("1375.2500"), budget.available_summary
     assert_equal expense, budget.expenses.find(expense.id)
   end
@@ -164,7 +166,22 @@ class BudgetTest < ActiveSupport::TestCase
     budget = budgets(:active)
 
     travel_to Date.new(2026, 8, 19) do
-      assert_equal BigDecimal("1375.2500") / 29, budget.todays_remainder
+      assert_equal BigDecimal("1200.2500") / 29, budget.todays_remainder
+
+      budget.expenses.create!(
+        source: sources(:active),
+        allocation: allocations(:active),
+        amount: 10,
+        occurred_on: Date.current
+      )
+      assert_equal BigDecimal("1200.2500") / 29, budget.todays_remainder
+
+      budget.expenses.create!(
+        source: sources(:active),
+        amount: 29,
+        occurred_on: Date.current
+      )
+      assert_equal BigDecimal("1171.2500") / 29, budget.todays_remainder
     end
 
     travel_to Date.new(2026, 8, 17) do

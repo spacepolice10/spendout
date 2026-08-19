@@ -13,6 +13,7 @@ class SourceTest < ActiveSupport::TestCase
   test "icon and colour options use public label and value shapes" do
     assert_includes Source.icon_options, [ "Credit card", "credit-card" ]
     assert_includes Source.colour_options, [ "Green", "green" ]
+    assert_includes Source.colour_options, [ "Pink", "pink" ]
   end
 
   test "uses fixed icon and colour defaults" do

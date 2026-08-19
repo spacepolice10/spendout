@@ -122,6 +122,22 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @source.amount, @source.reload.spendable_amount
   end
 
+  test "show displays details and owns the delete action" do
+    sign_in_as(@user)
+
+    get expense_path(@expense)
+
+    assert_response :success
+    assert_select "h1", text: "Expense"
+    assert_select "time[datetime='2026-08-19']"
+    assert_select "dd", text: /\$125 USD/
+    assert_select "a[href='#{source_path(@source)}']", text: @source.name
+    assert_select "a[href='#{allocation_path(@allocation)}']", text: @allocation.name
+    assert_select "dd", text: @expense.note
+    assert_select "a[aria-label='Back to budget'][href='#{budget_path(@budget)}']"
+    assert_select "form[action='#{expense_path(@expense)}'] button[data-turbo-confirm='Delete this expense permanently?']", text: "Delete expense"
+  end
+
   test "cannot create or delete through another user's budget" do
     sign_in_as(@user)
 
@@ -133,5 +149,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     delete expense_path(expenses(:other))
     assert_response :not_found
     assert Expense.exists?(expenses(:other).id)
+
+    get expense_path(expenses(:other))
+    assert_response :not_found
   end
 end

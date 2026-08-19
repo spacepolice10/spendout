@@ -10,6 +10,7 @@ class AllocationTest < ActiveSupport::TestCase
     assert_equal "green", allocation.colour
     assert_includes Allocation.icon_options, [ "Wallet", "wallet" ]
     assert_includes Allocation.colour_options, [ "Green", "green" ]
+    assert_includes Allocation.colour_options, [ "Pink", "pink" ]
   end
 
   test "rejects a currency that is not available in its budget" do

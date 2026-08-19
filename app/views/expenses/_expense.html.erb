@@ -1,0 +1,36 @@
+<article data-elevation="2" data-testid="expense-card">
+  <header>
+    <div>
+      <%= link_to expense.source.name, source_path(expense.source) %>
+      <%= "(Deleted)" if expense.source.deleted? %>
+    </div>
+    <time datetime="<%= expense.occurred_on.iso8601 %>"><%= expense.occurred_on.to_fs(:long) %></time>
+  </header>
+
+  <main>
+    <section data-layout="flex">
+      <div>
+        <% if expense.allocation %>
+          <%= icon_tag(expense.allocation.icon, style: icon_colour_styles(expense.allocation.colour)) %>
+          <div>
+            <%= link_to expense.allocation.name, allocation_path(expense.allocation) %>
+            <%= "(Deleted)" if expense.allocation.deleted? %>
+            <%= tag.p(expense.note, data: { testid: "expense-note" }) if expense.note.present? %>
+          </div>
+        <% else %>
+          <div>
+            <strong>No allocation</strong>
+            <%= tag.p(expense.note, data: { testid: "expense-note" }) if expense.note.present? %>
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <%= link_to expense_path(expense), aria: { label: "View expense" } do %>
+          <strong><%= formatted_amount(expense.amount, expense.currency) %></strong>
+          <%= expense.currency_code %>
+        <% end %>
+      </div>
+    </section>
+  </main>
+</article>

@@ -9,7 +9,8 @@ module Colourable
     "red" => "Red",
     "blue" => "Blue",
     "yellow" => "Yellow",
-    "violet" => "Violet"
+    "violet" => "Violet",
+    "pink" => "Pink"
   }.freeze
 
   included do

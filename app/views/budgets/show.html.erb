@@ -38,11 +38,11 @@
       <% end %>
     </main>
     <footer>
-      <%= link_to "Sources", budget_sources_path(@budget) %>
-      <%= link_to "Allocations", budget_allocations_path(@budget) %>
-      <%= link_to "Currencies", budget_currencies_path(@budget) %>
+      <%= link_to "Sources", budget_sources_path(@budget), role: "button" %>
+      <%= link_to "Allocations", budget_allocations_path(@budget), role: "button" %>
+      <%= link_to "Currencies", budget_currencies_path(@budget), role: "button" %>
       <%= button_to "Delete budget", budget_path(@budget), method: :delete,
-            data: { turbo_confirm: "Delete this budget and its source permanently?" } %>
+            data: { intent: "negative", turbo_confirm: "Delete this budget and its source permanently?" } %>
     </footer>
   </article>
 
@@ -53,42 +53,7 @@
 
     <main>
       <% if @expenses.any? %>
-        <% @expenses.each do |expense| %>
-          <article data-elevation="2" data-testid="expense-card">
-            <header>
-              <div>
-                <strong><%= formatted_amount(expense.amount, expense.currency) %></strong>
-                <%= expense.currency_code %>
-              </div>
-              <time datetime="<%= expense.occurred_on.iso8601 %>"><%= expense.occurred_on.to_fs(:long) %></time>
-            </header>
-
-            <main>
-              <dl>
-                <dt>Source</dt>
-                <dd>
-                  <%= link_to expense.source.name, source_path(expense.source) %>
-                  <%= "(Deleted)" if expense.source.deleted? %>
-                </dd>
-                <dt>Allocation</dt>
-                <dd>
-                  <% if expense.allocation %>
-                    <%= link_to expense.allocation.name, allocation_path(expense.allocation) %>
-                    <%= "(Deleted)" if expense.allocation.deleted? %>
-                  <% else %>
-                    No allocation
-                  <% end %>
-                </dd>
-              </dl>
-              <%= tag.p(expense.note) if expense.note.present? %>
-            </main>
-
-            <footer>
-              <%= button_to "Delete expense", expense_path(expense), method: :delete,
-                    data: { turbo_confirm: "Delete this expense permanently?" } %>
-            </footer>
-          </article>
-        <% end %>
+        <%= render @expenses %>
       <% else %>
         <h3>No expenses yet</h3>
         <p>Add an expense to track spending from this budget.</p>
@@ -96,7 +61,7 @@
     </main>
 
     <footer>
-      <%= link_to "New expense", new_budget_expense_path(@budget) %>
+      <%= link_to "New expense", new_budget_expense_path(@budget), role: "button" %>
     </footer>
   </article>
 </main>

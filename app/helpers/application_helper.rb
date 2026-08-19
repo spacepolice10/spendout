@@ -13,6 +13,12 @@ module ApplicationHelper
     "background: var(--color-palette-#{colour}); color: var(--color-invert-1);"
   end
 
+  def icon_colour_styles(colour)
+    return unless Colourable::CATALOG.key?(colour)
+
+    "color: var(--color-palette-#{colour});"
+  end
+
   def icon_tag(icon, options = {})
     icon_name = icon.presence
     tag.span(

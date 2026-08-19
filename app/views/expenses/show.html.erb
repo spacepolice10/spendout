@@ -1,0 +1,44 @@
+<main data-size="sm">
+  <article data-elevation="1">
+    <header>
+      <nav>
+        <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
+        <h1>Expense</h1>
+      </nav>
+      <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= @expense.occurred_on.to_fs(:long) %></time>
+    </header>
+
+    <%= tag.p(flash[:notice]) if flash[:notice] %>
+
+    <main>
+      <dl>
+        <dt>Amount</dt>
+        <dd><%= formatted_amount(@expense.amount, @expense.currency) %> <%= @expense.currency_code %></dd>
+        <dt>Source</dt>
+        <dd>
+          <%= link_to @expense.source.name, source_path(@expense.source) %>
+          <%= "(Deleted)" if @expense.source.deleted? %>
+        </dd>
+        <dt>Allocation</dt>
+        <dd>
+          <% if @expense.allocation %>
+            <%= icon_tag(@expense.allocation.icon, style: icon_colour_styles(@expense.allocation.colour)) %>
+            <%= link_to @expense.allocation.name, allocation_path(@expense.allocation) %>
+            <%= "(Deleted)" if @expense.allocation.deleted? %>
+          <% else %>
+            No allocation
+          <% end %>
+        </dd>
+        <% if @expense.note.present? %>
+          <dt>Note</dt>
+          <dd><%= @expense.note %></dd>
+        <% end %>
+      </dl>
+    </main>
+
+    <footer>
+      <%= button_to "Delete expense", expense_path(@expense), method: :delete,
+            data: { intent: "negative", turbo_confirm: "Delete this expense permanently?" } %>
+    </footer>
+  </article>
+</main>

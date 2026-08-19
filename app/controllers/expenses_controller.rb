@@ -1,6 +1,6 @@
 class ExpensesController < ApplicationController
   before_action :set_budget, only: %i[ new create ]
-  before_action :set_expense, only: :destroy
+  before_action :set_expense, only: %i[ show destroy ]
 
   def new
     @active_sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
@@ -23,6 +23,10 @@ class ExpensesController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
+    @budget = @expense.budget
   end
 
   def destroy

@@ -59,8 +59,17 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "dt", text: "Available"
     assert_select "dd", text: /1,375.25 USD/
     assert_select "[data-testid='expense-card']", count: 1, text: /Groceries/
+    assert_select "[data-testid='expense-card'] > header" do
+      assert_select "a[href='#{source_path(sources(:active))}']", text: sources(:active).name
+      assert_select "time[datetime='2026-08-19']"
+    end
+    assert_select "[data-testid='expense-card'] > main section[data-layout='flex']" do
+      assert_select ".icon-wrap[style*='--color-palette-yellow']"
+      assert_select "a[href='#{allocation_path(allocations(:active))}']", text: allocations(:active).name
+      assert_select "a[aria-label='View expense'][href='#{expense_path(expenses(:active))}']", text: /\$125 USD/
+    end
     assert_select "a[href='#{new_budget_expense_path(budgets(:active))}']", text: "New expense"
-    assert_select "form[action='#{expense_path(expenses(:active))}'] button[data-turbo-confirm='Delete this expense permanently?']", text: "Delete expense"
+    assert_select "button", text: "Delete expense", count: 0
   end
 
   test "show displays rolling remainder only for an active budget" do
@@ -70,7 +79,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
       get budget_path(budgets(:active))
 
       assert_select "dt", text: "Today's remainder"
-      assert_select "dd", text: /47.42 USD/
+      assert_select "dd", text: /41.39 USD/
 
       get budget_path(budgets(:archived))
 
@@ -104,7 +113,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
     get budget_path(budget)
 
-    notes = css_select("[data-testid='expense-card'] main > p").map(&:text)
+    notes = css_select("[data-testid='expense-note']").map(&:text)
     assert_equal [ "Newer", "Groceries", "Older" ], notes
   end
 

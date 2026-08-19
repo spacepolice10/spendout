@@ -65,6 +65,12 @@ class Budget < ApplicationRecord
     amount_in_base_of(expenses.joins(:source).where(sources: { deleted_at: nil }))
   end
 
+  def unallocated_expenses_amount_in_base
+    amount_in_base_of(
+      expenses.joins(:source).where(allocation_id: nil, sources: { deleted_at: nil })
+    )
+  end
+
   def amount_summary
     sources_amount_in_base - allocations_amount_in_base
   end
@@ -84,7 +90,7 @@ class Budget < ApplicationRecord
   def todays_remainder
     return unless period_from <= Date.current && Date.current <= period_to
 
-    available_summary / (period_to - Date.current + 1).to_i
+    (amount_summary - unallocated_expenses_amount_in_base) / (period_to - Date.current + 1).to_i
   end
 
   def currency_code=(value)

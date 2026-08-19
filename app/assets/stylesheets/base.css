@@ -67,6 +67,16 @@
         &[data-layout="flex"] {
             display: flex;
             flex: 1 1 0;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-h);
+
+            &>div {
+                display: flex;
+                align-items: center;
+                gap: var(--space-h);
+            }
         }
 
     }
@@ -134,6 +144,87 @@
         }
     }
 
+    :is(button, [role="button"]) {
+        --button-background: var(--color-2);
+        --button-background-hovered: var(--color-1);
+        --button-background-active: var(--color-2);
+        --button-border: var(--border-subtle);
+        --button-color: var(--color-invert-1);
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        height: fit-content;
+        padding: var(--space-v) var(--space-h);
+        color: var(--button-color);
+        background: var(--button-background);
+        border: var(--button-border);
+        border-radius: var(--radius-2);
+        text-decoration: none;
+        cursor: pointer;
+        user-select: none;
+        transition: background 150ms ease, color 150ms ease;
+
+        &[data-size="sm"] {
+            padding-block: var(--space-v-half);
+        }
+
+        &[data-size="lg"] {
+            padding-block: var(--space-v-2);
+        }
+
+        &[data-radius="base"] {
+            border-radius: var(--radius-2);
+        }
+
+        &[data-radius="full"] {
+            border-radius: var(--radius-full);
+        }
+
+        &[data-intent="primary"] {
+            --button-background: var(--color-invert-1);
+            --button-background-hovered: var(--color-invert-2);
+            --button-background-active: var(--color-invert-3);
+            --button-color: var(--color-1);
+        }
+
+        &[data-intent="secondary"] {
+            --button-background: var(--color-2);
+            --button-background-hovered: var(--color-1);
+            --button-background-active: var(--color-2);
+            --button-color: var(--color-invert-1);
+        }
+
+        &[data-intent="negative"] {
+            --button-background: var(--color-negative);
+            --button-background-hovered: color-mix(in oklch, var(--color-negative) 90%, var(--color-invert-negative));
+            --button-background-active: color-mix(in oklch, var(--color-negative) 80%, var(--color-invert-negative));
+            --button-color: var(--color-invert-negative);
+        }
+
+        &[data-intent="positive"] {
+            --button-background: var(--color-positive);
+            --button-background-hovered: color-mix(in oklch, var(--color-positive) 90%, var(--color-invert-positive));
+            --button-background-active: color-mix(in oklch, var(--color-positive) 80%, var(--color-invert-positive));
+            --button-color: var(--color-invert-positive);
+        }
+
+        &:disabled,
+        &[aria-disabled="true"] {
+            opacity: var(--opacity-50);
+            cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled, [aria-disabled="true"]) {
+            background: var(--button-background-hovered);
+        }
+
+        &:active:not(:disabled, [aria-disabled="true"]) {
+            background: var(--button-background-active);
+        }
+    }
+
     form {
         --font-weight-label: var(--font-weight-bold);
         --font-weight-small: var(--font-weight-medium);
@@ -147,12 +238,12 @@
         --outline-button: 1px solid var(--color-invert-1);
         --background-input: var(--color-1);
         --input-color: var(--color-invert-3);
-        --background-button: var(--color-invert-1);
-        --button-color: var(--color-1);
-        --background-button-hovered: var(--color-invert-2);
-        --background-button-active: var(--color-invert-3);
-        --background-color-checked: var(--color-invert-1);
-        --color-checked: var(--color-1);
+        --background-button: var(--color-2);
+        --button-color: var(--color-invert-1);
+        --background-button-hovered: var(--color-1);
+        --background-button-active: var(--color-2);
+        --background-color-checked: var(--color-2);
+        --color-checked: var(--color-invert-1);
 
         display: grid;
         gap: var(--form-space-v);
@@ -237,7 +328,7 @@
             }
         }
 
-        & :is(button, input[type="submit"], input[type="button"], input[type="reset"]) {
+        & :is(input[type="submit"], input[type="button"], input[type="reset"]) {
             position: relative;
             height: fit-content;
             width: fit-content;
@@ -265,6 +356,11 @@
             &:active {
                 background: var(--background-button-active);
             }
+        }
+
+        & :is(button, [role="button"]) {
+            position: relative;
+            margin-inline: auto;
         }
 
         & :is(button[type="submit"], button:not([type]))::after {
@@ -343,7 +439,7 @@
 
     a {
         text-decoration-skip-ink: auto;
-        color: hotpink;
+        color: var(--color-invert-1);
     }
 
     li {
