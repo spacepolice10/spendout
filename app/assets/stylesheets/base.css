@@ -475,7 +475,7 @@
         &[data-type="pill"] {
             display: inline-flex;
             align-items: center;
-            min-height: var(--button-height-xs);
+            min-height: var(--space-v-3);
             padding-inline: var(--space-h-half);
             border-radius: var(--radius-full);
             background: var(--mark-colour);

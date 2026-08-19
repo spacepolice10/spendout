@@ -1,35 +1,34 @@
-<article class="expense" data-elevation="2" data-testid="expense-card">
-  <header>
-    <small>
-      From: <%= link_to expense.source.name, source_path(expense.source) %>
-      <%= "(Deleted)" if expense.source.deleted? %>
-    </small>
-    <small>
-      <time datetime="<%= expense.occurred_on.iso8601 %>"><%= expense.occurred_on.to_fs(:long) %></time>
-    </small>
-  </header>
-
-  <main>
-    <section data-layout="flex">
-      <div>
+<%= link_to expense_path(expense), data: { expense_link: true }, aria: { label: "View expense" } do %>
+  <article class="expense" data-testid="expense-card">
+    <main>
+      <div data-expense-line>
         <% if expense.allocation %>
           <%= icon_tag(expense.allocation.icon, style: icon_colour_styles(expense.allocation.colour)) %>
+        <% else %>
+          <%= icon_tag(expense.source.icon, style: icon_colour_styles(expense.source.colour)) %>
         <% end %>
-        <div>
-          <% if expense.allocation %>
-            <%= link_to expense.allocation.name, allocation_path(expense.allocation) %>
-            <%= "(Deleted)" if expense.allocation.deleted? %>
-          <% end %>
-          <%= tag.p(expense.note, data: { testid: "expense-note" }) if expense.note.present? %>
+
+        <div data-expense-description>
+          <strong data-expense-name>
+            <% if expense.allocation %>
+              <%= expense.allocation.name %>
+              <%= "(Deleted)" if expense.allocation.deleted? %>
+            <% else %>
+              Unallocated
+            <% end %>
+          </strong>
         </div>
+
+        <span data-expense-leader aria-hidden="true"></span>
+
+        <span data-expense-amount>
+          <strong><%= formatted_amount(expense.amount, expense.currency) %></strong>
+          <small><%= expense.currency_code %></small>
+        </span>
       </div>
 
-      <div>
-        <%= link_to expense_path(expense), aria: { label: "View expense" } do %>
-          <strong><%= formatted_amount(expense.amount, expense.currency) %></strong>
-          <%= expense.currency_code %>
-        <% end %>
-      </div>
-    </section>
-  </main>
-</article>
+      <%= tag.span("Note", data: { expense_note: true, testid: "expense-note" },
+            aria: { label: "Has note" }, title: "Has note") if expense.note.present? %>
+    </main>
+  </article>
+<% end %>

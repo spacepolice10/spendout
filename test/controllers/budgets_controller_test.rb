@@ -56,16 +56,19 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[aria-label='Back to budgets'][href='#{budgets_path}']"
     assert_select "a[href='#{budget_sources_path(budgets(:active))}']", text: "Sources"
     assert_select "a[href='#{budget_allocations_path(budgets(:active))}']", text: "Allocations"
-    assert_select "[data-testid='expense-card']", count: 1, text: /Groceries/
-    assert_select "[data-testid='expense-card'] > header" do
-      assert_select "a[href='#{source_path(sources(:active))}']", text: sources(:active).name
+    assert_select "[data-testid='expense-card']", count: 1
+    assert_select "[data-testid='expense-day'] > header" do
       assert_select "time[datetime='2026-08-19']"
+      assert_select "[data-testid='expense-day-total']", text: /\$125 USD/
     end
-    assert_select "[data-testid='expense-card'] > main section[data-layout='flex']" do
+    assert_select "[data-testid='expense-card'] > main" do
       assert_select ".icon-wrap[style*='--color-palette-yellow']"
-      assert_select "a[href='#{allocation_path(allocations(:active))}']", text: allocations(:active).name
-      assert_select "a[aria-label='View expense'][href='#{expense_path(expenses(:active))}']", text: /\$125 USD/
+      assert_select "[data-expense-name]", text: allocations(:active).name
+      assert_select "[data-testid='expense-note'][aria-label='Has note']", text: "Note"
+      assert_select "[data-expense-source]", count: 0
+      assert_select "[data-expense-amount]", text: /\$125 USD/
     end
+    assert_select "a[data-expense-link][aria-label='View expense'][href='#{expense_path(expenses(:active))}'] > [data-testid='expense-card']"
     assert_select "a[role='button'][aria-label='New expense'][href='#{new_budget_expense_path(budgets(:active))}']" do
       assert_select ".icon-wrap .icon"
     end
@@ -114,13 +117,31 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     budget = budgets(:active)
     source = sources(:active)
-    budget.expenses.create!(source: source, amount: 1, occurred_on: Date.new(2026, 8, 18), note: "Older")
-    budget.expenses.create!(source: source, amount: 1, occurred_on: Date.new(2026, 8, 20), note: "Newer")
+    older = budget.expenses.create!(source: source, amount: 1, occurred_on: Date.new(2026, 8, 18), note: "Older")
+    newer = budget.expenses.create!(source: source, amount: 1, occurred_on: Date.new(2026, 8, 20), note: "Newer")
 
     get budget_path(budget)
 
-    notes = css_select("[data-testid='expense-note']").map(&:text)
-    assert_equal [ "Newer", "Groceries", "Older" ], notes
+    expense_paths = css_select("a[data-expense-link]").map { |link| link["href"] }
+    assert_equal [ expense_path(newer), expense_path(expenses(:active)), expense_path(older) ], expense_paths
+    assert_select "[data-testid='expense-note']", count: 3, text: "Note"
+    assert_select "[data-testid='expense-list']", text: /Newer|Groceries|Older/, count: 0
+  end
+
+  test "show groups expenses by occurrence date and totals each day in base currency" do
+    sign_in_as(@user)
+    budget = budgets(:active)
+    eur = budget.currencies.create!(alphabetic_code: "EUR", rate: 1.25)
+    source = budget.sources.create!(name: "Euros", amount: 100, currency_code: eur.alphabetic_code)
+    budget.expenses.create!(source: source, amount: 8, occurred_on: Date.new(2026, 8, 19), note: "Coffee")
+    budget.expenses.create!(source: sources(:active), amount: 5, occurred_on: Date.new(2026, 8, 18), note: "Snack")
+
+    get budget_path(budget)
+
+    days = css_select("[data-testid='expense-day']")
+    assert_equal [ "2026-08-19", "2026-08-18" ], days.map { |day| day.at_css("time")["datetime"] }
+    assert_match(/\$135 USD/, days.first.at_css("[data-testid='expense-day-total']").text.squish)
+    assert_match(/\$5 USD/, days[1].at_css("[data-testid='expense-day-total']").text.squish)
   end
 
   test "show has an expense empty state" do
@@ -135,7 +156,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[role='button'][aria-label='New expense'][href='#{new_budget_expense_path(budget)}']"
   end
 
-  test "show labels deleted historical expense associations" do
+  test "show labels deleted allocations without revealing expense source or note" do
     sign_in_as(@user)
     budget = budgets(:active)
     source = budget.sources.create!(
@@ -152,14 +173,15 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
       icon: "wallet",
       colour: "green"
     )
-    budget.expenses.create!(source: source, allocation: allocation, amount: 10, note: "Historical")
+    expense = budget.expenses.create!(source: source, allocation: allocation, amount: 10, note: "Historical")
     allocation.update!(deleted_at: Time.current)
     source.update!(deleted_at: Time.current)
 
     get budget_path(budget)
 
-    card = css_select("[data-testid='expense-card']").find { |element| element.text.include?("Historical") }
-    assert_includes card.text.squish, "Cash (Deleted)"
+    card = css_select("a[data-expense-link][href='#{expense_path(expense)}'] [data-testid='expense-card']").first
+    assert_not_includes card.text.squish, "Cash"
+    assert_not_includes card.text.squish, "Historical"
     assert_includes card.text.squish, "Pocket money (Deleted)"
   end
 

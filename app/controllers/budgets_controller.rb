@@ -9,6 +9,14 @@ class BudgetsController < ApplicationController
   def show
     @expenses = @budget.expenses.includes(:source, :allocation)
       .order(occurred_on: :desc, created_at: :desc, id: :desc)
+    @expenses_by_date = @expenses.group_by(&:occurred_on)
+
+    currencies_by_code = @budget.currencies.index_by(&:alphabetic_code)
+    @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
+      expenses.sum(BigDecimal("0")) do |expense|
+        currencies_by_code.fetch(expense.currency_code).amount_in_base(expense.amount)
+      end
+    end
   end
 
   def new
