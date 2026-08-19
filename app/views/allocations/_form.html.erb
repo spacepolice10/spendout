@@ -17,11 +17,13 @@
   <%= form.label :name %>
   <%= form.text_field :name, required: true, autofocus: true %>
 
-  <%= form.label :source_id, "Source" %>
-  <%= form.select :source_id, allocation_source_options(active_sources), {}, required: true %>
-
   <%= form.label :amount %>
   <%= form.number_field :amount, min: 0, step: 0.0001, required: true %>
+
+  <%= form.label :currency_code, "Currency" %>
+  <%= form.select :currency_code,
+        budget.currencies.map { |currency| [ "#{currency.name} (#{currency.alphabetic_code})", currency.alphabetic_code ] },
+        {}, required: true %>
 
   <%= render "shared/appearance_fields", form: form %>
 

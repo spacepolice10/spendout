@@ -1,0 +1,26 @@
+active:
+  budget: active
+  source: active
+  allocation: active
+  currency_code: USD
+  amount: 125.0000
+  occurred_on: 2026-08-19
+  note: Groceries
+
+archived:
+  budget: archived
+  source: archived
+  allocation: archived
+  currency_code: EUR
+  amount: 50.0000
+  occurred_on: 2026-06-03
+  note: Museum tickets
+
+other:
+  budget: other
+  source: other
+  allocation: other
+  currency_code: VND
+  amount: 100000.0000
+  occurred_on: 2026-08-10
+  note: Lunch

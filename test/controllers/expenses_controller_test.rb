@@ -1,0 +1,137 @@
+require "test_helper"
+
+class ExpensesControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @user = users(:one)
+    @budget = budgets(:active)
+    @source = sources(:active)
+    @allocation = allocations(:active)
+    @expense = expenses(:active)
+  end
+
+  test "requires authentication" do
+    get new_budget_expense_path(@budget)
+
+    assert_redirected_to new_session_path
+  end
+
+  test "new defaults source allocation and occurrence and renders controls" do
+    sign_in_as(@user)
+
+    travel_to Date.new(2026, 8, 20) do
+      get new_budget_expense_path(@budget)
+    end
+
+    assert_response :success
+    assert_select "select[name='expense[source_id]'] option[value='#{@source.id}'][selected]"
+    assert_select "fieldset[data-layout='flex'] legend", text: "Allocation"
+    assert_select "fieldset[data-layout='flex'] > div > label", count: @budget.allocations.where(deleted_at: nil).count + 1
+    assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}'][checked]"
+    assert_select "input[name='expense[allocation_id]'][value='']"
+    assert_select "[data-expense-form-target='allocation']", count: 0
+    assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
+    assert_select "input[name='expense[note]'][maxlength='200']"
+    assert_select "input[name='expense[note]'][size]", count: 0
+    assert_select "input[name='expense[currency_code]']", count: 0
+  end
+
+  test "creates an allocated expense and inherits source currency" do
+    sign_in_as(@user)
+
+    assert_difference("Expense.count", 1) do
+      post budget_expenses_path(@budget), params: {
+        expense: {
+          source_id: @source.id,
+          allocation_id: @allocation.id,
+          amount: "25.2500",
+          occurred_on: "2026-08-20",
+          note: "Dinner",
+          currency_code: "EUR"
+        }
+      }
+    end
+
+    expense = @budget.expenses.order(:created_at, :id).last
+    assert_redirected_to budget_path(@budget)
+    assert_equal @source, expense.source
+    assert_equal @allocation, expense.allocation
+    assert_equal BigDecimal("25.2500"), expense.amount
+    assert_equal Date.new(2026, 8, 20), expense.occurred_on
+    assert_equal "Dinner", expense.note
+    assert_equal "USD", expense.currency_code
+  end
+
+  test "creates an expense without an allocation" do
+    sign_in_as(@user)
+
+    assert_difference("Expense.count", 1) do
+      post budget_expenses_path(@budget), params: {
+        expense: {
+          source_id: @source.id,
+          allocation_id: "",
+          amount: "10",
+          occurred_on: "2026-08-20"
+        }
+      }
+    end
+
+    assert_nil @budget.expenses.order(:created_at, :id).last.allocation
+  end
+
+  test "rejects overspending and tampered associations" do
+    sign_in_as(@user)
+
+    assert_no_difference("Expense.count") do
+      post budget_expenses_path(@budget), params: {
+        expense: {
+          source_id: @source.id,
+          amount: "1375.2501",
+          occurred_on: "2026-08-20"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Amount must be less than or equal to 1375.25/
+
+    assert_no_difference("Expense.count") do
+      post budget_expenses_path(@budget), params: {
+        expense: {
+          source_id: sources(:other).id,
+          allocation_id: allocations(:other).id,
+          amount: "1",
+          occurred_on: "2026-08-20"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "[role='alert']", text: /Source must belong to this budget/
+    assert_select "[role='alert']", text: /Allocation must belong to this budget/
+  end
+
+  test "deletes an owned expense permanently" do
+    sign_in_as(@user)
+
+    assert_difference("Expense.count", -1) do
+      delete expense_path(@expense)
+    end
+
+    assert_redirected_to budget_path(@budget)
+    assert_equal "Expense was deleted.", flash[:notice]
+    assert_equal @source.amount, @source.reload.spendable_amount
+  end
+
+  test "cannot create or delete through another user's budget" do
+    sign_in_as(@user)
+
+    post budget_expenses_path(budgets(:other)), params: {
+      expense: { source_id: sources(:other).id, amount: 1, occurred_on: "2026-08-10" }
+    }
+    assert_response :not_found
+
+    delete expense_path(expenses(:other))
+    assert_response :not_found
+    assert Expense.exists?(expenses(:other).id)
+  end
+end

@@ -6,6 +6,7 @@ class Budget < ApplicationRecord
 
   belongs_to :user
   has_many :currencies, dependent: :destroy, inverse_of: :budget
+  has_many :expenses, dependent: :destroy, inverse_of: :budget
   has_many :allocations, dependent: :destroy, inverse_of: :budget
   has_many :sources, dependent: :destroy, inverse_of: :budget
 
@@ -60,8 +61,30 @@ class Budget < ApplicationRecord
     amount_in_base_of(allocations.where(deleted_at: nil))
   end
 
+  def expenses_amount_in_base
+    amount_in_base_of(expenses.joins(:source).where(sources: { deleted_at: nil }))
+  end
+
   def amount_summary
     sources_amount_in_base - allocations_amount_in_base
+  end
+
+  def overallocated?
+    allocations_amount_in_base > sources_amount_in_base
+  end
+
+  def overallocated_by
+    [ allocations_amount_in_base - sources_amount_in_base, BigDecimal("0") ].max
+  end
+
+  def available_summary
+    sources_amount_in_base - expenses_amount_in_base
+  end
+
+  def todays_remainder
+    return unless period_from <= Date.current && Date.current <= period_to
+
+    available_summary / (period_to - Date.current + 1).to_i
   end
 
   def currency_code=(value)

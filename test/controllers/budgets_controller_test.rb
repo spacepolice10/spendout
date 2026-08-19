@@ -56,6 +56,96 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{budget_currencies_path(budgets(:active))}']", text: "Currencies"
     assert_select "dt", text: "Remaining"
     assert_select "dd", text: /1,200.25 USD/
+    assert_select "dt", text: "Available"
+    assert_select "dd", text: /1,375.25 USD/
+    assert_select "[data-testid='expense-card']", count: 1, text: /Groceries/
+    assert_select "a[href='#{new_budget_expense_path(budgets(:active))}']", text: "New expense"
+    assert_select "form[action='#{expense_path(expenses(:active))}'] button[data-turbo-confirm='Delete this expense permanently?']", text: "Delete expense"
+  end
+
+  test "show displays rolling remainder only for an active budget" do
+    sign_in_as(@user)
+
+    travel_to Date.new(2026, 8, 19) do
+      get budget_path(budgets(:active))
+
+      assert_select "dt", text: "Today's remainder"
+      assert_select "dd", text: /47.42 USD/
+
+      get budget_path(budgets(:archived))
+
+      assert_select "dt", text: "Today's remainder", count: 0
+    end
+  end
+
+  test "show warns without blocking when allocations exceed sources" do
+    sign_in_as(@user)
+    budget = budgets(:active)
+    budget.allocations.create!(
+      name: "Ambitious plan",
+      amount: "1500.2501",
+      currency_code: "USD",
+      icon: "wallet",
+      colour: "green"
+    )
+
+    get budget_path(budget)
+
+    assert_response :success
+    assert_select "[data-testid='overallocation-warning']", text: /exceed available sources by \$300 USD/
+  end
+
+  test "show orders expenses newest occurrence first" do
+    sign_in_as(@user)
+    budget = budgets(:active)
+    source = sources(:active)
+    budget.expenses.create!(source: source, amount: 1, occurred_on: Date.new(2026, 8, 18), note: "Older")
+    budget.expenses.create!(source: source, amount: 1, occurred_on: Date.new(2026, 8, 20), note: "Newer")
+
+    get budget_path(budget)
+
+    notes = css_select("[data-testid='expense-card'] main > p").map(&:text)
+    assert_equal [ "Newer", "Groceries", "Older" ], notes
+  end
+
+  test "show has an expense empty state" do
+    sign_in_as(@user)
+    budget = budgets(:active)
+    budget.expenses.destroy_all
+
+    get budget_path(budget)
+
+    assert_select "[data-testid='expense-card']", count: 0
+    assert_select "[data-testid='expense-list']", text: /No expenses yet/
+    assert_select "a[href='#{new_budget_expense_path(budget)}']", text: "New expense"
+  end
+
+  test "show labels deleted historical expense associations" do
+    sign_in_as(@user)
+    budget = budgets(:active)
+    source = budget.sources.create!(
+      name: "Cash",
+      amount: 100,
+      currency_code: "USD",
+      icon: "cash-banknote",
+      colour: "green"
+    )
+    allocation = budget.allocations.create!(
+      name: "Pocket money",
+      amount: 50,
+      currency_code: "USD",
+      icon: "wallet",
+      colour: "green"
+    )
+    budget.expenses.create!(source: source, allocation: allocation, amount: 10, note: "Historical")
+    allocation.update!(deleted_at: Time.current)
+    source.update!(deleted_at: Time.current)
+
+    get budget_path(budget)
+
+    card = css_select("[data-testid='expense-card']").find { |element| element.text.include?("Historical") }
+    assert_includes card.text.squish, "Cash (Deleted)"
+    assert_includes card.text.squish, "Pocket money (Deleted)"
   end
 
   test "creates the complete aggregate from canonical currency data" do
@@ -108,7 +198,9 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
       assert_difference("Currency.count", -1) do
         assert_difference("Source.count", -1) do
           assert_difference("Allocation.count", -1) do
-            delete budget_path(budget)
+            assert_difference("Expense.count", -1) do
+              delete budget_path(budget)
+            end
           end
         end
       end

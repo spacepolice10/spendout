@@ -7,6 +7,8 @@ class BudgetsController < ApplicationController
   end
 
   def show
+    @expenses = @budget.expenses.includes(:source, :allocation)
+      .order(occurred_on: :desc, created_at: :desc, id: :desc)
   end
 
   def new

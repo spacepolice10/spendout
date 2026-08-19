@@ -1,0 +1,53 @@
+<%= form_with model: [ budget, expense ] do |form| %>
+  <% if expense.errors.any? %>
+    <section role="alert" data-form-errors>
+      <h2>
+        <%= pluralize(expense.errors.count, "error") %> prevented this expense
+        from being saved:
+      </h2>
+
+      <ul>
+        <% expense.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= form.label :source_id, "Source" %>
+  <%= form.select :source_id,
+        active_sources.map { |source| [ "#{source.name} — #{formatted_amount(source.spendable_amount, source.currency)} available (#{source.currency_code})", source.id ] },
+        {},
+        required: true %>
+
+  <%= form.label :amount %>
+  <%= form.number_field :amount, min: 0.0001, step: 0.0001, required: true, autofocus: true %>
+
+  <%= form.label :occurred_on, "Date" %>
+  <%= form.date_field :occurred_on,
+        min: budget.period_from,
+        max: budget.period_to,
+        required: true %>
+
+  <fieldset data-layout="flex">
+    <legend>Allocation</legend>
+    <div>
+      <%= form.label :allocation_id, value: "", for: "expense_allocation_id_none" do %>
+        <%= form.radio_button :allocation_id, "", id: "expense_allocation_id_none" %>
+        No allocation
+      <% end %>
+
+      <% active_allocations.each do |allocation| %>
+        <%= form.label :allocation_id, value: allocation.id do %>
+          <%= form.radio_button :allocation_id, allocation.id %>
+          <%= allocation.name %>
+        <% end %>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <%= form.label :note %>
+  <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional" %>
+
+  <%= form.submit %>
+<% end %>

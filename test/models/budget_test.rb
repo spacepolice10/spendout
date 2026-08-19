@@ -109,9 +109,9 @@ class BudgetTest < ActiveSupport::TestCase
       colour: "green"
     )
     euro_allocation = budget.allocations.create!(
-      source: euro_source,
       name: "European trip",
       amount: "5.2500",
+      currency_code: "EUR",
       icon: "plane",
       colour: "blue"
     )
@@ -132,6 +132,48 @@ class BudgetTest < ActiveSupport::TestCase
     euro_allocation.update_columns(deleted_at: nil)
 
     assert_equal BigDecimal("1224.5500"), budget.amount_summary
+  end
+
+  test "summarizes expenses in base currency and excludes deleted sources" do
+    budget = budgets(:active)
+    budget.currencies.create!(alphabetic_code: "EUR", rate: "1.100000000000")
+    source = budget.sources.create!(
+      name: "Euros",
+      amount: "25.5000",
+      currency_code: "EUR",
+      icon: "wallet",
+      colour: "green"
+    )
+    expense = budget.expenses.create!(
+      source: source,
+      amount: "5.2500",
+      occurred_on: budget.period_from
+    )
+
+    assert_equal BigDecimal("130.7750"), budget.expenses_amount_in_base
+    assert_equal BigDecimal("1397.5250"), budget.available_summary
+
+    source.update!(deleted_at: Time.current)
+
+    assert_equal BigDecimal("125.0000"), budget.expenses_amount_in_base
+    assert_equal BigDecimal("1375.2500"), budget.available_summary
+    assert_equal expense, budget.expenses.find(expense.id)
+  end
+
+  test "calculates a rolling remainder only during the active period" do
+    budget = budgets(:active)
+
+    travel_to Date.new(2026, 8, 19) do
+      assert_equal BigDecimal("1375.2500") / 29, budget.todays_remainder
+    end
+
+    travel_to Date.new(2026, 8, 17) do
+      assert_nil budget.todays_remainder
+    end
+
+    travel_to Date.new(2026, 9, 17) do
+      assert_nil budget.todays_remainder
+    end
   end
 
   private

@@ -4,7 +4,6 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
     @budget = budgets(:active)
-    @source = sources(:active)
     @allocation = allocations(:active)
   end
 
@@ -20,10 +19,10 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     get budget_allocations_path(@budget)
 
     assert_response :success
-    assert_select "[data-testid='allocation-card']", count: 1
-    assert_select "[data-testid='allocation-card']", text: /Housing/
+    assert_select "[data-testid='allocation-card']", count: 1, text: /Housing/
     assert_select "dt", text: "Remaining"
     assert_select "dd", text: /1,200.25 USD/
+    assert_select "[data-testid='overallocation-warning']", count: 0
     assert_select "a[aria-label='New allocation'][href='#{new_budget_allocation_path(@budget)}']"
     assert_select "a[aria-label='Back to budget'][href='#{budget_path(@budget)}']"
   end
@@ -38,22 +37,21 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='allocation-card']", count: 0
   end
 
-  test "new defaults to the active base source and renders shared appearance options" do
+  test "new defaults to base currency and renders shared appearance options" do
     sign_in_as(@user)
 
     get new_budget_allocation_path(@budget)
 
     assert_response :success
-    assert_select "select[name='allocation[source_id]'] option[value='#{@source.id}'][selected]", text: /1,200.25 available \(USD\)/
+    assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]", text: "US Dollar (USD)"
+    assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
     assert_select "input[name='allocation[colour]'][type='radio']", count: Allocation.colour_options.size
     assert_select "input[name='allocation[colour]'][value='green'][checked]"
-    assert_select "input[name='allocation[currency_code]']", count: 0
-    assert_select "dt", text: "Remaining", count: 0
   end
 
-  test "creates an allocation and inherits source currency" do
+  test "creates an allocation with its selected currency" do
     sign_in_as(@user)
 
     assert_difference("Allocation.count", 1) do
@@ -61,8 +59,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
         allocation: {
           name: "Emergency savings",
           amount: "100.2500",
-          source_id: @source.id,
-          currency_code: "EUR",
+          currency_code: "USD",
+          source_id: sources(:other).id,
           icon: "pig-money",
           colour: "red"
         }
@@ -78,35 +76,38 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "red", allocation.colour
   end
 
-  test "over-capacity allocation creates no record and rerenders errors" do
+  test "allows over-allocation and returns a warning" do
     sign_in_as(@user)
 
-    assert_no_difference("Allocation.count") do
+    assert_difference("Allocation.count", 1) do
       post budget_allocations_path(@budget), params: {
         allocation: {
-          name: "Too much",
-          amount: "1200.2501",
-          source_id: @source.id,
+          name: "Ambitious plan",
+          amount: "1500.2501",
+          currency_code: "USD",
           icon: "wallet",
           colour: "green"
         }
       }
     end
 
-    assert_response :unprocessable_entity
-    assert_select "[role='alert']", text: /Amount must be less than or equal to 1200.25/
-    assert_select "select[name='allocation[source_id]'] option[value='#{@source.id}'][selected]"
+    allocation = @budget.allocations.order(:created_at, :id).last
+    assert_redirected_to allocation_path(allocation)
+    assert_equal "Allocation was created. Planned allocations now exceed available sources.", flash[:notice]
+
+    get budget_allocations_path(@budget)
+    assert_select "[data-testid='overallocation-warning']", text: /exceed available sources by \$300 USD/
   end
 
-  test "cannot create against another budget source" do
+  test "invalid currency creates no record and rerenders errors" do
     sign_in_as(@user)
 
     assert_no_difference("Allocation.count") do
       post budget_allocations_path(@budget), params: {
         allocation: {
-          name: "Wrong source",
+          name: "Wrong currency",
           amount: "1",
-          source_id: sources(:other).id,
+          currency_code: "EUR",
           icon: "wallet",
           colour: "green"
         }
@@ -114,10 +115,11 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "[role='alert']", text: /Source must exist/
+    assert_select "[role='alert']", text: /Currency code must be available in this budget/
+    assert_select "select[name='allocation[currency_code]'] option[value='USD']"
   end
 
-  test "show displays allocation source and amount" do
+  test "show displays allocation amount and budget without a source" do
     sign_in_as(@user)
 
     get allocation_path(@allocation)
@@ -125,7 +127,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", text: @allocation.name
     assert_select "dd", text: /300 USD/
-    assert_select "a[href='#{source_path(@source)}']", text: @source.name
+    assert_select "dt", text: "Source", count: 0
+    assert_select "a[href='#{budget_path(@budget)}']", text: @budget.name
     assert_select "a[aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']"
   end
 

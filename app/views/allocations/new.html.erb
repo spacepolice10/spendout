@@ -8,13 +8,7 @@
     </header>
 
     <main>
-      <% if @active_sources.any? %>
-        <%= render "form", budget: @budget, allocation: @allocation, active_sources: @active_sources %>
-      <% else %>
-        <h2>Add a source first</h2>
-        <p>An allocation needs an active source.</p>
-        <%= link_to "New source", new_budget_source_path(@budget) %>
-      <% end %>
+      <%= render "form", budget: @budget, allocation: @allocation %>
     </main>
   </article>
 </main>

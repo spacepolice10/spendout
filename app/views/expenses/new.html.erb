@@ -1,0 +1,24 @@
+<main data-size="sm">
+  <article data-elevation="1">
+    <header>
+      <nav>
+        <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
+        <h1>New expense</h1>
+      </nav>
+    </header>
+
+    <main>
+      <% if @active_sources.any? %>
+        <%= render "form",
+              budget: @budget,
+              expense: @expense,
+              active_sources: @active_sources,
+              active_allocations: @active_allocations %>
+      <% else %>
+        <h2>Add a source first</h2>
+        <p>An expense needs an active source.</p>
+        <%= link_to "New source", new_budget_source_path(@budget) %>
+      <% end %>
+    </main>
+  </article>
+</main>

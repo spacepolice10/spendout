@@ -97,12 +97,11 @@ class SourceTest < ActiveSupport::TestCase
     assert source.errors.added?(:currency_code, "must be available in this budget")
   end
 
-  test "cannot be reduced below its active allocated amount" do
+  test "is not constrained by allocation amounts" do
     source = sources(:active)
     source.amount = BigDecimal("299.9999")
 
-    assert_not source.valid?
-    assert source.errors.added?(:amount, "must cover active allocations")
+    assert source.valid?
   end
 
   private

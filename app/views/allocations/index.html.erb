@@ -20,6 +20,14 @@
         <dd><%= formatted_amount(@budget.amount_summary, @budget.base_currency) %> <%= @budget.base_currency.alphabetic_code %></dd>
       </dl>
 
+      <% if @budget.overallocated? %>
+        <p role="status" data-testid="overallocation-warning">
+          Planned allocations exceed available sources by
+          <%= formatted_amount(@budget.overallocated_by, @budget.base_currency) %>
+          <%= @budget.base_currency.alphabetic_code %>.
+        </p>
+      <% end %>
+
       <% if @allocations.any? %>
         <% @allocations.each do |allocation| %>
           <%= link_to allocation_path(allocation), style: "color: inherit;" do %>
@@ -38,7 +46,6 @@
               <main>
                 <strong><%= formatted_amount(allocation.amount, allocation.currency) %></strong>
                 <%= allocation.currency_code %>
-                <p>From <%= allocation.source.name %></p>
               </main>
             </article>
           <% end %>
