@@ -23,30 +23,58 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_select "label[for='expense_source_id'] > legend", text: "From"
-    assert_select "select[name='expense[source_id]'] option[value='#{@source.id}'][selected]"
-    assert_select "fieldset[data-expense-allocations] legend", text: "Spend on"
-    assert_select "fieldset[data-expense-allocations] > div > label", count: @budget.allocations.where(deleted_at: nil).count + 1
-    assert_select "fieldset[data-expense-allocations] .icon-wrap", count: @budget.allocations.where(deleted_at: nil).count
+    assert_select "fieldset[data-expense-sources] > div > label", count: 1
+    assert_select "input[type='radio'][name='expense[source_id]'][value='#{@source.id}'][checked][required]"
+    assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) > label",
+      count: @budget.allocations.where(deleted_at: nil).count
+    assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) .icon-wrap",
+      count: @budget.allocations.where(deleted_at: nil).count
     assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}'][checked]"
-    assert_select "input[name='expense[allocation_id]'][value='']"
+    assert_select "input[name='expense[allocation_id]'][value='']", count: 0
     assert_select "[data-expense-form-target='allocation']", count: 0
-    assert_select "[data-optional-item-toggle]", count: 3
-    assert_select "fieldset[data-expense-options]"
-    assert_select "label[for='expense-date-item-toggle']", text: "+ Date"
-    assert_select "label[for='expense-note-toggle']", text: "+ Note"
-    assert_select "label[for='expense-category-toggle']", text: "+ Category"
-    assert_select "[data-optional-item-control] label[for='expense_occurred_on']", text: "Date"
-    assert_select "[data-optional-item-control] label[for='expense_note']", text: "Note"
-    assert_select "[data-optional-item-control] label[for='expense_category_name_to_create']", text: "New category"
+    assert_select "[data-expense-options]"
+    assert_select "details[data-optional-item]", count: 4
+    assert_select "details[data-controller='details']", count: 0
+    assert_select "details[data-action]", count: 0
+    assert_select "details[data-optional-item] > summary > span > .icon-wrap", count: 4
+    assert_select "details.utilities--sr-only" do
+      assert_select "fieldset[data-expense-sources]"
+    end
+    assert_select "[data-optional-item] > input[type='checkbox']", count: 0
+    assert_select "details[data-optional-item] > summary" do |summaries|
+      assert_equal [ "From #{@source.name}", "Spend on #{@allocation.name}", "Date August 20, 2026", "Note Added" ],
+        summaries.map { |summary| summary.text.squish }
+    end
+    assert_select "details[data-optional-item]:not([open]) > summary > span", text: "Date"
+    assert_select "details[data-optional-item] > summary > small", text: /August 20, 2026/
+    assert_select "details[data-optional-item]:not([open]) > summary > span", text: "Note"
+    assert_select "details[data-optional-item]:not([open]) > summary > small[hidden]", text: "Added"
+    assert_select "[data-optional-item-control] label[for='expense_occurred_on']"
+    assert_select "[data-optional-item-control] label[for='expense_note']"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
     assert_select "input[name='expense[note]'][maxlength='200']"
     assert_select "input[name='expense[note]'][size]", count: 0
-    assert_select "input[name='expense[category_name_to_create]'][placeholder='Category name']"
+    assert_select "input[type='text'][name]#expense_category_filter", count: 0
+    assert_select "fieldset[data-expense-allocations][data-controller='category-filter']"
+    assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-filter-target='filter'][data-action='input->category-filter#filter']"
+    assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-filter-target='createdInput']"
+    assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option'][data-filter-value='#{@allocation.name}']"
+    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='createdButton'][data-action='category-filter#useCreatedValue']", text: "Add new"
+    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='cleanupButton'][data-action='category-filter#cleanup']", text: "Cleanup"
     assert_select "label[for='expense_amount'] > legend", text: "How much?"
     assert_select "input[name='expense[amount]'][aria-label='Amount'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
     assert_select "input[name='expense[amount]'][value]", count: 0
     assert_select "input[name='expense[currency_code]']", count: 0
+  end
+
+  test "shows the source disclosure when more than one active source is available" do
+    sign_in_as(@user)
+    @budget.sources.create!(name: "Cash", amount: 100, currency_code: "USD")
+
+    get new_budget_expense_path(@budget)
+
+    assert_select "details.utilities--sr-only", count: 0
+    assert_select "input[type='radio'][name='expense[source_id]']", count: 2
   end
 
   test "creates an allocated expense and inherits source currency" do
@@ -134,6 +162,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
+    assert_select "details[data-optional-item][open]" do
+      assert_select "summary", text: /Spend on Coffee/
+    end
     assert_select "input[name='expense[category_name_to_create]'][value='Coffee']"
   end
 

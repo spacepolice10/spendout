@@ -220,7 +220,7 @@
         }
 
         &[data-size="lg"] {
-            padding-block: var(--space-v-2);
+            height: var(--form-control-height);
         }
 
         &[data-size="xl"] {
@@ -303,8 +303,8 @@
         --form-label-font-weight: var(--font-weight-bold);
         --form-space-v: var(--space-v);
         --form-space-h: var(--space-h);
-        --form-control-height: 3rem;
         --form-input-border: var(--border-subtle);
+        --form-control-height: var(--space-v-4);
         --form-input-radius: var(--radius-1);
         --form-input-outline: 1px solid var(--color-accent);
         --form-input-color: var(--color-invert-3);
@@ -314,10 +314,6 @@
         display: grid;
         gap: var(--form-space-v);
         min-width: 0;
-
-        & label {
-            font-weight: var(--form-label-font-weight);
-        }
 
         & fieldset {
             margin-bottom: var(--space-v);
@@ -351,6 +347,9 @@
 
         & :is(input, textarea, select) {
             font-size: var(--font-size-base-type);
+            &::placeholder {
+                color: var(--color-invert-3);
+            }
         }
 
         & :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]), textarea, select) {
@@ -375,6 +374,10 @@
                 opacity: var(--opacity-50);
                 cursor: not-allowed;
             }
+        }
+
+        & input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]) {
+            height: var(--form-control-height);
         }
 
         & select {
@@ -538,4 +541,5 @@
     *+ :is(p, ul, ol, blockquote, table, article, aside, details) {
         margin-top: 0.5em;
     }
+
 }

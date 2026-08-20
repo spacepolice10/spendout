@@ -14,15 +14,6 @@
     </section>
   <% end %>
 
-  <%= form.label :source_id do %>
-    <legend>From</legend>
-
-    <%= form.select :source_id,
-          active_sources.map { |source| [ "#{source.name} — #{formatted_amount(source.spendable_amount, source.currency)} available (#{source.currency_code})", source.id ] },
-          {},
-          required: true %>
-  <% end %>
-
   <%= form.label :amount do %>
     <legend>How much?</legend>
 
@@ -34,76 +25,162 @@
         } %>
   <% end %>
 
-  <fieldset data-expense-allocations>
-    <legend>Spend on</legend>
-
+  <div data-expense-options>
     <div>
-      <%= form.label :allocation_id, value: "", for: "expense_allocation_id_none" do %>
-        <%= form.radio_button :allocation_id, "", id: "expense_allocation_id_none" %>
-        No allocation
+      <%= tag.details data: {
+            optional_item: true
+          }, class: ("utilities--sr-only" if active_sources.one?) do %>
+        <summary>
+          <span>
+            <%= icon_tag("plus") %>
+            From
+          </span>
+          <small><%= expense.source&.name %></small>
+        </summary>
+
+        <div data-optional-item-control>
+          <fieldset data-expense-sources>
+            <div>
+              <% active_sources.each do |source| %>
+                <%= form.label :source_id, value: source.id,
+                      style: "--source-colour: var(--color-palette-#{source.colour});" do %>
+                  <%= form.radio_button :source_id, source.id, required: true %>
+
+                  <%= icon_tag(source.icon) %>
+
+                  <span>
+                    <strong><%= source.name %></strong>
+
+                    <small>
+                      <%= formatted_amount(source.spendable_amount, source.currency) %>
+                      available (<%= source.currency_code %>)
+                    </small>
+                  </span>
+                <% end %>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
       <% end %>
 
-      <% active_allocations.each do |allocation| %>
-        <%= form.label :allocation_id, value: allocation.id,
-              style: "--allocation-colour: var(--color-palette-#{allocation.colour});" do %>
-          <%= form.radio_button :allocation_id, allocation.id %>
-          <%= icon_tag(allocation.icon) %>
+      <%= tag.details data: {
+            optional_item: true
+          }, open: expense.category_name_to_create.present? do %>
+        <summary>
+          <span>
+            <%= icon_tag("plus") %>
+            Spend on
+          </span>
 
-          <span><%= allocation.name %></span>
-        <% end %>
+          <small>
+            <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
+          </small>
+        </summary>
+
+        <div data-optional-item-control>
+          <fieldset data-expense-allocations data-controller="category-filter">
+            <div data-create-category>
+              <%= tag.input type: "text",
+                    id: "expense_category_filter",
+                    value: expense.category_name_to_create,
+                    placeholder: "Find or add category",
+                    autocomplete: "off",
+                    aria: { label: "Find or add category" },
+                    data: {
+                      category_filter_target: "filter",
+                      action: "input->category-filter#filter"
+                    } %>
+
+              <%= form.hidden_field :category_name_to_create,
+                    data: {
+                      category_filter_target: "createdTextform"
+                    } %>
+
+              <div>
+                <%= tag.button "Add new", type: "button",
+                    hidden: true,
+                    data: {
+                      size: "lg",
+                      category_filter_target: "createdButton",
+                      action: "category-filter#selectCreatedCategory"
+                    } %>
+
+                <%= tag.button "Cleanup", type: "button",
+                    hidden: true,
+                    data: {
+                      size: "lg",
+                      intent: "secondary",
+                      category_filter_target: "cleanupButton",
+                      action: "category-filter#cleanup"
+                    } %>
+              </div>
+            </div>
+
+            <div>
+              <% active_allocations.each do |allocation| %>
+                <%= form.label :allocation_id, value: allocation.id,
+                      style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
+                      data: {
+                        category_filter_target: "option",
+                        filter_value: allocation.name
+                      } do %>
+                  <%= form.radio_button :allocation_id, allocation.id,
+                        data: {
+                          category_filter_target: "allocation",
+                          action: "change->category-filter#selectAllocation"
+                        } %>
+
+                  <%= icon_tag(allocation.icon) %>
+
+                  <span><%= allocation.name %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
       <% end %>
-    </div>
-  </fieldset>
 
-  <fieldset data-expense-options>
-    <div>
-      <div data-optional-item>
-        <%= tag.input type: "checkbox", id: "expense-date-item-toggle",
-              checked: expense.errors[:occurred_on].any?, data: { optional_item_toggle: true }, aria: { label: "Show date field" } %>
-
-        <%= tag.label "+ Date", for: "expense-date-item-toggle" %>
+      <%= tag.details data: {
+            optional_item: true
+          }, open: expense.errors[:occurred_on].any? do %>
+        <summary>
+          <span>
+            <%= icon_tag("plus") %>
+            Date
+          </span>
+          <small><%= expense.occurred_on&.to_fs(:long) %></small>
+        </summary>
 
         <div data-optional-item-control>
           <%= form.label :occurred_on do %>
-            <legend>Date</legend>
-
             <%= form.date_field :occurred_on,
                 min: budget.period_from,
                 max: budget.period_to,
                 required: true %>
           <% end %>
         </div>
-      </div>
+      <% end %>
 
-      <div data-optional-item>
-        <%= tag.input type: "checkbox", id: "expense-note-toggle",
-              checked: expense.note.present?, data: { optional_item_toggle: true }, aria: { label: "Show note field" } %>
-
-        <%= tag.label "+ Note", for: "expense-note-toggle" %>
+      <%= tag.details data: {
+            optional_item: true
+          }, open: expense.note.present? do %>
+        <summary>
+          <span>
+            <%= icon_tag("plus") %>
+            Note
+          </span>
+          <%= tag.small("Added", hidden: expense.note.blank?) %>
+        </summary>
 
         <div data-optional-item-control>
           <%= form.label :note do %>
-            <legend>Note</legend>
+
             <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional" %>
           <% end %>
         </div>
-      </div>
-
-      <div data-optional-item>
-        <%= tag.input type: "checkbox", id: "expense-category-toggle",
-              checked: expense.category_name_to_create.present?, data: { optional_item_toggle: true }, aria: { label: "Show category field" } %>
-
-        <%= tag.label "+ Category", for: "expense-category-toggle" %>
-
-        <div data-optional-item-control>
-          <%= form.label :category_name_to_create do %>
-            <legend>New category</legend>
-            <%= form.text_field :category_name_to_create, size: nil, placeholder: "Category name" %>
-          <% end %>
-        </div>
-      </div>
+      <% end %>
     </div>
-  </fieldset>
+  </div>
 
   <%= form.submit "Create", data: { intent: "primary" } %>
 <% end %>
