@@ -30,6 +30,36 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='expense-card']", count: 1
     assert_select "a[href='#{new_budget_expense_path(budgets(:active))}']"
     assert_select "a", text: "Currencies", count: 0
+    assert_select "form[action='#{budget_path(budgets(:active))}'] button", "Reset budget"
+  end
+
+  test "reset permanently deletes the budget and its contents" do
+    budget = budgets(:active)
+    counts = {
+      budgets: Budget.count,
+      sources: Source.count,
+      allocations: Allocation.count,
+      expenses: Expense.count,
+      budget_sources: budget.sources.size,
+      budget_allocations: budget.allocations.size,
+      budget_expenses: budget.expenses.size
+    }
+
+    delete budget_path(budget)
+
+    assert_redirected_to new_budget_path
+    assert_equal counts[:budgets] - 1, Budget.count
+    assert_equal counts[:sources] - counts[:budget_sources], Source.count
+    assert_equal counts[:allocations] - counts[:budget_allocations], Allocation.count
+    assert_equal counts[:expenses] - counts[:budget_expenses], Expense.count
+  end
+
+  test "cannot reset another user's budget" do
+    assert_no_difference([ "Budget.count", "Source.count", "Allocation.count", "Expense.count" ]) do
+      delete budget_path(budgets(:other))
+    end
+
+    assert_response :not_found
   end
 
   test "new renders when all budgets are archived" do

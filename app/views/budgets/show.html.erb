@@ -91,6 +91,9 @@
     </article>
   <% end %>
 
+  <%= button_to "Reset budget", budget_path(@budget), method: :delete,
+        data: { intent: "negative", turbo_confirm: "Delete this budget and all of its money, plans, and expenses permanently?" } %>
+
   <%= link_to new_budget_expense_path(@budget),
             role: "button",
             data: { intent: "primary", create_expense: true },

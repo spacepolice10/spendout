@@ -1,5 +1,5 @@
 class BudgetsController < ApplicationController
-  before_action :set_budget, only: :show
+  before_action :set_budget, only: %i[ show destroy ]
 
   def current
     if budget = Current.user.current_budget
@@ -39,6 +39,11 @@ class BudgetsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @budget.destroy!
+    redirect_to new_budget_path, notice: "Budget was reset."
   end
 
   private
