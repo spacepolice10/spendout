@@ -14,7 +14,7 @@
     <main>
       <dl>
         <dt>Amount</dt>
-        <dd><%= formatted_amount(@allocation.amount, @allocation.currency) %> <%= @allocation.currency_code %></dd>
+        <dd><%= formatted_amount(@allocation.amount, @allocation.currency_code) %> <%= @allocation.currency_code %></dd>
         <dt>Budget</dt>
         <dd><%= link_to @budget.name, budget_path(@budget) %></dd>
       </dl>

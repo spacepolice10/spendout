@@ -52,7 +52,7 @@
                     <strong><%= source.name %></strong>
 
                     <small>
-                      <%= formatted_amount(source.spendable_amount, source.currency) %>
+                      <%= formatted_amount(source.spendable_amount, source.currency_code) %>
                       available (<%= source.currency_code %>)
                     </small>
                   </span>
@@ -64,7 +64,8 @@
       <% end %>
 
       <%= tag.details data: {
-            optional_item: true
+            optional_item: true,
+            controller: "category-filter"
           }, open: expense.category_name_to_create.present? do %>
         <summary>
           <span>
@@ -72,14 +73,14 @@
             Spend on
           </span>
 
-          <small>
+          <small data-category-filter-target="summary">
             <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
           </small>
         </summary>
 
         <div data-optional-item-control>
-          <fieldset data-expense-allocations data-controller="category-filter">
-            <div data-create-category>
+          <fieldset data-expense-allocations>
+            <div data-create-category data-category-filter-target="filterForm">
               <%= tag.input type: "text",
                     id: "expense_category_filter",
                     value: expense.category_name_to_create,
@@ -93,7 +94,7 @@
 
               <%= form.hidden_field :category_name_to_create,
                     data: {
-                      category_filter_target: "createdTextform"
+                      category_filter_target: "pendingNameTextform"
                     } %>
 
               <div>
@@ -101,8 +102,8 @@
                     hidden: true,
                     data: {
                       size: "lg",
-                      category_filter_target: "createdButton",
-                      action: "category-filter#selectCreatedCategory"
+                      category_filter_target: "addButton",
+                      action: "category-filter#createPendingCategory"
                     } %>
 
                 <%= tag.button "Cleanup", type: "button",
@@ -116,7 +117,7 @@
               </div>
             </div>
 
-            <div>
+            <div data-category-filter-target="options">
               <% active_allocations.each do |allocation| %>
                 <%= form.label :allocation_id, value: allocation.id,
                       style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
@@ -136,6 +137,24 @@
                 <% end %>
               <% end %>
             </div>
+
+            <template data-category-filter-target="template">
+              <div data-category-filter-target="pendingCategory" data-pending-category>
+                <label style="--allocation-colour: var(--color-palette-<%= Colourable::DEFAULT_COLOUR %>);">
+                  <input type="radio" name="expense[allocation_id]" value="" checked>
+
+                  <%= icon_tag(Iconable::DEFAULT_ICON) %>
+
+                  <span data-category-filter-target="pendingCategoryName"></span>
+                </label>
+
+                <button type="button"
+                        aria-label="Delete new category"
+                        data-action="category-filter#removePendingCategory">
+                  Delete
+                </button>
+              </div>
+            </template>
           </fieldset>
         </div>
       <% end %>

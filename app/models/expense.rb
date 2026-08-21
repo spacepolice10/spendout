@@ -1,4 +1,6 @@
 class Expense < ApplicationRecord
+  include Currencyable
+
   belongs_to :budget, inverse_of: :expenses
   belongs_to :source, inverse_of: :expenses
   belongs_to :allocation, optional: true, inverse_of: :expenses, autosave: true
@@ -28,10 +30,6 @@ class Expense < ApplicationRecord
 
   def destroy_with_source_lock!
     source.with_lock { destroy! }
-  end
-
-  def currency
-    budget.currencies.find { |currency| currency.alphabetic_code == currency_code }
   end
 
   private

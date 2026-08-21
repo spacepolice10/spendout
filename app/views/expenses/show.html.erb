@@ -13,7 +13,7 @@
     <main>
       <dl>
         <dt>Amount</dt>
-        <dd><%= formatted_amount(@expense.amount, @expense.currency) %> <%= @expense.currency_code %></dd>
+        <dd><%= formatted_amount(@expense.amount, @expense.currency_code) %> <%= @expense.currency_code %></dd>
         <dt>Source</dt>
         <dd>
           <%= link_to @expense.source.name, source_path(@expense.source) %>

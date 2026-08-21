@@ -55,6 +55,12 @@
                     margin-inline: 0;
                 }
             }
+
+            & [data-pending-category] {
+                display: flex;
+                align-items: center;
+                gap: var(--space-h-half);
+            }
         }
 
         & fieldset[data-expense-sources] {

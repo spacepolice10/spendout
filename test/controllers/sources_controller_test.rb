@@ -55,7 +55,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[amount]'][value]", count: 0
     assert_select "input[name='source[amount]'][data-money-input-start-value]", count: 0
     assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
-    assert_select "select[name='source[currency_code]'] option[value='EUR']", count: 0
+    assert_select "select[name='source[currency_code]'] option[value='EUR']"
   end
 
   test "creates a source from catalog values" do

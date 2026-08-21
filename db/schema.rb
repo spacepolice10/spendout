@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_050000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_010000) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -22,8 +22,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_050000) do
     t.string "name", null: false
     t.boolean "planned", default: true, null: false
     t.datetime "updated_at", null: false
-    t.index ["budget_id", "currency_code"], name: "index_allocations_on_budget_id_and_currency_code"
     t.index ["budget_id"], name: "index_allocations_on_budget_id"
+    t.index ["budget_id"], name: "index_allocations_on_budget_id_and_currency_code"
     t.index ["deleted_at"], name: "index_allocations_on_deleted_at"
     t.check_constraint "amount >= 0", name: "allocations_amount_non_negative"
   end
@@ -46,20 +46,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_050000) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_budgets_on_user_id"
-  end
-
-  create_table "currencies", force: :cascade do |t|
-    t.string "alphabetic_code", limit: 3, null: false
-    t.integer "budget_id", null: false
-    t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.string "numeric_code", limit: 3, null: false
-    t.decimal "rate", precision: 24, scale: 12, null: false
-    t.string "symbol", null: false
-    t.datetime "updated_at", null: false
-    t.index ["budget_id", "alphabetic_code"], name: "index_currencies_on_budget_id_and_alphabetic_code", unique: true
-    t.index ["budget_id"], name: "index_currencies_on_budget_id"
-    t.check_constraint "rate > 0", name: "currencies_rate_positive"
   end
 
   create_table "expenses", force: :cascade do |t|
@@ -115,7 +101,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_050000) do
 
   add_foreign_key "allocations", "budgets"
   add_foreign_key "budgets", "users"
-  add_foreign_key "currencies", "budgets"
   add_foreign_key "expenses", "allocations"
   add_foreign_key "expenses", "budgets"
   add_foreign_key "expenses", "sources"

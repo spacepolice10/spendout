@@ -3,10 +3,10 @@ module ApplicationHelper
     Current.user
   end
 
-  def formatted_amount(amount, currency)
+  def formatted_amount(amount, currency_code)
     number_to_currency(
       amount,
-      unit: currency.symbol,
+      unit: Currency.find!(currency_code)[:symbol],
       strip_insignificant_zeros: true
     )
   end

@@ -1,5 +1,6 @@
 class Source < ApplicationRecord
   include Colourable, Iconable
+  include Currencyable
 
   belongs_to :budget, inverse_of: :sources
   has_many :expenses, inverse_of: :source
@@ -10,10 +11,6 @@ class Source < ApplicationRecord
   validate :currency_is_available_in_budget
   validate :base_source_is_not_deleted
   before_destroy :prevent_base_source_destruction, prepend: true, unless: -> { destroyed_by_association.present? }
-
-  def currency
-    budget.currencies.find { |currency| currency.alphabetic_code == currency_code }
-  end
 
   def deleted?
     deleted_at.present?
@@ -31,9 +28,9 @@ class Source < ApplicationRecord
 
   private
     def currency_is_available_in_budget
-      return if currency_code.blank? || budget.nil? || currency.present?
+      return if currency_code.blank? || Currency::CATALOG.key?(currency_code)
 
-      errors.add(:currency_code, "must be available in this budget")
+      errors.add(:currency_code, "is not supported")
     end
 
     def base_source_is_not_deleted

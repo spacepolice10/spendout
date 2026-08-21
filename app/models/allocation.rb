@@ -1,5 +1,6 @@
 class Allocation < ApplicationRecord
   include Colourable, Iconable
+  include Currencyable
 
   belongs_to :budget, inverse_of: :allocations
   has_many :expenses, inverse_of: :allocation
@@ -12,18 +13,14 @@ class Allocation < ApplicationRecord
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
   validate :currency_is_available_in_budget
 
-  def currency
-    budget.currencies.find { |currency| currency.alphabetic_code == currency_code }
-  end
-
   def deleted?
     deleted_at.present?
   end
 
   private
     def currency_is_available_in_budget
-      return if currency_code.blank? || budget.nil? || currency.present?
+      return if currency_code.blank? || Currency::CATALOG.key?(currency_code)
 
-      errors.add(:currency_code, "must be available in this budget")
+      errors.add(:currency_code, "is not supported")
     end
 end

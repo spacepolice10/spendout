@@ -1,9 +1,8 @@
 Rails.application.routes.draw do
-  root "budgets#index"
+  root "budgets#current"
 
-  resources :budgets, only: %i[ index new create show destroy ] do
+  resources :budgets, only: %i[ new create show ] do
     resources :allocations, only: %i[ index new create show ], shallow: true
-    resources :currencies, only: %i[ index new create edit update ], shallow: true
     resources :expenses, only: %i[ new create show destroy ], shallow: true
     resources :sources, only: %i[ index new create show ], shallow: true
   end

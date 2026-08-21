@@ -22,7 +22,7 @@
         <span data-expense-leader aria-hidden="true"></span>
 
         <span data-expense-amount>
-          <strong><%= formatted_amount(expense.amount, expense.currency) %></strong>
+          <strong><%= formatted_amount(expense.amount, expense.currency_code) %></strong>
           <small><%= expense.currency_code %></small>
         </span>
       </div>

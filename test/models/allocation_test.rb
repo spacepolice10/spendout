@@ -15,7 +15,8 @@ class AllocationTest < ActiveSupport::TestCase
     allocation = budgets(:active).allocations.build(name: "Savings", amount: 1, currency_code: "USD")
 
     assert allocation.valid?
-    assert_equal currencies(:active_usd), allocation.currency
+    assert_equal "$", allocation.currency_symbol
+    assert_equal "US Dollar", allocation.currency_name
     assert_equal "wallet", allocation.icon
     assert_equal "green", allocation.colour
     assert_includes Allocation.icon_options, [ "Wallet", "wallet" ]
@@ -23,11 +24,11 @@ class AllocationTest < ActiveSupport::TestCase
     assert_includes Allocation.colour_options, [ "Pink", "pink" ]
   end
 
-  test "rejects a currency that is not available in its budget" do
-    allocation = budgets(:active).allocations.build(name: "European trip", amount: 1, currency_code: "EUR")
+  test "rejects an unsupported currency" do
+    allocation = budgets(:active).allocations.build(name: "European trip", amount: 1, currency_code: "XXX")
 
     assert_not allocation.valid?
-    assert allocation.errors.added?(:currency_code, "must be available in this budget")
+    assert allocation.errors.added?(:currency_code, :inclusion, value: "XXX")
   end
 
   test "allows allocations to exceed total sources" do

@@ -16,14 +16,14 @@
     <main>
       <dl>
         <dt>Remaining</dt>
-        <dd><%= formatted_amount(@budget.amount_summary, @budget.base_currency) %> <%= @budget.base_currency.alphabetic_code %></dd>
+        <dd><%= formatted_amount(@budget.amount_summary, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
       </dl>
 
       <% if @budget.overallocated? %>
         <p role="status" data-testid="overallocation-warning">
           Planned allocations exceed available sources by
-          <%= formatted_amount(@budget.overallocated_by, @budget.base_currency) %>
-          <%= @budget.base_currency.alphabetic_code %>.
+          <%= formatted_amount(@budget.overallocated_by, @budget.base_currency_code) %>
+          <%= @budget.base_currency_code %>.
         </p>
       <% end %>
 
@@ -43,7 +43,7 @@
               </header>
 
               <main>
-                <strong><%= formatted_amount(allocation.amount, allocation.currency) %></strong>
+                <strong><%= formatted_amount(allocation.amount, allocation.currency_code) %></strong>
                 <%= allocation.currency_code %>
               </main>
             </article>

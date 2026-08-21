@@ -36,7 +36,7 @@
 
           <dd>
             <h2>
-              <%= formatted_amount(todays_remainder, @budget.base_currency) %> <%= @budget.base_currency.alphabetic_code %>
+              <%= formatted_amount(todays_remainder, @budget.base_currency_code) %> <%= @budget.base_currency_code %>
             </h2>
           </dd>
         </dl>
@@ -56,11 +56,6 @@
         <span>Plan</span>
       <% end %>
 
-      <%= link_to budget_currencies_path(@budget), role: "button", class: "currency-button",
-            data: { appearance: "keycap", colour: "yellow" } do %>
-        <%= icon_tag("coin") %>
-        <span>Currencies</span>
-      <% end %>
     </footer>
 
     <br>
@@ -82,8 +77,8 @@
 
               <p>
                 <strong data-testid="expense-day-total">
-                  <%= formatted_amount(@expense_totals_by_date.fetch(date), @budget.base_currency) %>
-                  <%= @budget.base_currency.alphabetic_code %>
+                  <%= formatted_amount(@expense_totals_by_date.fetch(date), @budget.base_currency_code) %>
+                  <%= @budget.base_currency_code %>
                 </strong>
               </p>
             </header>

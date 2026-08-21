@@ -10,7 +10,8 @@ class ExpenseTest < ActiveSupport::TestCase
       assert expense.valid?
       assert_equal Date.current, expense.occurred_on
       assert_equal "USD", expense.currency_code
-      assert_equal currencies(:active_usd), expense.currency
+      assert_equal "$", expense.currency_symbol
+      assert_equal "US Dollar", expense.currency_name
     end
 
     travel_to Date.new(2026, 10, 1) do

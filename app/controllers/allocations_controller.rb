@@ -10,7 +10,7 @@ class AllocationsController < ApplicationController
   end
 
   def new
-    @allocation = @budget.allocations.new(currency_code: @budget.base_currency.alphabetic_code)
+    @allocation = @budget.allocations.new(currency_code: @budget.base_currency_code)
   end
 
   def create

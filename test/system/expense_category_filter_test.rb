@@ -38,6 +38,16 @@ class ExpenseCategoryFilterTest < ApplicationSystemTestCase
     click_button "Add new"
 
     assert_equal "Coffee", find("input[name='expense[category_name_to_create]']", visible: :all).value
+    assert_selector "[data-category-filter-target='pendingCategory']", text: "Coffee"
+    assert_selector "input[type='radio'][name='expense[allocation_id]'][value='']:checked", visible: :all
+    assert_no_selector "#expense_category_filter", visible: :visible
     assert_selector "details[open] fieldset[data-expense-allocations]"
+
+    click_button "Delete"
+
+    assert_equal "", find("input[name='expense[category_name_to_create]']", visible: :all).value
+    assert_no_selector "[data-category-filter-target='pendingCategory']"
+    assert_selector "#expense_category_filter", visible: :visible
+    assert_equal "", filter.value
   end
 end

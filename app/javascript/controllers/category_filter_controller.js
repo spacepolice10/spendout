@@ -1,15 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "filter", "option", "allocation", "createdTextform", "createdButton", "cleanupButton" ]
+  static targets = [
+    "filterForm", "filter", "options", "option", "allocation", "pendingNameTextform",
+    "addButton", "cleanupButton", "template", "pendingCategory", "pendingCategoryName", "summary"
+  ]
 
   connect() {
-    this.filter()
+    const pendingName = this.pendingNameTextformTarget.value.trim()
+
+    if (pendingName) {
+      this.renderPendingCategory(pendingName)
+    } else {
+      this.filter()
+    }
   }
 
-  filter(event) {
-    if (event) this.createdTextformTarget.value = ""
-
+  filter() {
     const requestString = this.filterTarget.value.trim().toLocaleLowerCase()
     let matches = 0
 
@@ -20,11 +27,11 @@ export default class extends Controller {
     })
 
     const nothingMatched = requestString !== "" && matches === 0
-    this.createdButtonTarget.hidden = !nothingMatched
+    this.addButtonTarget.hidden = !nothingMatched
     this.cleanupButtonTarget.hidden = !nothingMatched
   }
 
-  selectCreatedCategory() {
+  createPendingCategory() {
     const value = this.filterTarget.value.trim()
     if (!value) {
       this.filterTarget.focus()
@@ -32,20 +39,43 @@ export default class extends Controller {
     }
 
     this.allocationTargets.forEach(input => input.checked = false)
-    this.createdTextformTarget.value = value
-    this.filterTarget.value = value
+    this.pendingNameTextformTarget.value = value
+    this.renderPendingCategory(value)
   }
 
-  cleanup() {
+  removePendingCategory() {
+    this.pendingCategoryTarget.remove()
+    this.pendingNameTextformTarget.value = ""
     this.filterTarget.value = ""
-    this.createdTextformTarget.value = ""
+    this.filterFormTarget.hidden = false
+    this.summaryTarget.textContent = "No allocation"
     this.filter()
     this.filterTarget.focus()
   }
 
-  selectAllocation() {
-    this.createdTextformTarget.value = ""
+  cleanup() {
     this.filterTarget.value = ""
     this.filter()
+    this.filterTarget.focus()
+  }
+
+  selectAllocation(event) {
+    if (this.hasPendingCategoryTarget) this.pendingCategoryTarget.remove()
+
+    this.pendingNameTextformTarget.value = ""
+    this.filterTarget.value = ""
+    this.filterFormTarget.hidden = false
+    this.summaryTarget.textContent = event.currentTarget.closest("label").dataset.filterValue
+    this.filter()
+  }
+
+  renderPendingCategory(name) {
+    if (this.hasPendingCategoryTarget) this.pendingCategoryTarget.remove()
+
+    const category = this.templateTarget.content.cloneNode(true)
+    category.querySelector('[data-category-filter-target~="pendingCategoryName"]').textContent = name
+    this.optionsTarget.append(category)
+    this.filterFormTarget.hidden = true
+    this.summaryTarget.textContent = name
   }
 }

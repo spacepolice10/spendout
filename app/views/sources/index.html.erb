@@ -16,7 +16,7 @@
     <main>
       <dl>
         <dt>Source totals</dt>
-        <dd><%= formatted_amount(@budget.sources_amount_in_base, @budget.base_currency) %> <%= @budget.base_currency.alphabetic_code %></dd>
+        <dd><%= formatted_amount(@budget.sources_amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
       </dl>
       <% if @sources.any? %>
         <% @sources.each do |source| %>
@@ -34,8 +34,8 @@
               </header>
 
               <main>
-                <strong><%= formatted_amount(source.amount, source.currency) %></strong>
-                <%= source.currency.alphabetic_code %>
+                <strong><%= formatted_amount(source.amount, source.currency_code) %></strong>
+                <%= source.currency_code %>
               </main>
             </article>
           <% end %>

@@ -7,4 +7,8 @@ class User < ApplicationRecord
   validates :email_address, presence: true,
     format: { with: URI::MailTo::EMAIL_REGEXP },
     uniqueness: { case_sensitive: false }
+
+  def current_budget
+    budgets.where(period_to: Date.current..).order(created_at: :desc, id: :desc).first
+  end
 end

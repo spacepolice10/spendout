@@ -1,4 +1,4 @@
-class Currency < ApplicationRecord
+class Currency
   # A single issuing country or region for each consumer-facing currency.
   FLAG_COUNTRIES = {
     "AED" => "AE", "AFN" => "AF", "ALL" => "AL", "AMD" => "AM", "AOA" => "AO",
@@ -193,17 +193,6 @@ class Currency < ApplicationRecord
     [ code, data.merge(flag: flag).freeze ]
   end.freeze
 
-  belongs_to :budget, inverse_of: :currencies
-
-  validates :name, :numeric_code, :symbol, presence: true
-  validates :rate, numericality: { greater_than: 0 }
-  validates :alphabetic_code,
-    presence: true,
-    inclusion: { in: CATALOG.keys },
-    uniqueness: { scope: :budget_id }
-  validates :numeric_code, format: { with: /\A\d{3}\z/ }
-  validate :alphabetic_code_is_immutable, on: :update
-  validate :base_currency_rate_is_1
   class << self
     def catalog
       CATALOG
@@ -213,43 +202,12 @@ class Currency < ApplicationRecord
       CATALOG.map { |code, data| [ "#{data[:flag]} #{data[:name]} (#{code})", code ] }
     end
 
-    def find_in_catalog(code)
+    def find(code)
       CATALOG[code.to_s.strip.upcase]
     end
-  end
 
-  def alphabetic_code=(value)
-    code = value.to_s.strip.upcase.presence
-    super(code)
-
-    metadata = self.class.find_in_catalog(code)
-    self.name = metadata&.fetch(:name, nil)
-    self.numeric_code = metadata&.fetch(:numeric_code, nil)
-    self.symbol = metadata&.fetch(:symbol, nil)
-  end
-
-  def amount_in_base(amount)
-    BigDecimal(amount.to_s) * rate
-  end
-
-  def flag
-    self.class.find_in_catalog(alphabetic_code).fetch(:flag)
-  end
-
-  def option_name
-    "#{flag} #{name} (#{alphabetic_code.upcase})"
-  end
-
-  def base?
-    budget&.base_currency == self
-  end
-
-  private
-    def alphabetic_code_is_immutable
-      errors.add(:alphabetic_code, "cannot be changed") if will_save_change_to_alphabetic_code?
+    def find!(code)
+      find(code) || raise(ArgumentError, "Unsupported currency: #{code}")
     end
-
-    def base_currency_rate_is_1
-      errors.add(:rate, "must be 1 for the base currency") if base? && rate != 1
-    end
+  end
 end

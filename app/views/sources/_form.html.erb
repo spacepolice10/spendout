@@ -26,7 +26,7 @@
 
   <%= form.label :currency_code, "Currency" %>
   <%= form.select :currency_code,
-        budget.currencies.map { |currency| [ currency.option_name, currency.alphabetic_code ] },
+        Currency.options,
         { include_blank: "Choose a currency" }, required: true %>
 
   <%= render "shared/appearance_fields", form: form %>

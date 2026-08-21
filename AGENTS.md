@@ -1,15 +1,15 @@
-- A user can own many budgets.
-- A budget has sources, allocations, currencies, and expenses.
-- A source is a money container with a name, amount, icon, colour, and currency.
+- A user has at most one active budget; archived budgets remain as history. The root shows the active budget or the new-budget form when none is active.
+- A budget has sources, allocations, and expenses.
+- A source is a currency-specific money container with a name, amount, icon, colour, and currency.
 - An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; unplanned categories only classify expenses paid from that remainder.
-- An expense has an amount, currency, source, optional allocation, optional 200-character note, and user-editable occurrence date.
-- Expense forms provide default source and allocation selections.
+- An expense debits a source, may classify spending with an allocation, and preserves its amount, source currency, optional 200-character note, and user-editable occurrence date.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
 - The first source determines the budget's base currency and cannot be deleted independently.
-- Each additional currency has a manually entered rate expressed as base-currency units per one unit of that currency.
+- Currency metadata comes from the static ISO catalog. Do not create budget-owned currencies or fetch exchange rates externally.
 - Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
 - Replace the generated password authentication; do not extend it.
-- Store money with precision-safe types. Do not fetch exchange rates externally unless requested.
+- Store money with precision-safe types.
 - Follow Basecamp conventions and reference projects such as Fizzy and Writebook when writing Ruby or Hotwire code.
 - Reuse the variables and semantic rules in `base.css`. Agents must not create CSS classes; use existing classes only for business semantics, never for layouts or generic components.
+- In templates, prefer native HTML over Ruby-generated markup whenever HTML can express the structure clearly; reserve Ruby for dynamic values, conditions, iteration, and Rails helpers that provide meaningful behavior.
 - Update these rules when the project requires it, but keep this file concise and free of unnecessary detail.

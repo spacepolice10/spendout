@@ -1,26 +1,34 @@
 class BudgetsController < ApplicationController
-  before_action :set_budget, only: %i[ show destroy ]
+  before_action :set_budget, only: :show
 
-  def index
-    active, archived = Current.user.budgets.order(created_at: :desc).partition { |budget| !budget.archived? }
-    @budgets = active + archived
+  def current
+    if budget = Current.user.current_budget
+      redirect_to budget
+    else
+      redirect_to new_budget_path
+    end
   end
 
   def show
+    if @budget.archived?
+      redirect_to Current.user.current_budget || new_budget_path
+      return
+    end
+
     @expenses = @budget.expenses.includes(:source, :allocation)
       .order(occurred_on: :desc, created_at: :desc, id: :desc)
     @expenses_by_date = @expenses.group_by(&:occurred_on)
-
-    currencies_by_code = @budget.currencies.index_by(&:alphabetic_code)
     @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
-      expenses.sum(BigDecimal("0")) do |expense|
-        currencies_by_code.fetch(expense.currency_code).amount_in_base(expense.amount)
-      end
+      expenses.select { |expense| expense.currency_code == @budget.base_source.currency_code }.sum(&:amount)
     end
   end
 
   def new
-    @budget = Current.user.budgets.new(period_from: Date.current)
+    if budget = Current.user.current_budget
+      redirect_to budget
+    else
+      @budget = Current.user.budgets.new(period_from: Date.current)
+    end
   end
 
   def create
@@ -31,11 +39,6 @@ class BudgetsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def destroy
-    @budget.destroy!
-    redirect_to budgets_path, notice: "Budget was deleted."
   end
 
   private

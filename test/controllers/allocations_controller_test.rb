@@ -110,7 +110,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
         allocation: {
           name: "Wrong currency",
           amount: "1",
-          currency_code: "EUR",
+          currency_code: "XXX",
           icon: "wallet",
           colour: "green"
         }
@@ -118,7 +118,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "[role='alert']", text: /Currency code must be available in this budget/
+    assert_select "[role='alert']", text: /Currency code is not included in the list/
     assert_select "select[name='allocation[currency_code]'] option[value='USD']"
   end
 

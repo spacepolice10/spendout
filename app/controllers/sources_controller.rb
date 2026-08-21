@@ -10,7 +10,7 @@ class SourcesController < ApplicationController
   end
 
   def new
-    @source = @budget.sources.new(currency_code: @budget.base_currency.alphabetic_code)
+    @source = @budget.sources.new(currency_code: @budget.base_currency_code)
   end
 
   def create

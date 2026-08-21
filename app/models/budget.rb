@@ -5,7 +5,6 @@ class Budget < ApplicationRecord
   }.freeze
 
   belongs_to :user
-  has_many :currencies, dependent: :destroy, inverse_of: :budget
   has_many :expenses, dependent: :destroy, inverse_of: :budget
   has_many :allocations, dependent: :destroy, inverse_of: :budget
   has_many :sources, dependent: :destroy, inverse_of: :budget
@@ -20,13 +19,14 @@ class Budget < ApplicationRecord
   validates :duration, inclusion: { in: DURATIONS.keys }
   validates :currency_code, inclusion: { in: Currency::CATALOG.keys }, on: :create
   validates :source_amount, numericality: { greater_than_or_equal_to: 0 }, on: :create
-  validates :currencies, :sources, presence: true, on: :create
   validate :period_starts_before_ends
+  validate :single_current_budget_possible, on: :create
 
   def save_with_base_source
-    currencies.build(alphabetic_code: currency_code, rate: 1)
-    sources.build(amount: source_amount, currency_code: currency_code)
-    save
+    user.with_lock do
+      sources.build(amount: source_amount, currency_code: currency_code)
+      save
+    end
   end
 
   def name
@@ -45,8 +45,16 @@ class Budget < ApplicationRecord
     period_to.present? && period_to < Date.current
   end
 
-  def base_currency
-    currencies.find_by(alphabetic_code: base_source&.currency_code)
+  def base_currency_code
+    base_source&.currency_code
+  end
+
+  def base_currency_metadata
+    Currency.find!(base_currency_code)
+  end
+
+  def base_currency_symbol
+    base_currency_metadata[:symbol]
   end
 
   def base_source
@@ -123,11 +131,8 @@ class Budget < ApplicationRecord
 
   private
     def amount_in_base_of(records)
-      currencies_by_code = currencies.index_by(&:alphabetic_code)
-
-      records.group(:currency_code).sum(:amount).sum(BigDecimal("0")) do |currency_code, amount|
-        currencies_by_code.fetch(currency_code).amount_in_base(amount)
-      end
+      table = records.klass.table_name
+      records.where(table => { currency_code: base_source&.currency_code }).sum("#{table}.amount")
     end
 
     def calculate_period_to
@@ -139,6 +144,10 @@ class Budget < ApplicationRecord
       return unless period_from && period_to
 
       errors.add(:period_to, "must be on or after the start date") if period_to < period_from
+    end
+
+    def single_current_budget_possible
+      errors.add(:base, "An active budget already exists") if user&.current_budget
     end
 
     def format_date(date, include_year: false)
