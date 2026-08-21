@@ -19,7 +19,7 @@ class BudgetsController < ApplicationController
       .order(occurred_on: :desc, created_at: :desc, id: :desc)
     @expenses_by_date = @expenses.group_by(&:occurred_on)
     @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
-      expenses.select { |expense| expense.currency_code == @budget.base_source.currency_code }.sum(&:amount)
+      expenses.sum(&:amount_in_base)
     end
   end
 
@@ -35,7 +35,7 @@ class BudgetsController < ApplicationController
     @budget = Current.user.budgets.new(budget_params)
 
     if @budget.save_with_base_source
-      redirect_to @budget, notice: "Budget was created."
+      redirect_to allocations_path, notice: "Budget was created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -51,7 +51,8 @@ class BudgetsController < ApplicationController
         :period_from,
         :duration,
         :currency_code,
-        :source_amount
+        :source_amount,
+        :source_rate
       )
     end
 end

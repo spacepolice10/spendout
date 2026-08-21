@@ -26,8 +26,9 @@ export default class extends Controller {
       if (matchesString) matches += 1
     })
 
+    const noAllocations = this.optionTargets.length === 0
     const nothingMatched = requestString !== "" && matches === 0
-    this.addButtonTarget.hidden = !nothingMatched
+    this.addButtonTarget.hidden = !noAllocations && !nothingMatched
     this.cleanupButtonTarget.hidden = !nothingMatched
   }
 

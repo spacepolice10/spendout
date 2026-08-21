@@ -85,4 +85,8 @@
     [data-appearance="keycap"][data-colour="pink"] {
         --keycap-colour: var(--color-palette-pink);
     }
+    [data-appearance="keycap"][data-colour="black"] {
+        --keycap-colour: var(--color-palette-black);
+        color: white;
+    }
 }

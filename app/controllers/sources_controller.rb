@@ -10,7 +10,7 @@ class SourcesController < ApplicationController
   end
 
   def new
-    @source = @budget.sources.new(currency_code: @budget.base_currency_code)
+    @source = @budget.sources.new(currency_code: @budget.base_currency_code, rate: 1)
   end
 
   def create
@@ -34,6 +34,6 @@ class SourcesController < ApplicationController
     end
 
     def source_params
-      params.require(:source).permit(:name, :amount, :currency_code, :icon, :colour)
+      params.require(:source).permit(:name, :amount, :currency_code, :rate, :icon, :colour)
     end
 end

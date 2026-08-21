@@ -1,10 +1,9 @@
 <main data-size="lg">
-  <%= tag.p(flash[:notice]) if flash[:notice] %>
-
   <article data-elevation="1">
     <header>
       <nav>
         <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
+
         <div>
           <h1>Allocations</h1>
         </div>
@@ -16,7 +15,10 @@
     <main>
       <dl>
         <dt>Remaining</dt>
-        <dd><%= formatted_amount(@budget.amount_summary, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
+
+        <dd>
+          <%= formatted_amount(@budget.amount_summary, @budget.base_currency_code) %> <%= @budget.base_currency_code %>
+        </dd>
       </dl>
 
       <% if @budget.overallocated? %>
@@ -29,29 +31,36 @@
 
       <% if @allocations.any? %>
         <% @allocations.each do |allocation| %>
-          <%= link_to allocation_path(allocation), style: "color: inherit;" do %>
-            <article
-              data-elevation="1"
-              data-testid="allocation-card"
-              style="<%= colour_styles(allocation.colour) %>"
-            >
-              <header>
-                <nav>
-                  <%= icon_tag(allocation.icon) %>
-                  <h2><%= allocation.name %></h2>
-                </nav>
-              </header>
+          <article data-elevation="1" data-testid="allocation-card">
+            <header>
+              <nav>
+                <%= icon_tag(allocation.icon, style: colour_styles(allocation.colour)) %>
+                <h2><%= allocation.name %></h2>
+              </nav>
 
-              <main>
-                <strong><%= formatted_amount(allocation.amount, allocation.currency_code) %></strong>
-                <%= allocation.currency_code %>
-              </main>
-            </article>
-          <% end %>
+              <strong><%= formatted_amount(allocation.amount, allocation.currency_code) %></strong>
+            </header>
+
+            <main>
+              <% if allocation.rate != 1 %>
+                It was planned at a rate of <%= allocation.rate %>
+                <%= @budget.base_currency_code %> per
+                <%= allocation.currency_code %>.
+              <% end %>
+
+              <%= button_to allocation_path(allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
+                Remove allocation
+              <% end %>
+            </main>
+          </article>
         <% end %>
       <% else %>
-        <h2>No allocations yet</h2>
-        <p>Add an allocation to plan spending from your sources.</p>
+        <h2>Plan important spending first</h2>
+        <p>
+          Set money aside for essentials such as rent, utilities, bills, and
+          emergencies. This shows how much you can spend freely without putting
+          your plans at risk.
+        </p>
       <% end %>
     </main>
   </article>

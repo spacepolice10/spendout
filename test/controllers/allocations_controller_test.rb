@@ -37,6 +37,16 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='allocation-card']", count: 0
   end
 
+  test "index subtracts a different-currency plan from the base currency remainder" do
+    sign_in_as(@user)
+    @budget.allocations.create!(name: "European trip", amount: 50, currency_code: "EUR", rate: "1.2")
+
+    get budget_allocations_path(@budget)
+
+    assert_response :success
+    assert_select "dd", text: /1,140.25 USD/
+  end
+
   test "new defaults to base currency and renders shared appearance options" do
     sign_in_as(@user)
 
@@ -44,6 +54,11 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]"
+    assert_select "input[name='allocation[rate]'][value='1.0']"
+    assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
+    assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
+    assert_select "input[name='allocation[rate]'][data-currency-conversion-target='rate']"
+    assert_select "small[data-currency-conversion-target='result'][aria-live='polite']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
@@ -63,6 +78,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
           name: "Emergency savings",
           amount: "100.2500",
           currency_code: "USD",
+          rate: "1",
           source_id: sources(:other).id,
           icon: "pig-money",
           colour: "red"
@@ -75,6 +91,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Emergency savings", allocation.name
     assert_equal BigDecimal("100.2500"), allocation.amount
     assert_equal "USD", allocation.currency_code
+    assert_equal BigDecimal("1"), allocation.rate
     assert_equal "pig-money", allocation.icon
     assert_equal "red", allocation.colour
   end
@@ -143,6 +160,20 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "small", text: "Deleted"
+  end
+
+  test "removes an allocation without deleting it from historical expenses" do
+    sign_in_as(@user)
+    expense = expenses(:active)
+
+    assert_no_difference("Allocation.count") do
+      delete allocation_path(@allocation)
+    end
+
+    assert_redirected_to budget_allocations_path(@budget)
+    assert_equal "Allocation was removed.", flash[:notice]
+    assert_predicate @allocation.reload, :deleted?
+    assert_equal @allocation, expense.reload.allocation
   end
 
   test "cannot access another user's budget or allocation" do

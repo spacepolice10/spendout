@@ -1,7 +1,8 @@
 class Budget < ApplicationRecord
   DURATIONS = {
     "14_days" => 14,
-    "30_days" => 30
+    "30_days" => 30,
+    "90_days" => 90
   }.freeze
 
   belongs_to :user
@@ -12,6 +13,7 @@ class Budget < ApplicationRecord
   attribute :duration, :string, default: "30_days"
   attribute :currency_code, :string
   attribute :source_amount, :decimal
+  attribute :source_rate, :decimal, default: 1
 
   before_validation :calculate_period_to, on: :create
 
@@ -19,12 +21,13 @@ class Budget < ApplicationRecord
   validates :duration, inclusion: { in: DURATIONS.keys }
   validates :currency_code, inclusion: { in: Currency::CATALOG.keys }, on: :create
   validates :source_amount, numericality: { greater_than_or_equal_to: 0 }, on: :create
+  validates :source_rate, numericality: { equal_to: 1 }, on: :create
   validate :period_starts_before_ends
   validate :single_current_budget_possible, on: :create
 
   def save_with_base_source
     user.with_lock do
-      sources.build(amount: source_amount, currency_code: currency_code)
+      sources.build(amount: source_amount, currency_code: currency_code, rate: source_rate)
       save
     end
   end
@@ -102,17 +105,17 @@ class Budget < ApplicationRecord
   def todays_remainder
     return unless period_from <= Date.current && Date.current <= period_to
 
-    planned_remainder = amount_summary - unallocated_expenses_amount_in_base
+    daily_target = amount_summary / period_days
+    planned_remainder = daily_target * days_elapsed - unallocated_expenses_amount_in_base
     actual_remainder = available_summary
 
-    [ planned_remainder, actual_remainder ].min / days_until_archived
+    [ planned_remainder, actual_remainder ].min
   end
 
   def todays_remainder_percentage
     remainder = todays_remainder
     return unless remainder
 
-    period_days = (period_to - period_from + 1).to_i
     daily_target = amount_summary / period_days
     return BigDecimal("0") unless daily_target.positive?
 
@@ -125,14 +128,27 @@ class Budget < ApplicationRecord
     (period_to - Date.current + 1).to_i
   end
 
+  def days_elapsed
+    return unless period_from && Date.current >= period_from
+
+    [ (Date.current - period_from + 1).to_i, period_days ].min
+  end
+
   def currency_code=(value)
     super(value.to_s.strip.upcase.presence)
   end
 
   private
+    def period_days
+      (period_to - period_from + 1).to_i
+    end
+
     def amount_in_base_of(records)
-      table = records.klass.table_name
-      records.where(table => { currency_code: base_source&.currency_code }).sum("#{table}.amount")
+      table = records.klass.arel_table
+
+      records.pluck(table[:amount], table[:rate]).sum(BigDecimal("0")) do |amount, rate|
+        amount * rate
+      end
     end
 
     def calculate_period_to

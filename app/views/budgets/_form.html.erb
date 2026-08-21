@@ -28,10 +28,10 @@
               } %>
 
       <%= form.label :currency_code, "Currency", hidden: true %>
-
       <%= form.select :currency_code, Currency.options,
             { include_blank: "Choose a currency" },
             required: true, aria: { label: "Choose your salary currency" } %>
+      <%= form.hidden_field :source_rate, value: 1 %>
     </div>
   </fieldset>
 
@@ -45,14 +45,22 @@
     </div>
   </fieldset>
 
-  <%#= tag.details do %>
-    <%#= tag.summary "Change start date" %>
+  <%= tag.details do %>
+    <summary>
+      <span>
+        <%= icon_tag("plus") %>
+        Date
+      </span>
+      <small>
+          Starts today by default
+      </small>
+    </summary>
 
-    <%#= tag.div do %>
-      <%#= form.label :period_from, "Start date" %>
-      <%#= form.date_field :period_from, required: true %>
-    <%# end %>
-  <%# end %>
+    <div>
+      <%= form.date_field :period_from, required: true %>
+    </div>
+  <% end %>
 
-  <%= form.submit "Create budget" %>
+  <br>
+  <%= form.button "Create budget", type: "submit", data: { intent: "primary" } %>
 <% end %>

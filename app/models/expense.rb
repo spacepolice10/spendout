@@ -10,7 +10,6 @@ class Expense < ApplicationRecord
   before_validation :set_default_occurred_on
   before_validation :inherit_currency_from_source
 
-  validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
   validates :amount, numericality: { greater_than: 0 }
   validates :note, length: { maximum: 200 }, allow_blank: true
   validate :occurred_during_budget
@@ -40,7 +39,8 @@ class Expense < ApplicationRecord
         name: category_name_to_create,
         amount: 0,
         planned: false,
-        currency_code: source&.currency_code
+        currency_code: source&.currency_code,
+        rate: source&.rate
       )
     end
 
@@ -52,6 +52,7 @@ class Expense < ApplicationRecord
 
     def inherit_currency_from_source
       self.currency_code = source&.currency_code
+      self.rate = source&.rate
     end
 
     def occurred_during_budget

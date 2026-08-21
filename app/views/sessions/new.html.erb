@@ -3,9 +3,6 @@
     <h1>Spendout</h1>
   </header>
 
-  <%= tag.p(flash[:alert], role: "alert") if flash[:alert] %>
-  <%= tag.p(flash[:notice]) if flash[:notice] %>
-
   <article data-elevation="1">
     <header>
       <h2>Sign in</h2>
@@ -17,7 +14,7 @@
       <%= form_with url: session_path do |form| %>
         <%= form.label :email_address, "Email address" %>
         <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
-        <%= form.button "Email me a code", type: "submit", data: { appearance: "keycap", colour: "yellow" } %>
+        <%= form.button "Email me a code", type: "submit", data: { intent: "primary" } %>
       <% end %>
     </main>
   </article>

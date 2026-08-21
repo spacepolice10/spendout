@@ -81,6 +81,17 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='radio'][name='expense[source_id]']", count: 2
   end
 
+  test "shows add new before typing when no active allocations are available" do
+    sign_in_as(@user)
+    @budget.allocations.update_all(deleted_at: Time.current)
+
+    get new_budget_expense_path(@budget)
+
+    assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option']", count: 0
+    assert_select "button[type='button']:not([hidden])[data-category-filter-target='addButton']", text: "Add new"
+    assert_select "button[type='button'][hidden][data-category-filter-target='cleanupButton']", text: "Cleanup"
+  end
+
   test "creates an allocated expense and inherits source currency" do
     sign_in_as(@user)
 

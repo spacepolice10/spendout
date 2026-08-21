@@ -1,0 +1,17 @@
+<%= form.label currency_attribute, "Currency" %>
+<%= form.select currency_attribute,
+      Currency.options,
+      { include_blank: "Choose a currency" }, required: true %>
+
+<%= form.label rate_attribute, "Rate to #{base_currency_code}" %>
+<%= form.number_field rate_attribute, min: "0.000000000001", step: "any", required: true,
+      value: form.object.public_send(rate_attribute)&.to_s("F"),
+      data: {
+        currency_conversion_target: "rate",
+        action: "input->currency-conversion#calculate"
+      },
+      aria: { description: "currency-rate-help" } %>
+<small data-currency-conversion-target="result" aria-live="polite" hidden></small>
+<small id="currency-rate-help">
+  How much one unit of this currency is worth in <%= base_currency_code %>.
+</small>

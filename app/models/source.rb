@@ -6,7 +6,6 @@ class Source < ApplicationRecord
   has_many :expenses, inverse_of: :source
 
   validates :name, presence: true
-  validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
   validate :currency_is_available_in_budget
   validate :base_source_is_not_deleted

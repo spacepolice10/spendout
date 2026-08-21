@@ -1,6 +1,15 @@
 module Currencyable
   extend ActiveSupport::Concern
 
+  included do
+    validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
+    validates :rate, numericality: { greater_than: 0 }
+  end
+
+  def amount_in_base
+    amount * rate
+  end
+
   def currency_metadata
     Currency.find!(currency_code)
   end

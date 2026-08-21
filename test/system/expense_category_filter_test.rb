@@ -50,4 +50,17 @@ class ExpenseCategoryFilterTest < ApplicationSystemTestCase
     assert_selector "#expense_category_filter", visible: :visible
     assert_equal "", filter.value
   end
+
+  test "offers to add a category before typing when the budget has no allocations" do
+    budgets(:active).allocations.update_all(deleted_at: Time.current)
+
+    visit new_budget_expense_path(budgets(:active))
+    find("details", text: "Spend on").find("summary").click
+
+    within("fieldset[data-expense-allocations]") do
+      assert_field "Find or add category", with: ""
+      assert_button "Add new"
+      assert_no_button "Cleanup"
+    end
+  end
 end

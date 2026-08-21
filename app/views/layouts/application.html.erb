@@ -28,6 +28,14 @@
   </head>
 
   <body>
+    <% if flash.any? %>
+      <aside aria-label="Notifications" data-toasts>
+        <% flash.each do |type, message| %>
+          <p role="<%= type.to_sym == :alert ? "alert" : "status" %>" data-type="<%= type %>"><%= message %></p>
+        <% end %>
+      </aside>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

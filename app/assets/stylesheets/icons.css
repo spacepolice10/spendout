@@ -4,9 +4,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2ch;
-      height: 2ch;
+      width: 4ch;
+      height: 4ch;
       box-sizing: border-box;
+      border-radius: var(--radius-4);
+      border: var(--border-subtle);
+      padding: var(--space-v-half);
       flex-shrink: 0;
     }
   
@@ -42,5 +45,6 @@
      --icon-plus: url(/icon-plus.svg);
      --icon-shopping-cart: url(/icon-shopping-cart.svg);
      --icon-wallet: url(/icon-wallet.svg);
+     --icon-circle-dot: url(/icon-circle-dot.svg);
     }
   }

@@ -1,4 +1,8 @@
-<%= form_with model: [ budget, allocation ], data: { allocation_form: true } do |form| %>
+<%= form_with model: [ budget, allocation ], data: {
+      allocation_form: true,
+      controller: "currency-conversion",
+      currency_conversion_base_currency_value: budget.base_currency_code
+    } do |form| %>
   <% if allocation.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
@@ -21,15 +25,17 @@
   <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true,
         data: {
           controller: "money-input",
-          money_input_start_value: allocation.amount&.to_s("F")
+          money_input_start_value: allocation.amount&.to_s("F"),
+          currency_conversion_target: "amount",
+          action: "input->currency-conversion#calculate"
         } %>
 
-  <%= form.label :currency_code, "Currency" %>
-  <%= form.select :currency_code,
-        Currency.options,
-        { include_blank: "Choose a currency" }, required: true %>
+  <%= render "shared/currency_fields", form: form,
+        currency_attribute: :currency_code, rate_attribute: :rate,
+        base_currency_code: budget.base_currency_code %>
 
   <%= render "shared/appearance_fields", form: form %>
 
-  <%= form.submit %>
+  <br>
+  <%= form.button "Save", type: "submit", data: { intent: "primary" } %>
 <% end %>

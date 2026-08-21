@@ -10,6 +10,7 @@ class ExpenseTest < ActiveSupport::TestCase
       assert expense.valid?
       assert_equal Date.current, expense.occurred_on
       assert_equal "USD", expense.currency_code
+      assert_equal sources(:active).rate, expense.rate
       assert_equal "$", expense.currency_symbol
       assert_equal "US Dollar", expense.currency_name
     end
@@ -20,6 +21,16 @@ class ExpenseTest < ActiveSupport::TestCase
       assert expense.valid?
       assert_equal budget.period_to, expense.occurred_on
     end
+  end
+
+  test "snapshots the source currency rate" do
+    source = budgets(:active).sources.create!(name: "Euros", amount: 100, currency_code: "EUR", rate: "1.2")
+    expense = budgets(:active).expenses.create!(source: source, amount: 10)
+
+    source.update!(rate: "1.3")
+
+    assert_equal BigDecimal("1.2"), expense.reload.rate
+    assert_equal BigDecimal("12"), expense.amount_in_base
   end
 
   test "requires a positive amount and an occurrence within the budget" do

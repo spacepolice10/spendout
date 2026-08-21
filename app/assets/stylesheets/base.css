@@ -130,6 +130,87 @@
         }
     }
 
+    form details {
+        min-inline-size: 0;
+
+        &>summary {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-h-half);
+            min-height: 2rem;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+
+            &>span {
+                display: inline-flex;
+                align-items: center;
+                gap: var(--space-h-half);
+                min-height: 2rem;
+                padding: var(--space-v-half) var(--space-h);
+                border: var(--form-input-border);
+                border-radius: var(--radius-full);
+                background: var(--color-4);
+            }
+
+            &>small {
+                color: var(--color-invert-3);
+                font-size: var(--font-size-xs);
+                font-weight: normal;
+            }
+        }
+
+        &>summary:focus-visible {
+            outline: var(--form-input-outline);
+        }
+
+        &>div {
+            display: grid;
+            grid-template-rows: 0fr;
+            inline-size: min(16rem, 100%);
+            opacity: 0;
+            visibility: hidden;
+            transition:
+                grid-template-rows 220ms ease,
+                opacity 100ms ease 80ms,
+                visibility 0s linear 220ms;
+
+            & input {
+                margin-top: 0;
+            }
+        }
+
+        &[open] {
+            inline-size: 100%;
+            padding: var(--space-v-half) var(--space-h-half);
+            border: var(--border-subtle);
+            border-radius: var(--radius-1);
+            background: var(--color-1);
+
+            &>summary {
+                display: none;
+            }
+
+            &>div {
+                grid-template-rows: 1fr;
+                inline-size: 100%;
+                opacity: 1;
+                visibility: visible;
+                transition:
+                    grid-template-rows 220ms ease,
+                    opacity 140ms ease 100ms,
+                    visibility 0s;
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        form details>div {
+            transition: none;
+        }
+    }
+
     article {
         border-radius: var(--radius-2);
 
@@ -324,7 +405,7 @@
                 &>div {
                     display: flex;
                     flex-wrap: wrap;
-                    gap: var(--form-space-h);
+                    gap: var(--space-h-half);
                 }
             }
 
@@ -359,7 +440,6 @@
             border: var(--form-input-border);
             border-radius: var(--form-input-radius);
             padding: var(--form-space-v) var(--form-space-h);
-            margin-top: var(--space-v-half);
 
             &:focus,
             &:focus-visible {

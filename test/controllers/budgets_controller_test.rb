@@ -39,6 +39,9 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "New budget"
+    assert_select "form details > summary > span", text: "Change start date"
+    assert_select "form details > summary > span > .icon-wrap"
+    assert_select "form details > div input[type='date'][name='budget[period_from]']"
   end
 
   test "an archived budget redirects to creation when no budget is active" do

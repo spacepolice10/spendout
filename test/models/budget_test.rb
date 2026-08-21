@@ -29,12 +29,39 @@ class BudgetTest < ActiveSupport::TestCase
     assert_includes budget.errors.full_messages, "An active budget already exists"
   end
 
-  test "base summaries do not combine unrelated currencies without rates" do
+  test "planned allocations in other currencies reduce the base currency remainder" do
     budget = budgets(:active)
-    budget.sources.create!(name: "Euro cash", amount: 100, currency_code: "EUR")
-    budget.allocations.create!(name: "Euro plan", amount: 50, currency_code: "EUR")
+    budget.sources.create!(name: "Euro cash", amount: 100, currency_code: "EUR", rate: "1.2")
+    budget.allocations.create!(name: "Euro plan", amount: 50, currency_code: "EUR", rate: "1.2")
 
-    assert_equal BigDecimal("1500.25"), budget.sources_amount_in_base
-    assert_equal BigDecimal("300"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1620.25"), budget.sources_amount_in_base
+    assert_equal BigDecimal("360"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1260.25"), budget.amount_summary
+  end
+
+  test "today's remainder rolls unused daily spending forward" do
+    budget = budgets(:active)
+    budget.expenses.delete_all
+    budget.allocations.delete_all
+    budget.sources.where.not(id: budget.base_source.id).delete_all
+    budget.base_source.update!(amount: 99_000)
+    budget.update_columns(period_from: Date.new(2026, 8, 1), period_to: Date.new(2026, 8, 30))
+
+    travel_to Date.new(2026, 8, 1) do
+      budget.expenses.create!(source: budget.base_source, amount: 1_500, occurred_on: Date.current)
+
+      assert_equal BigDecimal("1800"), budget.todays_remainder
+      assert_in_delta 54.55, budget.todays_remainder_percentage.to_f, 0.01
+    end
+
+    travel_to Date.new(2026, 8, 2) do
+      assert_equal BigDecimal("5100"), budget.todays_remainder
+      budget.expenses.create!(source: budget.base_source, amount: 10_000, occurred_on: Date.current)
+    end
+
+    travel_to Date.new(2026, 8, 3) do
+      assert_equal BigDecimal("-1600"), budget.todays_remainder
+      assert_equal BigDecimal("0"), budget.todays_remainder_percentage
+    end
   end
 end

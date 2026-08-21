@@ -92,6 +92,19 @@ class SourceTest < ActiveSupport::TestCase
     assert_equal "US Dollar", sources(:active).currency_name
   end
 
+  test "converts its amount to the budget base currency using a decimal rate" do
+    source = budgets(:active).sources.build(amount: "10.25", currency_code: "EUR", rate: "1.2")
+
+    assert_equal BigDecimal("12.3"), source.amount_in_base
+  end
+
+  test "requires a positive conversion rate" do
+    source = budgets(:active).sources.build(amount: 1, currency_code: "EUR", rate: 0)
+
+    assert_not source.valid?
+    assert source.errors.added?(:rate, :greater_than, value: BigDecimal("0"), count: 0)
+  end
+
   test "rejects an unsupported currency" do
     source = budgets(:active).sources.build(amount: 1, currency_code: "XXX")
 

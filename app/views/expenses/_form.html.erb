@@ -99,7 +99,7 @@
 
               <div>
                 <%= tag.button "Add new", type: "button",
-                    hidden: true,
+                    hidden: active_allocations.any?,
                     data: {
                       size: "lg",
                       category_filter_target: "addButton",

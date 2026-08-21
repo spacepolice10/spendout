@@ -1,16 +1,16 @@
 class AllocationsController < ApplicationController
   before_action :set_budget, only: %i[ index new create ]
-  before_action :set_allocation, only: :show
+  before_action :set_allocation, only: %i[ show destroy ]
 
   def index
-    @allocations = @budget.allocations.where(deleted_at: nil).order(:created_at, :id)
+    @allocations = @budget.allocations.where(deleted_at: nil, planned: true).order(:created_at, :id)
   end
 
   def show
   end
 
   def new
-    @allocation = @budget.allocations.new(currency_code: @budget.base_currency_code)
+    @allocation = @budget.allocations.new(currency_code: @budget.base_currency_code, rate: 1)
   end
 
   def create
@@ -22,9 +22,17 @@ class AllocationsController < ApplicationController
       else
         "Allocation was created."
       end
-      redirect_to @allocation, notice: notice
+      redirect_to budget_allocations_path(@budget), notice: notice
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @allocation.update(deleted_at: Time.current)
+      redirect_to budget_allocations_path(@budget), notice: "Allocation was removed."
+    else
+      redirect_to budget_allocations_path(@budget), alert: "Allocation was not removed."
     end
   end
 
@@ -39,6 +47,6 @@ class AllocationsController < ApplicationController
     end
 
     def allocation_params
-      params.require(:allocation).permit(:name, :amount, :currency_code, :icon, :colour)
+      params.require(:allocation).permit(:name, :amount, :currency_code, :rate, :icon, :colour)
     end
 end
