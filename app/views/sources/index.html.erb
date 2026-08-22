@@ -6,11 +6,6 @@
           <h1>Sources</h1>
         </div>
       </nav>
-
-      <%= link_to new_budget_source_path(@budget), role: "button", data: { intent: "secondary" } do %>
-        <%= icon_tag("plus") %>
-        <span>New source</span>
-      <% end %>
     </header>
 
     <main>
@@ -48,23 +43,34 @@
       <% else %>
         <article data-elevation="1">
           <header>
-            <h2>No sources yet</h2>
+            <h2>Add your wallets or cards</h2>
           </header>
+
           <main>
-            <p>Add a source to track money available to this budget. It might be your salary, a gift, a loan, etc.</p>
+            <p>
+              Add a source to track money available to this budget. It might be
+              your salary, a gift, a loan, etc.
+            </p>
           </main>
         </article>
       <% end %>
     </main>
 
     <footer>
-      <div data-layout="flex">
-        <%= link_to budget_path(@budget), role: "button", data: { intent: "secondary" } do %>
-          <%= icon_tag("wallet") %>
-          <span>Expenses</span>
-          <%= icon_tag("chevron-right") %>
-        <% end %>
-      </div>
+      <% if @sources.any? %>
+        <div data-layout="flex">
+          <%= link_to budget_path(@budget), role: "button", data: { intent: "secondary" } do %>
+            <%= icon_tag("wallet") %>
+            <span>Show expenses</span>
+            <%= icon_tag("chevron-right") %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= link_to new_budget_source_path(@budget), role: "button", data: { intent: "secondary" } do %>
+        <%= icon_tag("plus") %>
+        <span>Add source</span>
+      <% end %>
     </footer>
   </article>
 </main>

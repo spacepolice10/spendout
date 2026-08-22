@@ -3,14 +3,9 @@
     <header>
       <nav>
         <div>
-          <h1>Allocations</h1>
+          <h1>Categories</h1>
         </div>
       </nav>
-
-      <%= link_to new_budget_allocation_path(@budget), role: "button", data: { intent: "secondary" } do %>
-        <%= icon_tag("plus") %>
-        <span>New allocation</span>
-      <% end %>
     </header>
 
     <main>
@@ -64,8 +59,8 @@
           <main>
             <p>
               Set money aside for essentials such as rent, utilities, bills, and
-              emergencies. This will help to spend freely without
-              putting your plans at risk.
+              emergencies. This will help to spend freely without putting your
+              plans at risk.
             </p>
           </main>
         </article>
@@ -76,8 +71,13 @@
       <div data-layout="flex">
         <%= link_to budget_path(@budget), role: "button", data: { intent: "secondary" } do %>
           <%= icon_tag("chevron-left") %>
-          <span>Expenses</span>
+          <span>Show expenses</span>
           <%= icon_tag("wallet") %>
+        <% end %>
+
+        <%= link_to new_budget_allocation_path(@budget), role: "button", data: { intent: "secondary" } do %>
+          <%= icon_tag("plus") %>
+          <span>New category</span>
         <% end %>
       </div>
     </footer>

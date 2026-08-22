@@ -35,7 +35,7 @@ class BudgetsController < ApplicationController
     @budget = Current.user.budgets.new(budget_params)
 
     if Current.user.with_lock { @budget.save }
-      redirect_to new_budget_source_path(@budget), notice: "Budget was created. Add your first source."
+      redirect_to budget_sources_path(@budget), notice: "Budget was created. Add your first source."
     else
       render :new, status: :unprocessable_entity
     end

@@ -47,13 +47,13 @@
       <%= link_to budget_sources_path(@budget), role: "button", class: "source-button",
             data: { intent: "secondary" } do %>
         <%= icon_tag("wallet") %>
-        <span>Money</span>
+        <span>My money</span>
       <% end %>
 
       <%= link_to budget_allocations_path(@budget), role: "button", class: "allocation-button",
             data: { intent: "secondary" } do %>
         <%= icon_tag("pig-money") %>
-        <span>Plan</span>
+        <span>Planned categories</span>
       <% end %>
 
     </footer>

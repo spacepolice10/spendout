@@ -7,17 +7,16 @@
         text-align: center;
 
         & h1 {
-            --session-logo-color: light-dark(
-                oklch(0.68 0.19 248),
-                oklch(0.82 0.14 240)
-            );
 
-            color: var(--session-logo-color);
-            font-family: "Bradley Hand", "Comic Sans MS", cursive;
+
+            color: var(--color-accent);
+            /* font-family: "Bradley Hand", "Comic Sans MS", cursive; */
             font-size: var(--font-size-2xl);
-            font-style: italic;
+            /* font-style: italic; */
             letter-spacing: 0.04em;
-            rotate: -2deg;
+            /* rotate: -2deg; */
+            text-transform: uppercase;
+            font-family: var(--font-family-sans);
         }
     }
 }
