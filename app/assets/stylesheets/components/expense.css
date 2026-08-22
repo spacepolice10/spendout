@@ -4,13 +4,6 @@
         min-inline-size: 0;
         padding-bottom: calc(2.5rem + var(--space-v-4));
 
-        & input[data-controller~="money-input"] {
-            height: 5rem;
-            font-size: var(--font-size-2xl);
-            font-weight: var(--font-weight-bold);
-            text-align: center;
-        }
-
         & input[type="date"] {
             display: block;
             inline-size: 100%;

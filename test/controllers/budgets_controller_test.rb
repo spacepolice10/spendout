@@ -69,8 +69,10 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "New budget"
-    assert_select "form details > summary > span", text: "Change start date"
-    assert_select "form details > summary > span > .icon-wrap"
+    assert_select "select[name='budget[base_currency_code]']"
+    assert_select "input[name='budget[source_amount]']", count: 0
+    assert_select "input[name='budget[source_rate]']", count: 0
+    assert_select "form details > summary > span", text: "Date"
     assert_select "form details > div input[type='date'][name='budget[period_from]']"
   end
 
@@ -82,19 +84,20 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_budget_path
   end
 
-  test "creating a budget redirects directly to it" do
+  test "creating a budget without a source redirects to source creation" do
     budgets(:active).update_columns(period_to: Date.yesterday)
 
     assert_difference("Budget.count", 1) do
-      post budgets_path, params: { budget: {
-        period_from: Date.current,
-        duration: "30_days",
-        currency_code: "USD",
-        source_amount: "100"
-      } }
+      assert_no_difference("Source.count") do
+        post budgets_path, params: { budget: {
+          period_from: Date.current,
+          duration: "30_days",
+          base_currency_code: "USD"
+        } }
+      end
     end
 
-    assert_redirected_to budget_path(Budget.order(:id).last)
+    assert_redirected_to new_budget_source_path(Budget.order(:id).last)
   end
 
   test "cannot create another active budget" do
@@ -102,8 +105,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
       post budgets_path, params: { budget: {
         period_from: Date.current,
         duration: "30_days",
-        currency_code: "USD",
-        source_amount: "100"
+        base_currency_code: "USD"
       } }
     end
 

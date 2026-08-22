@@ -24,13 +24,13 @@ class ExpenseTest < ActiveSupport::TestCase
   end
 
   test "snapshots the source currency rate" do
-    source = budgets(:active).sources.create!(name: "Euros", amount: 100, currency_code: "EUR", rate: "1.2")
+    source = budgets(:active).sources.create!(name: "Dong", amount: 266000, currency_code: "VND", rate: "26600")
     expense = budgets(:active).expenses.create!(source: source, amount: 10)
 
-    source.update!(rate: "1.3")
+    source.update!(rate: "27000")
 
-    assert_equal BigDecimal("1.2"), expense.reload.rate
-    assert_equal BigDecimal("12"), expense.amount_in_base
+    assert_equal BigDecimal("26600"), expense.reload.rate
+    assert_equal BigDecimal("10") / BigDecimal("26600"), expense.amount_in_base
   end
 
   test "requires a positive amount and an occurrence within the budget" do

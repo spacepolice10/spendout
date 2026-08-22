@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "filterForm", "filter", "options", "option", "allocation", "pendingNameTextform",
-    "addButton", "cleanupButton", "template", "pendingCategory", "pendingCategoryName", "summary"
+    "createCategoryButton", "cleanupCategoryButton", "template", "pendingCategory", "pendingCategoryName", "summary"
   ]
 
   connect() {
@@ -26,10 +26,8 @@ export default class extends Controller {
       if (matchesString) matches += 1
     })
 
-    const noAllocations = this.optionTargets.length === 0
-    const nothingMatched = requestString !== "" && matches === 0
-    this.addButtonTarget.hidden = !noAllocations && !nothingMatched
-    this.cleanupButtonTarget.hidden = !nothingMatched
+    this.createCategoryButtonTarget.hidden = !requestString
+    this.cleanupCategoryButtonTarget.hidden = !requestString
   }
 
   createPendingCategory() {
@@ -41,6 +39,8 @@ export default class extends Controller {
 
     this.allocationTargets.forEach(input => input.checked = false)
     this.pendingNameTextformTarget.value = value
+    this.cleanupCategoryButtonTarget.hidden = true
+    this.createCategoryButtonTarget.hidden = true
     this.renderPendingCategory(value)
   }
 

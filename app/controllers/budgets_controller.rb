@@ -34,8 +34,8 @@ class BudgetsController < ApplicationController
   def create
     @budget = Current.user.budgets.new(budget_params)
 
-    if @budget.save_with_base_source
-      redirect_to budget_allocations_path(@budget), notice: "Budget was created."
+    if Current.user.with_lock { @budget.save }
+      redirect_to new_budget_source_path(@budget), notice: "Budget was created. Add your first source."
     else
       render :new, status: :unprocessable_entity
     end
@@ -55,9 +55,7 @@ class BudgetsController < ApplicationController
       params.require(:budget).permit(
         :period_from,
         :duration,
-        :currency_code,
-        :source_amount,
-        :source_rate
+        :base_currency_code
       )
     end
 end

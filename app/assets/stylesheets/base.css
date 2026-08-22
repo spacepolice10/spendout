@@ -31,7 +31,6 @@
         margin-inline: auto;
 
         &>header {
-            margin-inline: auto;
             width: 100%;
         }
 
@@ -40,10 +39,10 @@
             align-content: start;
             gap: var(--space-v-2);
             container: inline-size;
-            margin-inline: auto;
             width: 100%;
             height: 100%;
             padding: var(--space-v-2) var(--space-h);
+            margin-inline: auto;
 
             &[data-size="xs"] {
                 max-width: 376px;
@@ -89,6 +88,17 @@
         font-size: var(--font-size-xs);
     }
 
+    div {
+        &[data-layout="flex"] {
+            display: flex;
+            gap: var(--space-h-half);
+        }
+        &[data-layout="grid"] {
+            display: grid;
+            gap: var(--space-v);
+        }
+    }
+
     section {
 
         &[data-layout="grid"] {
@@ -118,46 +128,59 @@
     }
 
     details>summary {
-        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-h-half);
         padding-block: var(--space-v-half);
+        text-transform: uppercase;
 
-        &::marker {
-            content: "";
-        }
-
-        &::-webkit-details-marker {
-            display: none;
-        }
     }
 
     form details {
-        min-inline-size: 0;
-
+        width: 100%;
         &>summary {
             display: inline-flex;
             align-items: center;
             gap: var(--space-h-half);
             min-height: 2rem;
+            width: 100%;
             padding: 0;
             border: 0;
             background: transparent;
             cursor: pointer;
+            font-size: var(--font-size-base-read);
 
             &>span {
                 display: inline-flex;
                 align-items: center;
                 gap: var(--space-h-half);
                 min-height: 2rem;
-                padding: var(--space-v-half) var(--space-h);
-                border: var(--form-input-border);
-                border-radius: var(--radius-full);
-                background: var(--color-4);
+
+                &:before {
+                    content: "";
+                    display: block;
+                    width: 2ch;
+                    height: 2ch;
+                    background: currentColor;
+                    transition: transform 150ms ease;
+                    -webkit-mask-size: contain;
+                    mask-size: contain;
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    -webkit-mask-position: center;
+                    mask-position: center;
+                    --icon-mask: var(--icon-chevron-right);
+                    -webkit-mask-image: var(--icon-mask);
+                    mask-image: var(--icon-mask);
+                    flex-shrink: 0;
+                }
             }
 
             &>small {
-                color: var(--color-invert-3);
-                font-size: var(--font-size-xs);
+                color: var(--color-accent);
                 font-weight: normal;
+                font-size: var(--font-size-base-read);
+                padding-block: var(--space-v-half);
             }
         }
 
@@ -168,14 +191,13 @@
         &>div {
             display: grid;
             grid-template-rows: 0fr;
+            gap: var(--space-v-half);
             inline-size: min(16rem, 100%);
             opacity: 0;
-            visibility: hidden;
             transition:
                 grid-template-rows 220ms ease,
                 opacity 100ms ease 80ms,
                 visibility 0s linear 220ms;
-
             & input {
                 margin-top: 0;
             }
@@ -183,13 +205,19 @@
 
         &[open] {
             inline-size: 100%;
-            padding: var(--space-v-half) var(--space-h-half);
+            background: var(--color-2);
             border: var(--border-subtle);
-            border-radius: var(--radius-1);
-            background: var(--color-1);
+            border-radius: var(--radius-2);
+            padding: var(--space-v) var(--space-v);
+            animation: popout 220ms ease;
 
             &>summary {
-                display: none;
+                &>small {
+                    display: none;
+                }
+                & span:before {
+                    transform: rotate(90deg);
+                }
             }
 
             &>div {
@@ -281,6 +309,7 @@
         justify-content: center;
         width: fit-content;
         height: fit-content;
+        gap: var(--space-h-half);
         padding: var(--space-v) var(--space-h);
         color: var(--button-color);
         background: var(--button-background);
@@ -397,7 +426,6 @@
         min-width: 0;
 
         & fieldset {
-            margin-bottom: var(--space-v);
             &>div {
                 margin-top: var(--space-v-half);
             }
@@ -417,6 +445,12 @@
             }
         }
 
+        label {
+           &>div {
+            margin-top: var(--space-v-half);
+           } 
+        }
+
         & legend {
             padding-block: var(--space-v-half);
             font-weight: var(--form-label-font-weight);
@@ -427,10 +461,14 @@
         }
 
         & :is(input, textarea, select) {
+            background: transparent;
             font-size: var(--font-size-base-type);
-            &::placeholder {
-                color: var(--color-invert-3);
-            }
+            field-sizing: content;
+        }
+
+        & input::placeholder {
+            color: var(--color-invert-4);
+            opacity: var(--opacity-50);
         }
 
         & :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]), textarea, select) {
@@ -444,10 +482,6 @@
             &:focus,
             &:focus-visible {
                 outline: var(--form-input-outline);
-            }
-
-            &::placeholder {
-                color: var(--form-input-color);
             }
 
             &:disabled {
@@ -471,14 +505,13 @@
             display: flex;
             position: relative;
             align-items: center;
-            border: var(--form-input-border);
-            border-radius: var(--form-input-radius);
             padding: var(--form-space-v) var(--form-space-h);
+            gap: var(--space-h-half);
+            border: 1px solid transparent;
 
             &:has(>input[type="checkbox"]:checked, >input[type="radio"]:checked) {
-                background: var(--form-checked-background);
                 color: var(--form-checked-color);
-                outline: var(--form-input-outline);
+                border-color: var(--color-accent);
             }
 
             &:has(>input[type="checkbox"]:focus-visible, >input[type="radio"]:focus-visible) {
@@ -551,10 +584,7 @@
     }
 
     mark {
-        --mark-colour: var(--color-palette-yellow);
-
-        color: var(--color-invert-1);
-
+        z-index: 0;
         &[data-type="pill"] {
             display: inline-flex;
             align-items: center;
@@ -565,12 +595,16 @@
         }
 
         &[data-type="highlight"] {
-            padding-inline: 0.1em;
-            background: linear-gradient(
-                to top,
-                var(--mark-colour) 45%,
-                transparent 45%
-            );
+            position: relative;
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: var(--radius-1);
+                border: 1px solid var(--color-accent);
+                transform: skewX(-10deg);
+                z-index: -1;
+            }
         }
     }
 
@@ -598,11 +632,13 @@
 
     /* Focus — thin soft ring, offset outward; follows border-radius on controls */
     *:focus-visible {
+        position: relative;
         outline: 0.5px solid color-mix(in oklch,
                 var(--color-invert-1) 80%,
                 transparent);
         box-shadow: none;
         transition: none;
+        outline-color: var(--color-accent);
     }
 
     a {

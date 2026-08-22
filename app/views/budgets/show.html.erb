@@ -1,3 +1,5 @@
+<% content_for :title, "Budget" %>
+
 <main data-size="sm">
   <article
     class="budget"
@@ -10,7 +12,6 @@
         <h3>Hello, <%= current_user.email_address %></h3>
       </nav>
 
-      <%= button_to "Sign out", session_path(Current.session), method: :delete, data: { turbo_confirm: "Are you sure you want to sign out?", intent: "secondary" } %>
       <small><%= "Archived" if @budget.archived? %></small>
     </header>
 
@@ -44,13 +45,13 @@
 
     <footer>
       <%= link_to budget_sources_path(@budget), role: "button", class: "source-button",
-            data: { appearance: "keycap", colour: "green" } do %>
+            data: { intent: "secondary" } do %>
         <%= icon_tag("wallet") %>
         <span>Money</span>
       <% end %>
 
       <%= link_to budget_allocations_path(@budget), role: "button", class: "allocation-button",
-            data: { appearance: "keycap", colour: "pink" } do %>
+            data: { intent: "secondary" } do %>
         <%= icon_tag("pig-money") %>
         <span>Plan</span>
       <% end %>
@@ -96,7 +97,7 @@
 
   <%= link_to new_budget_expense_path(@budget),
             role: "button",
-            data: { intent: "primary", create_expense: true },
+            data: { intent: "primary", size: "lg", create_expense: true },
             aria: { label: "New expense" } do %>
     <%= icon_tag("plus") %>
     <span>New expense</span>

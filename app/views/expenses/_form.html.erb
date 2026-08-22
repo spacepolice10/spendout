@@ -14,27 +14,15 @@
     </section>
   <% end %>
 
-  <%= form.label :amount do %>
-    <legend>How much?</legend>
-
-    <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true, autofocus: true,
-        aria: { label: "Amount" },
-        data: {
-          controller: "money-input",
-          money_input_start_value: expense.amount&.to_s("F")
-        } %>
-  <% end %>
+  <%= render "shared/amount_fields", form: form, amount_attribute: :amount, open: true %>
 
   <div data-expense-options>
     <div>
-      <%= tag.details data: {
+      <%= tag.details name: "form-details", data: {
             optional_item: true
-          }, class: ("utilities--sr-only" if active_sources.one?) do %>
+          } do %>
         <summary>
-          <span>
-            <%= icon_tag("plus") %>
-            From
-          </span>
+          <span>From:</span>
           <small><%= expense.source&.name %></small>
         </summary>
 
@@ -46,7 +34,7 @@
                       style: "--source-colour: var(--color-palette-#{source.colour});" do %>
                   <%= form.radio_button :source_id, source.id, required: true %>
 
-                  <%= icon_tag(source.icon) %>
+                  <%= icon_tag(source.icon, style: "color: var(--color-palette-#{source.colour});") %>
 
                   <span>
                     <strong><%= source.name %></strong>
@@ -63,15 +51,12 @@
         </div>
       <% end %>
 
-      <%= tag.details data: {
+      <%= tag.details name: "form-details", data: {
             optional_item: true,
             controller: "category-filter"
           }, open: expense.category_name_to_create.present? do %>
         <summary>
-          <span>
-            <%= icon_tag("plus") %>
-            Spend on
-          </span>
+          <span> Category </span>
 
           <small data-category-filter-target="summary">
             <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
@@ -96,28 +81,28 @@
                     data: {
                       category_filter_target: "pendingNameTextform"
                     } %>
-
-              <div>
-                <%= tag.button "Add new", type: "button",
-                    hidden: active_allocations.any?,
-                    data: {
-                      size: "lg",
-                      category_filter_target: "addButton",
-                      action: "category-filter#createPendingCategory"
-                    } %>
-
-                <%= tag.button "Cleanup", type: "button",
-                    hidden: true,
-                    data: {
-                      size: "lg",
-                      intent: "secondary",
-                      category_filter_target: "cleanupButton",
-                      action: "category-filter#cleanup"
-                    } %>
-              </div>
             </div>
 
             <div data-category-filter-target="options">
+              <%= tag.button icon_tag("plus"), type: "button",
+              style: "margin-inline: 0;",
+                hidden: active_allocations.any?,
+                data: {
+                  size: "lg",
+                  category_filter_target: "createCategoryButton",
+                  action: "category-filter#createPendingCategory"
+                } %>
+
+              <%= tag.button icon_tag("trash-simple"), type: "button",
+                style: "margin-inline: 0;",
+                hidden: true,
+                data: {
+                  size: "lg",
+                  intent: "secondary",
+                  category_filter_target: "cleanupCategoryButton",
+                  action: "category-filter#cleanup"
+                } %>
+
               <% active_allocations.each do |allocation| %>
                 <%= form.label :allocation_id, value: allocation.id,
                       style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
@@ -139,18 +124,30 @@
             </div>
 
             <template data-category-filter-target="template">
-              <div data-category-filter-target="pendingCategory" data-pending-category>
-                <label style="--allocation-colour: var(--color-palette-<%= Colourable::DEFAULT_COLOUR %>);">
-                  <input type="radio" name="expense[allocation_id]" value="" checked>
+              <div
+                data-category-filter-target="pendingCategory"
+                data-pending-category
+              >
+                <label
+                  style="--allocation-colour: var(--color-palette-<%= Colourable::DEFAULT_COLOUR %>);"
+                >
+                  <input
+                    type="radio"
+                    name="expense[allocation_id]"
+                    value=""
+                    checked
+                  >
 
                   <%= icon_tag(Iconable::DEFAULT_ICON) %>
 
                   <span data-category-filter-target="pendingCategoryName"></span>
                 </label>
 
-                <button type="button"
-                        aria-label="Delete new category"
-                        data-action="category-filter#removePendingCategory">
+                <button
+                  type="button"
+                  aria-label="Delete new category"
+                  data-action="category-filter#removePendingCategory"
+                >
                   Delete
                 </button>
               </div>
@@ -159,14 +156,11 @@
         </div>
       <% end %>
 
-      <%= tag.details data: {
+      <%= tag.details name: "form-details", data: {
             optional_item: true
           }, open: expense.errors[:occurred_on].any? do %>
         <summary>
-          <span>
-            <%= icon_tag("plus") %>
-            Date
-          </span>
+          <span> Date </span>
           <small><%= expense.occurred_on&.to_fs(:long) %></small>
         </summary>
 
@@ -180,20 +174,16 @@
         </div>
       <% end %>
 
-      <%= tag.details data: {
+      <%= tag.details name: "form-details", data: {
             optional_item: true
           }, open: expense.note.present? do %>
         <summary>
-          <span>
-            <%= icon_tag("plus") %>
-            Note
-          </span>
+          <span> Note </span>
           <%= tag.small("Added", hidden: expense.note.blank?) %>
         </summary>
 
         <div data-optional-item-control>
           <%= form.label :note do %>
-
             <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional" %>
           <% end %>
         </div>

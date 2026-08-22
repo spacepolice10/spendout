@@ -18,17 +18,8 @@
     </section>
   <% end %>
 
-  <%= form.label :name %>
-  <%= form.text_field :name, required: true, autofocus: true %>
-
-  <%= form.label :amount %>
-  <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true,
-        data: {
-          controller: "money-input",
-          money_input_start_value: source.amount&.to_s("F"),
-          currency_conversion_target: "amount",
-          action: "input->currency-conversion#calculate"
-        } %>
+  <%= render "shared/name_fields", form: form, name_attribute: :name %>
+  <%= render "shared/amount_fields", form: form, amount_attribute: :amount %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,
@@ -36,5 +27,7 @@
 
   <%= render "shared/appearance_fields", form: form %>
 
-  <%= form.submit %>
+  <%= form.button type: "submit" do %>
+    <span> Save </span>
+  <% end %>
 <% end %>

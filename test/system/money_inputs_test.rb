@@ -101,6 +101,18 @@ class MoneyInputsTest < ApplicationSystemTestCase
     assert_operator sizes["current"], :>=, 16
   end
 
+  test "formats a currency quote and evaluates selected units in the base currency" do
+    visit new_budget_source_path(budgets(:active))
+
+    select "VND Dong, 🇻🇳", from: "source_currency_code"
+    input_value(find("input[name='source[amount]']"), "26600")
+    rate = find("input[name='source[rate]']")
+    input_value(rate, "26600")
+
+    assert_equal "26.600", rate.value
+    assert_text(/=\s*\$1(?:\.00)?/)
+  end
+
   private
     def input_value(field, value)
       page.execute_script(<<~JAVASCRIPT, field, value)

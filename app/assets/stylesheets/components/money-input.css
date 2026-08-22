@@ -1,6 +1,8 @@
 @layer components {
-    input[data-controller~="money-input"] {
-        font-size: var(--font-size-base-type);
-        font-variant-numeric: tabular-nums;
+    & input[data-controller~="money-input"] {
+        height: 5rem;
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        text-align: center;
     }
 }

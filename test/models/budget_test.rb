@@ -1,42 +1,54 @@
 require "test_helper"
 
 class BudgetTest < ActiveSupport::TestCase
-  test "first source determines base currency" do
+  test "stores its base currency independently of its first source" do
     budget = budgets(:active)
 
     assert_equal sources(:active), budget.base_source
     assert_equal "USD", budget.base_currency_code
     assert_equal "$", budget.base_currency_symbol
+
+    sources(:active).update_column(:currency_code, "EUR")
+    assert_equal "USD", budget.reload.base_currency_code
   end
 
-  test "creates a budget and base source atomically" do
+  test "creates a budget without creating a source" do
     budgets(:active).update_columns(period_to: Date.yesterday)
     budget = users(:one).budgets.new(period_from: Date.current, duration: "14_days",
-      currency_code: "EUR", source_amount: "100.2500")
+      base_currency_code: "EUR")
 
-    assert_difference([ "Budget.count", "Source.count" ], 1) do
-      assert budget.save_with_base_source
+    assert_difference("Budget.count", 1) do
+      assert_no_difference("Source.count") do
+        assert budget.save
+      end
     end
-    assert_equal "EUR", budget.base_source.currency_code
-    assert_equal BigDecimal("100.25"), budget.base_source.amount
+    assert_equal "EUR", budget.base_currency_code
+    assert_nil budget.base_source
+  end
+
+  test "base currency cannot change after creation" do
+    budget = budgets(:active)
+
+    assert_not budget.update(base_currency_code: "EUR")
+    assert_includes budget.errors[:base_currency_code], "cannot be changed"
   end
 
   test "allows only one current budget" do
     budget = users(:one).budgets.new(period_from: Date.current, duration: "14_days",
-      currency_code: "USD", source_amount: 1)
+      base_currency_code: "USD")
 
-    assert_not budget.save_with_base_source
+    assert_not budget.save
     assert_includes budget.errors.full_messages, "An active budget already exists"
   end
 
   test "planned allocations in other currencies reduce the base currency remainder" do
     budget = budgets(:active)
-    budget.sources.create!(name: "Euro cash", amount: 100, currency_code: "EUR", rate: "1.2")
-    budget.allocations.create!(name: "Euro plan", amount: 50, currency_code: "EUR", rate: "1.2")
+    budget.sources.create!(name: "Euro cash", amount: 100, currency_code: "EUR", rate: "0.8")
+    budget.allocations.create!(name: "Euro plan", amount: 50, currency_code: "EUR", rate: "0.8")
 
-    assert_equal BigDecimal("1620.25"), budget.sources_amount_in_base
-    assert_equal BigDecimal("360"), budget.allocations_amount_in_base
-    assert_equal BigDecimal("1260.25"), budget.amount_summary
+    assert_equal BigDecimal("1625.25"), budget.sources_amount_in_base
+    assert_equal BigDecimal("362.5"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1262.75"), budget.amount_summary
   end
 
   test "today's remainder rolls unused daily spending forward" do

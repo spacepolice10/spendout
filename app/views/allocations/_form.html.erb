@@ -6,8 +6,8 @@
   <% if allocation.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
-        <%= pluralize(allocation.errors.count, "error") %> prevented this allocation
-        from being saved:
+        <%= pluralize(allocation.errors.count, "error") %> prevented this
+        allocation from being saved:
       </h2>
 
       <ul>
@@ -18,17 +18,8 @@
     </section>
   <% end %>
 
-  <%= form.label :name %>
-  <%= form.text_field :name, required: true, autofocus: true %>
-
-  <%= form.label :amount %>
-  <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true,
-        data: {
-          controller: "money-input",
-          money_input_start_value: allocation.amount&.to_s("F"),
-          currency_conversion_target: "amount",
-          action: "input->currency-conversion#calculate"
-        } %>
+  <%= render "shared/name_fields", form: form, name_attribute: :name, open: true %>
+  <%= render "shared/amount_fields", form: form, amount_attribute: :amount %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,

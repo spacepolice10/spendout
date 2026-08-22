@@ -2,12 +2,14 @@ module Currencyable
   extend ActiveSupport::Concern
 
   included do
+    before_validation :use_unit_rate_for_base_currency
+
     validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
     validates :rate, numericality: { greater_than: 0 }
   end
 
   def amount_in_base
-    amount * rate
+    amount / rate
   end
 
   def currency_metadata
@@ -29,4 +31,9 @@ module Currencyable
   def currency_flag
     currency_metadata[:flag]
   end
+
+  private
+    def use_unit_rate_for_base_currency
+      self.rate = 1 if currency_code.present? && currency_code == budget&.base_currency_code
+    end
 end

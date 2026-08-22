@@ -1,17 +1,46 @@
-<%= form.label currency_attribute, "Currency" %>
-<%= form.select currency_attribute,
-      Currency.options,
-      { include_blank: "Choose a currency" }, required: true %>
+<details name="form-details" data-controller="form-details">
+  <summary data-form-details-target="summary">
+    <span> Currency: </span>
+    <small data-form-details-target="summaryContent"><%= base_currency_code %></small>
+  </summary>
 
-<%= form.label rate_attribute, "Rate to #{base_currency_code}" %>
-<%= form.number_field rate_attribute, min: "0.000000000001", step: "any", required: true,
-      value: form.object.public_send(rate_attribute)&.to_s("F"),
+  <div>
+    <small> What currency is used? </small>
+    <%= form.label currency_attribute, "Currency", hidden: true %>
+
+    <%= form.select currency_attribute,
+      Currency.options,
+      { include_blank: "Choose a currency" }, required: true,
       data: {
-        currency_conversion_target: "rate",
-        action: "input->currency-conversion#calculate"
-      },
-      aria: { description: "currency-rate-help" } %>
-<small data-currency-conversion-target="result" aria-live="polite" hidden></small>
-<small id="currency-rate-help">
-  How much one unit of this currency is worth in <%= base_currency_code %>.
-</small>
+        currency_conversion_target: "currency",
+        action: "change->currency-conversion#currencyChanged input->form-details#updateSummaryContent"
+      } %>
+
+    <%= tag.div data: { currency_conversion_target: "rateFields" },
+            hidden: form.object.public_send(currency_attribute).blank? ||
+              form.object.public_send(currency_attribute) == base_currency_code do %>
+      <small id="currency-rate-help">
+        How many units of the selected currency equal 1
+        <%= base_currency_code %>.
+      </small>
+
+      <div data-layout="flex">
+        <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
+        data: {
+          controller: "money-input",
+          money_input_start_value: form.object.public_send(rate_attribute)&.to_s("F"),
+          money_input_fraction_digits_value: 12,
+          currency_conversion_target: "rate",
+          action: "input->currency-conversion#calculate input->form-details#updateSummaryContent"
+        },
+        aria: { description: "currency-rate-help" } %>
+
+        <small
+          data-currency-conversion-target="result"
+          aria-live="polite"
+          hidden
+        ></small>
+      </div>
+    <% end %>
+  </div>
+</details>

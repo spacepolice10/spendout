@@ -1,14 +1,17 @@
 active:
   user: one
+  base_currency_code: USD
   period_from: 2026-08-18
   period_to: 2026-09-16
 
 archived:
   user: one
+  base_currency_code: EUR
   period_from: 2026-06-01
   period_to: 2026-06-14
 
 other:
   user: two
+  base_currency_code: VND
   period_from: 2026-08-01
   period_to: 2026-08-30

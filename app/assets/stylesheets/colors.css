@@ -1,17 +1,14 @@
 @layer variables {
   :root {
-    --color-palette-green: light-dark(oklch(0.776 0.175 143.8), oklch(0.38 0.10 143.8));
-    --color-palette-red: light-dark(oklch(0.660 0.211 33.0), oklch(0.38 0.12 33.0));
-    --color-palette-blue: light-dark(oklch(0.72 0.16 266.6), oklch(0.35 0.12 266.6));
-    --color-palette-yellow: light-dark(oklch(0.827 0.171 80.5), oklch(0.42 0.10 80.5));
-    --color-palette-violet: light-dark(oklch(0.606 0.219 292.7), oklch(0.38 0.12 292.7));
-    --color-palette-pink: light-dark(oklch(0.716 0.176 345.0), oklch(0.38 0.11 345.0));
+    --color-palette-green: light-dark(oklch(0.776 0.175 143.8), oklch(0.68 0.10 143.8));
+    --color-palette-red: light-dark(oklch(0.660 0.211 33.0), oklch(0.68 0.12 33.0));
+    --color-palette-blue: light-dark(oklch(0.72 0.16 266.6), oklch(0.82 0.12 266.6));
+    --color-palette-yellow: light-dark(oklch(0.827 0.171 80.5), oklch(0.82 0.10 80.5));
+    --color-palette-violet: light-dark(oklch(0.606 0.219 292.7), oklch(0.68 0.12 292.7));
+    --color-palette-pink: light-dark(oklch(0.716 0.176 345.0), oklch(0.68 0.11 345.0));
     --color-palette-black: light-dark(oklch(0.000 0.000 0.000), oklch(0.000 0.000 0.000));
     
-    --color-accent: light-dark(
-      var(--color-palette-blue),
-      color-mix(in oklch, var(--color-palette-blue) 45%, var(--color-invert-1))
-    );
+    --color-accent: light-dark(oklch(0.776 0.175 143.8), oklch(0.88 0.10 143.8));
     --color-accent-negative: light-dark(
       var(--color-palette-red),
       color-mix(in oklch, var(--color-palette-red) 45%, var(--color-invert-1))

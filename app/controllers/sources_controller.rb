@@ -1,6 +1,6 @@
 class SourcesController < ApplicationController
   before_action :set_budget, only: %i[ index new create ]
-  before_action :set_source, only: :show
+  before_action :set_source, only: %i[ show destroy ]
 
   def index
     @sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
@@ -10,16 +10,24 @@ class SourcesController < ApplicationController
   end
 
   def new
-    @source = @budget.sources.new(currency_code: @budget.base_currency_code, rate: 1)
+    @source = @budget.sources.new(currency_code: @budget.base_currency_code)
   end
 
   def create
     @source = @budget.sources.new(source_params)
 
     if @source.save
-      redirect_to @source, notice: "Source was created."
+      redirect_to budget_sources_path(@budget), notice: "Source was created."
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @source.update(deleted_at: Time.current)
+      redirect_to budget_sources_path(@budget), notice: "Source was deleted."
+    else
+      redirect_to budget_sources_path(@budget), alert: "Source was not deleted."
     end
   end
 

@@ -11,26 +11,15 @@ class Budget < ApplicationRecord
   has_many :sources, dependent: :destroy, inverse_of: :budget
 
   attribute :duration, :string, default: "30_days"
-  attribute :currency_code, :string
-  attribute :source_amount, :decimal
-  attribute :source_rate, :decimal, default: 1
 
   before_validation :calculate_period_to, on: :create
 
   validates :period_from, :period_to, presence: true
   validates :duration, inclusion: { in: DURATIONS.keys }
-  validates :currency_code, inclusion: { in: Currency::CATALOG.keys }, on: :create
-  validates :source_amount, numericality: { greater_than_or_equal_to: 0 }, on: :create
-  validates :source_rate, numericality: { equal_to: 1 }, on: :create
+  validates :base_currency_code, inclusion: { in: Currency::CATALOG.keys }
   validate :period_starts_before_ends
   validate :single_current_budget_possible, on: :create
-
-  def save_with_base_source
-    user.with_lock do
-      sources.build(amount: source_amount, currency_code: currency_code, rate: source_rate)
-      save
-    end
-  end
+  validate :base_currency_cannot_change, on: :update
 
   def name
     return unless period_from && period_to
@@ -48,8 +37,8 @@ class Budget < ApplicationRecord
     period_to.present? && period_to < Date.current
   end
 
-  def base_currency_code
-    base_source&.currency_code
+  def currency_code
+    base_currency_code
   end
 
   def base_currency_metadata
@@ -122,7 +111,7 @@ class Budget < ApplicationRecord
     [ [ remainder / daily_target * 100, BigDecimal("0") ].max, BigDecimal("100") ].min
   end
 
-  def days_until_archived
+  def days_before_archived
     return if archived?
 
     (period_to - Date.current + 1).to_i
@@ -135,6 +124,10 @@ class Budget < ApplicationRecord
   end
 
   def currency_code=(value)
+    self.base_currency_code = value
+  end
+
+  def base_currency_code=(value)
     super(value.to_s.strip.upcase.presence)
   end
 
@@ -147,7 +140,7 @@ class Budget < ApplicationRecord
       table = records.klass.arel_table
 
       records.pluck(table[:amount], table[:rate]).sum(BigDecimal("0")) do |amount, rate|
-        amount * rate
+        amount / rate
       end
     end
 
@@ -164,6 +157,10 @@ class Budget < ApplicationRecord
 
     def single_current_budget_possible
       errors.add(:base, "An active budget already exists") if user&.current_budget
+    end
+
+    def base_currency_cannot_change
+      errors.add(:base_currency_code, "cannot be changed") if will_save_change_to_base_currency_code?
     end
 
     def format_date(date, include_year: false)

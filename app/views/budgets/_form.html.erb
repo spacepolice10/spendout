@@ -14,53 +14,52 @@
     </section>
   <% end %>
 
-  <fieldset class="salary" data-layout="grid">
-    <legend>What's your salary?</legend>
-    <small>Or how much do you expect to earn/spend in this budget?</small>
+  <label for="base_currency_code">
+    <legend>What's your main currency?</legend>
+    <small>Other currencies will use this one as a reference to calculate against to.</small>
+
     <div>
-      <%= form.label :source_amount, "Amount", hidden: true %>
-
-      <%= form.text_field :source_amount, inputmode: "decimal", placeholder: "0", required: true, autofocus: true,
-              aria: { label: "Enter your salary amount" },
-              data: {
-                controller: "money-input",
-                money_input_start_value: budget.source_amount&.to_s("F")
-              } %>
-
-      <%= form.label :currency_code, "Currency", hidden: true %>
-      <%= form.select :currency_code, Currency.options,
+      <%= form.select :base_currency_code, Currency.options,
             { include_blank: "Choose a currency" },
-            required: true, aria: { label: "Choose your salary currency" } %>
-      <%= form.hidden_field :source_rate, value: 1 %>
+            required: true, autofocus: true, aria: { label: "Choose your main currency" } %>
     </div>
-  </fieldset>
+  </label>
+
+  <!-- <fieldset data-layout="flex"> -->
+    <!-- <legend>How often do you get paid?</legend> -->
+    <!-- <small>Or how often do you expect to replenish your budget?</small> -->
+
+    <!-- <div> -->
+      <%#= form.collection_radio_buttons :duration, Budget::DURATIONS.keys, :itself, ->(value) { value.tr("_", " ") } do |radio| %>
+        <%#= radio.label { radio.radio_button + radio.text } %>
+      <%# end %>
+    <!-- </div> -->
+  <!-- </fieldset> -->
 
   <fieldset data-layout="flex">
-    <legend>How often do you get paid?</legend>
-    <small>Or how often do you expect to replenish your budget?</small>
-    <div>
-      <%= form.collection_radio_buttons :duration, Budget::DURATIONS.keys, :itself, ->(value) { value.tr("_", " ") } do |radio| %>
-        <%= radio.label { radio.radio_button + radio.text } %>
-      <% end %>
+    <legend>When does your budget start and end?</legend>
+    <small>Mostly people select a period in 1 month between the paydays</small>
+
+    <div style="flex-wrap: nowrap;">
+      <%= form.date_field :period_from, value: Date.today.beginning_of_month, required: true %>
+      <%= form.date_field :period_to, value: Date.today.end_of_month, required: true %>
     </div>
   </fieldset>
 
-  <%= tag.details do %>
-    <summary>
-      <span>
-        <%= icon_tag("plus") %>
-        Date
-      </span>
-      <small>
-          Starts today by default
-      </small>
-    </summary>
+  <%#= tag.details do %>
+    <!-- <summary> -->
+      <!-- <span> Starts at </span> -->
+      <!-- <small> Begging of the month </small> -->
+    <!-- </summary> -->
 
-    <div>
-      <%= form.date_field :period_from, required: true %>
-    </div>
-  <% end %>
+    <!-- <div> -->
+      <%#= form.date_field :period_from, value: Date.today.beginning_of_month, required: true %>
+    <!-- </div> -->
+  <%# end %>
 
   <br>
-  <%= form.button "Create budget", type: "submit", data: { intent: "primary" } %>
+
+  <%= form.button type: "submit", data: { intent: "primary" } do %>
+    Next step <%= icon_tag("chevron-right") %>
+  <% end %>
 <% end %>

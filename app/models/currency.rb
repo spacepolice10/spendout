@@ -146,7 +146,7 @@ class Currency
   "QAR" => { name: "Qatari Rial", numeric_code: "634", symbol: "QAR" }.freeze,
   "RON" => { name: "Romanian Leu", numeric_code: "946", symbol: "RON" }.freeze,
   "RSD" => { name: "Serbian Dinar", numeric_code: "941", symbol: "RSD" }.freeze,
-  "RUB" => { name: "Russian Ruble", numeric_code: "643", symbol: "RUB" }.freeze,
+  "RUB" => { name: "Russian Ruble", numeric_code: "643", symbol: "₽" }.freeze,
   "RWF" => { name: "Rwanda Franc", numeric_code: "646", symbol: "RWF" }.freeze,
   "SAR" => { name: "Saudi Riyal", numeric_code: "682", symbol: "SAR" }.freeze,
   "SBD" => { name: "Solomon Islands Dollar", numeric_code: "090", symbol: "SBD" }.freeze,
@@ -199,7 +199,7 @@ class Currency
     end
 
     def options
-      CATALOG.map { |code, data| [ "#{data[:flag]} #{data[:name]} (#{code})", code ] }
+      CATALOG.map { |code, data| [ "#{code} #{data[:name]}, #{data[:flag]}", code ] }
     end
 
     def find(code)

@@ -57,6 +57,9 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='source[currency_code]'] option[value='EUR']"
     assert_select "input[name='source[rate]'][value='1.0']"
+    assert_select "input[name='source[rate]'][type='text'][inputmode='decimal'][data-controller='money-input']"
+    assert_select "input[name='source[rate]'][data-money-input-fraction-digits-value='12']"
+    assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='source[amount]'][data-currency-conversion-target='amount']"
     assert_select "input[name='source[rate]'][data-currency-conversion-target='rate']"
@@ -83,7 +86,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to source_path(source)
     assert_equal "Emergency fund", source.name
     assert_equal BigDecimal("125.5000"), source.amount
-    assert_equal BigDecimal("1.25"), source.rate
+    assert_equal BigDecimal("1"), source.rate
     assert_equal "building-bank", source.icon
     assert_equal "blue", source.colour
   end

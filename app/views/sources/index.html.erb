@@ -2,46 +2,69 @@
   <article data-elevation="1">
     <header>
       <nav>
-        <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
         <div>
           <h1>Sources</h1>
         </div>
       </nav>
 
-      <%= link_to icon_tag("plus"), new_budget_source_path(@budget), aria: { label: "New source" } %>
+      <%= link_to new_budget_source_path(@budget), role: "button", data: { intent: "secondary" } do %>
+        <%= icon_tag("plus") %>
+        <span>New source</span>
+      <% end %>
     </header>
 
     <main>
       <dl>
         <dt>Source totals</dt>
-        <dd><%= formatted_amount(@budget.sources_amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
+
+        <dd>
+          <%= formatted_amount(@budget.sources_amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %>
+        </dd>
       </dl>
+
       <% if @sources.any? %>
         <% @sources.each do |source| %>
-          <%= link_to source_path(source), style: "color: inherit;" do %>
-            <article
-              data-elevation="1"
-              data-testid="source-card"
-              style="<%= colour_styles(source.colour) %>"
-            >
-              <header>
-                <nav>
-                  <%= icon_tag(source.icon) %>
-                  <h2><%= source.name %></h2>
-                </nav>
-              </header>
+          <article
+            data-elevation="1"
+            data-testid="source-card"
+            style="<%= colour_styles(source.colour) %>"
+          >
+            <header>
+              <nav>
+                <%= icon_tag(source.icon) %>
+                <h2><%= source.name %></h2>
+              </nav>
 
-              <main>
-                <strong><%= formatted_amount(source.amount, source.currency_code) %></strong>
-                <%= source.currency_code %>
-              </main>
-            </article>
-          <% end %>
+              <strong><%= formatted_amount(source.amount, source.currency_code) %></strong>
+            </header>
+
+            <footer>
+              <%= button_to source_path(source), method: :delete, aria: { label: "Remove source" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this source?" } do %>
+                <%= icon_tag("trash-simple") %>
+              <% end %>
+            </footer>
+          </article>
         <% end %>
       <% else %>
-        <h2>No sources yet</h2>
-        <p>Add a source to track money available to this budget.</p>
+        <article data-elevation="1">
+          <header>
+            <h2>No sources yet</h2>
+          </header>
+          <main>
+            <p>Add a source to track money available to this budget. It might be your salary, a gift, a loan, etc.</p>
+          </main>
+        </article>
       <% end %>
     </main>
+
+    <footer>
+      <div data-layout="flex">
+        <%= link_to budget_path(@budget), role: "button", data: { intent: "secondary" } do %>
+          <%= icon_tag("wallet") %>
+          <span>Expenses</span>
+          <%= icon_tag("chevron-right") %>
+        <% end %>
+      </div>
+    </footer>
   </article>
 </main>

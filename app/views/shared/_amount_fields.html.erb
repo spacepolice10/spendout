@@ -1,0 +1,18 @@
+<details name="form-details" data-controller="form-details" open>
+  <summary data-form-details-target="summary">
+    <span> Amount: </span>
+    <small data-form-details-target="summaryContent"><%= form.object.amount %></small>
+  </summary>
+
+  <div>
+    <small> How much money is in this <%= form.object.class.name.downcase %>? </small>
+
+    <%= form.text_field :amount, inputmode: "decimal", placeholder: "0", required: true,
+      data: {
+        controller: "money-input",
+        money_input_start_value: form.object.amount&.to_s("F"),
+        currency_conversion_target: "amount",
+        action: "input->currency-conversion#calculate input->form-details#updateSummaryContent"
+      } %>
+  </div>
+</details>

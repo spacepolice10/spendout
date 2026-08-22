@@ -1,25 +1,35 @@
-<fieldset data-layout="flex">
-  <legend>Icon</legend>
+<details name="form-details" data-controller="form-details">
+  <summary data-form-details-target="summary">
+    <span> Icon: </span>
+    <small data-form-details-target="summaryContent"><%= form.object.icon %></small>
+  </summary>
 
-  <div>
-    <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
-      <%= radio.label title: radio.text do %>
-        <%= radio.radio_button aria: { label: radio.text } %>
-        <%= icon_tag(radio.value) %>
+  <fieldset data-layout="flex">
+    <div>
+      <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
+        <%= radio.label title: radio.text do %>
+          <%= radio.radio_button aria: { label: radio.text }, data: { action: "input->form-details#updateSummaryContent" } %>
+          <%= icon_tag(radio.value) %>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
-</fieldset>
+    </div>
+  </fieldset>
+</details>
 
-<fieldset data-layout="flex">
-  <legend>Colour</legend>
+<details name="form-details" data-controller="form-details">
+  <summary data-form-details-target="summary">
+    <span> Colour: </span>
+    <small data-form-details-target="summaryContent"><%= form.object.colour %></small>
+  </summary>
 
-  <div>
-    <%= form.collection_radio_buttons :colour, form.object.class.colour_options, :second, :first do |radio| %>
-      <%= radio.label style: "--form-checked-background: var(--color-palette-#{radio.value}); --form-checked-color: var(--color-invert-1);" do %>
-        <%= radio.radio_button %>
-        <%= icon_tag("circle-dot", style: "color: var(--color-palette-#{radio.value});") %>
+  <fieldset data-layout="flex">
+    <div>
+      <%= form.collection_radio_buttons :colour, form.object.class.colour_options, :second, :first do |radio| %>
+        <%= radio.label style: "--form-checked-background: var(--color-palette-#{radio.value}); --form-checked-color: var(--color-invert-1);" do %>
+          <%= radio.radio_button data: { action: "input->form-details#updateSummaryContent" } %>
+          <%= icon_tag("circle-dot", style: "color: var(--color-palette-#{radio.value});") %>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
-</fieldset>
+    </div>
+  </fieldset>
+</details>

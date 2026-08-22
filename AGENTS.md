@@ -4,8 +4,8 @@
 - An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; unplanned categories only classify expenses paid from that remainder.
 - An expense debits a source, may classify spending with an allocation, and preserves its amount, source currency, optional 200-character note, and user-editable occurrence date.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
-- The first source determines the budget's base currency and cannot be deleted independently.
-- Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-entered rate to the budget's base currency; do not create budget-owned currencies or fetch rates externally.
+- A budget snapshots its immutable base currency at creation. Sources are created in the next step; the first source defaults to that currency and cannot be deleted independently.
+- Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-entered quote expressed as selected-currency units per one base-currency unit; do not create budget-owned currencies or fetch rates externally.
 - Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
 - Replace the generated password authentication; do not extend it.
 - Store money with precision-safe types.

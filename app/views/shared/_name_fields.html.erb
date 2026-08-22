@@ -1,0 +1,11 @@
+<details name="form-details" data-controller="form-details" open>
+  <summary data-form-details-target="summary">
+    <span> Name: </span>
+    <small data-form-details-target="summaryContent"><%= form.object.name %></small>
+  </summary>
+
+  <div>
+    <small> What is the name of this <%= form.object.class.name.downcase %>? </small>
+    <%= form.text_field :name, required: true, data: { form_details_target: "input" } %>
+  </div>
+</details>

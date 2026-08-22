@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = { start: String }
+  static values = {
+    start: String,
+    fractionDigits: { type: Number, default: 4 }
+  }
 
   connect() {
     this.events = new AbortController()
@@ -66,7 +69,7 @@ export default class extends Controller {
     const integerValue = separatorIndex === -1 ? unsignedValue : unsignedValue.slice(0, separatorIndex)
     const fractionValue = separatorIndex === -1 ? null : unsignedValue.slice(separatorIndex + 1)
     const integerDigits = integerValue.replace(/\D/g, "")
-    const fractionDigits = fractionValue?.replace(/\D/g, "").slice(0, 4)
+    const fractionDigits = fractionValue?.replace(/\D/g, "").slice(0, this.fractionDigitsValue)
 
     return {
       empty: integerDigits === "" && !fractionDigits,

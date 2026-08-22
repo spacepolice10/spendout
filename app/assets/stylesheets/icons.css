@@ -4,12 +4,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 4ch;
-      height: 4ch;
+      width: 2ch;
+      height: 2ch;
       box-sizing: border-box;
       border-radius: var(--radius-4);
-      border: var(--border-subtle);
-      padding: var(--space-v-half);
       flex-shrink: 0;
     }
   
@@ -36,6 +34,7 @@
      --icon-car: url(/icon-car.svg);
      --icon-cash-banknote: url(/icon-cash-banknote.svg);
      --icon-chevron-left: url(/icon-chevron-left.svg);
+     --icon-chevron-right: url(/icon-chevron-right.svg);
      --icon-coin: url(/icon-coin.svg);
      --icon-credit-card: url(/icon-credit-card.svg);
      --icon-gift: url(/icon-gift.svg);
@@ -46,5 +45,6 @@
      --icon-shopping-cart: url(/icon-shopping-cart.svg);
      --icon-wallet: url(/icon-wallet.svg);
      --icon-circle-dot: url(/icon-circle-dot.svg);
+     --icon-trash-simple: url(/icon-trash-simple.svg);
     }
   }

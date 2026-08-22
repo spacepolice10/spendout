@@ -14,7 +14,7 @@ module ApplicationHelper
   def colour_styles(colour)
     return unless Colourable::CATALOG.key?(colour)
 
-    "background: var(--color-palette-#{colour}); color: var(--color-invert-1);"
+    "border-color: var(--color-palette-#{colour}); color: var(--color-palette-#{colour});"
   end
 
   def icon_colour_styles(colour)

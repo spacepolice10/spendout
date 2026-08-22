@@ -39,12 +39,12 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
   test "index subtracts a different-currency plan from the base currency remainder" do
     sign_in_as(@user)
-    @budget.allocations.create!(name: "European trip", amount: 50, currency_code: "EUR", rate: "1.2")
+    @budget.allocations.create!(name: "European trip", amount: 50, currency_code: "EUR", rate: "0.8")
 
     get budget_allocations_path(@budget)
 
     assert_response :success
-    assert_select "dd", text: /1,140.25 USD/
+    assert_select "dd", text: /1,137.75 USD/
   end
 
   test "new defaults to base currency and renders shared appearance options" do
@@ -54,7 +54,9 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]"
-    assert_select "input[name='allocation[rate]'][value='1.0']"
+    assert_select "input[name='allocation[rate]'][value='1']"
+    assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][data-controller='money-input']"
+    assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
     assert_select "input[name='allocation[rate]'][data-currency-conversion-target='rate']"

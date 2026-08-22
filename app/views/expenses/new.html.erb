@@ -17,7 +17,10 @@
       <% else %>
         <h2>Add a source first</h2>
         <p>An expense needs an active source.</p>
-        <%= link_to "New source", new_budget_source_path(@budget) %>
+        <%= link_to new_budget_source_path(@budget), role: "button", data: { intent: "secondary" } do %>
+          <%= icon_tag("plus") %>
+          <span>New source</span>
+        <% end %>
       <% end %>
     </main>
   </article>
