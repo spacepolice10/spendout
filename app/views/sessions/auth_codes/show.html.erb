@@ -13,12 +13,12 @@
       <%= form_with url: session_auth_code_path do |form| %>
         <%= form.label :code, "Sign-in code" %>
         <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code", inputmode: "text", maxlength: 7 %>
-        <%= form.button "Sign in", type: "submit" %>
+        <%= form.button "Sign in", type: "submit", data: { intent: "primary", size: "lg" } %>
       <% end %>
     </main>
 
     <footer>
-      <%= link_to "Use another email address", new_session_path %>
+      <%= link_to "Use another email address", new_session_path, style: "text-decoration: underline;" %>
     </footer>
   </article>
 </main>
