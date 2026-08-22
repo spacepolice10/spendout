@@ -308,7 +308,7 @@
         align-items: center;
         justify-content: center;
         width: fit-content;
-        height: fit-content;
+        height: auto;
         gap: var(--space-h-half);
         padding: var(--space-v) var(--space-h);
         color: var(--button-color);
@@ -330,7 +330,7 @@
         }
 
         &[data-size="lg"] {
-            height: var(--form-control-height);
+            height: var(--space-v-4);
         }
 
         &[data-size="xl"] {
