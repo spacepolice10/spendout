@@ -14,7 +14,6 @@ class Expense < ApplicationRecord
   validates :note, length: { maximum: 200 }, allow_blank: true
   validate :occurred_during_budget
   validate :source_belongs_to_budget
-  validate :source_is_active
   validate :allocation_belongs_to_budget
   validate :allocation_is_active
   validate :amount_fits_source
@@ -66,10 +65,6 @@ class Expense < ApplicationRecord
       return if source.nil? || budget.nil? || source.budget_id == budget.id
 
       errors.add(:source, "must belong to this budget")
-    end
-
-    def source_is_active
-      errors.add(:source, "must be active") if source&.deleted?
     end
 
     def allocation_belongs_to_budget

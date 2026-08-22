@@ -32,7 +32,7 @@
               <% active_sources.each do |source| %>
                 <%= form.label :source_id, value: source.id,
                       style: "--source-colour: var(--color-palette-#{source.colour});" do %>
-                  <%= form.radio_button :source_id, source.id, required: true %>
+                  <%= form.radio_button :source_id, source.id, required: true, checked: true %>
 
                   <%= icon_tag(source.icon, style: "color: var(--color-palette-#{source.colour});") %>
 
