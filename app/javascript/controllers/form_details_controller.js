@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "summary", "summaryContent" ]
+  static targets = ["summary", "summaryContent"]
 
   connect() {
     this.abortController = new AbortController();

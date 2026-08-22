@@ -49,22 +49,26 @@
         </div>
       <% end %>
 
-      <%= tag.details name: "form-details", data: {
+      <% if active_allocations.any? %>
+        <%= tag.details name: "form-details", data: {
             optional_item: true,
             controller: "category-filter"
           }, open: expense.category_name_to_create.present? do %>
-        <summary>
-          <span> Category: </span>
+          <summary>
+            <span> Category: </span>
 
-          <small data-category-filter-target="summary">
-            <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
-          </small>
-        </summary>
+            <small data-category-filter-target="summary">
+              <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
+            </small>
+          </summary>
 
-        <div data-optional-item-control>
-          <fieldset data-expense-allocations>
-            <div data-create-category data-category-filter-target="filterForm">
-              <%= tag.input type: "text",
+          <div data-optional-item-control>
+            <fieldset data-expense-allocations>
+              <div
+                data-create-category
+                data-category-filter-target="filterForm"
+              >
+                <%= tag.input type: "text",
                     id: "expense_category_filter",
                     value: expense.category_name_to_create,
                     placeholder: "Find or add category",
@@ -75,14 +79,14 @@
                       action: "input->category-filter#filter"
                     } %>
 
-              <%= form.hidden_field :category_name_to_create,
+                <%= form.hidden_field :category_name_to_create,
                     data: {
                       category_filter_target: "pendingNameTextform"
                     } %>
-            </div>
+              </div>
 
-            <div data-category-filter-target="options">
-              <%= tag.button icon_tag("plus"), type: "button",
+              <div data-category-filter-target="options">
+                <%= tag.button icon_tag("plus"), type: "button",
               style: "margin-inline: 0;",
                 hidden: active_allocations.any?,
                 data: {
@@ -91,7 +95,7 @@
                   action: "category-filter#createPendingCategory"
                 } %>
 
-              <%= tag.button icon_tag("trash-simple"), type: "button",
+                <%= tag.button icon_tag("trash-simple"), type: "button",
                 style: "margin-inline: 0;",
                 hidden: true,
                 data: {
@@ -101,57 +105,58 @@
                   action: "category-filter#cleanup"
                 } %>
 
-              <% active_allocations.each do |allocation| %>
-                <%= form.label :allocation_id, value: allocation.id,
+                <% active_allocations.each do |allocation| %>
+                  <%= form.label :allocation_id, value: allocation.id,
                       style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
                       data: {
                         category_filter_target: "option",
                         filter_value: allocation.name
                       } do %>
-                  <%= form.radio_button :allocation_id, allocation.id,
+                    <%= form.radio_button :allocation_id, allocation.id,
                         data: {
                           category_filter_target: "allocation",
                           action: "change->category-filter#selectAllocation"
                         } %>
 
-                  <%= icon_tag(allocation.icon) %>
+                    <%= icon_tag(allocation.icon) %>
 
-                  <span><%= allocation.name %></span>
+                    <span><%= allocation.name %></span>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </div>
-
-            <template data-category-filter-target="template">
-              <div
-                data-category-filter-target="pendingCategory"
-                data-pending-category
-              >
-                <label
-                  style="--allocation-colour: var(--color-palette-<%= Colourable::DEFAULT_COLOUR %>);"
-                >
-                  <input
-                    type="radio"
-                    name="expense[allocation_id]"
-                    value=""
-                    checked
-                  >
-
-                  <%= icon_tag(Iconable::DEFAULT_ICON) %>
-
-                  <span data-category-filter-target="pendingCategoryName"></span>
-                </label>
-
-                <button
-                  type="button"
-                  aria-label="Delete new category"
-                  data-action="category-filter#removePendingCategory"
-                >
-                  Delete
-                </button>
               </div>
-            </template>
-          </fieldset>
-        </div>
+
+              <template data-category-filter-target="template">
+                <div
+                  data-category-filter-target="pendingCategory"
+                  data-pending-category
+                >
+                  <label
+                    style="--allocation-colour: var(--color-palette-<%= Colourable::DEFAULT_COLOUR %>);"
+                  >
+                    <input
+                      type="radio"
+                      name="expense[allocation_id]"
+                      value=""
+                      checked
+                    >
+
+                    <%= icon_tag(Iconable::DEFAULT_ICON) %>
+
+                    <span data-category-filter-target="pendingCategoryName"></span>
+                  </label>
+
+                  <button
+                    type="button"
+                    aria-label="Delete new category"
+                    data-action="category-filter#removePendingCategory"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </template>
+            </fieldset>
+          </div>
+        <% end %>
       <% end %>
 
       <%= tag.details name: "form-details", data: {
@@ -190,10 +195,11 @@
   </div>
 
   <div data-layout="flex">
-    <%= link_to budget_path(budget), role: "button", data: { intent: "secondary" } do %>
+    <%= link_to budget_path(budget), role: "button", data: { intent: "secondary", size: "lg" } do %>
       <%= icon_tag("chevron-left") %>
       <span>Cancel</span>
     <% end %>
-    <%= form.submit "Create", data: { intent: "primary" } %>
+
+    <%= form.submit "Create", data: { intent: "primary", size: "lg" } %>
   </div>
 <% end %>
