@@ -34,8 +34,6 @@
                       style: "--source-colour: var(--color-palette-#{source.colour});" do %>
                   <%= form.radio_button :source_id, source.id, required: true, checked: true %>
 
-                  <%= icon_tag(source.icon, style: "color: var(--color-palette-#{source.colour});") %>
-
                   <span>
                     <strong><%= source.name %></strong>
 
@@ -56,7 +54,7 @@
             controller: "category-filter"
           }, open: expense.category_name_to_create.present? do %>
         <summary>
-          <span> Category </span>
+          <span> Category: </span>
 
           <small data-category-filter-target="summary">
             <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
@@ -160,7 +158,7 @@
             optional_item: true
           }, open: expense.errors[:occurred_on].any? do %>
         <summary>
-          <span> Date </span>
+          <span> Date: </span>
           <small><%= expense.occurred_on&.to_fs(:long) %></small>
         </summary>
 
@@ -178,7 +176,7 @@
             optional_item: true
           }, open: expense.note.present? do %>
         <summary>
-          <span> Note </span>
+          <span> Note: </span>
           <%= tag.small("Added", hidden: expense.note.blank?) %>
         </summary>
 
@@ -191,5 +189,11 @@
     </div>
   </div>
 
-  <%= form.submit "Create", data: { intent: "primary" } %>
+  <div data-layout="flex">
+    <%= link_to budget_path(budget), role: "button", data: { intent: "secondary" } do %>
+      <%= icon_tag("chevron-left") %>
+      <span>Cancel</span>
+    <% end %>
+    <%= form.submit "Create", data: { intent: "primary" } %>
+  </div>
 <% end %>

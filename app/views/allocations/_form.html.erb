@@ -27,6 +27,12 @@
 
   <%= render "shared/appearance_fields", form: form %>
 
-  <br>
-  <%= form.button "Save", type: "submit", data: { intent: "primary" } %>
+  <div data-layout="flex">
+    <%= link_to budget_allocations_path(budget), role: "button", data: { intent: "secondary" } do %>
+      <%= icon_tag("chevron-left") %>
+      <span>Cancel</span>
+    <% end %>
+
+    <%= form.button "Save", type: "submit", data: { intent: "primary" } %>
+  </div>
 <% end %>
