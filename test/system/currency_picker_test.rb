@@ -54,11 +54,11 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_selector "[data-currency-conversion-target='rateFields']:not([hidden])"
     assert_selector "[data-currency-conversion-target='rateCode']", text: "VND"
 
-    quote = find("input[id='source_rate_quote']")
-    send_input(quote, "26600")
+    rate = find("input[name='source[rate]']")
+    send_input(rate, "26600")
+    send_input(find("input[name='source[amount]']"), "26600")
 
-    assert_equal "1", find("input[id='source_rate_base']").value
-    assert_text(/=\s*\$1(?:\.00)?/)
+    assert_equal "1", find("[data-currency-conversion-target='converted']").value
   end
 
   private

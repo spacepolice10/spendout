@@ -101,41 +101,21 @@ class MoneyInputsTest < ApplicationSystemTestCase
     assert_operator sizes["current"], :>=, 16
   end
 
-  test "formats a currency quote and evaluates selected units in the base currency" do
-    visit new_budget_source_path(budgets(:active))
-
-    find("details", text: "Currency:").find("summary").click
-    find("input[data-currency-picker-target='filter']").set("vnd")
-    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
-    input_value(find("input[name='source[amount]']"), "26600")
-
-    quote = find("input[id='source_rate_quote']")
-    input_value(quote, "26600")
-
-    assert_equal "26.600", quote.value
-    assert_equal "1", find("input[id='source_rate_base']").value
-    assert_text(/=\s*\$1(?:\.00)?/)
-  end
-
-  test "recalculates the quote from a base edit and swaps values with the icon" do
+  test "formats a rate and converts the entered amount in the overlay" do
     visit new_budget_source_path(budgets(:active))
 
     find("details", text: "Currency:").find("summary").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
 
-    base = find("input[id='source_rate_base']")
-    quote = find("input[id='source_rate_quote']")
-    input_value(quote, "26000")
-    input_value(base, "2")
+    input_value(find("input[name='source[amount]']"), "52000")
 
-    assert_equal "52.000", quote.value
+    rate = find("input[name='source[rate]']")
+    input_value(rate, "26000")
 
-    click_button "Swap currencies"
-
-    assert_equal "52.000", base.value
-    assert_equal "2", quote.value
-    assert_equal "0.000038461538", find("input[name='source[rate]']", visible: :all).value
+    assert_equal "26.000", rate.value
+    assert_equal "2", find("[data-currency-conversion-target='converted']").value
+    assert_equal "VND", find("[data-currency-conversion-target='rateCode']").text
   end
 
   private

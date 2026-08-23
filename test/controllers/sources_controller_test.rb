@@ -51,8 +51,8 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[colour]'][type='radio']", count: Source.colour_options.size
     assert_select "input[name='source[colour]'][value='green'][checked]"
     assert_select "input[name='source[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
-    assert_select "input[name='source[amount]'][value]", count: 0
-    assert_select "input[name='source[amount]'][data-money-input-start-value]", count: 0
+    assert_select "input[name='source[amount]'][value='0']"
+    assert_select "input[name='source[amount]'][data-money-input-start-value='0']"
     assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='source[currency_code]'] option[value='EUR']"
     assert_select "select[name='source[currency_code]'][data-currency-picker-target='select']"
@@ -62,15 +62,13 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
-    assert_select "input[name='source[rate]'][type='hidden'][data-currency-conversion-target='rate']"
-    assert_select "input[id='source_rate_base'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateBase'][value='1']"
-    assert_select "input[id='source_rate_quote'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateQuote']"
-    assert_select "input[id='source_rate_base'][data-money-input-fraction-digits-value='12']"
-    assert_select "button[type='button'][aria-label='Swap currencies'][data-action~='currency-conversion#swapPair']"
+    assert_select "input[name='source[rate]'][type='text'][inputmode='decimal'][required][data-controller='money-input'][data-currency-conversion-target='rate']"
+    assert_select "input[name='source[rate]'][data-money-input-fraction-digits-value='12']"
+    assert_select "input[type='text'][readonly][data-currency-conversion-target='converted']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='source[amount]'][data-currency-conversion-target='amount']"
-    assert_select "small[data-currency-conversion-target='result'][aria-live='polite']"
+    assert_select "small[data-currency-conversion-target='rateCode']"
   end
 
   test "creates a source from catalog values" do

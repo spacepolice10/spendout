@@ -6,6 +6,7 @@
 
   <div>
     <small> What is the name of this <%= form.object.class.name.downcase %>? </small>
-    <%= form.text_field :name, required: true, data: { form_details_target: "input" } %>
+    <%= form.text_field :name, required: true, placeholder: local_assigns[:placeholder],
+      data: { form_details_target: "input" } %>
   </div>
 </details>

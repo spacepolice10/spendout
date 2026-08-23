@@ -18,8 +18,8 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, name_attribute: :name %>
-  <%= render "shared/amount_fields", form: form, amount_attribute: :amount %>
+  <%= render "shared/name_fields", form: form, name_attribute: :name, placeholder: "Credit card, cash, loan, etc." %>
+  <%= render "shared/amount_fields", form: form, amount_attribute: :amount, default_amount: true %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,

@@ -59,14 +59,13 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
-    assert_select "input[name='allocation[rate]'][type='hidden'][data-currency-conversion-target='rate']"
-    assert_select "input[id='allocation_rate_base'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateBase'][value='1']"
-    assert_select "input[id='allocation_rate_quote'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateQuote']"
-    assert_select "button[type='button'][aria-label='Swap currencies'][data-action~='currency-conversion#swapPair']"
+    assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][required][data-controller='money-input'][data-currency-conversion-target='rate']"
+    assert_select "input[name='allocation[rate]'][data-money-input-fraction-digits-value='12']"
+    assert_select "input[type='text'][readonly][data-currency-conversion-target='converted']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
-    assert_select "small[data-currency-conversion-target='result'][aria-live='polite']"
+    assert_select "small[data-currency-conversion-target='rateCode']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
