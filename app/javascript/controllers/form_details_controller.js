@@ -21,6 +21,8 @@ export default class extends Controller {
 
   updateSummaryContent(event) {
     const { detail } = event.params
+    window.__dbg = window.__dbg || []
+    window.__dbg.push([event.target.tagName, event.target.value, detail])
     this.summaryContentTarget.textContent = event.target.value
   }
 }

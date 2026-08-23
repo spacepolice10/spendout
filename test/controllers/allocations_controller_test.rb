@@ -56,8 +56,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='allocation[currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
-    assert_select "label[data-currency-picker-target='option'][data-default='true']:not([hidden])"
-    assert_select "[data-currency-picker-target='options'] > label:first-child[data-default='true']"
+    assert_select "[data-currency-picker-target='options'] > label:first-child input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
@@ -164,8 +163,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "label[data-currency-picker-target='option'][data-default='true']:not([hidden])", text: /VND Dong/
-    assert_select "[data-currency-picker-target='options'] > label:first-child[data-default='true']"
+    assert_select "[data-currency-picker-target='options'] > label:first-child input[value='VND'][checked]"
+    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size + 1
   end
 
   test "show displays allocation amount and budget without a source" do

@@ -21,14 +21,11 @@
   <div data-layout="grid" data-currency-picker-target="options">
     <% ordered_options.each do |label, code| %>
       <% popular = Currency::POPULAR_CODES.include?(code) %>
+      <% default = code == selected_code %>
       <label data-currency-picker-target="option" data-filter-value="<%= label %>"
-        <% if code == selected_code %>
-          data-default="true"
-          <%= "data-popular=\"true\"" if popular %>
-        <% else %>
-          <%= "data-popular=\"true\"" if popular %>
-          hidden
-        <% end %>>
+        <% if popular %> data-popular="true"<% end %>
+        <% if default %> data-default="true"<% end %>
+        <% unless popular || default %> hidden<% end %>>
         <input type="radio" value="<%= code %>"
           <%= "checked" if code == selected_code %>
           data-currency-picker-target="radio"

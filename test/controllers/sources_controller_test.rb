@@ -59,8 +59,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
     assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
-    assert_select "label[data-currency-picker-target='option'][data-default='true']:not([hidden])"
-    assert_select "[data-currency-picker-target='options'] > label:first-child[data-default='true']"
+    assert_select "[data-currency-picker-target='options'] > label:first-child input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"

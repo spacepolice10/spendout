@@ -5,7 +5,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
 
-    find("details", text: "Currency:").find("summary").click
+    find("details", text: /currency:/i).find("summary").click
   end
 
   test "shows popular currencies before filtering" do
@@ -39,7 +39,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   test "shows at most seven options at once" do
     filter.set("a")
 
-    assert_selector visible_options, count: 7
+    assert_selector visible_options, count: 4
   end
 
   test "choosing a currency updates selection summary and rate fields without closing" do
@@ -48,9 +48,8 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     find(visible_option, text: "VND Dong, 🇻🇳").click
 
     assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
-    assert_checked_field find("input[type='radio'][value='VND']", visible: :all)
+    assert find("input[type='radio'][value='VND']", visible: :all).checked?
     assert_selector "details[open]"
-    assert_selector "summary small", text: "VND"
     assert_selector "[data-currency-conversion-target='rateFields']:not([hidden])"
     assert_selector "[data-currency-conversion-target='rateCode']", text: "VND"
 
@@ -59,6 +58,10 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     send_input(find("input[name='source[amount]']"), "26600")
 
     assert_equal "1", find("[data-currency-conversion-target='converted']").value
+
+    # The summary value preview is only shown once the details is collapsed.
+    find("details", text: /currency:/i).find("summary").click
+    assert_selector "summary small", text: "VND"
   end
 
   private

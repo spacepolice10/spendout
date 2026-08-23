@@ -19,6 +19,7 @@
         min-height: var(--keycap-min-height, 2rem);
         gap: var(--space-h-half);
         margin-bottom: 0.5rem;
+        border: var(--border-subtle);
         border-radius: var(--radius-3);
         font-weight: var(--font-weight-bold);
         transition: background 150ms ease;

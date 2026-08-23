@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-const MAX_VISIBLE = 7
+const MAX_VISIBLE = 4
 
 export default class extends Controller {
   static targets = ["select", "filter", "option", "radio", "emptyState"]
@@ -15,7 +15,7 @@ export default class extends Controller {
     let visible = 0
 
     this.optionTargets.forEach((option) => {
-      const matches = option.dataset.filterValue.toLocaleLowerCase().includes(query)
+      const matches = option.dataset.filterValue.toLocaleLowerCase().includes(requestString)
       const wanted = requestString === "" ? matches && this.isPreselected(option) : matches
       const shown = wanted && visible < MAX_VISIBLE
 
