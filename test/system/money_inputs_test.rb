@@ -106,7 +106,7 @@ class MoneyInputsTest < ApplicationSystemTestCase
 
     find("details", text: "Currency:").find("summary").click
     find("input[data-currency-picker-target='filter']").set("vnd")
-    click_button "VND Dong, 🇻🇳"
+    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
     input_value(find("input[name='source[amount]']"), "26600")
     rate = find("input[name='source[rate]']")
     input_value(rate, "26600")

@@ -1,4 +1,5 @@
 <%# locals: (form:, attribute:, select_data: {}, filter_autofocus: false) %>
+<% selected_code = form.object.public_send(attribute) %>
 <div data-controller="currency-picker">
   <%= form.select attribute,
     Currency.options,
@@ -19,11 +20,15 @@
   <div data-layout="grid" data-currency-picker-target="options">
     <% Currency.options.each do |label, code| %>
       <% popular = Currency::POPULAR_CODES.include?(code) %>
-      <button type="button" value="<%= code %>" data-intent="secondary"
-        data-filter-value="<%= label %>"
-        data-currency-picker-target="option"
-        <% if popular %> data-popular="true"<% else %> hidden<% end %>
-        data-action="click->currency-picker#choose"><%= label %></button>
+      <label data-currency-picker-target="option" data-filter-value="<%= label %>"
+        <% if popular %> data-popular="true"<% else %> hidden<% end %>>
+        <input type="radio" value="<%= code %>"
+          <%= "checked" if selected_code == code %>
+          data-currency-picker-target="radio"
+          data-action="change->currency-picker#choose">
+
+        <span><%= label %></span>
+      </label>
     <% end %>
   </div>
 

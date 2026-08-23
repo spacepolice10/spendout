@@ -72,8 +72,9 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='budget[base_currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[data-currency-picker-target='filter'][autofocus]"
-    assert_select "button[value='USD'][data-currency-picker-target='option'][data-popular='true']:not([hidden])"
-    assert_select "button[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
+    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
+    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
+    assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='budget[source_amount]']", count: 0
     assert_select "input[name='budget[source_rate]']", count: 0

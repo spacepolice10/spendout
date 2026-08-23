@@ -1,7 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
+const MAX_VISIBLE = 7
+
 export default class extends Controller {
-  static targets = ["select", "filter", "option", "emptyState"]
+  static targets = ["select", "filter", "option", "radio", "emptyState"]
 
   connect() {
     this.markSelected()
@@ -14,7 +16,8 @@ export default class extends Controller {
 
     this.optionTargets.forEach((option) => {
       const matches = option.dataset.filterValue.toLocaleLowerCase().includes(query)
-      const shown = query === "" ? matches && this.isPopular(option) : matches
+      const wanted = query === "" ? this.isPopular(option) : matches
+      const shown = wanted && visible < MAX_VISIBLE
 
       option.hidden = !shown
       if (shown) visible += 1
@@ -24,9 +27,7 @@ export default class extends Controller {
   }
 
   choose(event) {
-    const button = event.currentTarget
-
-    this.selectTarget.value = button.value
+    this.selectTarget.value = event.currentTarget.value
     this.selectTarget.dispatchEvent(new Event("change", { bubbles: true }))
     this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
 
@@ -34,9 +35,8 @@ export default class extends Controller {
   }
 
   markSelected() {
-    this.optionTargets.forEach((option) => {
-      option.dataset.intent =
-        option.value === this.selectTarget.value ? "primary" : "secondary"
+    this.radioTargets.forEach((radio) => {
+      radio.checked = radio.value === this.selectTarget.value
     })
   }
 

@@ -9,42 +9,48 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   end
 
   test "shows popular currencies before filtering" do
-    assert_button "USD US Dollar, 🇺🇸"
-    assert_button "EUR Euro, 🇪🇺"
-    assert_button "GBP Pound Sterling, 🇬🇧"
-    assert_no_button "VND Dong, 🇻🇳"
+    assert_visible_option "USD US Dollar, 🇺🇸"
+    assert_visible_option "EUR Euro, 🇪🇺"
+    assert_visible_option "GBP Pound Sterling, 🇬🇧"
+    assert_no_visible_option "VND Dong, 🇻🇳"
     assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
   end
 
   test "filters by code and name replacing the popular list" do
     filter.set("yen")
-    assert_button "JPY Yen, 🇯🇵"
-    assert_no_button "USD US Dollar, 🇺🇸"
+    assert_visible_option "JPY Yen, 🇯🇵"
+    assert_no_visible_option "USD US Dollar, 🇺🇸"
 
     filter.set("vnd")
-    assert_button "VND Dong, 🇻🇳"
+    assert_visible_option "VND Dong, 🇻🇳"
 
     filter.set("usd")
-    assert_button "USD US Dollar, 🇺🇸"
+    assert_visible_option "USD US Dollar, 🇺🇸"
 
     filter.set("zzzz")
     assert_text "No currencies found"
 
     filter.set("")
-    assert_button "EUR Euro, 🇪🇺"
-    assert_no_button "VND Dong, 🇻🇳"
+    assert_visible_option "EUR Euro, 🇪🇺"
+    assert_no_visible_option "VND Dong, 🇻🇳"
     assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
+  end
+
+  test "shows at most seven options at once" do
+    filter.set("a")
+
+    assert_selector visible_options, count: 7
   end
 
   test "choosing a currency updates selection summary and rate fields without closing" do
     filter.set("dong")
 
-    click_button "VND Dong, 🇻🇳"
+    find(visible_option, text: "VND Dong, 🇻🇳").click
 
     assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
+    assert_checked_field find("input[type='radio'][value='VND']", visible: :all)
     assert_selector "details[open]"
     assert_selector "summary small", text: "VND"
-    assert_selector "button[value='VND'][data-intent='primary']"
     assert_selector "[data-currency-conversion-target='rateFields']:not([hidden])"
 
     rate = find("input[name='source[rate]']")
@@ -57,6 +63,22 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   private
     def filter
       find("input[data-currency-picker-target='filter']")
+    end
+
+    def visible_option
+      "label[data-currency-picker-target='option']:not([hidden])"
+    end
+
+    def visible_options
+      visible_option
+    end
+
+    def assert_visible_option(text)
+      assert_selector visible_option, text: text
+    end
+
+    def assert_no_visible_option(text)
+      assert_no_selector visible_option, text: text
     end
 
     def send_input(field, value)
