@@ -8,39 +8,11 @@
     <small> What currency is used? </small>
     <%= form.label currency_attribute, "Currency", hidden: true %>
 
-    <div data-controller="currency-picker">
-      <%= form.select currency_attribute,
-        Currency.options,
-        { include_blank: "Choose a currency" }, required: true,
-        class: "utilities--sr-only",
-        aria: { label: "Currency" },
-        data: {
-          currency_picker_target: "select",
-          currency_conversion_target: "currency",
-          action: "change->currency-conversion#currencyChanged input->form-details#updateSummaryContent"
-        } %>
-
-      <%= tag.input type: "search", placeholder: "Search by name or code",
-        autocomplete: "off",
-        aria: { label: "Search currencies" },
-        data: {
-          currency_picker_target: "filter",
-          action: "input->currency-picker#filter"
-        } %>
-
-      <div data-layout="grid" data-currency-picker-target="options">
-        <% Currency.options.each do |label, code| %>
-          <% popular = Currency::POPULAR_CODES.include?(code) %>
-          <button type="button" value="<%= code %>" data-intent="secondary"
-            data-filter-value="<%= label %>"
-            data-currency-picker-target="option"
-            <% if popular %> data-popular="true"<% else %> hidden<% end %>
-            data-action="click->currency-picker#choose"><%= label %></button>
-        <% end %>
-      </div>
-
-      <small data-currency-picker-target="emptyState" hidden> No currencies found </small>
-    </div>
+    <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
+          select_data: {
+            currency_conversion_target: "currency",
+            action: "change->currency-conversion#currencyChanged input->form-details#updateSummaryContent"
+          } %>
 
     <%= tag.div data: { currency_conversion_target: "rateFields" },
             hidden: form.object.public_send(currency_attribute).blank? ||

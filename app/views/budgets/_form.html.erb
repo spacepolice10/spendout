@@ -19,9 +19,8 @@
     <small>Other currencies will use this one as a reference to calculate against to.</small>
 
     <div>
-      <%= form.select :base_currency_code, Currency.options,
-            { include_blank: "Choose a currency" },
-            required: true, autofocus: true, aria: { label: "Choose your main currency" } %>
+      <%= render "shared/currency_picker", form: form, attribute: :base_currency_code,
+            filter_autofocus: true %>
     </div>
   </label>
 
@@ -59,7 +58,7 @@
 
   <br>
 
-  <%= form.button type: "submit", data: { intent: "primary" } do %>
+  <%= form.button type: "submit", data: { appearance: "keycap" } do %>
     Next step <%= icon_tag("chevron-right") %>
   <% end %>
 <% end %>
