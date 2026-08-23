@@ -27,7 +27,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body style="padding-bottom: calc(5rem + env(safe-area-inset-bottom));">
     <% if flash.any? %>
       <aside aria-label="Notifications" data-toasts>
         <% flash.each do |type, message| %>
@@ -37,5 +37,7 @@
     <% end %>
 
     <%= yield %>
+
+    <%= render "shared/tabbar" %>
   </body>
 </html>

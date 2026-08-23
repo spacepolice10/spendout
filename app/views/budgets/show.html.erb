@@ -42,23 +42,6 @@
         </dl>
       <% end %>
     </main>
-
-    <footer>
-      <%= link_to budget_sources_path(@budget), role: "button", class: "source-button",
-            data: { intent: "secondary" } do %>
-        <%= icon_tag("wallet") %>
-        <span>My money</span>
-      <% end %>
-
-      <%= link_to budget_allocations_path(@budget), role: "button", class: "allocation-button",
-            data: { intent: "secondary" } do %>
-        <%= icon_tag("pig-money") %>
-        <span>Planned categories</span>
-      <% end %>
-
-    </footer>
-
-    <br>
   </article>
 
   <% if @expenses.any? %>
@@ -98,7 +81,8 @@
   <%= link_to new_budget_expense_path(@budget),
             role: "button",
             data: { intent: "primary", size: "lg", create_expense: true },
-            aria: { label: "New expense" } do %>
+            aria: { label: "New expense" },
+            style: "margin-bottom: var(--space-v-8)" do %>
     <%= icon_tag("plus") %>
     <span>New expense</span>
   <% end %>

@@ -1,6 +1,7 @@
 <main class="session-page" data-size="sm">
   <header>
     <h1>Spendout</h1>
+    <p>Spendout is a simple and secure way to manage your money.</p>
   </header>
 
   <article data-elevation="1">
@@ -13,7 +14,11 @@
 
       <%= form_with url: session_path do |form| %>
         <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
-        <%= form.button "Email me a code", type: "submit", data: { intent: "primary" } %>
+
+        <%= form.button "Email me a code", type: "submit", data: { appearance: "keycap" } do %>
+          <span>Email me a code</span>
+          <%= icon_tag("chevron-right") %>
+        <% end %>
       <% end %>
     </main>
   </article>

@@ -68,18 +68,10 @@
     </main>
 
     <footer>
-      <div data-layout="flex">
-        <%= link_to budget_path(@budget), role: "button", data: { intent: "secondary" } do %>
-          <%= icon_tag("chevron-left") %>
-          <span>Show expenses</span>
-          <%= icon_tag("wallet") %>
-        <% end %>
-
-        <%= link_to new_budget_allocation_path(@budget), role: "button", data: { intent: "secondary" } do %>
-          <%= icon_tag("plus") %>
-          <span>New category</span>
-        <% end %>
-      </div>
+      <%= link_to new_budget_allocation_path(@budget), role: "button", data: { intent: "secondary" } do %>
+        <%= icon_tag("plus") %>
+        <span>New category</span>
+      <% end %>
     </footer>
   </article>
 </main>

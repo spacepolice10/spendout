@@ -313,7 +313,7 @@
         padding: var(--space-v) var(--space-h);
         color: var(--button-color);
         background: var(--button-background);
-        border: var(--button-border);
+        border: 0;
         border-radius: var(--radius-2);
         text-decoration: none;
         cursor: pointer;
@@ -420,6 +420,7 @@
         --form-input-color: var(--color-invert-3);
         --form-checked-background: var(--color-2);
         --form-checked-color: var(--color-invert-1);
+        --bracket: linear-gradient(var(--color-accent), var(--color-accent));
 
         display: grid;
         gap: var(--form-space-v);
@@ -464,6 +465,7 @@
             background: transparent;
             font-size: var(--font-size-base-type);
             field-sizing: content;
+            color: var(--color-accent);
         }
 
         & input::placeholder {
@@ -478,10 +480,24 @@
             border: var(--form-input-border);
             border-radius: var(--form-input-radius);
             padding: var(--form-space-v) var(--form-space-h);
+            background-repeat: no-repeat;
+            background-position:
+                left center, left top, left bottom,
+                right center, right top, right bottom;
+            background-size: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+            background-image:
+                var(--bracket), var(--bracket), var(--bracket),
+                var(--bracket), var(--bracket), var(--bracket);
+            transition: background-size 160ms ease;
 
             &:focus,
             &:focus-visible {
-                outline: var(--form-input-outline);
+                outline: none;
+                border-color: transparent;
+                background-color: transparent;
+                background-size:
+                    2px 100%, 0.75em 2px, 0.75em 2px,
+                    2px 100%, 0.75em 2px, 0.75em 2px;
             }
 
             &:disabled {
@@ -507,15 +523,35 @@
             align-items: center;
             padding: var(--form-space-v) var(--form-space-h);
             gap: var(--space-h-half);
-            border: 1px solid transparent;
+
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                translate: 0 -50%;
+                width: 0.75em;
+                height: 60%;
+                opacity: 0;
+                background-repeat: no-repeat;
+                background-image: var(--bracket), var(--bracket), var(--bracket);
+                background-size: 0 0, 0 0, 0 0;
+                pointer-events: none;
+                transition: opacity 160ms ease, background-size 160ms ease;
+            }
+
+            &::before {
+                left: 0;
+                background-position: left center, left top, left bottom;
+            }
+
+            &::after {
+                right: 0;
+                background-position: right center, right top, right bottom;
+            }
 
             &:has(>input[type="checkbox"]:checked, >input[type="radio"]:checked) {
                 color: var(--form-checked-color);
-                border-color: var(--color-accent);
-            }
-
-            &:has(>input[type="checkbox"]:focus-visible, >input[type="radio"]:focus-visible) {
-                outline: var(--form-input-outline);
             }
 
             &>input[type="checkbox"],
@@ -530,6 +566,15 @@
             }
         }
 
+        /* Terminal-style brackets drawn with CSS, flanking checked/focused checkboxes and radios */
+        & label:has(>input[type="checkbox"]:is(:checked, :focus-visible), >input[type="radio"]:is(:checked, :focus-visible)) {
+            &::before,
+            &::after {
+                opacity: 1;
+                background-size: 2px 100%, 100% 2px, 100% 2px;
+            }
+        }
+
         & :is(button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"]) {
             --button-background: var(--color-invert-1);
             --button-background-hovered: var(--color-invert-2);
@@ -537,7 +582,6 @@
             --button-color: var(--color-1);
 
             position: relative;
-            margin-inline: auto;
         }
 
         & :is(button[type="submit"], button:not([type]))::after {
@@ -576,6 +620,12 @@
     @media (prefers-reduced-motion: reduce) {
         form[aria-busy="true"] :is(button[type="submit"], button:not([type]))::after {
             animation: none;
+        }
+
+        form :is(input, textarea, select),
+        form label:has(>input[type="checkbox"], >input[type="radio"])::before,
+        form label:has(>input[type="checkbox"], >input[type="radio"])::after {
+            transition: none;
         }
     }
 

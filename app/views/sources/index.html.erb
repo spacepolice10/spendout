@@ -57,16 +57,6 @@
     </main>
 
     <footer>
-      <% if @sources.any? %>
-        <div data-layout="flex">
-          <%= link_to budget_path(@budget), role: "button", data: { intent: "secondary" } do %>
-            <%= icon_tag("wallet") %>
-            <span>Show expenses</span>
-            <%= icon_tag("chevron-right") %>
-          <% end %>
-        </div>
-      <% end %>
-
       <%= link_to new_budget_source_path(@budget), role: "button", data: { intent: "secondary" } do %>
         <%= icon_tag("plus") %>
         <span>Add source</span>

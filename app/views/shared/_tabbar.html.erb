@@ -1,0 +1,35 @@
+<% if (budget = Current.user&.current_budget) %>
+  <% expenses_active = controller_name == "budgets" && action_name == "show" %>
+  <% money_active = controller_name == "sources" %>
+  <% categories_active = controller_name == "allocations" %>
+
+  <nav
+    aria-label="Budget sections"
+    style="position:fixed;left:0;right:0;bottom:0;z-index:10;padding-bottom:env(safe-area-inset-bottom);background:var(--color-2);border-top:var(--border-subtle);"
+  >
+    <div
+      style="display:flex;gap:var(--space-h);max-width:1280px;margin-inline:auto;padding:var(--space-v) var(--space-h);"
+    >
+      <%= link_to budget_sources_path(budget),
+            role: "button",
+            data: (money_active ? { current: "page" } : {}),
+            style: "flex:1;width:auto;#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if money_active}" do %>
+        <span>My money</span>
+      <% end %>
+
+      <%= link_to budget_path(budget),
+        role: "button",
+        data: (expenses_active ? { current: "page" } : {}),
+        style: "flex:1;width:auto;#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if expenses_active}" do %>
+        <span>Expenses</span>
+      <% end %>
+
+      <%= link_to budget_allocations_path(budget),
+            role: "button",
+            data: (categories_active ? { current: "page" } : {}),
+            style: "flex:1;width:auto;#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if categories_active}" do %>
+        <span>Categories</span>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

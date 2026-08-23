@@ -1,92 +1,59 @@
 @layer components {
     :is(button, [role="button"])[data-appearance="keycap"] {
-        --keycap-face: light-dark(
-            color-mix(
-                in oklch,
-                var(--keycap-colour, var(--color-accent)) 82%,
-                var(--color-1)
-            ),
-            color-mix(
-                in oklch,
-                var(--keycap-colour, var(--color-accent)) 82%,
-                var(--color-2)
-            )
+        --keycap-base: light-dark(oklch(0.98 0 0), oklch(0.34 0 0));
+        --keycap-base-dark: light-dark(oklch(86.995% 0.0001 271.152), oklch(0.22 0 0));
+        --keycap-inner-starts: light-dark(oklch(89.755% 0.0001 271.152), oklch(0.20 0 0));
+        --keycap-inner-ends: light-dark(oklch(0.96 0 0), oklch(0.38 0 0));
+        --button-background: linear-gradient(
+            to bottom,
+            var(--keycap-base),
+            var(--keycap-base-dark)
         );
-        --keycap-edge: light-dark(
-            color-mix(in oklch, var(--keycap-face) 82%, var(--color-invert-1)),
-            color-mix(in oklch, var(--keycap-face) 82%, var(--color-1))
-        );
-        --keycap-border: color-mix(
-            in oklch,
-            var(--keycap-edge) 22%,
-            var(--keycap-face)
-        );
-        --button-background: var(--keycap-face);
-        --button-background-hovered: color-mix(
-            in oklch,
-            var(--keycap-face) 88%,
-            var(--color-1)
-        );
-        --button-background-active: var(--keycap-face);
+        --button-background-hovered: var(--button-background);
+        --button-background-active: var(--button-background);
         --button-color: var(--color-invert-1);
 
+        position: relative;
+        isolation: isolate;
         min-width: fit-content;
         min-height: var(--keycap-min-height, 2rem);
         gap: var(--space-h-half);
         margin-bottom: 0.5rem;
-        border-radius: var(--radius-1);
+        border-radius: var(--radius-3);
         font-weight: var(--font-weight-bold);
-        box-shadow:
-            0 0.5rem 0 var(--keycap-edge),
-            0 0.5rem 0 2px var(--keycap-border);
-        translate: 0 0;
-        transition: background 150ms ease, box-shadow 100ms ease, translate 100ms ease;
+        transition: background 150ms ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0.22rem 0.22rem 0.22rem 0.22rem;
+            z-index: -1;
+            border: var(--border-subtle);
+            border-radius: calc(var(--radius-3) - 1px);
+            background: linear-gradient(
+                to bottom,
+                var(--keycap-inner-starts),
+                var(--keycap-inner-ends)
+            );
+            pointer-events: none;
+            transition: inset 100ms ease;
+        }
 
         &:hover:not(:disabled, [aria-disabled="true"]) {
-            box-shadow:
-                0 0.625rem 0 var(--keycap-edge),
-                0 0.625rem 0 2px var(--keycap-border);
-            translate: 0 -0.125rem;
+            &::before {
+                inset: 0.12rem 0.15rem 0.3rem 0.15rem;
+            }
         }
 
         &:active:not(:disabled, [aria-disabled="true"]) {
-            box-shadow:
-                0 0.125rem 0 var(--keycap-edge),
-                0 0.125rem 0 2px var(--keycap-border);
-            translate: 0 0.375rem;
+            &::before {
+                inset: 0.05rem 0.07rem 0.14rem 0.07rem;
+            }
         }
 
         &:focus-visible {
-            outline: 2px solid var(--keycap-face);
+            outline: 2px solid var(--keycap-base);
             outline-offset: 3px;
         }
-    }
-
-    [data-appearance="keycap"][data-colour="green"] {
-        --keycap-colour: var(--color-palette-green);
-    }
-
-    [data-appearance="keycap"][data-colour="red"] {
-        --keycap-colour: var(--color-palette-red);
-    }
-
-    [data-appearance="keycap"][data-colour="blue"] {
-        --keycap-colour: var(--color-palette-blue);
-    }
-
-    [data-appearance="keycap"][data-colour="yellow"] {
-        --keycap-colour: var(--color-palette-yellow);
-    }
-
-    [data-appearance="keycap"][data-colour="violet"] {
-        --keycap-colour: var(--color-palette-violet);
-    }
-
-    [data-appearance="keycap"][data-colour="pink"] {
-        --keycap-colour: var(--color-palette-pink);
-    }
-    [data-appearance="keycap"][data-colour="black"] {
-        --keycap-colour: var(--color-palette-black);
-        color: white;
     }
 }
