@@ -9,13 +9,26 @@ class Source < ApplicationRecord
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
   validate :currency_is_available_in_budget
 
+  before_destroy :prevent_direct_destruction
+
   def spendable_amount(excluding: nil)
     recorded_expenses = expenses
     recorded_expenses = recorded_expenses.where.not(id: excluding.id) if excluding&.persisted?
     amount - recorded_expenses.sum(:amount)
   end
 
+  def deleted?
+    deleted_at.present?
+  end
+
   private
+    def prevent_direct_destruction
+      return if destroyed_by_association
+
+      errors.add(:base, "source cannot be destroyed directly")
+      throw(:abort)
+    end
+
     def currency_is_available_in_budget
       return if currency_code.blank? || Currency::CATALOG.key?(currency_code)
 

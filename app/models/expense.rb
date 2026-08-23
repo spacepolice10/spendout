@@ -15,6 +15,7 @@ class Expense < ApplicationRecord
   validate :occurred_during_budget
   validate :source_belongs_to_budget
   validate :allocation_belongs_to_budget
+  validate :source_is_active
   validate :allocation_is_active
   validate :amount_fits_source
 
@@ -71,6 +72,10 @@ class Expense < ApplicationRecord
       return if allocation.nil? || budget.nil? || allocation.budget_id == budget.id
 
       errors.add(:allocation, "must belong to this budget")
+    end
+
+    def source_is_active
+      errors.add(:source, "must be active") if source&.deleted?
     end
 
     def allocation_is_active

@@ -11,12 +11,12 @@ export default class extends Controller {
   }
 
   filter() {
-    const query = this.filterTarget.value.trim().toLocaleLowerCase()
+    const requestString = this.filterTarget.value.trim().toLocaleLowerCase()
     let visible = 0
 
     this.optionTargets.forEach((option) => {
       const matches = option.dataset.filterValue.toLocaleLowerCase().includes(query)
-      const wanted = query === "" ? this.isPopular(option) : matches
+      const wanted = requestString === "" ? matches && this.isPreselected(option) : matches
       const shown = wanted && visible < MAX_VISIBLE
 
       option.hidden = !shown
@@ -35,12 +35,24 @@ export default class extends Controller {
   }
 
   markSelected() {
-    this.radioTargets.forEach((radio) => {
-      radio.checked = radio.value === this.selectTarget.value
+    this.optionTargets.forEach((option) => {
+      const input = option.querySelector("input")
+      const selected = input.value === this.selectTarget.value
+
+      input.checked = selected
+      option.dataset.default = selected ? "true" : null
     })
   }
 
   isPopular(option) {
     return option.dataset.popular === "true"
+  }
+
+  isDefault(option) {
+    return option.dataset.default === "true"
+  }
+
+  isPreselected(option) {
+    return this.isPopular(option) || this.isDefault(option)
   }
 }

@@ -17,7 +17,7 @@ class SourceTest < ActiveSupport::TestCase
   end
 
   test "uses fixed icon and colour defaults" do
-    source = budgets(:active).sources.build(amount: 1, currency_code: "USD")
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD")
 
     assert_equal "wallet", source.icon
     assert_equal "green", source.colour
@@ -25,16 +25,16 @@ class SourceTest < ActiveSupport::TestCase
 
   test "accepts every supported icon and colour" do
     Source.icon_catalog.each_key do |icon|
-      assert budgets(:active).sources.build(amount: 1, currency_code: "USD", icon: icon).valid?
+      assert budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD", icon: icon).valid?
     end
 
     Source.colour_catalog.each_key do |colour|
-      assert budgets(:active).sources.build(amount: 1, currency_code: "USD", colour: colour).valid?
+      assert budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD", colour: colour).valid?
     end
   end
 
   test "rejects unsupported or blank icons and colours" do
-    source = budgets(:active).sources.build(amount: 1, currency_code: "USD", icon: "unknown", colour: "unknown")
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD", icon: "unknown", colour: "unknown")
 
     assert_not source.valid?
     assert source.errors.added?(:icon, :inclusion, value: "unknown")
@@ -49,17 +49,17 @@ class SourceTest < ActiveSupport::TestCase
   end
 
   test "allows zero and preserves four decimal places" do
-    source = budgets(:active).sources.build(amount: "0.1234", currency_code: "USD")
+    source = budgets(:active).sources.build(name: "Test source", amount: "0.1234", currency_code: "USD")
 
     assert source.valid?
     assert_equal BigDecimal("0.1234"), source.amount
-    assert_equal "Main source", source.name
+    assert_equal "Test source", source.name
     assert_equal "wallet", source.icon
     assert_equal "green", source.colour
   end
 
   test "rejects negative amounts" do
-    source = budgets(:active).sources.build(amount: -0.0001, currency_code: "USD")
+    source = budgets(:active).sources.build(name: "Test source", amount: -0.0001, currency_code: "USD")
 
     assert_not source.valid?
     assert source.errors.added?(:amount, :greater_than_or_equal_to, value: BigDecimal("-0.0001"), count: 0)
@@ -73,18 +73,19 @@ class SourceTest < ActiveSupport::TestCase
     assert_equal source, Source.find(source.id)
   end
 
-  test "base source cannot be deleted or directly destroyed" do
+  test "cannot be destroyed directly" do
     source = sources(:active)
-    source.deleted_at = Time.current
-
-    assert_not source.save
-    assert source.errors.added?(:deleted_at, "cannot delete the base source")
-
-    source.reload
 
     assert_not source.destroy
-    assert source.errors.added?(:base, "source cannot be destroyed")
+    assert source.errors.added?(:base, "source cannot be destroyed directly")
     assert source.persisted?
+  end
+
+  test "base source can be deleted" do
+    source = sources(:active)
+
+    assert source.update(deleted_at: Time.current)
+    assert source.deleted?
   end
 
   test "resolves currency horizontally within its budget" do
@@ -93,27 +94,27 @@ class SourceTest < ActiveSupport::TestCase
   end
 
   test "converts its amount using selected-currency units per base-currency unit" do
-    source = budgets(:active).sources.build(amount: "26600", currency_code: "VND", rate: "26600")
+    source = budgets(:active).sources.build(name: "Test source", amount: "26600", currency_code: "VND", rate: "26600")
 
     assert_equal BigDecimal("1"), source.amount_in_base
   end
 
   test "forces the base currency rate to one" do
-    source = budgets(:active).sources.build(amount: 1, currency_code: "USD", rate: "26600")
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD", rate: "26600")
 
     assert source.valid?
     assert_equal BigDecimal("1"), source.rate
   end
 
   test "requires a positive conversion rate" do
-    source = budgets(:active).sources.build(amount: 1, currency_code: "EUR", rate: 0)
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "EUR", rate: 0)
 
     assert_not source.valid?
     assert source.errors.added?(:rate, :greater_than, value: BigDecimal("0"), count: 0)
   end
 
   test "rejects an unsupported currency" do
-    source = budgets(:active).sources.build(amount: 1, currency_code: "XXX")
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "XXX")
 
     assert_not source.valid?
     assert source.errors.added?(:currency_code, :inclusion, value: "XXX")

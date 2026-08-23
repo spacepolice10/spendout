@@ -78,8 +78,8 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='budget[source_amount]']", count: 0
     assert_select "input[name='budget[source_rate]']", count: 0
-    assert_select "form details > summary > span", text: "Date"
-    assert_select "form details > div input[type='date'][name='budget[period_from]']"
+    assert_select "form legend", text: "When does your budget start and end?"
+    assert_select "form input[type='date'][name='budget[period_from]'][required]"
   end
 
   test "an archived budget redirects to creation when no budget is active" do

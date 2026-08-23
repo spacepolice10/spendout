@@ -49,11 +49,10 @@
         </div>
       <% end %>
 
-      <% if active_allocations.any? %>
-        <%= tag.details name: "form-details", data: {
-            optional_item: true,
-            controller: "category-filter"
-          }, open: expense.category_name_to_create.present? do %>
+      <%= tag.details name: "form-details", data: {
+          optional_item: true,
+          controller: "category-filter"
+        }, open: expense.category_name_to_create.present? do %>
           <summary>
             <span> Category: </span>
 
@@ -157,7 +156,6 @@
             </fieldset>
           </div>
         <% end %>
-      <% end %>
 
       <%= tag.details name: "form-details", data: {
             optional_item: true

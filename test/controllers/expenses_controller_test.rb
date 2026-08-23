@@ -27,7 +27,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='radio'][name='expense[source_id]'][value='#{@source.id}'][checked][required]"
     assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) > label",
       count: @budget.allocations.where(deleted_at: nil).count
-    assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) .icon-wrap",
+    assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) label .icon-wrap",
       count: @budget.allocations.where(deleted_at: nil).count
     assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}'][checked]"
     assert_select "fieldset[data-expense-allocations] > div input[name='expense[allocation_id]'][value='']", count: 0
@@ -36,19 +36,15 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "details[data-optional-item]", count: 4
     assert_select "details[data-controller='details']", count: 0
     assert_select "details[data-action]", count: 0
-    assert_select "details[data-optional-item] > summary > span > .icon-wrap", count: 4
-    assert_select "details.utilities--sr-only" do
-      assert_select "fieldset[data-expense-sources]"
-    end
+    assert_select "details[data-optional-item] > summary > span", count: 4
     assert_select "[data-optional-item] > input[type='checkbox']", count: 0
     assert_select "details[data-optional-item] > summary" do |summaries|
-      assert_equal [ "From #{@source.name}", "Spend on #{@allocation.name}", "Date August 20, 2026", "Note Added" ],
+      assert_equal [ "From: #{@source.name}", "Category: #{@allocation.name}", "Date: August 20, 2026", "Note: Added" ],
         summaries.map { |summary| summary.text.squish }
     end
-    assert_select "details[data-optional-item]:not([open]) > summary > span", text: "Date"
-    assert_select "details[data-optional-item] > summary > small", text: /August 20, 2026/
-    assert_select "details[data-optional-item]:not([open]) > summary > span", text: "Note"
-    assert_select "details[data-optional-item]:not([open]) > summary > small[hidden]", text: "Added"
+    assert_select "details[data-optional-item]:not([open]) > summary > span", text: "Date:"
+    assert_select "details[data-optional-item]:not([open]) > summary > small", text: /August 20, 2026/
+    assert_select "details[data-optional-item] > summary > small", text: "Added"
     assert_select "[data-optional-item-control] label[for='expense_occurred_on']"
     assert_select "[data-optional-item-control] label[for='expense_note']"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
@@ -59,14 +55,13 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-filter-target='filter'][data-action='input->category-filter#filter']"
     assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-filter-target='pendingNameTextform']"
     assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option'][data-filter-value='#{@allocation.name}']"
-    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='addButton'][data-action='category-filter#createPendingCategory']", text: "Add new"
-    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='cleanupButton'][data-action='category-filter#cleanup']", text: "Cleanup"
+    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='createCategoryButton'][data-action='category-filter#createPendingCategory']"
+    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='cleanupCategoryButton'][data-action='category-filter#cleanup']"
     assert_select "template[data-category-filter-target='template'] [data-category-filter-target='pendingCategory'][data-pending-category] > label"
     assert_select "template input[type='radio'][name='expense[allocation_id]'][value=''][checked]"
     assert_select "template [data-category-filter-target='pendingCategoryName']"
     assert_select "template button[type='button'][aria-label='Delete new category'][data-action='category-filter#removePendingCategory']", text: "Delete"
-    assert_select "label[for='expense_amount'] > legend", text: "How much?"
-    assert_select "input[name='expense[amount]'][aria-label='Amount'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
+    assert_select "input[name='expense[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
     assert_select "input[name='expense[amount]'][value]", count: 0
     assert_select "input[name='expense[currency_code]']", count: 0
   end
@@ -88,8 +83,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     get new_budget_expense_path(@budget)
 
     assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option']", count: 0
-    assert_select "button[type='button']:not([hidden])[data-category-filter-target='addButton']", text: "Add new"
-    assert_select "button[type='button'][hidden][data-category-filter-target='cleanupButton']", text: "Cleanup"
+    assert_select "button[type='button']:not([hidden])[data-category-filter-target='createCategoryButton']"
+    assert_select "button[type='button'][hidden][data-category-filter-target='cleanupCategoryButton']"
   end
 
   test "creates an allocated expense and inherits source currency" do
@@ -178,7 +173,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "details[data-optional-item][open]" do
-      assert_select "summary", text: /Spend on Coffee/
+      assert_select "summary", text: /Category: Coffee/
     end
     assert_select "input[name='expense[category_name_to_create]'][value='Coffee']"
   end

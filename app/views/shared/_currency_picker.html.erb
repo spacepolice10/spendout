@@ -1,5 +1,6 @@
 <%# locals: (form:, attribute:, select_data: {}, filter_autofocus: false) %>
 <% selected_code = form.object.public_send(attribute) %>
+<% ordered_options = Currency.options.partition { |_, code| code == selected_code }.reduce(:+) %>
 <div data-controller="currency-picker">
   <%= form.select attribute,
     Currency.options,
@@ -18,12 +19,18 @@
     } %>
 
   <div data-layout="grid" data-currency-picker-target="options">
-    <% Currency.options.each do |label, code| %>
+    <% ordered_options.each do |label, code| %>
       <% popular = Currency::POPULAR_CODES.include?(code) %>
       <label data-currency-picker-target="option" data-filter-value="<%= label %>"
-        <% if popular %> data-popular="true"<% else %> hidden<% end %>>
+        <% if code == selected_code %>
+          data-default="true"
+          <%= "data-popular=\"true\"" if popular %>
+        <% else %>
+          <%= "data-popular=\"true\"" if popular %>
+          hidden
+        <% end %>>
         <input type="radio" value="<%= code %>"
-          <%= "checked" if selected_code == code %>
+          <%= "checked" if code == selected_code %>
           data-currency-picker-target="radio"
           data-action="change->currency-picker#choose">
 

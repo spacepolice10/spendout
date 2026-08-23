@@ -56,6 +56,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='allocation[currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
+    assert_select "label[data-currency-picker-target='option'][data-default='true']:not([hidden])"
+    assert_select "[data-currency-picker-target='options'] > label:first-child[data-default='true']"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
@@ -144,6 +146,26 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: /Currency code is not included in the list/
     assert_select "select[name='allocation[currency_code]'] option[value='USD']"
+  end
+
+  test "rerendered form shows the chosen non-popular currency first" do
+    sign_in_as(@user)
+
+    assert_no_difference("Allocation.count") do
+      post budget_allocations_path(@budget), params: {
+        allocation: {
+          name: "",
+          amount: "1",
+          currency_code: "VND",
+          icon: "wallet",
+          colour: "green"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "label[data-currency-picker-target='option'][data-default='true']:not([hidden])", text: /VND Dong/
+    assert_select "[data-currency-picker-target='options'] > label:first-child[data-default='true']"
   end
 
   test "show displays allocation amount and budget without a source" do
