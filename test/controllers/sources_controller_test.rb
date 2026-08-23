@@ -56,6 +56,15 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[amount]'][data-money-input-start-value]", count: 0
     assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='source[currency_code]'] option[value='EUR']"
+    assert_select "select[name='source[currency_code]'][data-currency-picker-target='select']"
+    assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
+    assert_select "button[value='USD'][data-currency-picker-target='option']", text: /US Dollar/
+    assert_select "button[data-currency-picker-target='option'][value='USD'][data-popular='true']:not([hidden])"
+    assert_select "button[data-currency-picker-target='option'][value='EUR'][data-popular='true']:not([hidden])"
+    assert_select "button[data-currency-picker-target='option'][value='GBP'][data-popular='true']:not([hidden])"
+    assert_select "button[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
+    assert_select "button[data-currency-picker-target='option']", count: Currency.options.size
+    assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='source[rate]'][value='1.0']"
     assert_select "input[name='source[rate]'][type='text'][inputmode='decimal'][data-controller='money-input']"
     assert_select "input[name='source[rate]'][data-money-input-fraction-digits-value='12']"

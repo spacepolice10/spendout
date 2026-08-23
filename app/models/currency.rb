@@ -1,4 +1,6 @@
 class Currency
+  POPULAR_CODES = %w[USD EUR GBP].freeze
+
   # A single issuing country or region for each consumer-facing currency.
   FLAG_COUNTRIES = {
     "AED" => "AE", "AFN" => "AF", "ALL" => "AL", "AMD" => "AM", "AOA" => "AO",
@@ -199,7 +201,11 @@ class Currency
     end
 
     def options
-      CATALOG.map { |code, data| [ "#{code} #{data[:name]}, #{data[:flag]}", code ] }
+      CATALOG.keys.map { |code| option_for(code) }
+    end
+
+    def popular_options
+      POPULAR_CODES.map { |code| option_for(code) }
     end
 
     def find(code)
@@ -208,6 +214,13 @@ class Currency
 
     def find!(code)
       find(code) || raise(ArgumentError, "Unsupported currency: #{code}")
+    end
+
+    private
+
+    def option_for(code)
+      data = CATALOG.fetch(code)
+      [ "#{code} #{data[:name]}, #{data[:flag]}", code ]
     end
   end
 end

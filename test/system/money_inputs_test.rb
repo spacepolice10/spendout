@@ -104,7 +104,9 @@ class MoneyInputsTest < ApplicationSystemTestCase
   test "formats a currency quote and evaluates selected units in the base currency" do
     visit new_budget_source_path(budgets(:active))
 
-    select "VND Dong, 🇻🇳", from: "source_currency_code"
+    find("details", text: "Currency:").find("summary").click
+    find("input[data-currency-picker-target='filter']").set("vnd")
+    click_button "VND Dong, 🇻🇳"
     input_value(find("input[name='source[amount]']"), "26600")
     rate = find("input[name='source[rate]']")
     input_value(rate, "26600")

@@ -54,6 +54,11 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]"
+    assert_select "select[name='allocation[currency_code]'][data-currency-picker-target='select']"
+    assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
+    assert_select "button[data-currency-picker-target='option'][value='USD'][data-popular='true']:not([hidden])"
+    assert_select "button[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
+    assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='allocation[rate]'][value='1']"
     assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][data-controller='money-input']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
