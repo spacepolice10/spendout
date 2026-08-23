@@ -23,8 +23,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "dt", text: "Remaining"
     assert_select "dd", text: /1,200.25 USD/
     assert_select "[data-testid='overallocation-warning']", count: 0
-    assert_select "a[aria-label='New allocation'][href='#{new_budget_allocation_path(@budget)}']"
-    assert_select "a[aria-label='Back to budget'][href='#{budget_path(@budget)}']"
+    assert_select "a[href='#{new_budget_allocation_path(@budget)}']", text: /New category/
   end
 
   test "index excludes deleted allocations" do
@@ -60,12 +59,13 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
-    assert_select "input[name='allocation[rate]'][value='1']"
-    assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][data-controller='money-input']"
+    assert_select "input[name='allocation[rate]'][type='hidden'][data-currency-conversion-target='rate']"
+    assert_select "input[id='allocation_rate_base'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateBase'][value='1']"
+    assert_select "input[id='allocation_rate_quote'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateQuote']"
+    assert_select "button[type='button'][aria-label='Swap currencies'][data-action~='currency-conversion#swapPair']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
-    assert_select "input[name='allocation[rate]'][data-currency-conversion-target='rate']"
     assert_select "small[data-currency-conversion-target='result'][aria-live='polite']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
@@ -95,7 +95,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     allocation = @budget.allocations.order(:created_at, :id).last
-    assert_redirected_to allocation_path(allocation)
+    assert_redirected_to budget_allocations_path(@budget)
     assert_equal "Emergency savings", allocation.name
     assert_equal BigDecimal("100.2500"), allocation.amount
     assert_equal "USD", allocation.currency_code
@@ -120,7 +120,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     allocation = @budget.allocations.order(:created_at, :id).last
-    assert_redirected_to allocation_path(allocation)
+    assert_redirected_to budget_allocations_path(@budget)
     assert_equal "Allocation was created. Planned allocations now exceed available sources.", flash[:notice]
 
     get budget_allocations_path(@budget)

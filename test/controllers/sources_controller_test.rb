@@ -21,8 +21,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-testid='source-card']", count: 1
     assert_select "[data-testid='source-card']", text: /Main source/
-    assert_select "a[aria-label='New source'][href='#{new_budget_source_path(@budget)}']"
-    assert_select "a[aria-label='Back to budget'][href='#{budget_path(@budget)}']"
+    assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
   end
 
   test "index excludes deleted sources" do
@@ -63,13 +62,14 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
-    assert_select "input[name='source[rate]'][value='1.0']"
-    assert_select "input[name='source[rate]'][type='text'][inputmode='decimal'][data-controller='money-input']"
-    assert_select "input[name='source[rate]'][data-money-input-fraction-digits-value='12']"
+    assert_select "input[name='source[rate]'][type='hidden'][data-currency-conversion-target='rate']"
+    assert_select "input[id='source_rate_base'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateBase'][value='1']"
+    assert_select "input[id='source_rate_quote'][type='text'][inputmode='decimal'][data-controller='money-input'][data-currency-conversion-target='rateQuote']"
+    assert_select "input[id='source_rate_base'][data-money-input-fraction-digits-value='12']"
+    assert_select "button[type='button'][aria-label='Swap currencies'][data-action~='currency-conversion#swapPair']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='source[amount]'][data-currency-conversion-target='amount']"
-    assert_select "input[name='source[rate]'][data-currency-conversion-target='rate']"
     assert_select "small[data-currency-conversion-target='result'][aria-live='polite']"
   end
 
@@ -90,7 +90,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     end
 
     source = @budget.sources.order(:created_at, :id).last
-    assert_redirected_to source_path(source)
+    assert_redirected_to budget_sources_path(@budget)
     assert_equal "Emergency fund", source.name
     assert_equal BigDecimal("125.5000"), source.amount
     assert_equal BigDecimal("1"), source.rate

@@ -14,31 +14,59 @@
             action: "change->currency-conversion#currencyChanged input->form-details#updateSummaryContent"
           } %>
 
+    <% base_id = "#{form.object_name}_#{rate_attribute}_base" %>
+    <% quote_id = "#{form.object_name}_#{rate_attribute}_quote" %>
+
     <%= tag.div data: { currency_conversion_target: "rateFields" },
             hidden: form.object.public_send(currency_attribute).blank? ||
               form.object.public_send(currency_attribute) == base_currency_code do %>
+      <%= form.hidden_field rate_attribute, data: { currency_conversion_target: "rate" } %>
+
       <small id="currency-rate-help">
-        How many units of the selected currency equal 1
-        <%= base_currency_code %>.
+        Enter equivalent amounts or swap sides.
       </small>
 
-      <div data-layout="flex">
-        <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
-        data: {
-          controller: "money-input",
-          money_input_start_value: form.object.public_send(rate_attribute)&.to_s("F"),
-          money_input_fraction_digits_value: 12,
-          currency_conversion_target: "rate",
-          action: "input->currency-conversion#calculate input->form-details#updateSummaryContent"
-        },
-        aria: { description: "currency-rate-help" } %>
+      <div data-layout="flex" style="align-items: end;">
+        <div>
+          <input type="text" id="<%= base_id %>" inputmode="decimal" value="1"
+            aria-label="Amount in <%= base_currency_code %>"
+            data-controller="money-input"
+            data-money-input-fraction-digits-value="12"
+            data-currency-conversion-target="rateBase"
+            data-action="input->currency-conversion#calculateFromBase">
 
-        <small
-          data-currency-conversion-target="result"
-          aria-live="polite"
-          hidden
-        ></small>
+          <small><%= base_currency_code %></small>
+        </div>
+
+        <button type="button" aria-label="Swap currencies"
+          data-action="currency-conversion#swapPair">
+          <svg viewBox="0 0 16 16" width="1em" height="1em" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 5h10l-3-3M14 11H4l3 3"></path>
+          </svg>
+        </button>
+
+        <div>
+          <input type="text" id="<%= quote_id %>" inputmode="decimal"
+            value="<%= form.object.public_send(rate_attribute)&.to_s("F") %>"
+            aria-label="Amount in selected currency"
+            data-controller="money-input"
+            data-money-input-fraction-digits-value="12"
+            data-currency-conversion-target="rateQuote"
+            data-action="input->currency-conversion#calculateFromQuote">
+
+          <small data-currency-conversion-target="rateCode">
+            <%= form.object.public_send(currency_attribute) %>
+          </small>
+        </div>
       </div>
+
+      <small
+        data-currency-conversion-target="result"
+        aria-live="polite"
+        hidden
+      ></small>
     <% end %>
   </div>
 </details>
