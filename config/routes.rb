@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   resources :budgets, only: %i[ new create destroy ] do
     resources :allocations, shallow: true
     resources :expenses, shallow: true
-    resources :sources, shallow: true
+    resources :sources, shallow: true do
+      resources :exchanges, only: %i[ new create ]
+    end
   end
 
   resource :session, only: %i[ new create destroy ] do

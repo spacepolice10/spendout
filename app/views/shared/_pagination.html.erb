@@ -1,0 +1,15 @@
+<% unless page.only? %>
+  <footer>
+    <nav aria-label="Pagination for <%= records_name %>">
+      <% unless page.first? %>
+        <%= link_to "Previous", url_for(page: page.number - 1), role: "button", data: { intent: "secondary" } %>
+      <% end %>
+
+      <span>Page <%= page.number %> of <%= page.recordset.page_count %></span>
+
+      <% unless page.last? %>
+        <%= link_to "Next", url_for(page: page.next_param), role: "button", data: { intent: "secondary" } %>
+      <% end %>
+    </nav>
+  </footer>
+<% end %>

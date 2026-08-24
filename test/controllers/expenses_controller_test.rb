@@ -32,6 +32,33 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='#{budget_path(@budget)}'] button", "Reset budget"
   end
 
+  test "index paginates expense history" do
+    sign_in_as(@user)
+    15.times do |index|
+      @budget.expenses.create!(
+        source: @source,
+        amount: 1,
+        occurred_on: @budget.period_from + index.days,
+        note: "Expense #{index}"
+      )
+    end
+
+    get budget_expenses_path(@budget)
+
+    assert_select "[data-testid='expense-card']", count: 15
+    assert_select "nav[aria-label='Pagination for expenses']", text: /Page 1 of 2/
+    assert_select "nav[aria-label='Pagination for expenses'] a", text: "Previous", count: 0
+    assert_select "nav[aria-label='Pagination for expenses'] a", text: "Next" do |links|
+      get links.first["href"]
+    end
+
+    assert_response :success
+    assert_select "[data-testid='expense-card']", count: 1
+    assert_select "nav[aria-label='Pagination for expenses']", text: /Page 2 of 2/
+    assert_select "nav[aria-label='Pagination for expenses'] a", text: "Previous"
+    assert_select "nav[aria-label='Pagination for expenses'] a", text: "Next", count: 0
+  end
+
   test "index redirects an archived budget to creation when no budget is active" do
     sign_in_as(@user)
     @budget.update_columns(period_to: Date.yesterday)

@@ -19,8 +19,10 @@
         currency_conversion_target: "amount",
         action: "input->currency-conversion#calculate input->form-details#updateSummaryContent"
       } %>
-    <small>
-      Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
-    </small>
+    <% unless mobile_variant? %>
+      <small>
+        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+      </small>
+    <% end %>
   </div>
 </details>

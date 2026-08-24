@@ -1,4 +1,4 @@
-<%# locals: (form:, attribute:, select_data: {}, filter_data: {}, filter_autofocus: false, rate_attribute: nil, base_currency_code: nil) %>
+<%# locals: (form:, attribute:, select_data: {}, filter_data: {}, filter_autofocus: false, rate_attribute: nil, base_currency_code: nil, converted_amount_label: nil) %>
 <% selected_code = form.object.public_send(attribute) %>
 <% suggested_code = Current.suggested_currency_code %>
 <% priority_codes = [selected_code, suggested_code, *Currency::POPULAR_CODES].compact.uniq %>
@@ -62,7 +62,7 @@
             action: "input->currency-conversion#calculate"
           } %>
 
-        <output aria-label="Converted amount in <%= base_currency_code %>"
+        <output aria-label="<%= converted_amount_label || "Converted amount in #{base_currency_code}" %>"
           aria-live="polite"
           data-currency-conversion-target="converted"></output>
       </div>

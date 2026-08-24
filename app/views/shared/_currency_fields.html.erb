@@ -1,4 +1,4 @@
-<%# locals: (form:, currency_attribute:, rate_attribute:, base_currency_code:, open: false) %>
+<%# locals: (form:, currency_attribute:, rate_attribute:, base_currency_code:, open: false, converted_amount_label: nil) %>
 <% currency_code = form.object.public_send(currency_attribute).presence || base_currency_code %>
 <details name="form-details" data-controller="form-details"<%= " open" if open %>>
   <summary data-form-details-target="summary">
@@ -17,13 +17,16 @@
           },
           filter_data: { form_details_target: "input" },
           rate_attribute: rate_attribute,
-          base_currency_code: base_currency_code %>
-    <small>
-      Use <kbd>arrow keys</kbd> to switch.
-    </small>
+          base_currency_code: base_currency_code,
+          converted_amount_label: converted_amount_label %>
+    <% unless mobile_variant? %>
+      <small>
+        Use <kbd>arrow keys</kbd> to switch.
+      </small>
 
-    <small>
-      Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
-    </small>
+      <small>
+        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+      </small>
+    <% end %>
   </div>
 </details>

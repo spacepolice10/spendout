@@ -8,8 +8,10 @@ class ExpensesController < ApplicationController
       return
     end
 
-    @expenses = @budget.expenses.includes(:source, :allocation)
-      .order(occurred_on: :desc, created_at: :desc, id: :desc)
+    @expenses = set_page_and_extract_portion_from(
+      @budget.expenses.includes(:source, :allocation)
+        .order(occurred_on: :desc, created_at: :desc, id: :desc)
+    )
     @expenses_by_date = @expenses.group_by(&:occurred_on)
     @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
       expenses.sum(&:amount_in_base)

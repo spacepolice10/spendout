@@ -1,0 +1,51 @@
+<%= form_with model: exchange, url: source_exchanges_path(parent_source), data: {
+      controller: "currency-conversion",
+      currency_conversion_base_currency_value: parent_source.currency_code,
+      currency_conversion_operation_value: "multiply"
+    } do |form| %>
+  <% if exchange.errors.any? %>
+    <section role="alert" data-form-errors>
+      <h2><%= pluralize(exchange.errors.count, "error") %> prevented this exchange from being saved:</h2>
+      <ul>
+        <% exchange.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= render "shared/name_fields", form: form, name_attribute: :child_source_name,
+        placeholder: "Travel cash, foreign account, etc." %>
+
+  <details name="form-details" data-controller="form-details">
+    <summary data-form-details-target="summary">
+      <span>Amount from <%= parent_source.currency_code %>:</span>
+      <small data-form-details-target="summaryContent"><%= exchange.parent_amount || 0 %></small>
+    </summary>
+    <div>
+      <small>How much should be taken from <%= parent_source.name %>?</small>
+      <%= form.label :parent_amount, "Amount from #{parent_source.currency_code}", class: "utilities--sr-only" %>
+      <%= form.text_field :parent_amount, inputmode: "decimal", placeholder: "0", required: true,
+            data: { controller: "money-input", form_details_target: "input",
+              money_input_start_value: exchange.parent_amount&.to_s("F"),
+              currency_conversion_target: "amount",
+              action: "input->currency-conversion#calculate input->form-details#updateSummaryContent" } %>
+    </div>
+  </details>
+
+  <%= render "shared/currency_fields", form: form,
+        currency_attribute: :child_currency_code, rate_attribute: :rate,
+        base_currency_code: parent_source.currency_code,
+        converted_amount_label: "New source amount" %>
+
+  <div data-layout="flex">
+    <%= link_to budget_sources_path(budget), role: "button", data: { appearance: "keycap", intent: "secondary", size: "lg" } do %>
+      <%= icon_tag("chevron-left") %>
+      <span>Cancel</span>
+    <% end %>
+    <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary", size: "lg" } do %>
+      <span>Confirm exchange</span>
+      <%= icon_tag("chevron-right") %>
+    <% end %>
+  </div>
+<% end %>

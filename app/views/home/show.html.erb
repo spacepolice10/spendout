@@ -50,10 +50,10 @@
     </header>
     <div data-control-layout>
       <article class="budget" data-landing-fuel>
-        <%= render "shared/daily_gauge", amount: 74, currency_code: "USD", percentage: 68, demo: true %>
+        <%= render "shared/daily_gauge", amount: 74, currency_code: "USD", percentage: 68 %>
       </article>
       <div data-control-notes>
-        <article><span aria-hidden="true">🐷</span><div><h3>Unused money rolls forward</h3><p>Spend less today and tomorrow's safe remainder grows. Spend more and the meter adjusts.</p></div></article>
+        <article><span aria-hidden="true">🎢</span><div><h3>Unused money rolls forward</h3><p>Spend less today and tomorrow's safe remainder grows. Spend more and the meter adjusts.</p></div></article>
         <article><span aria-hidden="true">🛡️</span><div><h3>Plans stay protected</h3><p>Spending assigned to rent, bills, or another planned category does not consume the everyday remainder.</p></div></article>
         <article><span aria-hidden="true">🚦</span><div><h3>A signal, never a gate</h3><p>Over-planning produces a warning, not a lock. Spendout informs your decision and stays out of the way.</p></div></article>
       </div>
@@ -77,6 +77,10 @@
       <article data-elevation="1">
         <header><h3>One useful total</h3><span data-status>BASE · USD</span></header>
         <main data-conversion-total><div><span>Cash</span><strong>₫2,630,000</strong></div><div><span>Everyday card</span><strong>$900</strong></div><hr><div><span>Total in base</span><strong>$1,000</strong></div></main>
+      </article>
+      <article data-elevation="1">
+        <header><h3>Exchange between sources</h3><span data-status>RECORDED</span></header>
+        <main><p>Move money into a new currency source. The parent balance is reduced and the exact exchange stays in your history.</p><div data-rate-example><span>$100 USD</span><span aria-hidden="true">→</span><strong>€86 EUR</strong></div></main>
       </article>
     </div>
   </section>

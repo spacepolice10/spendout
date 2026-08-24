@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ "amount", "currency", "rate", "converted", "rateFields" ]
-  static values = { baseCurrency: String }
+  static values = { baseCurrency: String, operation: { type: String, default: "divide" } }
 
   connect() {
     this.previousCurrency = this.currencyTarget.value
@@ -31,7 +31,8 @@ export default class extends Controller {
     const rate = this.parsedAmount(this.rateTarget.value)
     const valid = Number.isFinite(amount) && Number.isFinite(rate) && rate > 0
 
-    this.convertedTarget.textContent = valid ? this.canonicalize(amount / rate) : ""
+    const converted = this.operationValue === "multiply" ? amount * rate : amount / rate
+    this.convertedTarget.textContent = valid ? this.canonicalize(converted) : ""
   }
 
   parsedAmount(value) {

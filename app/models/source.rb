@@ -4,6 +4,8 @@ class Source < ApplicationRecord
 
   belongs_to :budget, inverse_of: :sources
   has_many :expenses, inverse_of: :source
+  has_many :outgoing_exchanges, class_name: "Exchange", foreign_key: :parent_source_id, inverse_of: :parent_source
+  has_one :incoming_exchange, class_name: "Exchange", foreign_key: :child_source_id, inverse_of: :child_source
 
   validates :name, presence: true
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
@@ -11,10 +13,12 @@ class Source < ApplicationRecord
 
   before_destroy :prevent_direct_destruction
 
-  def spendable_amount(excluding: nil)
+  def spendable_amount(excluding: nil, excluding_exchange: nil)
     recorded_expenses = expenses
     recorded_expenses = recorded_expenses.where.not(id: excluding.id) if excluding&.persisted?
-    amount - recorded_expenses.sum(:amount)
+    recorded_exchanges = outgoing_exchanges
+    recorded_exchanges = recorded_exchanges.where.not(id: excluding_exchange.id) if excluding_exchange&.persisted?
+    amount - recorded_expenses.sum(:amount) - recorded_exchanges.sum(:parent_amount)
   end
 
   def deleted?

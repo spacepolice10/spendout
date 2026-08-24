@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_23_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_24_000000) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -49,6 +49,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_000000) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_budgets_on_user_id"
+  end
+
+  create_table "exchanges", force: :cascade do |t|
+    t.integer "budget_id", null: false
+    t.decimal "child_amount", precision: 19, scale: 4, null: false
+    t.string "child_currency_code", limit: 3, null: false
+    t.integer "child_source_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "parent_amount", precision: 19, scale: 4, null: false
+    t.string "parent_currency_code", limit: 3, null: false
+    t.integer "parent_source_id", null: false
+    t.decimal "rate", precision: 24, scale: 12, null: false
+    t.datetime "updated_at", null: false
+    t.index ["budget_id", "created_at"], name: "index_exchanges_on_budget_id_and_created_at"
+    t.index ["budget_id"], name: "index_exchanges_on_budget_id"
+    t.index ["child_source_id"], name: "index_exchanges_on_child_source_id", unique: true
+    t.index ["parent_source_id"], name: "index_exchanges_on_parent_source_id"
+    t.check_constraint "child_amount > 0", name: "exchanges_child_amount_positive"
+    t.check_constraint "parent_amount > 0", name: "exchanges_parent_amount_positive"
+    t.check_constraint "rate > 0", name: "exchanges_rate_positive"
   end
 
   create_table "expenses", force: :cascade do |t|
@@ -108,6 +128,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_000000) do
 
   add_foreign_key "allocations", "budgets"
   add_foreign_key "budgets", "users"
+  add_foreign_key "exchanges", "budgets"
+  add_foreign_key "exchanges", "sources", column: "child_source_id"
+  add_foreign_key "exchanges", "sources", column: "parent_source_id"
   add_foreign_key "expenses", "allocations"
   add_foreign_key "expenses", "budgets"
   add_foreign_key "expenses", "sources"

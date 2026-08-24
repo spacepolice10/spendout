@@ -48,9 +48,11 @@
               <% end %>
             </div>
 
-            <small>
-              Use <kbd>arrow keys</kbd> to switch.
-            </small>
+            <% unless mobile_variant? %>
+              <small>
+                Use <kbd>arrow keys</kbd> to switch.
+              </small>
+            <% end %>
           </fieldset>
         </div>
       <% end %>
@@ -113,7 +115,7 @@
               <% end %>
             </div>
 
-            <% if active_allocations.any? %>
+            <% if active_allocations.any? && !mobile_variant? %>
               <small>
                 Use <kbd>arrow keys</kbd> to switch.
               </small>
@@ -170,7 +172,9 @@
         } do %>
         <%= icon_tag("chevron-left") %>
         <span>Cancel</span>
-        <kbd aria-hidden="true">Shift + Escape</kbd>
+        <% unless mobile_variant? %>
+          <kbd aria-hidden="true">Shift + Escape</kbd>
+        <% end %>
       <% end %>
 
       <%= form.button type: "submit", data: {
@@ -179,7 +183,9 @@
         } do %>
         <span>Confirm</span>
         <%= icon_tag("chevron-right") %>
-        <kbd aria-hidden="true">Cmd + Enter</kbd>
+        <% unless mobile_variant? %>
+          <kbd aria-hidden="true">Cmd + Enter</kbd>
+        <% end %>
       <% end %>
     </div>
   </footer>

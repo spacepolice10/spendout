@@ -1,19 +1,16 @@
-<%# locals: (amount:, currency_code:, percentage:, demo: false) %>
+<%# locals: (amount:, currency_code:, percentage:) %>
 <% remainder_percentage = percentage.to_f.round(2) %>
 <% needle_angle = (remainder_percentage * 1.8 - 90).round(2) %>
 
 <article data-daily-gauge data-elevation="2">
   <header>
-    <% unless demo %>
-      <h2>Can I spend more today?</h2>
-    <% end %>
-    <small>Safe to spend today: <%= formatted_amount(amount, currency_code) %> <%= currency_code %></small>
+    <h2>Can I spend more today?</h2>
   </header>
 
   <main>
     <div
       role="progressbar"
-      aria-label="Safe spending available today<%= " example" if demo %>"
+      aria-label="Safe spending available today"
       aria-valuemin="0"
       aria-valuemax="100"
       aria-valuenow="<%= remainder_percentage %>"
@@ -22,7 +19,13 @@
     >
       <svg viewBox="0 0 240 150" aria-hidden="true" focusable="false">
         <defs>
-          <linearGradient id="daily-gauge-arc-colour" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient
+            id="daily-gauge-arc-colour"
+            x1="0"
+            y1="0"
+            x2="1"
+            y2="0"
+          >
             <stop offset="0%" stop-color="var(--color-negative)" />
             <stop offset="18%" stop-color="var(--color-4)" />
             <stop offset="100%" stop-color="var(--color-4)" />
@@ -32,7 +35,10 @@
         <path data-remainder-gauge-arc d="M 20 118 A 100 100 0 0 1 220 118" />
 
         <g data-remainder-gauge-ticks>
-          <path d="M 20 118 L 35 118 M 49.3 47.3 L 59.9 57.9 M 120 18 L 120 33 M 190.7 47.3 L 180.1 57.9 M 220 118 L 205 118" />
+          <path
+            d="M 20 118 L 35 118 M 49.3 47.3 L 59.9 57.9 M 120 18 L 120 33 M 190.7 47.3 L 180.1 57.9 M 220 118 L 205 118"
+          />
+
           <text x="43" y="111">0</text>
           <text x="67" y="68">25</text>
           <text x="120" y="51">50</text>
@@ -40,18 +46,39 @@
           <text x="197" y="111">100</text>
         </g>
 
-        <g data-remainder-gauge-needle transform="rotate(<%= needle_angle %> 120 118)">
-          <rect x="117.5" y="32" width="5" height="88" />
+        <g
+          data-remainder-gauge-needle
+          transform="rotate(<%= needle_angle %> 120 118)"
+        >
+          <rect
+            x="117.5"
+            y="32"
+            width="5"
+            height="88"
+          />
         </g>
 
-        <g data-remainder-gauge-hub transform="rotate(<%= needle_angle %> 120 118)">
+        <g
+          data-remainder-gauge-hub
+          transform="rotate(<%= needle_angle %> 120 118)"
+        >
           <circle cx="120" cy="118" r="12" />
-          <ellipse data-remainder-gauge-hub-reflection cx="116" cy="113.5" rx="3.5" ry="2" transform="rotate(-28 116 113.5)" />
+
+          <ellipse
+            data-remainder-gauge-hub-reflection
+            cx="116"
+            cy="113.5"
+            rx="3.5"
+            ry="2"
+            transform="rotate(-28 116 113.5)"
+          />
         </g>
 
         <text data-remainder-gauge-empty x="20" y="145">E</text>
         <text data-remainder-gauge-full x="220" y="145">F</text>
       </svg>
+
+      <small>Safe to spend today: <%= formatted_amount(amount, currency_code) %> <%= currency_code %></small>
     </div>
   </main>
 </article>

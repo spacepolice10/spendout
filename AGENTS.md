@@ -3,6 +3,7 @@
 - A source is a currency-specific money container with a name, amount, icon, colour, and currency.
 - An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; unplanned categories only classify expenses paid from that remainder.
 - An expense debits a source, may classify spending with an allocation, and preserves its amount, source currency, optional 200-character note, and user-editable occurrence date.
+- An exchange immutably debits one source and atomically creates another in a different currency, snapshotting both amounts and the parent-relative quote.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
 - A budget snapshots its immutable base currency at creation. Sources are created in the next step; the first source defaults to that currency and cannot be deleted independently.
 - Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-entered quote expressed as selected-currency units per one base-currency unit; do not create budget-owned currencies or fetch rates externally.

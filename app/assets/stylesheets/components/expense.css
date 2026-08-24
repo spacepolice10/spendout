@@ -71,13 +71,13 @@
 
     }
 
-    article.expense-list {
+    :is(article.expense-list, [data-exchange-list]) {
 
         & > main {
             gap: var(--space-v-2);
         }
 
-        & [data-expense-day] {
+        & :is([data-expense-day], [data-exchange-day]) {
             display: grid;
             gap: var(--space-v);
 
@@ -177,6 +177,47 @@
             font-size: var(--font-size-2xs);
             font-weight: var(--font-weight-bold);
             text-transform: uppercase;
+        }
+    }
+
+    [data-exchange-entry] {
+        border-radius: 0;
+
+        & > main {
+            padding: 0;
+        }
+
+        & [data-exchange-line] {
+            display: flex;
+            align-items: center;
+            gap: var(--space-h-half);
+            min-width: 0;
+        }
+
+        & [data-exchange-description] {
+            min-width: 0;
+        }
+
+        & [data-exchange-name] {
+            display: block;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        & [data-exchange-leader] {
+            min-width: var(--space-h);
+            flex: 1 1 auto;
+            align-self: center;
+            border-bottom: 2px dotted currentColor;
+            opacity: var(--opacity-50);
+        }
+
+        & [data-exchange-amounts],
+        & [data-exchange-amounts] > span {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.5ch;
+            flex: 0 0 auto;
         }
     }
 }

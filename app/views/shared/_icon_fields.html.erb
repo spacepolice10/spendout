@@ -18,11 +18,13 @@
         <% end %>
       <% end %>
     </div>
-    <small>
-      Use <kbd>arrow keys</kbd> to switch.
-    </small>
-    <small>
-      Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
-    </small>
+    <% unless mobile_variant? %>
+      <small>
+        Use <kbd>arrow keys</kbd> to switch.
+      </small>
+      <small>
+        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+      </small>
+    <% end %>
   </fieldset>
 </details>

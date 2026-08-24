@@ -24,10 +24,14 @@
                 <h2><%= source.name %></h2>
               </nav>
 
-              <strong><%= formatted_amount(source.amount, source.currency_code) %></strong>
+              <strong><%= formatted_amount(source.spendable_amount, source.currency_code) %></strong>
             </header>
 
             <footer>
+              <%= link_to new_source_exchange_path(source), role: "button", data: { intent: "secondary" } do %>
+                <%= icon_tag("coin") %>
+                <span>Exchange</span>
+              <% end %>
               <%= button_to source_path(source), method: :delete, aria: { label: "Remove source" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this source?" } do %>
                 <%= icon_tag("trash-simple") %>
               <% end %>
@@ -61,6 +65,62 @@
         </article>
       <% end %>
     </main>
+
+    <% if @exchanges.any? %>
+      <article data-exchange-list data-testid="exchange-list">
+        <main>
+          <article data-elevation="1">
+            <header><h2>Exchanges</h2></header>
+
+            <main>
+              <% @exchanges_by_date.each do |date, exchanges| %>
+                <section data-exchange-day data-testid="exchange-day">
+                  <header>
+                    <h3><time datetime="<%= date.iso8601 %>"><%= date.to_fs(:long) %></time></h3>
+                  </header>
+
+                  <main>
+                    <% exchanges.each do |exchange| %>
+                      <article data-exchange-entry data-testid="exchange-history-item">
+                        <main>
+                          <div data-exchange-line>
+                            <%= icon_tag(exchange.parent_source.icon, style: icon_colour_styles(exchange.parent_source.colour)) %>
+
+                            <div data-exchange-description>
+                              <strong data-exchange-name>
+                                <%= exchange.parent_source.name %><%= " (Deleted)" if exchange.parent_source.deleted? %>
+                                <span aria-hidden="true">→</span>
+                                <%= exchange.child_source.name %><%= " (Deleted)" if exchange.child_source.deleted? %>
+                              </strong>
+                            </div>
+
+                            <span data-exchange-leader aria-hidden="true"></span>
+
+                            <span data-exchange-amounts>
+                              <span>
+                                <strong><%= formatted_amount(exchange.parent_amount, exchange.parent_currency_code) %></strong>
+                                <small><%= exchange.parent_currency_code %></small>
+                              </span>
+                              <span aria-hidden="true">→</span>
+                              <span>
+                                <strong><%= formatted_amount(exchange.child_amount, exchange.child_currency_code) %></strong>
+                                <small><%= exchange.child_currency_code %></small>
+                              </span>
+                            </span>
+                          </div>
+                        </main>
+                      </article>
+                    <% end %>
+                  </main>
+                </section>
+              <% end %>
+            </main>
+
+            <%= render "shared/pagination", page: @page, records_name: "exchanges" %>
+          </article>
+        </main>
+      </article>
+    <% end %>
 
     <footer>
       <%= link_to new_budget_source_path(@budget), role: "button", data: {

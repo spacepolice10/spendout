@@ -35,7 +35,9 @@
         } do %>
       <%= icon_tag("chevron-left") %>
       <span>Cancel</span>
-      <kbd aria-hidden="true">Shift + Escape</kbd>
+      <% unless mobile_variant? %>
+        <kbd aria-hidden="true">Shift + Escape</kbd>
+      <% end %>
     <% end %>
     <%= form.button type: "submit", data: {
           appearance: "keycap", intent: "primary", size: "lg",
@@ -43,7 +45,9 @@
         } do %>
       <span>Confirm</span>
       <%= icon_tag("chevron-right") %>
-      <kbd aria-hidden="true">Cmd + Enter</kbd>
+      <% unless mobile_variant? %>
+        <kbd aria-hidden="true">Cmd + Enter</kbd>
+      <% end %>
     <% end %>
   </div>
 <% end %>

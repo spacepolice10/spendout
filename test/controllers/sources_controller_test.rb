@@ -25,6 +25,32 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
   end
 
+  test "index paginates exchange history" do
+    sign_in_as(@user)
+    16.times do |index|
+      exchange = @source.outgoing_exchanges.new(
+        budget: @budget,
+        child_source_name: "Euro cash #{index}",
+        child_currency_code: "EUR",
+        parent_amount: 1,
+        rate: 1
+      )
+      assert exchange.save_with_child_source
+    end
+
+    get budget_sources_path(@budget)
+
+    assert_select "[data-testid='exchange-history-item']", count: 15
+    assert_select "nav[aria-label='Pagination for exchanges']", text: /Page 1 of 2/
+    assert_select "nav[aria-label='Pagination for exchanges'] a", text: "Next" do |links|
+      get links.first["href"]
+    end
+
+    assert_response :success
+    assert_select "[data-testid='exchange-history-item']", count: 1
+    assert_select "nav[aria-label='Pagination for exchanges']", text: /Page 2 of 2/
+  end
+
   test "index excludes deleted sources" do
     sign_in_as(@user)
     deleted_source = create_secondary_source
@@ -70,6 +96,28 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='source[amount]'][data-currency-conversion-target='amount']"
+  end
+
+  test "new hides keyboard tips on mobile devices" do
+    sign_in_as(@user)
+
+    get new_budget_source_path(@budget), headers: {
+      "User-Agent" => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"
+    }
+
+    assert_response :success
+    assert_select "form kbd", count: 0
+  end
+
+  test "new shows keyboard tips on desktop devices" do
+    sign_in_as(@user)
+
+    get new_budget_source_path(@budget), headers: {
+      "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"
+    }
+
+    assert_response :success
+    assert_select "form kbd"
   end
 
   test "creates a source from catalog values" do

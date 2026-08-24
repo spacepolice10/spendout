@@ -8,6 +8,7 @@ class Budget < ApplicationRecord
   belongs_to :user
   has_many :expenses, dependent: :destroy, inverse_of: :budget
   has_many :allocations, dependent: :destroy, inverse_of: :budget
+  has_many :exchanges, dependent: :destroy, inverse_of: :budget
   has_many :sources, dependent: :destroy, inverse_of: :budget
 
   attribute :duration, :string, default: "30_days"
@@ -50,7 +51,14 @@ class Budget < ApplicationRecord
   end
 
   def sources_amount_in_base
-    amount_in_base_of(sources.where(deleted_at: nil))
+    active_sources = sources.where(deleted_at: nil)
+    exchanged_amount_in_base = exchanges
+      .joins(:parent_source)
+      .where(sources: { deleted_at: nil })
+      .pluck(:parent_amount, "sources.rate")
+      .sum(BigDecimal("0")) { |amount, rate| amount / rate }
+
+    amount_in_base_of(active_sources) - exchanged_amount_in_base
   end
 
   def allocations_amount_in_base

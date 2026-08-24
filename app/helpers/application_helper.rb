@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def mobile_variant?
+    request.variant.include?(:mobile)
+  end
+
   def current_user
     Current.user
   end

@@ -47,6 +47,8 @@
                 </section>
               <% end %>
             </main>
+
+            <%= render "shared/pagination", page: @page, records_name: "expenses" %>
           </article>
         </main>
       </article>

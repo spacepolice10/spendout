@@ -13,8 +13,10 @@
         form_details_target: "input",
         action: "input->form-details#updateSummaryContent"
       } %>
-    <small>
-      Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
-    </small>
+    <% unless mobile_variant? %>
+      <small>
+        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+      </small>
+    <% end %>
   </div>
 </details>
