@@ -72,9 +72,9 @@
   [data-control-notes] article > span { display: grid; place-items: center; font-size: 1.5rem; line-height: 1; }
   [data-control-notes] p { color: var(--color-invert-3); }
 
-  [data-currency-story] article { display: flex; flex-direction: column; min-height: 24rem; margin-block-start: 0; overflow: hidden; }
+  [data-currency-story] article { display: flex; flex-direction: column; margin-block-start: 0; overflow: hidden; }
   [data-currency-story] article > main { display: flex; flex: 1; flex-direction: column; gap: var(--space-v); font-size: var(--font-size-base-read); }
-  [data-currency-visual] { display: grid; align-content: start; gap: var(--space-v); height: calc(var(--space-v) * 13); margin-block-start: auto; }
+  [data-currency-visual] { display: grid; align-content: start; gap: var(--space-v); margin-block-start: auto; }
   [data-currency-story] label { display: grid; gap: var(--space-v-half); color: var(--color-invert-3); font-size: var(--font-size-xs); }
   [data-currency-story] label input { font-size: var(--font-size-base-read); }
   [data-currency-story] article > main small { font-size: var(--font-size-xs); }
