@@ -81,6 +81,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "output[aria-live='polite'][data-currency-conversion-target='converted']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
+    assert_select "form[data-controller='currency-conversion'][data-currency-conversion-rates-value]"
+    assert_select "[data-currency-conversion-target='rateStatus'][aria-live='polite']"
     assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size

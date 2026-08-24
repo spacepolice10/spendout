@@ -6,7 +6,7 @@
 - An exchange immutably debits one source and atomically creates another in a different currency, snapshotting both amounts and the parent-relative quote.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
 - A budget snapshots its immutable base currency at creation. Sources are created in the next step; the first source defaults to that currency and cannot be deleted independently.
-- Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-entered quote expressed as selected-currency units per one base-currency unit; do not create budget-owned currencies or fetch rates externally.
+- Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-confirmed quote expressed as selected-currency units per one base-currency unit. Dated external reference rates may be offered as editable suggestions; never silently update historical records or create budget-owned currencies.
 - Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
 - Replace the generated password authentication; do not extend it.
 - Store money with precision-safe types.

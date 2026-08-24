@@ -22,11 +22,13 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /Exchange from #{@parent.name}/
     assert_select "h1 a", count: 0
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-operation-value='multiply'][action='#{source_exchanges_path(@parent)}']"
+    assert_select "form[data-controller='currency-conversion'][data-currency-conversion-rates-value]"
     assert_select "input[name='exchange[child_source_name]'][required][value='#{@parent.name} exchange']"
     assert_select "input[name='exchange[parent_amount]'][data-currency-conversion-target='amount']"
     assert_select "select[name='exchange[child_currency_code]'][data-currency-conversion-target='currency']"
     assert_select "input[name='exchange[rate]'][data-currency-conversion-target='rate']"
     assert_select "output[data-currency-conversion-target='converted'][aria-label='New source amount']"
+    assert_select "[data-currency-conversion-target='rateStatus'][aria-live='polite']"
   end
 
   test "creates an exchange and its generated source" do

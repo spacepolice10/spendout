@@ -1,7 +1,11 @@
+<% reference_rates = CurrencyReferenceRates.for(parent_source.currency_code) %>
 <%= form_with model: exchange, url: source_exchanges_path(parent_source), data: {
       controller: "currency-conversion",
       currency_conversion_base_currency_value: parent_source.currency_code,
-      currency_conversion_operation_value: "multiply"
+      currency_conversion_operation_value: "multiply",
+      currency_conversion_rates_value: reference_rates.rates.to_json,
+      currency_conversion_reference_date_value: reference_rates.reference_date&.iso8601,
+      currency_conversion_provider_value: reference_rates.provider
     } do |form| %>
   <% if exchange.errors.any? %>
     <section role="alert" data-form-errors>

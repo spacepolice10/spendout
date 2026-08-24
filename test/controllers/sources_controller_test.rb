@@ -95,6 +95,8 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "output[aria-live='polite'][data-currency-conversion-target='converted']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
+    assert_select "form[data-controller='currency-conversion'][data-currency-conversion-rates-value]"
+    assert_select "[data-currency-conversion-target='rateStatus'][aria-live='polite']"
     assert_select "input[name='source[amount]'][data-currency-conversion-target='amount']"
   end
 

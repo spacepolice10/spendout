@@ -1,7 +1,11 @@
+<% reference_rates = CurrencyReferenceRates.for(budget.base_currency_code) %>
 <%= form_with model: [ budget, allocation ], data: {
       allocation_form: true,
       controller: "currency-conversion",
-      currency_conversion_base_currency_value: budget.base_currency_code
+      currency_conversion_base_currency_value: budget.base_currency_code,
+      currency_conversion_rates_value: reference_rates.rates.to_json,
+      currency_conversion_reference_date_value: reference_rates.reference_date&.iso8601,
+      currency_conversion_provider_value: reference_rates.provider
     } do |form| %>
   <% if allocation.errors.any? %>
     <section role="alert" data-form-errors>

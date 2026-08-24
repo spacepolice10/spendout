@@ -59,13 +59,15 @@
             money_input_fraction_digits_value: 12,
             currency_conversion_target: "rate",
             form_details_target: "input",
-            action: "input->currency-conversion#calculate"
+            action: "input->currency-conversion#rateEdited input->currency-conversion#calculate"
           } %>
 
         <output aria-label="<%= converted_amount_label || "Converted amount in #{base_currency_code}" %>"
           aria-live="polite"
           data-currency-conversion-target="converted"></output>
       </div>
+
+      <small aria-live="polite" data-currency-conversion-target="rateStatus"></small>
 
     </div>
   <% end %>

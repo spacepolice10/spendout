@@ -2,10 +2,15 @@ require "application_system_test_case"
 
 class CurrencyPickerTest < ApplicationSystemTestCase
   setup do
+    Rails.cache.delete(CurrencyReferenceRates::CACHE_KEY)
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
 
     find("details", text: /currency:/i).find("summary").click
+  end
+
+  teardown do
+    Rails.cache.delete(CurrencyReferenceRates::CACHE_KEY)
   end
 
   test "shows popular currencies before filtering" do
@@ -66,6 +71,35 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     # The summary value preview is only shown once the details is collapsed.
     find("details", text: /currency:/i).find("summary").click
     assert_selector "summary small", text: "VND"
+  end
+
+  test "autofills an editable dated reference rate and clears attribution after editing" do
+    Rails.cache.write(CurrencyReferenceRates::CACHE_KEY, {
+      "provider" => "Frankfurter",
+      "reference_date" => Date.current.iso8601,
+      "fetched_at" => Time.current.iso8601,
+      "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" }
+    })
+    visit new_budget_source_path(budgets(:active))
+    find("details", text: /currency:/i).find("summary").click
+    filter.set("dong")
+    find(visible_option, text: "VND Dong, 🇻🇳").click
+
+    rate = find("input[name='source[rate]']")
+    assert_equal "25.000", rate.value
+    assert_text "Frankfurter reference rate · #{Date.current.iso8601}"
+
+    send_input(rate, "24950")
+    assert_no_text "Frankfurter reference rate"
+    assert_equal "24.950", rate.value
+  end
+
+  test "asks for a manual rate when the selected currency has no suggestion" do
+    filter.set("dong")
+    find(visible_option, text: "VND Dong, 🇻🇳").click
+
+    assert_equal "", find("input[name='source[rate]']").value
+    assert_text "Reference rate unavailable. Enter a rate manually."
   end
 
   private

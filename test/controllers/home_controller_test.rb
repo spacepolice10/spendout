@@ -16,6 +16,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-hero-cybercat] img[alt='Cybercat'][width='100']", count: 1
     assert_select "[data-hero-cybercat] h1", text: "Spendout", count: 1
     assert_select "[data-floating-ui], [data-float]", count: 0
+    assert_select "[data-landing-fuel][data-controller='landing-gauge']", count: 1
     assert_select "[data-landing-fuel] [role='progressbar'][aria-valuenow='68.0']", count: 1
     assert_select "[data-landing-fuel] [data-daily-gauge] > header h2", count: 0
     assert_select "[data-landing-fuel] [data-remainder-gauge-needle][transform='rotate(32.4 120 118)']", count: 1
@@ -37,8 +38,16 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   test "landing distinguishes available behavior from planned work" do
     get landing_path
 
+    assert_select "[data-currency-story] > article", count: 3
+    assert_select "[data-currency-story]", text: /Switch currencies as you go/
+    assert_select "[data-currency-story]", text: /Exchange into another wallet/
+    assert_select "[data-currency-story]", text: /Easy conversions, honest rates/
+    assert_select "[data-currency-story] [data-status]", count: 0
+    assert_select "[data-currency-story] [data-currency-visual]", count: 3
+    assert_select "[data-currency-story]", text: /budget's base currency stays fixed/
+    assert_select "[data-currency-story]", text: /dated Frankfurter reference rate/
     assert_select "[data-rate-example]", text: /1 USD.*26,300 VND/
-    assert_select "small", text: /No external rate service/
+    assert_select "small", text: /Historical values never update silently/
     assert_select "[data-landing-ownership]", text: /currently deployed with Kamal/
     assert_select "[data-landing-ownership]", text: /ONCE is planned/
     assert_select "[data-landing-footer]", text: /planned, not yet available/
