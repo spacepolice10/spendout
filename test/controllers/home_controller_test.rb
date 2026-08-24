@@ -16,7 +16,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-hero-cybercat] img[alt='Cybercat'][width='100']", count: 1
     assert_select "[data-hero-cybercat] h1", text: "Spendout", count: 1
     assert_select "[data-floating-ui], [data-float]", count: 0
-    assert_select "[data-landing-fuel][data-controller='landing-gauge']", count: 1
+    assert_select "[data-landing-fuel] [data-daily-gauge][data-controller='gauge']", count: 1
     assert_select "[data-landing-fuel] [role='progressbar'][aria-valuenow='68.0']", count: 1
     assert_select "[data-landing-fuel] [data-daily-gauge] > header h2", count: 0
     assert_select "[data-landing-fuel] [data-remainder-gauge-needle][transform='rotate(32.4 120 118)']", count: 1

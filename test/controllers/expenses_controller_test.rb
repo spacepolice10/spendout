@@ -26,7 +26,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='expense-card']", count: 1
     assert_select "article[data-daily-gauge] > header h2", text: "Can I spend more today?", count: 1
     assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
-    assert_select "[data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
+    assert_select "[data-daily-gauge][data-controller='gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
     assert_select "a[href='#{new_budget_expense_path(@budget)}']"
     assert_select "a", text: "Currencies", count: 0
     assert_select "form[action='#{budget_path(@budget)}'] button", "Reset budget"
