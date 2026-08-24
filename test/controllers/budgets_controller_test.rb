@@ -72,6 +72,31 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form input[type='date'][name='budget[period_from]'][required]"
   end
 
+  test "new includes the timezone currency without selecting it" do
+    budgets(:active).update_columns(period_to: Date.yesterday)
+    cookies[:timezone] = "Asia/Saigon"
+
+    get new_budget_path
+
+    assert_response :success
+    assert_select "select[name='budget[base_currency_code]'] option[selected]", count: 0
+    assert_select "label[data-currency-picker-target='option'][data-suggested='true'][data-filter-value='VND Dong, 🇻🇳']:not([hidden])" do
+      assert_select "input[value='VND']:not([checked])"
+    end
+    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size + 1
+  end
+
+  test "new does not duplicate a popular timezone currency" do
+    budgets(:active).update_columns(period_to: Date.yesterday)
+    cookies[:timezone] = "America/New_York"
+
+    get new_budget_path
+
+    assert_response :success
+    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']", count: 1
+    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
+  end
+
   test "creating a budget without a source redirects to source creation" do
     budgets(:active).update_columns(period_to: Date.yesterday)
 

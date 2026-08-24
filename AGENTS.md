@@ -12,4 +12,5 @@
 - Follow Basecamp conventions and reference projects such as Fizzy and Writebook when writing Ruby or Hotwire code.
 - Reuse the variables and semantic rules in `base.css`. Agents must not create CSS classes; use existing classes only for business semantics, never for layouts or generic components.
 - In templates, prefer native HTML over Ruby-generated markup whenever HTML can express the structure clearly; reserve Ruby for dynamic values, conditions, iteration, and Rails helpers that provide meaningful behavior.
+- Keep `/landing` aligned with the shipped product: fine-tune its copy and demonstrations when features are added, changed, or removed, and label future work explicitly.
 - Update these rules when the project requires it, but keep this file concise and free of unnecessary detail.

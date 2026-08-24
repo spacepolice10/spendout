@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root "budgets#current"
+  get "landing" => "home#show", as: :landing
 
   resources :budgets, only: %i[ new create destroy ] do
     resources :allocations, shallow: true

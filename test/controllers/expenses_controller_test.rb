@@ -81,12 +81,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-filter-target='filter'][data-action='input->category-filter#filter']"
     assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-filter-target='pendingNameTextform']"
     assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option'][data-filter-value='#{@allocation.name}']"
-    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='createCategoryButton'][data-action='category-filter#createPendingCategory']"
-    assert_select "button[type='button'][hidden][data-size='lg'][data-category-filter-target='cleanupCategoryButton'][data-action='category-filter#cleanup']"
-    assert_select "template[data-category-filter-target='template'] [data-category-filter-target='pendingCategory'][data-pending-category] > label"
-    assert_select "template input[type='radio'][name='expense[allocation_id]'][value=''][checked]"
-    assert_select "template [data-category-filter-target='pendingCategoryName']"
-    assert_select "template button[type='button'][aria-label='Delete new category'][data-action='category-filter#removePendingCategory']", text: "Delete"
+    assert_select "small[hidden][data-category-filter-target='creationTip']", text: /Category named.*will be created/
+    assert_select "[data-category-filter-target='creationTipName']"
+    assert_select "fieldset[data-expense-allocations] button", count: 0
     assert_select "input[name='expense[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
     assert_select "input[name='expense[amount]'][value]", count: 0
     assert_select "input[name='expense[currency_code]']", count: 0
@@ -102,15 +99,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='radio'][name='expense[source_id]']", count: 2
   end
 
-  test "shows add new before typing when no active allocations are available" do
+  test "shows an empty category filter when no active allocations are available" do
     sign_in_as(@user)
     @budget.allocations.update_all(deleted_at: Time.current)
 
     get new_budget_expense_path(@budget)
 
     assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option']", count: 0
-    assert_select "button[type='button']:not([hidden])[data-category-filter-target='createCategoryButton']"
-    assert_select "button[type='button'][hidden][data-category-filter-target='cleanupCategoryButton']"
+    assert_select "input#expense_category_filter"
+    assert_select "[data-category-filter-target='creationTip'][hidden]"
+    assert_select "fieldset[data-expense-allocations] button", count: 0
   end
 
   test "creates an allocated expense and inherits source currency" do

@@ -50,10 +50,7 @@
 
         & [data-remainder-gauge-hub] {
             & circle {
-                fill: var(--color-2);
-                stroke: var(--color-3);
-                stroke-width: 2;
-                border: var(--border-subtle);
+                fill: var(--color-invert-2);
             }
 
             filter: drop-shadow(0 3px 2px color-mix(in oklch, black 42%, transparent));

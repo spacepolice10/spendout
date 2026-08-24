@@ -3,6 +3,7 @@
   <head>
     <title><%= content_for(:title) || "Spendout" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for(:description) || "Plan your money, know what is safe to spend today, and record expenses without fuss." %>">
     <meta name="view-transition" content="same-origin">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Spendout">
@@ -40,6 +41,6 @@
 
     <%= yield %>
 
-    <%= render "shared/tabbar" %>
+    <%= render "shared/tabbar" unless content_for?(:hide_tabbar) %>
   </body>
 </html>

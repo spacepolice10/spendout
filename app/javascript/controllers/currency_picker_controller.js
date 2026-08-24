@@ -60,7 +60,11 @@ export default class extends Controller {
     return option.dataset.default === "true"
   }
 
+  isSuggested(option) {
+    return option.dataset.suggested === "true"
+  }
+
   isPreselected(option) {
-    return this.isPopular(option) || this.isDefault(option)
+    return this.isPopular(option) || this.isDefault(option) || this.isSuggested(option)
   }
 }

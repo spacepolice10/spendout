@@ -69,7 +69,7 @@
 
         <div data-optional-item-control>
           <fieldset data-expense-allocations>
-            <div data-create-category data-category-filter-target="filterForm">
+            <div data-create-category>
               <%= tag.input type: "text",
                     id: "expense_category_filter",
                     value: expense.category_name_to_create,
@@ -88,26 +88,11 @@
                     } %>
             </div>
 
+            <small data-category-filter-target="creationTip" hidden>
+              Category named <strong data-category-filter-target="creationTipName"></strong> will be created
+            </small>
+
             <div data-category-filter-target="options">
-              <%= tag.button icon_tag("plus"), type: "button",
-              style: "margin-inline: 0;",
-                hidden: active_allocations.any?,
-                data: {
-                  size: "lg",
-                  category_filter_target: "createCategoryButton",
-                  action: "category-filter#createPendingCategory"
-                } %>
-
-              <%= tag.button icon_tag("trash-simple"), type: "button",
-                style: "margin-inline: 0;",
-                hidden: true,
-                data: {
-                  size: "lg",
-                  intent: "secondary",
-                  category_filter_target: "cleanupCategoryButton",
-                  action: "category-filter#cleanup"
-                } %>
-
               <% active_allocations.each do |allocation| %>
                 <%= form.label :allocation_id, value: allocation.id,
                       style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
@@ -134,35 +119,6 @@
               </small>
             <% end %>
 
-            <template data-category-filter-target="template">
-              <div
-                data-category-filter-target="pendingCategory"
-                data-pending-category
-              >
-                <label
-                  style="--allocation-colour: var(--color-palette-<%= Colourable::DEFAULT_COLOUR %>);"
-                >
-                  <input
-                    type="radio"
-                    name="expense[allocation_id]"
-                    value=""
-                    checked
-                  >
-
-                  <%= icon_tag(Iconable::DEFAULT_ICON) %>
-
-                  <span data-category-filter-target="pendingCategoryName"></span>
-                </label>
-
-                <button
-                  type="button"
-                  aria-label="Delete new category"
-                  data-action="category-filter#removePendingCategory"
-                >
-                  Delete
-                </button>
-              </div>
-            </template>
           </fieldset>
         </div>
       <% end %>

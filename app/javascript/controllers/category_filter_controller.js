@@ -2,81 +2,39 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "filterForm", "filter", "options", "option", "allocation", "pendingNameTextform",
-    "createCategoryButton", "cleanupCategoryButton", "template", "pendingCategory", "pendingCategoryName", "summary"
+    "filter", "option", "allocation", "pendingNameTextform", "creationTip",
+    "creationTipName", "summary"
   ]
 
   connect() {
     const pendingName = this.pendingNameTextformTarget.value.trim()
 
-    if (pendingName) {
-      this.renderPendingCategory(pendingName)
-    } else {
-      this.filter()
-    }
+    if (pendingName) this.filterTarget.value = pendingName
+    this.filter()
   }
 
   filter() {
     const requestString = this.filterTarget.value.trim().toLocaleLowerCase()
-    let matches = 0
-
     this.optionTargets.forEach(option => {
       const matchesString = requestString === "" || option.dataset.filterValue.toLocaleLowerCase().includes(requestString)
       option.hidden = !matchesString
-      if (matchesString) matches += 1
     })
 
-    this.createCategoryButtonTarget.hidden = !requestString
-    this.cleanupCategoryButtonTarget.hidden = !requestString
-  }
-
-  createPendingCategory() {
     const value = this.filterTarget.value.trim()
-    if (!value) {
-      this.filterTarget.focus()
-      return
-    }
-
-    this.allocationTargets.forEach(input => input.checked = false)
     this.pendingNameTextformTarget.value = value
-    this.cleanupCategoryButtonTarget.hidden = true
-    this.createCategoryButtonTarget.hidden = true
-    this.renderPendingCategory(value)
-  }
+    this.creationTipTarget.hidden = !value
+    this.creationTipNameTarget.textContent = value
 
-  removePendingCategory() {
-    this.pendingCategoryTarget.remove()
-    this.pendingNameTextformTarget.value = ""
-    this.filterTarget.value = ""
-    this.filterFormTarget.hidden = false
-    this.summaryTarget.textContent = "No allocation"
-    this.filter()
-    this.filterTarget.focus()
-  }
-
-  cleanup() {
-    this.filterTarget.value = ""
-    this.filter()
-    this.filterTarget.focus()
+    if (value) this.allocationTargets.forEach(input => input.checked = false)
+    this.summaryTarget.textContent = value || "No allocation"
   }
 
   selectAllocation(event) {
-    if (this.hasPendingCategoryTarget) this.pendingCategoryTarget.remove()
-
     this.pendingNameTextformTarget.value = ""
     this.filterTarget.value = ""
-    this.filterFormTarget.hidden = false
-    this.summaryTarget.textContent = event.currentTarget.closest("label").dataset.filterValue
+    this.creationTipTarget.hidden = true
+    this.creationTipNameTarget.textContent = ""
     this.filter()
-  }
-
-  renderPendingCategory(name) {
-    if (this.hasPendingCategoryTarget) this.pendingCategoryTarget.remove()
-
-    const category = this.templateTarget.content.cloneNode(true)
-    category.querySelector('[data-category-filter-target~="pendingCategoryName"]').textContent = name
-    this.optionsTarget.append(category)
-    this.filterFormTarget.hidden = true
-    this.summaryTarget.textContent = name
+    this.summaryTarget.textContent = event.currentTarget.closest("label").dataset.filterValue
   }
 }

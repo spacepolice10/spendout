@@ -1,6 +1,31 @@
 class Currency
   POPULAR_CODES = %w[USD EUR GBP].freeze
 
+  # Countries sharing a currency whose flag cannot provide a one-to-one mapping.
+  SHARED_CURRENCY_COUNTRIES = {
+    "AUD" => %w[AU CC CX HM KI NR NF TV],
+    "CHF" => %w[CH LI],
+    "DKK" => %w[DK FO GL],
+    "EUR" => %w[AD AT AX BE BG BL CY DE EE ES FI FR GF GP GR HR IE IT LT LU LV MC ME MF MQ NL PM PT RE SI SK SM TF VA XK YT],
+    "GBP" => %w[GB GG GS IM JE],
+    "NOK" => %w[BV NO SJ],
+    "NZD" => %w[CK NU NZ PN TK],
+    "USD" => %w[AS BQ EC FM GU IO MH MP PR PW TC TL UM US VG VI]
+  }.freeze
+
+  # Legacy IANA identifiers can still be returned by browsers and operating systems.
+  TIMEZONE_ALIASES = {
+    "America/Godthab" => "America/Nuuk",
+    "Asia/Calcutta" => "Asia/Kolkata",
+    "Asia/Katmandu" => "Asia/Kathmandu",
+    "Asia/Rangoon" => "Asia/Yangon",
+    "Asia/Saigon" => "Asia/Ho_Chi_Minh",
+    "Europe/Kiev" => "Europe/Kyiv",
+    "Pacific/Enderbury" => "Pacific/Kanton",
+    "Pacific/Ponape" => "Pacific/Pohnpei",
+    "Pacific/Truk" => "Pacific/Chuuk"
+  }.freeze
+
   # A single issuing country or region for each consumer-facing currency.
   FLAG_COUNTRIES = {
     "AED" => "AE", "AFN" => "AF", "ALL" => "AL", "AMD" => "AM", "AOA" => "AO",
@@ -195,6 +220,18 @@ class Currency
     [ code, data.merge(flag: flag).freeze ]
   end.freeze
 
+  COUNTRY_CURRENCY_CODES = begin
+    codes = FLAG_COUNTRIES.each_with_object({}) { |(currency_code, country_code), result| result[country_code] = currency_code }
+    SHARED_CURRENCY_COUNTRIES.each do |currency_code, country_codes|
+      country_codes.each { |country_code| codes[country_code] = currency_code }
+    end
+    codes.freeze
+  end
+
+  TIMEZONE_COUNTRY_CODES = TZInfo::Country.all.each_with_object({}) do |country, codes|
+    country.zone_identifiers.each { |identifier| codes[identifier] ||= country.code }
+  end.freeze
+
   class << self
     def catalog
       CATALOG
@@ -206,6 +243,17 @@ class Currency
 
     def popular_options
       POPULAR_CODES.map { |code| option_for(code) }
+    end
+
+    def currency_code_for_country(country_code)
+      COUNTRY_CURRENCY_CODES[country_code.to_s.upcase]
+    end
+
+    def currency_code_for_timezone(timezone_identifier)
+      identifier = timezone_identifier.to_s
+      canonical_identifier = TIMEZONE_ALIASES.fetch(identifier, identifier)
+
+      currency_code_for_country(TIMEZONE_COUNTRY_CODES[canonical_identifier])
     end
 
     def find(code)
