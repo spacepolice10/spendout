@@ -1,9 +1,9 @@
 <%# locals: (form:, currency_attribute:, rate_attribute:, base_currency_code:, open: false, converted_amount_label: nil) %>
 <% currency_code = form.object.public_send(currency_attribute).presence || base_currency_code %>
-<details name="form-details" data-controller="form-details"<%= " open" if open %>>
-  <summary data-form-details-target="summary">
+<details name="form-details" data-form-target="section"<%= " open" if open %>>
+  <summary data-form-target="summary">
     <span> Currency: </span>
-    <small data-form-details-target="summaryContent"><%= currency_code %></small>
+    <small data-form-target="summaryContent"><%= currency_code %></small>
   </summary>
 
   <div>
@@ -12,10 +12,10 @@
 
     <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
           select_data: {
-            currency_conversion_target: "currency",
-            action: "change->currency-conversion#currencyChanged input->form-details#updateSummaryContent"
+            currency_fields_target: "currency",
+            action: "change->currency-fields#currencyChanged input->form#updateSummary"
           },
-          filter_data: { form_details_target: "input" },
+          filter_data: { form_target: "focus" },
           rate_attribute: rate_attribute,
           base_currency_code: base_currency_code,
           converted_amount_label: converted_amount_label %>

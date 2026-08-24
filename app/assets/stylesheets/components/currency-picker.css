@@ -2,9 +2,25 @@
     .currency-picker {
         border: var(--border-subtle);
 
+        & [data-currency-combobox] {
+            position: relative;
+        }
+
+        & [data-currency-combobox] > .icon-wrap {
+            position: absolute;
+            inset-inline-start: var(--form-space-h);
+            inset-block-start: 50%;
+            translate: 0 -50%;
+            pointer-events: none;
+        }
+
         & input[type="search"] {
             border: 0;
-            border-bottom: var(--border-subtle);
+            padding-inline-start: calc(var(--form-space-h) + var(--space-h-2));
+        }
+
+        & [data-currency-picker-target="options"] {
+            border-top: var(--border-subtle);
         }
 
         & [data-currency-picker-option] {
@@ -14,27 +30,42 @@
                 background: var(--color-2);
             }
 
-            &>[data-currency-conversion-target~="rateFields"] {
-                display: grid;
-                gap: var(--space-v-half);
-                padding: var(--space-v-half) var(--form-space-h);
+        }
+
+        &>[data-currency-picker-target="attachment"] {
+            display: grid;
+            gap: var(--space-v-half);
+            padding: var(--space-v-half) var(--form-space-h);
+            border-top: var(--border-subtle);
+        }
+
+        & [data-currency-rate-input] {
+            display: flex;
+            gap: var(--space-h-half);
+
+            &>:is(input, output) {
+                flex: 1;
+                padding: var(--space-v-half) var(--space-h-half);
             }
 
-            & [data-currency-rate-input] {
-                display: flex;
-                gap: var(--space-h-half);
-
-                &:first-child {
-                    flex: 2;
-                }
-
-                &>:is(input, output) {
-                    flex: 1;
-                    height: fit-content;
-                    padding: var(--space-v-half) var(--space-h-half);
-                    font-size: var(--font-size-xs);
-                }
+            &>input {
+                font-size: var(--font-size-base-type);
             }
+
+            &>output {
+                font-size: var(--font-size-xs);
+            }
+        }
+
+        & [data-currency-picker-target="attachment"] :is(
+            output,
+            [data-expense-fields-target~="sourceDebit"],
+            [data-expense-fields-target~="budgetValue"]
+        ) {
+            display: flex;
+            align-items: center;
+            block-size: var(--form-control-height);
+            padding: var(--space-v-half) var(--space-h-half);
         }
     }
 }

@@ -95,6 +95,10 @@ class Budget < ApplicationRecord
     sources_amount_in_base - expenses_amount_in_base
   end
 
+  def last_expense_currency_code
+    expenses.order(created_at: :desc, id: :desc).pick(:currency_code)
+  end
+
   def todays_remainder
     return unless period_from <= Date.current && Date.current <= period_to
 

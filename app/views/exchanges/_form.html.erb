@@ -1,11 +1,8 @@
-<% reference_rates = CurrencyReferenceRates.for(parent_source.currency_code) %>
 <%= form_with model: exchange, url: source_exchanges_path(parent_source), data: {
-      controller: "currency-conversion",
-      currency_conversion_base_currency_value: parent_source.currency_code,
-      currency_conversion_operation_value: "multiply",
-      currency_conversion_rates_value: reference_rates.rates.to_json,
-      currency_conversion_reference_date_value: reference_rates.reference_date&.iso8601,
-      currency_conversion_provider_value: reference_rates.provider
+      controller: "form currency-fields",
+      currency_fields_base_currency_value: parent_source.currency_code,
+      currency_fields_operation_value: "multiply",
+      currency_fields_reference_url_value: currency_reference_path
     } do |form| %>
   <% if exchange.errors.any? %>
     <section role="alert" data-form-errors>
@@ -21,19 +18,20 @@
   <%= render "shared/name_fields", form: form, name_attribute: :child_source_name,
         placeholder: "Travel cash, foreign account, etc." %>
 
-  <details name="form-details" data-controller="form-details">
-    <summary data-form-details-target="summary">
+  <details name="form-details" data-form-target="section">
+    <summary data-form-target="summary">
       <span>Amount from <%= parent_source.currency_code %>:</span>
-      <small data-form-details-target="summaryContent"><%= exchange.parent_amount || 0 %></small>
+      <small data-form-target="summaryContent"><%= exchange.parent_amount || 0 %></small>
     </summary>
     <div>
       <small>How much should be taken from <%= parent_source.name %>?</small>
       <%= form.label :parent_amount, "Amount from #{parent_source.currency_code}", class: "utilities--sr-only" %>
       <%= form.text_field :parent_amount, inputmode: "decimal", placeholder: "0", required: true,
-            data: { controller: "money-input", form_details_target: "input",
-              money_input_start_value: exchange.parent_amount&.to_s("F"),
-              currency_conversion_target: "amount",
-              action: "input->currency-conversion#calculate input->form-details#updateSummaryContent" } %>
+            data: { controller: "amount-fields", form_target: "focus",
+              amount_fields_start_value: exchange.parent_amount&.to_s("F"),
+              amount_fields_minimum_value: "0", amount_fields_minimum_exclusive_value: true,
+              currency_fields_target: "amount",
+              action: "input->currency-fields#calculate input->form#updateSummary" } %>
     </div>
   </details>
 

@@ -5,8 +5,6 @@ require "net/http"
 module Frankfurter
   class Client
     ENDPOINT = "https://api.frankfurter.dev/v2/rates?base=EUR&date=%<date>s"
-    PROVIDER = "Frankfurter"
-
     class Error < StandardError; end
 
     def fetch
@@ -60,9 +58,7 @@ module Frankfurter
         raise Error, "rates have inconsistent reference dates" unless dates.uniq.one?
 
         {
-          "provider" => PROVIDER,
           "reference_date" => dates.first.iso8601,
-          "fetched_at" => Time.current.iso8601,
           "rates" => rates
         }
       end

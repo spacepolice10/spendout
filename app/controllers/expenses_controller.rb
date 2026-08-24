@@ -19,18 +19,18 @@ class ExpensesController < ApplicationController
   end
 
   def new
-    @active_sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
-    @active_allocations = @budget.allocations.where(deleted_at: nil).order(:created_at, :id)
+    set_form_collections
     @expense = @budget.expenses.new(
       source: @active_sources.first,
       allocation: @active_allocations.first,
+      currency_code: @active_sources.first&.currency_code,
+      conversion_rate: 1,
       occurred_on: Date.current.clamp(@budget.period_from, @budget.period_to)
     )
   end
 
   def create
-    @active_sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
-    @active_allocations = @budget.allocations.where(deleted_at: nil).order(:created_at, :id)
+    set_form_collections
     @expense = @budget.expenses.new(expense_params)
 
     if @expense.save_with_source_capacity
@@ -64,9 +64,22 @@ class ExpensesController < ApplicationController
         :source_id,
         :allocation_id,
         :amount,
+        :currency_code,
+        :conversion_rate,
         :occurred_on,
         :note,
         :category_name_to_create
       )
+    end
+
+    def set_form_collections
+      @active_sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
+      @active_allocations = @budget.allocations.where(deleted_at: nil).order(:created_at, :id)
+      @expense_currency_context = @active_sources.each_with_object({}) do |source, context|
+        context[source.id] = {
+          currency: source.currency_code,
+          rate: source.rate.to_s("F")
+        }
+      end
     end
 end

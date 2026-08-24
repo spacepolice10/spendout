@@ -223,6 +223,10 @@
     }
 
     section[data-form-errors] {
+        padding: var(--space-v) var(--space-h);
+        border: var(--border-strong);
+        border-color: var(--color-negative);
+        border-radius: var(--radius-2);
         color: var(--color-invert-negative);
     }
 

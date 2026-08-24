@@ -87,6 +87,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-expense-form-target='allocation']", count: 0
     assert_select "[data-expense-options]"
     assert_select "details[data-optional-item]", count: 4
+    assert_select "select[name='expense[currency_code]'][data-expense-fields-target='currency'] option[value='USD'][selected]"
+    assert_select "input[name='expense[conversion_rate]'][data-expense-fields-target='rate']"
     assert_select "details[data-controller='details']", count: 0
     assert_select "details[data-action]", count: 0
     assert_select "details[data-optional-item] > summary > span", count: 4
@@ -104,16 +106,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='expense[note]'][maxlength='200']"
     assert_select "input[name='expense[note]'][size]", count: 0
     assert_select "input[type='text'][name]#expense_category_filter", count: 0
-    assert_select "details[data-controller~='category-filter'] fieldset[data-expense-allocations]"
-    assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-filter-target='filter'][data-action='input->category-filter#filter']"
-    assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-filter-target='pendingNameTextform']"
-    assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option'][data-filter-value='#{@allocation.name}']"
-    assert_select "small[hidden][data-category-filter-target='creationTip']", text: /Category named.*will be created/
-    assert_select "[data-category-filter-target='creationTipName']"
+    assert_select "details[data-controller~='category-fields'] fieldset[data-expense-allocations]"
+    assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-fields-target='filter'][data-action='input->category-fields#filter']"
+    assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-fields-target='pendingNameTextform']"
+    assert_select "fieldset[data-expense-allocations] label[data-category-fields-target='option'][data-filter-value='#{@allocation.name}']"
+    assert_select "small[hidden][data-category-fields-target='creationTip']", text: /Category named.*will be created/
+    assert_select "[data-category-fields-target='creationTipName']"
     assert_select "fieldset[data-expense-allocations] button", count: 0
-    assert_select "input[name='expense[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
+    assert_select "input[name='expense[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
     assert_select "input[name='expense[amount]'][value]", count: 0
-    assert_select "input[name='expense[currency_code]']", count: 0
+    assert_select "input[type='radio'][name='expense-currency-picker'][value='USD'][checked]"
   end
 
   test "shows the source disclosure when more than one active source is available" do
@@ -126,19 +128,32 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='radio'][name='expense[source_id]']", count: 2
   end
 
+  test "prioritizes the last expense currency then the budget and source currencies" do
+    sign_in_as(@user)
+    @source.update!(currency_code: "EUR", rate: "0.8")
+    @budget.expenses.create!(source: @source, amount: 32, currency_code: "THB", conversion_rate: 1)
+
+    get new_budget_expense_path(@budget)
+
+    assert_select "[data-currency-picker-option]:nth-child(1) input[value='THB']"
+    assert_select "[data-currency-picker-option]:nth-child(2) input[value='USD']"
+    assert_select "[data-currency-picker-option]:nth-child(3) input[value='EUR']"
+    assert_select "select[name='expense[currency_code]'] option[value='EUR'][selected]"
+  end
+
   test "shows an empty category filter when no active allocations are available" do
     sign_in_as(@user)
     @budget.allocations.update_all(deleted_at: Time.current)
 
     get new_budget_expense_path(@budget)
 
-    assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option']", count: 0
+    assert_select "fieldset[data-expense-allocations] label[data-category-fields-target='option']", count: 0
     assert_select "input#expense_category_filter"
-    assert_select "[data-category-filter-target='creationTip'][hidden]"
+    assert_select "[data-category-fields-target='creationTip'][hidden]"
     assert_select "fieldset[data-expense-allocations] button", count: 0
   end
 
-  test "creates an allocated expense and inherits source currency" do
+  test "creates an allocated expense in a currency independent from its source" do
     sign_in_as(@user)
 
     assert_difference("Expense.count", 1) do
@@ -149,7 +164,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
           amount: "25.2500",
           occurred_on: "2026-08-20",
           note: "Dinner",
-          currency_code: "EUR"
+          currency_code: "EUR",
+          conversion_rate: "0.5"
         }
       }
     end
@@ -161,7 +177,10 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_equal BigDecimal("25.2500"), expense.amount
     assert_equal Date.new(2026, 8, 20), expense.occurred_on
     assert_equal "Dinner", expense.note
-    assert_equal "USD", expense.currency_code
+    assert_equal "EUR", expense.currency_code
+    assert_equal BigDecimal("50.5"), expense.source_amount
+    assert_equal "USD", expense.source_currency_code
+    assert_equal BigDecimal("0.5"), expense.rate
   end
 
   test "creates an expense without an allocation" do
@@ -282,6 +301,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: "Expense"
     assert_select "time[datetime='2026-08-19']"
     assert_select "dd", text: /\$125 USD/
+    assert_select "dt", text: "Source debit"
+    assert_select "dt", text: "Budget value"
     assert_select "a[href='#{source_path(@source)}']", text: @source.name
     assert_select "a[href='#{allocation_path(@allocation)}']", text: @allocation.name
     assert_select "dd", text: @expense.note

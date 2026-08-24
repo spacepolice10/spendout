@@ -3,40 +3,43 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = {
     start: String,
-    fractionDigits: { type: Number, default: 4 }
+    fractionDigits: { type: Number, default: 4 },
+    minimum: String,
+    minimumExclusive: Boolean,
+    maximum: String
   }
 
   connect() {
     this.events = new AbortController()
     const options = { signal: this.events.signal }
 
-    this.element.addEventListener("input", event => this.handleInput(event), options)
-    this.element.addEventListener("change", event => this.handleInput(event), options)
-    this.element.addEventListener("paste", event => this.handlePaste(event), options)
+    this.element.addEventListener("input", event => this.handleInputting(event), options)
+    this.element.addEventListener("change", event => this.handleInputting(event), options)
+    this.element.addEventListener("paste", event => this.handlePasting(event), options)
     this.element.form?.addEventListener("formdata", event => this.handleFormData(event), options)
 
     this.render(this.parseValue(this.hasStartValue ? this.startValue : this.element.value, "."))
   }
 
   disconnect() {
-    this.events.abort()
+    this.events.abort() 
   }
 
-  handleInput(event) {
+  handleInputting(event) {
     if (event.data === "." && event.inputType === "insertText" && !this.element.value.includes(",")) {
       const caret = this.element.selectionStart
       this.element.setRangeText(",", caret - 1, caret, "end")
     }
 
-    const tokensToRight = this.element.value
+    const tokensFromCursor = this.element.value
       .slice(this.element.selectionStart)
       .replace(/[^\d,]/g, "").length
 
     this.render(this.parseValue(this.element.value, ","))
-    this.restoreCursor(tokensToRight)
+    this.restoreCursor(tokensFromCursor)
   }
 
-  handlePaste(event) {
+  handlePasting(event) {
     const value = event.clipboardData?.getData("text")
     if (value == null) return
 
@@ -54,7 +57,7 @@ export default class extends Controller {
       this.element.selectionEnd,
       "end"
     )
-    this.handleInput({})
+    this.handleInputting({})
   }
 
   handleFormData(event) {
@@ -110,19 +113,53 @@ export default class extends Controller {
 
     if (this.canonicalValue === "" && this.element.value !== "") {
       message = "Enter a valid amount."
-    } else if (Number(this.canonicalValue) < 0) {
-      message = "Amount must be greater than or equal to 0."
+    } else if (this.canonicalValue !== "" && this.hasMinimumValue) {
+      const comparison = this.compare(this.canonicalValue, this.minimumValue)
+
+      if (comparison < 0 || (comparison === 0 && this.minimumExclusiveValue)) {
+        message = this.minimumExclusiveValue ?
+          `Amount must be greater than ${this.minimumValue}.` :
+          `Amount must be greater than or equal to ${this.minimumValue}.`
+      }
+    }
+
+    if (message === "" && this.canonicalValue !== "" && this.hasMaximumValue &&
+        this.compare(this.canonicalValue, this.maximumValue) > 0) {
+      message = `Amount must be less than or equal to ${this.maximumValue}.`
     }
 
     this.element.setCustomValidity(message)
   }
 
-  restoreCursor(tokensToRight) {
+  compare(left, right) {
+    const leftParts = this.comparable(left)
+    const rightParts = this.comparable(right)
+    const scale = Math.max(leftParts.fraction.length, rightParts.fraction.length)
+    const leftDigits = `${leftParts.integer}${leftParts.fraction.padEnd(scale, "0")}`
+    const rightDigits = `${rightParts.integer}${rightParts.fraction.padEnd(scale, "0")}`
+    const leftValue = BigInt(leftDigits || "0") * BigInt(leftParts.sign)
+    const rightValue = BigInt(rightDigits || "0") * BigInt(rightParts.sign)
+
+    return leftValue < rightValue ? -1 : leftValue > rightValue ? 1 : 0
+  }
+
+  comparable(value) {
+    const match = String(value).trim().match(/^(-?)(\d+)(?:\.(\d+))?$/)
+    if (!match) return { sign: 1, integer: "0", fraction: "" }
+
+    return {
+      sign: match[1] === "-" ? -1 : 1,
+      integer: match[2].replace(/^0+(?=\d)/, ""),
+      fraction: match[3] || ""
+    }
+  }
+
+  restoreCursor(tokensFromCursor) {
     let position = this.element.value.length
 
-    while (position > 0 && tokensToRight > 0) {
+    while (position > 0 && tokensFromCursor > 0) {
       position--
-      if (/[\d,]/.test(this.element.value[position])) tokensToRight--
+      if (/[\d,]/.test(this.element.value[position])) tokensFromCursor--
     }
 
     if (this.element.value[position - 1] === ".") position--

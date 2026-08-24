@@ -18,7 +18,7 @@ class Source < ApplicationRecord
     recorded_expenses = recorded_expenses.where.not(id: excluding.id) if excluding&.persisted?
     recorded_exchanges = outgoing_exchanges
     recorded_exchanges = recorded_exchanges.where.not(id: excluding_exchange.id) if excluding_exchange&.persisted?
-    amount - recorded_expenses.sum(:amount) - recorded_exchanges.sum(:parent_amount)
+    amount - recorded_expenses.sum(:source_amount) - recorded_exchanges.sum(:parent_amount)
   end
 
   def deleted?

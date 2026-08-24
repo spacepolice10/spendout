@@ -1,9 +1,9 @@
-<%# locals: (form:, amount_attribute: :amount, open: false, default_amount: false) %>
+<%# locals: (form:, amount_attribute: :amount, open: false, default_amount: false, minimum: "0", minimum_exclusive: false) %>
 <% amount = form.object.public_send(amount_attribute) %>
-<details name="form-details" data-controller="form-details"<%= " open" if open %>>
-  <summary data-form-details-target="summary">
+<details name="form-details" data-form-target="section"<%= " open" if open %>>
+  <summary data-form-target="summary">
     <span> Amount: </span>
-    <small data-form-details-target="summaryContent"><%= amount || 0 %></small>
+    <small data-form-target="summaryContent"><%= amount || 0 %></small>
   </summary>
 
   <div>
@@ -13,11 +13,13 @@
     <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0", autofocus: open, required: true,
       value: default_amount ? amount || 0 : amount,
       data: {
-        controller: "money-input",
-        form_details_target: "input",
-        money_input_start_value: amount ? amount.to_s("F") : (default_amount ? "0" : nil),
-        currency_conversion_target: "amount",
-        action: "input->currency-conversion#calculate input->form-details#updateSummaryContent"
+        controller: "amount-fields",
+        form_target: "focus",
+        amount_fields_start_value: amount ? amount.to_s("F") : (default_amount ? "0" : nil),
+        amount_fields_minimum_value: minimum,
+        amount_fields_minimum_exclusive_value: minimum_exclusive,
+        currency_fields_target: "amount",
+        action: "input->currency-fields#calculate input->form#updateSummary"
       } %>
     <% unless mobile_variant? %>
       <small>

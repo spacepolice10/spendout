@@ -12,10 +12,8 @@ module Frankfurter
         ]
       JSON
 
-      assert_equal "Frankfurter", payload["provider"]
       assert_equal "2026-08-24", payload["reference_date"]
       assert_equal({ "EUR" => "1", "USD" => "1.175", "VND" => "30912.125" }, payload["rates"])
-      assert Time.iso8601(payload["fetched_at"])
     end
 
     test "rejects malformed and unsafe rate tables" do

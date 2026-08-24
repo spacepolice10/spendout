@@ -1,6 +1,14 @@
 require "test_helper"
 
 class BudgetTest < ActiveSupport::TestCase
+  test "finds the currency of the most recently created expense" do
+    budget = budgets(:active)
+    source = sources(:active)
+    budget.expenses.create!(source: source, amount: 1, currency_code: "THB", conversion_rate: "0.03")
+
+    assert_equal "THB", budget.last_expense_currency_code
+  end
+
   test "stores its base currency independently of its sources" do
     budget = budgets(:active)
 

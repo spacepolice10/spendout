@@ -1,58 +1,57 @@
 <% content_for :title, "Expenses" %>
 
 <main data-size="lg" data-anchor="footer">
-  <article data-elevation="1">
-    <article
-      class="budget"
-      data-archived="<%= @budget.archived? %>"
-      data-testid="budget-card"
-    >
-      <main>
-        <% if (todays_remainder = @budget.todays_remainder) %>
-          <%= render "shared/daily_gauge",
+  <article
+    data-elevation="1"
+    class="budget"
+    data-archived="<%= @budget.archived? %>"
+    data-testid="budget-card"
+  >
+    <main>
+      <% if (todays_remainder = @budget.todays_remainder) %>
+        <%= render "shared/daily_gauge",
                 amount: todays_remainder,
                 currency_code: @budget.base_currency_code,
                 percentage: @budget.todays_remainder_percentage %>
-        <% end %>
-      </main>
-    </article>
+      <% end %>
 
-    <% if @expenses.any? %>
-      <article class="expense-list" data-testid="expense-list">
-        <main>
-          <article data-elevation="1">
-            <header>
-              <h2>Expenses</h2>
-            </header>
+      <% if @expenses.any? %>
+        <article
+          data-elevation="1"
+          class="expense-list"
+          data-testid="expense-list"
+        >
+          <header>
+            <h2>Expenses</h2>
+          </header>
 
-            <main>
-              <% @expenses_by_date.each do |date, expenses| %>
-                <section data-expense-day data-testid="expense-day">
-                  <header>
-                    <h3>
-                      <time datetime="<%= date.iso8601 %>"><%= date.to_fs(:long) %></time>
-                    </h3>
+          <main>
+            <% @expenses_by_date.each do |date, expenses| %>
+              <section data-expense-day data-testid="expense-day">
+                <header>
+                  <h3>
+                    <time datetime="<%= date.iso8601 %>"><%= date.to_fs(:long) %></time>
+                  </h3>
 
-                    <p>
-                      <strong data-testid="expense-day-total">
-                        <%= formatted_amount(@expense_totals_by_date.fetch(date), @budget.base_currency_code) %>
-                        <%= @budget.base_currency_code %>
-                      </strong>
-                    </p>
-                  </header>
+                  <p>
+                    <strong data-testid="expense-day-total">
+                      <%= formatted_amount(@expense_totals_by_date.fetch(date), @budget.base_currency_code) %>
+                      <%= @budget.base_currency_code %>
+                    </strong>
+                  </p>
+                </header>
 
-                  <main>
-                    <%= render expenses %>
-                  </main>
-                </section>
-              <% end %>
-            </main>
+                <main>
+                  <%= render expenses %>
+                </main>
+              </section>
+            <% end %>
+          </main>
 
-            <%= render "shared/pagination", page: @page, records_name: "expenses" %>
-          </article>
-        </main>
-      </article>
-    <% end %>
+          <%= render "shared/pagination", page: @page, records_name: "expenses" %>
+        </article>
+      <% end %>
+    </main>
 
     <footer>
       <%= link_to new_budget_expense_path(@budget), role: "button", data: {

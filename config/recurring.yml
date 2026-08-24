@@ -10,8 +10,8 @@
 #     schedule: at 5am every day
 
 production:
-  refresh_currency_reference_rates:
-    class: RefreshCurrencyReferenceRatesJob
+  refresh_currency_reference:
+    class: RefreshCurrencyReferenceJob
     queue: background
     schedule: at 6pm every day
 

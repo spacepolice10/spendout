@@ -17,6 +17,14 @@
           <%= link_to @expense.source.name, source_path(@expense.source) %>
           <%= "(Deleted)" if @expense.source.deleted? %>
         </dd>
+        <dt>Source debit</dt>
+        <dd><%= formatted_amount(@expense.source_amount, @expense.source_currency_code) %> <%= @expense.source_currency_code %></dd>
+        <% if @expense.currency_code != @expense.source_currency_code %>
+          <dt>Conversion quote</dt>
+          <dd><%= @expense.conversion_rate.to_s("F") %> <%= @expense.currency_code %> per 1 <%= @expense.source_currency_code %></dd>
+        <% end %>
+        <dt>Budget value</dt>
+        <dd><%= formatted_amount(@expense.amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
         <dt>Allocation</dt>
         <dd>
           <% if @expense.allocation %>

@@ -1,4 +1,11 @@
-<%= form_with model: [ budget, expense ], data: { expense_form: true } do |form| %>
+<%= form_with model: [ budget, expense ], data: {
+      expense_form: true,
+      controller: "form expense-fields",
+      action: "input->expense-fields#refresh change->expense-fields#refresh",
+      expense_fields_sources_value: expense_currency_context.to_json,
+      expense_fields_budget_currency_value: budget.base_currency_code,
+      expense_fields_reference_url_value: currency_reference_path
+    } do |form| %>
   <% if expense.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
@@ -14,15 +21,16 @@
     </section>
   <% end %>
 
-  <%= render "shared/amount_fields", form: form, amount_attribute: :amount, open: true %>
+  <%= render "shared/amount_fields", form: form, amount_attribute: :amount, open: true,
+        minimum_exclusive: true %>
 
   <div data-expense-options>
     <div>
       <%= tag.details name: "form-details", data: {
             optional_item: true,
-            controller: "form-details"
+            form_target: "section"
           } do %>
-        <summary data-form-details-target="summary">
+        <summary data-form-target="summary">
           <span>From:</span>
           <small><%= expense.source&.name %></small>
         </summary>
@@ -33,8 +41,8 @@
               <% active_sources.each do |source| %>
                 <%= form.label :source_id, value: source.id,
                       style: "--source-colour: var(--color-palette-#{source.colour});" do %>
-                  <%= form.radio_button :source_id, source.id, required: true, checked: true,
-                        data: { form_details_target: "input" } %>
+                  <%= form.radio_button :source_id, source.id, required: true,
+                        data: { form_target: "focus", expense_fields_target: "source" } %>
 
                   <span>
                     <strong><%= source.name %></strong>
@@ -59,12 +67,12 @@
 
       <%= tag.details name: "form-details", data: {
           optional_item: true,
-          controller: "category-filter form-details"
+          controller: "category-fields", form_target: "section"
         }, open: expense.category_name_to_create.present? do %>
-        <summary data-form-details-target="summary">
+        <summary data-form-target="summary">
           <span> Category: </span>
 
-          <small data-category-filter-target="summary">
+          <small data-category-fields-target="summary">
             <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
           </small>
         </summary>
@@ -79,33 +87,33 @@
                     autocomplete: "off",
                     aria: { label: "Find or add category" },
                     data: {
-                      category_filter_target: "filter",
-                      form_details_target: "input",
-                      action: "input->category-filter#filter"
+                      category_fields_target: "filter",
+                      form_target: "focus",
+                      action: "input->category-fields#filter"
                     } %>
 
               <%= form.hidden_field :category_name_to_create,
                     data: {
-                      category_filter_target: "pendingNameTextform"
+                      category_fields_target: "pendingNameTextform"
                     } %>
             </div>
 
-            <small data-category-filter-target="creationTip" hidden>
-              Category named <strong data-category-filter-target="creationTipName"></strong> will be created
+            <small data-category-fields-target="creationTip" hidden>
+              Category named <strong data-category-fields-target="creationTipName"></strong> will be created
             </small>
 
-            <div data-category-filter-target="options">
+            <div data-category-fields-target="options">
               <% active_allocations.each do |allocation| %>
                 <%= form.label :allocation_id, value: allocation.id,
                       style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
                       data: {
-                        category_filter_target: "option",
+                        category_fields_target: "option",
                         filter_value: allocation.name
                       } do %>
                   <%= form.radio_button :allocation_id, allocation.id,
                         data: {
-                          category_filter_target: "allocation",
-                          action: "change->category-filter#selectAllocation"
+                          category_fields_target: "allocation",
+                          action: "change->category-fields#selectAllocation"
                         } %>
 
                   <%= icon_tag(allocation.icon) %>
@@ -127,9 +135,9 @@
 
       <%= tag.details name: "form-details", data: {
             optional_item: true,
-            controller: "form-details"
+            form_target: "section"
           }, open: expense.errors[:occurred_on].any? do %>
-        <summary data-form-details-target="summary">
+        <summary data-form-target="summary">
           <span> Date: </span>
           <small><%= expense.occurred_on&.to_fs(:long) %></small>
         </summary>
@@ -140,16 +148,16 @@
                 min: budget.period_from,
                 max: budget.period_to,
                 required: true,
-                data: { form_details_target: "input" } %>
+                data: { form_target: "focus" } %>
           <% end %>
         </div>
       <% end %>
 
       <%= tag.details name: "form-details", data: {
             optional_item: true,
-            controller: "form-details"
+            form_target: "section"
           }, open: expense.note.present? do %>
-        <summary data-form-details-target="summary">
+        <summary data-form-target="summary">
           <span> Note: </span>
           <%= tag.small("Added", hidden: expense.note.blank?) %>
         </summary>
@@ -157,12 +165,38 @@
         <div data-optional-item-control>
           <%= form.label :note do %>
             <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional",
-                  data: { form_details_target: "input" } %>
+                  data: { form_target: "focus" } %>
           <% end %>
         </div>
       <% end %>
     </div>
   </div>
+
+  <details name="form-details" data-form-target="section"<%= " open" if expense.errors[:currency_code].any? || expense.errors[:conversion_rate].any? %>>
+    <summary data-form-target="summary">
+      <span> Currency: </span>
+      <small data-form-target="summaryContent"><%= expense.currency_code %></small>
+    </summary>
+
+    <div>
+      <small>What currency was the expense in?</small>
+      <%= form.label :currency_code, "Currency", class: "utilities--sr-only" %>
+      <%= render "shared/currency_picker", form: form, attribute: :currency_code,
+            select_data: {
+              expense_fields_target: "currency",
+              action: "change->expense-fields#currencyChanged input->form#updateSummary"
+            },
+            filter_data: { form_target: "focus" },
+            rate_attribute: :conversion_rate,
+            base_currency_code: expense.source_currency_code || expense.source&.currency_code,
+            rate_mode: :direct,
+            preferred_currency_codes: [
+              budget.last_expense_currency_code,
+              budget.base_currency_code,
+              expense.source&.currency_code
+            ] %>
+    </div>
+  </details>
 
   <footer>
     <div data-layout="flex">

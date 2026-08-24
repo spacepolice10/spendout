@@ -1,6 +1,6 @@
 require "application_system_test_case"
 
-class MoneyInputsTest < ApplicationSystemTestCase
+class AmountFieldsTest < ApplicationSystemTestCase
   setup do
     sign_in_as users(:one)
     visit new_budget_expense_path(budgets(:active))
@@ -35,11 +35,13 @@ class MoneyInputsTest < ApplicationSystemTestCase
     input_value(amount, "1234")
 
     caret = page.evaluate_script(<<~JAVASCRIPT, amount)
-      const input = arguments[0]
-      input.setSelectionRange(1, 1)
-      input.setRangeText("9", 1, 1, "end")
-      input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: "9" }))
-      input.selectionStart
+      (() => {
+        const input = arguments[0]
+        input.setSelectionRange(1, 1)
+        input.setRangeText("9", 1, 1, "end")
+        input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: "9" }))
+        return input.selectionStart
+      })()
     JAVASCRIPT
 
     assert_equal "19.234", amount.value
@@ -50,7 +52,7 @@ class MoneyInputsTest < ApplicationSystemTestCase
     amount = find("input[name='expense[amount]']")
 
     input_value(amount, "0")
-    assert field_valid?(amount)
+    assert_not field_valid?(amount)
 
     input_value(amount, "-1")
     assert_not field_valid?(amount)
@@ -63,13 +65,36 @@ class MoneyInputsTest < ApplicationSystemTestCase
     assert_not field_valid?(amount)
   end
 
+  test "allows zero for a source balance" do
+    visit new_budget_source_path(budgets(:active))
+    amount = find("input[name='source[amount]']", visible: :all)
+
+    input_value(amount, "0")
+
+    assert field_valid?(amount)
+  end
+
+  test "requires conversion rates to be greater than zero" do
+    visit new_budget_source_path(budgets(:active))
+    find("details", text: /currency:/i).find("summary").click
+    find("input[data-currency-picker-target='filter']").set("vnd")
+    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
+    rate = find("input[name='source[rate]']")
+
+    input_value(rate, "0")
+    assert_not field_valid?(rate)
+
+    input_value(rate, "0,000000000001")
+    assert field_valid?(rate)
+  end
+
   test "submits a canonical decimal without changing the localized display" do
     amount = find("input[name='expense[amount]']")
     input_value(amount, "1234,5600")
 
     assert_difference -> { budgets(:active).expenses.count }, 1 do
-      click_button "Create Expense"
-      assert_text "Budget"
+      click_button "Confirm"
+      assert_text "Expenses"
     end
 
     assert_equal BigDecimal("1234.5600"), budgets(:active).expenses.order(:created_at, :id).last.amount
@@ -79,7 +104,7 @@ class MoneyInputsTest < ApplicationSystemTestCase
     amount = find("input[name='expense[amount]']")
     input_value(amount, "1375,2501")
 
-    click_button "Create Expense"
+    click_button "Confirm"
 
     assert_text "Amount must be less than or equal to"
     assert_equal "1.375,2501", find("input[name='expense[amount]']").value
@@ -88,13 +113,15 @@ class MoneyInputsTest < ApplicationSystemTestCase
   test "keeps long values at the base type size" do
     amount = find("input[name='expense[amount]']")
     sizes = page.evaluate_script(<<~JAVASCRIPT, amount)
-      const input = arguments[0]
-      const normal = parseFloat(getComputedStyle(input).fontSize)
-      input.style.width = "12rem"
-      input.value = "999999999999999"
-      input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText" }))
-      const current = parseFloat(getComputedStyle(input).fontSize)
-      return { normal, current }
+      (() => {
+        const input = arguments[0]
+        const normal = parseFloat(getComputedStyle(input).fontSize)
+        input.style.width = "12rem"
+        input.value = "999999999999999"
+        input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText" }))
+        const current = parseFloat(getComputedStyle(input).fontSize)
+        return { normal, current }
+      })()
     JAVASCRIPT
 
     assert_in_delta sizes["normal"], sizes["current"], 0.25
@@ -104,17 +131,17 @@ class MoneyInputsTest < ApplicationSystemTestCase
   test "formats a rate and converts the entered amount in the overlay" do
     visit new_budget_source_path(budgets(:active))
 
-    find("details", text: "Currency:").find("summary").click
+    find("details", text: /currency:/i).find("summary").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
 
-    input_value(find("input[name='source[amount]']"), "52000")
+    input_value(find("input[name='source[amount]']", visible: :all), "52000")
 
     rate = find("input[name='source[rate]']")
     input_value(rate, "26000")
 
     assert_equal "26.000", rate.value
-    assert_equal "2", find("[data-currency-conversion-target='converted']").text
+    assert_equal "2", find("[data-currency-fields-target='converted']").text
   end
 
   private

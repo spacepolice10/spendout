@@ -1,8 +1,8 @@
 <%# locals: (form:, open: false) %>
-<details name="form-details" data-controller="form-details"<%= " open" if open %>>
-  <summary data-form-details-target="summary">
+<details name="form-details" data-form-target="section"<%= " open" if open %>>
+  <summary data-form-target="summary">
     <span> Icon: </span>
-    <small data-form-details-target="summaryContent"><%= form.object.icon %></small>
+    <small data-form-target="summaryContent"><%= form.object.icon %></small>
   </summary>
 
   <fieldset data-layout="flex">
@@ -11,8 +11,8 @@
       <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text do %>
           <%= radio.radio_button aria: { label: radio.text }, data: {
-                form_details_target: "input",
-                action: "input->form-details#updateSummaryContent"
+                form_target: "focus",
+                action: "input->form#updateSummary"
               } %>
           <%= icon_tag(radio.value) %>
         <% end %>

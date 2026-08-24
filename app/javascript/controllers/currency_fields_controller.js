@@ -5,28 +5,31 @@ export default class extends Controller {
   static values = {
     baseCurrency: String,
     operation: { type: String, default: "divide" },
-    rates: { type: Object, default: {} },
-    referenceDate: String,
-    provider: String
+    referenceUrl: String
   }
 
   connect() {
     this.previousCurrency = this.currencyTarget.value
+    this.validateCurrency()
     this.updateRateFields()
     this.updateInitialRateStatus()
     this.calculate()
   }
 
-  currencyChanged() {
-    if (this.currencyTarget.value === this.baseCurrencyValue) {
+  async currencyChanged() {
+    const selectedCurrency = this.currencyTarget.value
+    this.validateCurrency()
+
+    if (selectedCurrency === this.baseCurrencyValue) {
       this.setRate("1")
       this.clearRateStatus()
     } else {
-      const suggestedRate = this.ratesValue[this.currencyTarget.value]
+      const suggestedRate = await this.rateBetween(this.baseCurrencyValue, selectedCurrency)
+      if (this.currencyTarget.value !== selectedCurrency) return
 
       if (suggestedRate) {
         this.setRate(suggestedRate)
-        this.rateStatusTarget.textContent = `${this.providerValue} reference rate · ${this.referenceDateValue}`
+        this.clearRateStatus()
       } else {
         this.setRate("")
         this.rateStatusTarget.textContent = "Reference rate unavailable. Enter a rate manually."
@@ -36,6 +39,15 @@ export default class extends Controller {
     this.previousCurrency = this.currencyTarget.value
     this.updateRateFields()
     this.calculate()
+  }
+
+  validateCurrency() {
+    const sameCurrencyExchange = this.operationValue === "multiply" &&
+      this.currencyTarget.value === this.baseCurrencyValue
+
+    this.currencyTarget.setCustomValidity(
+      sameCurrencyExchange ? "Choose a currency different from the source currency." : ""
+    )
   }
 
   calculate() {
@@ -74,7 +86,7 @@ export default class extends Controller {
 
   setRate(value) {
     this.rateTarget.value = value
-    this.rateTarget.dataset.moneyInputStartValue = value
+    this.rateTarget.dataset.amountFieldsStartValue = value
     this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
     this.calculate()
   }
@@ -94,5 +106,30 @@ export default class extends Controller {
 
   clearRateStatus() {
     this.rateStatusTarget.textContent = ""
+  }
+
+  async rateBetween(from, to) {
+    const rates = await this.referenceRates()
+    const fromRate = Number(rates[from])
+    const toRate = Number(rates[to])
+    if (!Number.isFinite(fromRate) || !Number.isFinite(toRate) || fromRate <= 0 || toRate <= 0) return null
+
+    return this.canonicalize(toRate / fromRate)
+  }
+
+  async referenceRates() {
+    if (this.referenceRatesPromise) return this.referenceRatesPromise
+
+    const request = new URL(this.referenceUrlValue, window.location.origin)
+    request.searchParams.set("base", "USD")
+
+    this.referenceRatesPromise = (async () => {
+      const response = await fetch(request, { headers: { Accept: "application/json" } })
+      if (!response.ok) return {}
+
+      return (await response.json()).rates || {}
+    })().catch(() => ({}))
+
+    return this.referenceRatesPromise
   }
 }

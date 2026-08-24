@@ -1,4 +1,8 @@
-<%= form_with model: budget, data: { budget_form: true } do |form| %>
+<%= form_with model: budget, data: {
+      budget_form: true,
+      controller: "form date-fields",
+      action: "input->date-fields#validate change->date-fields#validate"
+    } do |form| %>
   <% if budget.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
@@ -40,8 +44,10 @@
     <small>Mostly people select a period in 1 month between the paydays</small>
 
     <div style="flex-wrap: nowrap;">
-      <%= form.date_field :period_from, value: Date.today.beginning_of_month, required: true %>
-      <%= form.date_field :period_to, value: Date.today.end_of_month, required: true %>
+      <%= form.date_field :period_from, value: Date.today.beginning_of_month, required: true,
+            data: { date_fields_target: "start" } %>
+      <%= form.date_field :period_to, value: Date.today.end_of_month, required: true,
+            data: { date_fields_target: "end" } %>
     </div>
   </fieldset>
 

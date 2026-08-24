@@ -76,22 +76,22 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
-    assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][required][data-controller='money-input'][data-currency-conversion-target='rate']"
-    assert_select "input[name='allocation[rate]'][data-money-input-fraction-digits-value='12']"
-    assert_select "output[aria-live='polite'][data-currency-conversion-target='converted']"
-    assert_select "[data-currency-conversion-target='rateFields'][hidden]"
-    assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
-    assert_select "form[data-controller='currency-conversion'][data-currency-conversion-rates-value]"
-    assert_select "[data-currency-conversion-target='rateStatus'][aria-live='polite']"
-    assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
+    assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][required][data-controller='amount-fields'][data-currency-fields-target='rate']"
+    assert_select "input[name='allocation[rate]'][data-amount-fields-fraction-digits-value='12']"
+    assert_select "output[aria-live='polite'][data-currency-fields-target='converted']"
+    assert_select "[data-currency-fields-target='rateFields'][hidden]"
+    assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
+    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-url-value='#{currency_reference_path}']"
+    assert_select "[data-currency-fields-target='rateStatus'][aria-live='polite']"
+    assert_select "input[name='allocation[amount]'][data-currency-fields-target='amount']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
     assert_select "input[name='allocation[colour]'][type='radio']", count: Allocation.colour_options.size
     assert_select "input[name='allocation[colour]'][value='green'][checked]"
-    assert_select "input[name='allocation[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='money-input']"
+    assert_select "input[name='allocation[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
     assert_select "input[name='allocation[amount]'][value]", count: 0
-    assert_select "input[name='allocation[amount]'][data-money-input-start-value]", count: 0
+    assert_select "input[name='allocation[amount]'][data-amount-fields-start-value]", count: 0
   end
 
   test "creates an allocation with its selected currency" do

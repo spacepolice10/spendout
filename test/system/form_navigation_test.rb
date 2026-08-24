@@ -1,6 +1,6 @@
 require "application_system_test_case"
 
-class FormDetailsTest < ApplicationSystemTestCase
+class FormNavigationTest < ApplicationSystemTestCase
   setup do
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
@@ -20,6 +20,14 @@ class FormDetailsTest < ApplicationSystemTestCase
 
   test "enter does not advance past an invalid input" do
     find("input[name='source[name]']").send_keys(:enter)
+
+    assert_selector "details[open] input[name='source[name]']:focus"
+  end
+
+  test "submission opens the section containing the first invalid field" do
+    find("details", text: /currency:/i).find("summary").click
+
+    click_button "Confirm"
 
     assert_selector "details[open] input[name='source[name]']:focus"
   end

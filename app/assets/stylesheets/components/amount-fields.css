@@ -1,5 +1,5 @@
 @layer components {
-    & input[data-controller~="money-input"] {
+    & input[data-controller~="amount-fields"] {
         height: 5rem;
         font-size: var(--font-size-2xl);
         font-weight: var(--font-weight-bold);

@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class CurrencyPickerTest < ApplicationSystemTestCase
   setup do
-    Rails.cache.delete(CurrencyReferenceRates::CACHE_KEY)
+    Rails.cache.delete(CurrencyReference::CACHE_KEY)
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
 
@@ -10,14 +10,15 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   end
 
   teardown do
-    Rails.cache.delete(CurrencyReferenceRates::CACHE_KEY)
+    Rails.cache.delete(CurrencyReference::CACHE_KEY)
   end
 
   test "shows popular currencies before filtering" do
+    filter.click
     assert_visible_option "USD US Dollar, 🇺🇸"
     assert_visible_option "EUR Euro, 🇪🇺"
     assert_visible_option "GBP Pound Sterling, 🇬🇧"
-    assert_no_visible_option "VND Dong, 🇻🇳"
+    assert_selector visible_options, maximum: 4
     assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
   end
 
@@ -37,8 +38,21 @@ class CurrencyPickerTest < ApplicationSystemTestCase
 
     filter.set("")
     assert_visible_option "EUR Euro, 🇪🇺"
-    assert_no_visible_option "VND Dong, 🇻🇳"
+    assert_selector visible_options, maximum: 4
     assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
+  end
+
+  test "keeps filtered options open when the search field loses focus" do
+    filter.set("dong")
+    find("body").click
+
+    assert_selector "[role='combobox'][aria-expanded='true']"
+    assert_visible_option "VND Dong, 🇻🇳"
+
+    find(visible_option, text: "VND Dong, 🇻🇳").click
+
+    assert_equal "VND Dong, 🇻🇳", filter.value
+    assert_selector "[role='combobox'][aria-expanded='false']"
   end
 
   test "shows at most seven options at once" do
@@ -47,7 +61,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_selector visible_options, count: 4
   end
 
-  test "choosing a currency updates selection summary and rate fields without closing" do
+  test "choosing a currency replaces the search text and collapses the listbox" do
     # The form sections are an accordion (shared name), so only one is open at a time.
     # Enter the amount first, then open the currency section to choose.
     find("details", text: /amount:/i).find("summary").click
@@ -60,24 +74,24 @@ class CurrencyPickerTest < ApplicationSystemTestCase
 
     assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
     assert find("input[type='radio'][value='VND']", visible: :all).checked?
-    assert_selector "details[open]"
-    assert_selector "[data-currency-conversion-target='rateFields']:not([hidden])"
-    assert_selector "[data-currency-picker-option]:has(input[value='VND']) > [data-currency-conversion-target='rateFields']"
+    assert_equal "VND Dong, 🇻🇳", filter.value
+    assert_selector "[role='combobox'][aria-expanded='false']"
+    assert_selector "[role='listbox'][hidden]", visible: :all
+    assert_selector "[data-currency-fields-target='rateFields']:not([hidden])"
+    assert_selector ".currency-picker > [data-currency-fields-target='rateFields']"
 
     rate = find("input[name='source[rate]']")
     send_input(rate, "26600")
-    assert_equal "1", find("[data-currency-conversion-target='converted']", visible: :all).text
+    assert_equal "1", find("[data-currency-fields-target='converted']", visible: :all).text
 
     # The summary value preview is only shown once the details is collapsed.
     find("details", text: /currency:/i).find("summary").click
     assert_selector "summary small", text: "VND"
   end
 
-  test "autofills an editable dated reference rate and clears attribution after editing" do
-    Rails.cache.write(CurrencyReferenceRates::CACHE_KEY, {
-      "provider" => "Frankfurter",
+  test "autofills an editable reference rate" do
+    Rails.cache.write(CurrencyReference::CACHE_KEY, {
       "reference_date" => Date.current.iso8601,
-      "fetched_at" => Time.current.iso8601,
       "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" }
     })
     visit new_budget_source_path(budgets(:active))
@@ -87,10 +101,8 @@ class CurrencyPickerTest < ApplicationSystemTestCase
 
     rate = find("input[name='source[rate]']")
     assert_equal "25.000", rate.value
-    assert_text "Frankfurter reference rate · #{Date.current.iso8601}"
 
     send_input(rate, "24950")
-    assert_no_text "Frankfurter reference rate"
     assert_equal "24.950", rate.value
   end
 
@@ -100,6 +112,16 @@ class CurrencyPickerTest < ApplicationSystemTestCase
 
     assert_equal "", find("input[name='source[rate]']").value
     assert_text "Reference rate unavailable. Enter a rate manually."
+  end
+
+  test "focuses the visible picker when the required currency is invalid" do
+    budgets(:active).update_columns(period_to: Date.yesterday)
+    visit new_budget_path
+
+    click_button "Next step"
+
+    assert_selector "input[data-currency-picker-target='filter']:focus"
+    assert_selector "[role='combobox'][aria-expanded='true']"
   end
 
   private

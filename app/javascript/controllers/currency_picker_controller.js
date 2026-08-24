@@ -3,15 +3,53 @@ import { Controller } from "@hotwired/stimulus"
 const MAX_VISIBLE = 4
 
 export default class extends Controller {
-  static targets = ["select", "filter", "option", "radio", "emptyState", "attachment"]
+  static targets = ["select", "filter", "options", "option", "radio", "emptyState", "attachment"]
 
   connect() {
+    this.events = new AbortController()
+    this.selectTarget.addEventListener("invalid", this.focusVisibleInput, {
+      signal: this.events.signal
+    })
+
     this.markSelected()
+    this.showSelection()
+    if (this.filterTarget.autofocus) queueMicrotask(() => this.open())
+  }
+
+  disconnect() {
+    this.events.abort()
+  }
+
+  focusVisibleInput = () => {
+    requestAnimationFrame(() => {
+      this.filterTarget.focus()
+      this.open()
+    })
+  }
+
+  open() {
+    this.optionsTarget.hidden = false
+    this.filterTarget.setAttribute("aria-expanded", "true")
+    this.filter()
+    this.filterTarget.select()
+  }
+
+  close() {
+    this.optionsTarget.hidden = true
+    this.emptyStateTarget.hidden = true
+    this.filterTarget.setAttribute("aria-expanded", "false")
+    this.showSelection()
+  }
+
+  search() {
+    this.optionsTarget.hidden = false
+    this.filterTarget.setAttribute("aria-expanded", "true")
     this.filter()
   }
 
   filter() {
-    const requestString = this.filterTarget.value.trim().toLocaleLowerCase()
+    const typed = this.filterTarget.value.trim()
+    const requestString = typed === this.selectedLabel ? "" : typed.toLocaleLowerCase()
     let visible = 0
 
     this.optionTargets.forEach((option) => {
@@ -33,6 +71,8 @@ export default class extends Controller {
     this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
 
     this.markSelected()
+    this.filterTarget.focus()
+    this.close()
   }
 
   markSelected() {
@@ -44,12 +84,15 @@ export default class extends Controller {
 
       input.checked = selected
       option.dataset.default = selected ? "true" : null
+      option.setAttribute("aria-selected", String(selected))
       if (selected) selectedOption = option
     })
 
-    if (this.hasAttachmentTarget && selectedOption) {
-      selectedOption.closest("[data-currency-picker-option]").append(this.attachmentTarget)
-    }
+    this.selectedLabel = selectedOption?.dataset.filterValue || ""
+  }
+
+  showSelection() {
+    this.filterTarget.value = this.selectedLabel || ""
   }
 
   isPopular(option) {

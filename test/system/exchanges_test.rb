@@ -18,6 +18,6 @@ class ExchangesTest < ApplicationSystemTestCase
       rate.dispatchEvent(new Event("input", { bubbles: true }))
     JAVASCRIPT
 
-    assert_selector "output[data-currency-conversion-target='converted']", text: "80", visible: :all
+    assert_selector "output[data-currency-fields-target='converted']", text: "80", visible: :all
   end
 end

@@ -1,22 +1,31 @@
 <%# locals: (form:, name_attribute: :name, placeholder: nil, open: true) %>
-<details name="form-details" data-controller="form-details"<%= " open" if open %>>
-  <summary data-form-details-target="summary">
-    <span> Name: </span>
-    <small data-form-details-target="summaryContent"><%= form.object.public_send(name_attribute) %></small>
-  </summary>
+<%= tag.details name: "form-details", data: { form_target: "section" }, open: open do %>
+  <%= tag.summary data: { form_target: "summary" } do %>
+    <%= tag.span " Name: " %>
 
-  <div>
-    <small> What is the name of this <%= form.object.class.name.downcase %>? </small>
+    <%= tag.small data: { form_target: "summaryContent" } do %>
+      <%= form.object.public_send(name_attribute) %>
+    <% end %>
+  <% end %>
+
+  <%= tag.div do %>
+    <%= tag.small do %>
+      What is the name of this <%= form.object.class.name.downcase %>?
+    <% end %>
+
     <%= form.label name_attribute, "Name", class: "utilities--sr-only" %>
+
     <%= form.text_field name_attribute, required: true, placeholder: placeholder, autofocus: open,
       data: {
-        form_details_target: "input",
-        action: "input->form-details#updateSummaryContent"
+        form_target: "focus",
+        action: "input->form#updateSummary"
       } %>
+
     <% unless mobile_variant? %>
-      <small>
-        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
-      </small>
+      <%= tag.small do %>
+        Press <%= tag.kbd "Enter" %> to continue or <%= tag.kbd "Shift" %> +
+        <%= tag.kbd "Enter" %> to go back.
+      <% end %>
     <% end %>
-  </div>
-</details>
+  <% end %>
+<% end %>

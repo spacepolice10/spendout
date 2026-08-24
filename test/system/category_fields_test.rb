@@ -1,11 +1,11 @@
 require "application_system_test_case"
 
-class ExpenseCategoryFilterTest < ApplicationSystemTestCase
+class ExpenseCategoryFieldsTest < ApplicationSystemTestCase
   setup do
     sign_in_as users(:one)
     visit new_budget_expense_path(budgets(:active))
 
-    find("details[data-controller~='category-filter']").find("summary").click
+    find("details[data-controller~='category-fields']").find("summary").click
   end
 
   test "filters allocations and stages typed text as a new category" do
@@ -19,7 +19,7 @@ class ExpenseCategoryFilterTest < ApplicationSystemTestCase
     assert_equal "Hous", find("input[name='expense[category_name_to_create]']", visible: :all).value
     assert_no_selector "input[name='expense[allocation_id]']:checked", visible: :all
 
-    find("label[data-category-filter-target='option']", text: "Housing").click
+    find("label[data-category-fields-target='option']", text: "Housing").click
     assert_equal "", find("input[name='expense[category_name_to_create]']", visible: :all).value
     assert_no_text "will be created"
     assert_selector "input[name='expense[allocation_id]']:checked", visible: :all
@@ -43,7 +43,7 @@ class ExpenseCategoryFilterTest < ApplicationSystemTestCase
     budgets(:active).allocations.update_all(deleted_at: Time.current)
 
     visit new_budget_expense_path(budgets(:active))
-    find("details[data-controller~='category-filter']").find("summary").click
+    find("details[data-controller~='category-fields']").find("summary").click
 
     within("fieldset[data-expense-allocations]") do
       assert_field "Find or add category", with: ""
