@@ -1,0 +1,16 @@
+/* Focus styles */
+
+@layer base {
+
+    *:focus-visible {
+        position: relative;
+        outline: 0.5px solid color-mix(in oklch,
+                var(--color-invert-1) 80%,
+                transparent);
+        box-shadow: none;
+        transition: none;
+        outline-color: var(--color-accent);
+    }
+
+}
+

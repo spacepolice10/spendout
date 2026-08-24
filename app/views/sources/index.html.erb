@@ -1,4 +1,4 @@
-<main data-size="lg">
+<main data-size="lg" data-anchor="footer">
   <article data-elevation="1">
     <header>
       <nav>
@@ -63,9 +63,14 @@
     </main>
 
     <footer>
-      <%= link_to new_budget_source_path(@budget), role: "button", data: { appearance: "keycap" } do %>
+      <%= link_to new_budget_source_path(@budget), role: "button", data: {
+            appearance: "keycap",
+            controller: "pressable",
+            action: "keydown.shift+s@document->pressable#click"
+          } do %>
         <%= icon_tag("plus") %>
         <span>Add source</span>
+        <kbd aria-hidden="true">S</kbd>
       <% end %>
     </footer>
   </article>

@@ -1,6 +1,15 @@
 require "test_helper"
 
 class AllocationTest < ActiveSupport::TestCase
+  test "spent amount is expressed in the allocation currency" do
+    allocation = allocations(:active)
+
+    assert_equal BigDecimal("125"), allocation.spent_amount
+
+    allocation.update!(currency_code: "EUR", rate: "0.8")
+    assert_equal BigDecimal("100"), allocation.spent_amount
+  end
+
   test "defaults to a planned allocation" do
     allocation = budgets(:active).allocations.new(
       name: "Groceries",

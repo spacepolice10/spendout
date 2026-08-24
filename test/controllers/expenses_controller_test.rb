@@ -15,6 +15,32 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
   end
 
+  test "index renders the expense history without currency management" do
+    sign_in_as(@user)
+
+    get budget_expenses_path(@budget)
+
+    assert_response :success
+    assert_select "meta[name='view-transition'][content='same-origin']", count: 1
+    assert_select "body > main[data-anchor='footer']"
+    assert_select "[data-testid='expense-card']", count: 1
+    assert_select "article[data-daily-gauge] > header h2", text: "Can I spend more today?", count: 1
+    assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
+    assert_select "[data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
+    assert_select "a[href='#{new_budget_expense_path(@budget)}']"
+    assert_select "a", text: "Currencies", count: 0
+    assert_select "form[action='#{budget_path(@budget)}'] button", "Reset budget"
+  end
+
+  test "index redirects an archived budget to creation when no budget is active" do
+    sign_in_as(@user)
+    @budget.update_columns(period_to: Date.yesterday)
+
+    get budget_expenses_path(@budget)
+
+    assert_redirected_to new_budget_path
+  end
+
   test "new defaults source allocation and occurrence and renders controls" do
     sign_in_as(@user)
 
@@ -51,7 +77,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='expense[note]'][maxlength='200']"
     assert_select "input[name='expense[note]'][size]", count: 0
     assert_select "input[type='text'][name]#expense_category_filter", count: 0
-    assert_select "details[data-controller='category-filter'] fieldset[data-expense-allocations]"
+    assert_select "details[data-controller~='category-filter'] fieldset[data-expense-allocations]"
     assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-filter-target='filter'][data-action='input->category-filter#filter']"
     assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-filter-target='pendingNameTextform']"
     assert_select "fieldset[data-expense-allocations] label[data-category-filter-target='option'][data-filter-value='#{@allocation.name}']"
@@ -104,7 +130,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     expense = @budget.expenses.order(:created_at, :id).last
-    assert_redirected_to budget_path(@budget)
+    assert_redirected_to budget_expenses_path(@budget)
     assert_equal @source, expense.source
     assert_equal @allocation, expense.allocation
     assert_equal BigDecimal("25.2500"), expense.amount
@@ -148,7 +174,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     expense = @budget.expenses.order(:created_at, :id).last
     category = expense.allocation
 
-    assert_redirected_to budget_path(@budget)
+    assert_redirected_to budget_expenses_path(@budget)
     assert_equal "Coffee", category.name
     assert_not category.planned?
     assert_equal BigDecimal("0"), category.amount
@@ -217,7 +243,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
       delete expense_path(@expense)
     end
 
-    assert_redirected_to budget_path(@budget)
+    assert_redirected_to budget_expenses_path(@budget)
     assert_equal "Expense was deleted.", flash[:notice]
     assert_equal @source.amount, @source.reload.spendable_amount
   end
@@ -234,7 +260,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{source_path(@source)}']", text: @source.name
     assert_select "a[href='#{allocation_path(@allocation)}']", text: @allocation.name
     assert_select "dd", text: @expense.note
-    assert_select "a[aria-label='Back to budget'][href='#{budget_path(@budget)}']"
+    assert_select "a[aria-label='Back to expenses'][href='#{budget_expenses_path(@budget)}']"
     assert_select "form[action='#{expense_path(@expense)}'] button[data-turbo-confirm='Delete this expense permanently?']", text: "Delete expense"
   end
 

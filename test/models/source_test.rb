@@ -81,7 +81,7 @@ class SourceTest < ActiveSupport::TestCase
     assert source.persisted?
   end
 
-  test "base source can be deleted" do
+  test "source can be marked as deleted" do
     source = sources(:active)
 
     assert source.update(deleted_at: Time.current)

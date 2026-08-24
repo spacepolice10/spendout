@@ -1,0 +1,118 @@
+/* Details and summary element styles */
+
+@layer base {
+
+    details>summary {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-h-half);
+        padding-block: var(--space-v-half);
+        text-transform: uppercase;
+
+    }
+
+    details {
+        width: 100%;
+        &>summary {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-h-half);
+            min-height: 2rem;
+            width: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            font-size: var(--font-size-base-read);
+
+            &>span {
+                display: inline-flex;
+                align-items: center;
+                gap: var(--space-h-half);
+                min-height: 2rem;
+
+                &:before {
+                    content: "";
+                    display: block;
+                    width: 2ch;
+                    height: 2ch;
+                    background: currentColor;
+                    transition: transform 150ms ease;
+                    -webkit-mask-size: contain;
+                    mask-size: contain;
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    -webkit-mask-position: center;
+                    mask-position: center;
+                    --icon-mask: var(--icon-chevron-right);
+                    -webkit-mask-image: var(--icon-mask);
+                    mask-image: var(--icon-mask);
+                    flex-shrink: 0;
+                }
+            }
+
+            &>small {
+                color: var(--color-accent);
+                font-weight: normal;
+                font-size: var(--font-size-base-read);
+                padding-block: var(--space-v-half);
+            }
+        }
+
+        &>summary:focus-visible {
+            outline: var(--form-input-outline);
+        }
+
+        &>div {
+            display: grid;
+            grid-template-rows: 0fr;
+            gap: var(--space-v-half);
+            inline-size: min(16rem, 100%);
+            opacity: 0;
+            transition:
+                grid-template-rows 220ms ease,
+                opacity 100ms ease 80ms,
+                visibility 0s linear 220ms;
+            & input {
+                margin-top: 0;
+            }
+        }
+
+        &[open] {
+            inline-size: 100%;
+            background: var(--color-2);
+            border: var(--border-subtle);
+            border-radius: var(--radius-2);
+            padding: var(--space-v) var(--space-v);
+            animation: popout 220ms ease;
+
+            &>summary {
+                &>small {
+                    display: none;
+                }
+                & span:before {
+                    transform: rotate(90deg);
+                }
+            }
+
+            &>div {
+                grid-template-rows: 1fr;
+                inline-size: 100%;
+                opacity: 1;
+                visibility: visible;
+                transition:
+                    grid-template-rows 220ms ease,
+                    opacity 140ms ease 100ms,
+                    visibility 0s;
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        form details>div {
+            transition: none;
+        }
+    }
+
+}
+

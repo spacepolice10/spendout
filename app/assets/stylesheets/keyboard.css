@@ -1,0 +1,28 @@
+/* Keyboard hint styles */
+
+@layer base {
+
+    kbd {
+        display: inline-block;
+        padding: 0.1em 0.4em;
+        border: var(--border-strong);
+        border-radius: var(--radius-2);
+        color: var(--color-invert-1);
+        background: var(--color-2);
+        box-shadow: 0 0.2em 0 color-mix(in oklch, var(--color-invert-1) 25%, transparent);
+        font-family: var(--font-family-mono);
+        font-size: 0.8em;
+        font-weight: var(--font-weight-bold);
+        line-height: 1.2;
+    }
+
+    :is(button, [role="button"])[data-controller~="pressable"] > kbd {
+        display: none;
+    }
+
+    body[data-hotkeys-visible] :is(button, [role="button"])[data-controller~="pressable"] > kbd {
+        display: inline-block;
+    }
+
+}
+

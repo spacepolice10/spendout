@@ -1,12 +1,20 @@
-<details name="form-details" data-controller="form-details" open>
+<%# locals: (form:, name_attribute: :name, placeholder: nil, open: true) %>
+<details name="form-details" data-controller="form-details"<%= " open" if open %>>
   <summary data-form-details-target="summary">
     <span> Name: </span>
-    <small data-form-details-target="summaryContent"><%= form.object.name %></small>
+    <small data-form-details-target="summaryContent"><%= form.object.public_send(name_attribute) %></small>
   </summary>
 
   <div>
     <small> What is the name of this <%= form.object.class.name.downcase %>? </small>
-    <%= form.text_field :name, required: true, placeholder: local_assigns[:placeholder],
-      data: { form_details_target: "input" } %>
+    <%= form.label name_attribute, "Name", class: "utilities--sr-only" %>
+    <%= form.text_field name_attribute, required: true, placeholder: placeholder, autofocus: open,
+      data: {
+        form_details_target: "input",
+        action: "input->form-details#updateSummaryContent"
+      } %>
+    <small>
+      Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+    </small>
   </div>
 </details>

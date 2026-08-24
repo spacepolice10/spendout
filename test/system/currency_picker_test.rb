@@ -43,6 +43,12 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   end
 
   test "choosing a currency updates selection summary and rate fields without closing" do
+    # The form sections are an accordion (shared name), so only one is open at a time.
+    # Enter the amount first, then open the currency section to choose.
+    find("details", text: /amount:/i).find("summary").click
+    send_input(find("input[name='source[amount]']"), "26600")
+
+    find("details", text: /currency:/i).find("summary").click
     filter.set("dong")
 
     find(visible_option, text: "VND Dong, 🇻🇳").click
@@ -51,13 +57,11 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert find("input[type='radio'][value='VND']", visible: :all).checked?
     assert_selector "details[open]"
     assert_selector "[data-currency-conversion-target='rateFields']:not([hidden])"
-    assert_selector "[data-currency-conversion-target='rateCode']", text: "VND"
+    assert_selector "[data-currency-picker-option]:has(input[value='VND']) > [data-currency-conversion-target='rateFields']"
 
     rate = find("input[name='source[rate]']")
     send_input(rate, "26600")
-    send_input(find("input[name='source[amount]']"), "26600")
-
-    assert_equal "1", find("[data-currency-conversion-target='converted']").value
+    assert_equal "1", find("[data-currency-conversion-target='converted']", visible: :all).text
 
     # The summary value preview is only shown once the details is collapsed.
     find("details", text: /currency:/i).find("summary").click

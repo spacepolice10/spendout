@@ -1,7 +1,7 @@
  @layer reset, variables, base, components, utilities;
 
  @layer reset {
- 
+
    /* Box model */
    *,
    *::before,
@@ -38,7 +38,7 @@
      min-block-size: 100svb; /* fill at least the small viewport block axis (avoids mobile chrome gap) */
    }
  
-   /* Typography, links, and font-family live in base.css (@layer base) */
+   /* Typography and body defaults live in focused stylesheets within @layer base. */
  
    /* Media */
    img, picture, video, canvas, svg {
@@ -113,4 +113,3 @@
    }
  
  }
- 

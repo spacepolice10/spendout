@@ -1,0 +1,44 @@
+<% spent_amount = allocation.spent_amount %>
+<% progress_max = allocation.amount.positive? ? allocation.amount : 1 %>
+<% progress_value = allocation.amount.positive? ? [ spent_amount, allocation.amount ].min : (spent_amount.positive? ? 1 : 0) %>
+
+<article data-elevation="1" data-testid="allocation-card">
+  <header>
+    <nav>
+      <%= icon_tag(allocation.icon, style: colour_styles(allocation.colour)) %>
+      <h2><%= allocation.name %></h2>
+    </nav>
+
+    <strong><%= formatted_amount(allocation.amount, allocation.currency_code) %></strong>
+  </header>
+
+  <main>
+    <progress
+      value="<%= progress_value %>"
+      max="<%= progress_max %>"
+      aria-label="<%= formatted_amount(spent_amount, allocation.currency_code) %> spent of <%= formatted_amount(allocation.amount, allocation.currency_code) %> planned"
+      style="--progress-colour: var(--color-palette-<%= allocation.colour %>);"
+      data-testid="allocation-progress"
+    ></progress>
+
+    <small>
+      <%= formatted_amount(spent_amount, allocation.currency_code) %> spent of
+      <%= formatted_amount(allocation.amount, allocation.currency_code) %> planned
+      <% if spent_amount > allocation.amount %>
+        — <%= formatted_amount(spent_amount - allocation.amount, allocation.currency_code) %> over plan
+      <% end %>
+    </small>
+  </main>
+
+  <footer>
+    <% if allocation.rate != 1 %>
+      It was planned at a rate of <%= allocation.rate %>
+      <%= budget.base_currency_code %> per
+      <%= allocation.currency_code %>.
+    <% end %>
+
+    <%= button_to allocation_path(allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
+      <%= icon_tag("trash-simple") %>
+    <% end %>
+  </footer>
+</article>

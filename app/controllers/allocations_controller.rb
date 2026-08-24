@@ -3,7 +3,7 @@ class AllocationsController < ApplicationController
   before_action :set_allocation, only: %i[ show destroy ]
 
   def index
-    @allocations = @budget.allocations.where(deleted_at: nil, planned: true).order(:created_at, :id)
+    @allocations = @budget.allocations.includes(:expenses).where(deleted_at: nil, planned: true).order(:created_at, :id)
   end
 
   def show

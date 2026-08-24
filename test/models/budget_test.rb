@@ -1,10 +1,9 @@
 require "test_helper"
 
 class BudgetTest < ActiveSupport::TestCase
-  test "stores its base currency independently of its first source" do
+  test "stores its base currency independently of its sources" do
     budget = budgets(:active)
 
-    assert_equal sources(:active), budget.base_source
     assert_equal "USD", budget.base_currency_code
     assert_equal "$", budget.base_currency_symbol
 
@@ -23,7 +22,6 @@ class BudgetTest < ActiveSupport::TestCase
       end
     end
     assert_equal "EUR", budget.base_currency_code
-    assert_nil budget.base_source
   end
 
   test "base currency cannot change after creation" do
@@ -53,14 +51,15 @@ class BudgetTest < ActiveSupport::TestCase
 
   test "today's remainder rolls unused daily spending forward" do
     budget = budgets(:active)
+    source = sources(:active)
     budget.expenses.delete_all
     budget.allocations.delete_all
-    budget.sources.where.not(id: budget.base_source.id).delete_all
-    budget.base_source.update!(amount: 99_000)
+    budget.sources.where.not(id: source.id).delete_all
+    source.update!(amount: 99_000)
     budget.update_columns(period_from: Date.new(2026, 8, 1), period_to: Date.new(2026, 8, 30))
 
     travel_to Date.new(2026, 8, 1) do
-      budget.expenses.create!(source: budget.base_source, amount: 1_500, occurred_on: Date.current)
+      budget.expenses.create!(source: source, amount: 1_500, occurred_on: Date.current)
 
       assert_equal BigDecimal("1800"), budget.todays_remainder
       assert_in_delta 54.55, budget.todays_remainder_percentage.to_f, 0.01
@@ -68,12 +67,52 @@ class BudgetTest < ActiveSupport::TestCase
 
     travel_to Date.new(2026, 8, 2) do
       assert_equal BigDecimal("5100"), budget.todays_remainder
-      budget.expenses.create!(source: budget.base_source, amount: 10_000, occurred_on: Date.current)
+      assert_equal BigDecimal("100"), budget.todays_remainder_percentage
+      budget.expenses.create!(source: source, amount: 10_000, occurred_on: Date.current)
+      assert_equal BigDecimal("0"), budget.todays_remainder_percentage
     end
 
     travel_to Date.new(2026, 8, 3) do
       assert_equal BigDecimal("-1600"), budget.todays_remainder
       assert_equal BigDecimal("0"), budget.todays_remainder_percentage
+    end
+  end
+
+  test "planned category spending does not consume the daily remainder" do
+    budget = budgets(:active)
+    source = sources(:active)
+    budget.expenses.delete_all
+    budget.allocations.delete_all
+    budget.sources.where.not(id: source.id).delete_all
+    source.update!(amount: 3_300)
+    budget.update_columns(period_from: Date.new(2026, 8, 1), period_to: Date.new(2026, 8, 30))
+
+    travel_to Date.new(2026, 8, 1) do
+      planned = budget.allocations.create!(
+        name: "Rent",
+        amount: 300,
+        currency_code: "USD",
+        rate: 1,
+        planned: true
+      )
+
+      assert_equal BigDecimal("100"), budget.todays_remainder
+      assert_equal BigDecimal("100"), budget.todays_remainder_percentage
+
+      budget.expenses.create!(
+        source: source,
+        allocation: planned,
+        amount: 50,
+        occurred_on: Date.current
+      )
+
+      assert_equal BigDecimal("100"), budget.todays_remainder
+      assert_equal BigDecimal("100"), budget.todays_remainder_percentage
+
+      budget.expenses.create!(source: source, amount: 50, occurred_on: Date.current)
+
+      assert_equal BigDecimal("50"), budget.todays_remainder
+      assert_equal BigDecimal("50"), budget.todays_remainder_percentage
     end
   end
 end

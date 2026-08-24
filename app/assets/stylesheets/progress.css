@@ -1,0 +1,56 @@
+/* Progress element styles */
+
+@layer base {
+
+    progress {
+        --progress-segment-size: var(--space-h);
+        --progress-segment-gap: var(--radius-1);
+
+        appearance: none;
+        display: block;
+        width: 100%;
+        height: var(--space-v);
+        overflow: hidden;
+        border: 0;
+        border-radius: var(--radius-none);
+        background: repeating-linear-gradient(
+            to right,
+            var(--color-3) 0,
+            var(--color-3) calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+            transparent calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+            transparent var(--progress-segment-size)
+        );
+
+        &::-webkit-progress-bar {
+            background: repeating-linear-gradient(
+                to right,
+                var(--color-3) 0,
+                var(--color-3) calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+                transparent calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+                transparent var(--progress-segment-size)
+            );
+        }
+
+        &::-webkit-progress-value {
+            background: repeating-linear-gradient(
+                to right,
+                var(--progress-colour, var(--color-accent)) 0,
+                var(--progress-colour, var(--color-accent)) calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+                transparent calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+                transparent var(--progress-segment-size)
+            );
+        }
+
+        &::-moz-progress-bar {
+            background: repeating-linear-gradient(
+                to right,
+                var(--progress-colour, var(--color-accent)) 0,
+                var(--progress-colour, var(--color-accent)) calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+                transparent calc(var(--progress-segment-size) - var(--progress-segment-gap)),
+                transparent var(--progress-segment-size)
+            );
+        }
+    }
+
+}
+

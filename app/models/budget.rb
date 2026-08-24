@@ -49,10 +49,6 @@ class Budget < ApplicationRecord
     base_currency_metadata[:symbol]
   end
 
-  def base_source
-    sources.order("sources.created_at ASC", "sources.id ASC").first
-  end
-
   def sources_amount_in_base
     amount_in_base_of(sources.where(deleted_at: nil))
   end
@@ -106,9 +102,13 @@ class Budget < ApplicationRecord
     return unless remainder
 
     daily_target = amount_summary / period_days
-    return BigDecimal("0") unless daily_target.positive?
+    planned_opening_remainder = daily_target * days_elapsed -
+      unallocated_expenses_amount_in_base + todays_unallocated_expenses_amount_in_base
+    actual_opening_remainder = available_summary + todays_expenses_amount_in_base
+    opening_remainder = [ planned_opening_remainder, actual_opening_remainder ].min
+    return BigDecimal("0") unless opening_remainder.positive?
 
-    [ [ remainder / daily_target * 100, BigDecimal("0") ].max, BigDecimal("100") ].min
+    [ [ remainder / opening_remainder * 100, BigDecimal("0") ].max, BigDecimal("100") ].min
   end
 
   def days_before_archived
@@ -142,6 +142,24 @@ class Budget < ApplicationRecord
       records.pluck(table[:amount], table[:rate]).sum(BigDecimal("0")) do |amount, rate|
         amount / rate
       end
+    end
+
+    def todays_expenses_amount_in_base
+      amount_in_base_of(
+        expenses
+          .joins(:source)
+          .where(occurred_on: Date.current, sources: { deleted_at: nil })
+      )
+    end
+
+    def todays_unallocated_expenses_amount_in_base
+      amount_in_base_of(
+        expenses
+          .joins(:source)
+          .left_outer_joins(:allocation)
+          .where(occurred_on: Date.current, sources: { deleted_at: nil })
+          .where("expenses.allocation_id IS NULL OR allocations.planned = ?", false)
+      )
     end
 
     def calculate_period_to

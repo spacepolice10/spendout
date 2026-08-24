@@ -6,7 +6,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
   test "root redirects to the current budget" do
     get root_path
 
-    assert_redirected_to budget_path(budgets(:active))
+    assert_redirected_to budget_expenses_path(budgets(:active))
   end
 
   test "root redirects to budget creation when all budgets are archived" do
@@ -20,17 +20,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
   test "new redirects to the current budget when one exists" do
     get new_budget_path
 
-    assert_redirected_to budget_path(budgets(:active))
-  end
-
-  test "show renders the expense history without currency management" do
-    get budget_path(budgets(:active))
-
-    assert_response :success
-    assert_select "[data-testid='expense-card']", count: 1
-    assert_select "a[href='#{new_budget_expense_path(budgets(:active))}']"
-    assert_select "a", text: "Currencies", count: 0
-    assert_select "form[action='#{budget_path(budgets(:active))}'] button", "Reset budget"
+    assert_redirected_to budget_expenses_path(budgets(:active))
   end
 
   test "reset permanently deletes the budget and its contents" do
@@ -80,14 +70,6 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='budget[source_rate]']", count: 0
     assert_select "form legend", text: "When does your budget start and end?"
     assert_select "form input[type='date'][name='budget[period_from]'][required]"
-  end
-
-  test "an archived budget redirects to creation when no budget is active" do
-    budgets(:active).update_columns(period_to: Date.yesterday)
-
-    get budget_path(budgets(:active))
-
-    assert_redirected_to new_budget_path
   end
 
   test "creating a budget without a source redirects to source creation" do

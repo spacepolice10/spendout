@@ -1,0 +1,76 @@
+@layer components {
+    article.budget [data-daily-gauge] {
+        &>main {
+            justify-items: center;
+            text-align: center;
+        }
+
+        &>main dl h2 {
+            margin-block-start: var(--space-v-half);
+            font-size: var(--font-size-xl);
+        }
+    }
+
+    article.budget [data-remainder-gauge] {
+        width: min(100%, 22rem);
+
+        & svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        & [data-remainder-gauge-arc] {
+            fill: none;
+            stroke: url("#daily-gauge-arc-colour");
+            stroke-linecap: round;
+            stroke-width: 14;
+        }
+
+        & [data-remainder-gauge-ticks] path {
+            fill: none;
+            stroke: var(--color-invert-1);
+            stroke-linecap: round;
+            stroke-width: 1;
+        }
+
+        & text {
+            fill: var(--color-invert-3);
+            font-family: var(--font-family-mono);
+            font-size: 9px;
+            font-weight: var(--font-weight-medium);
+            text-anchor: middle;
+        }
+
+        & [data-remainder-gauge-needle] {
+            fill: var(--color-palette-red);
+            filter: drop-shadow(0 1px 1px color-mix(in oklch, black 30%, transparent));
+        }
+
+        & [data-remainder-gauge-hub] {
+            & circle {
+                fill: var(--color-2);
+                stroke: var(--color-3);
+                stroke-width: 2;
+                border: var(--border-subtle);
+            }
+
+            filter: drop-shadow(0 3px 2px color-mix(in oklch, black 42%, transparent));
+        }
+
+        & [data-remainder-gauge-hub-reflection] {
+            fill: color-mix(in oklch, white 52%, transparent);
+            pointer-events: none;
+        }
+
+        & :is([data-remainder-gauge-empty], [data-remainder-gauge-full]) {
+            font-size: 13px;
+            font-weight: var(--font-weight-bold);
+        }
+
+        & [data-remainder-gauge-empty] {
+            fill: var(--color-negative);
+        }
+    }
+}

@@ -1,0 +1,129 @@
+/* Generic semantic layout styles */
+
+@layer base {
+
+    body {
+        display: flex;
+        flex-direction: column;
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-base-read);
+        background-color: var(--color-3);
+        background-image:
+            linear-gradient(to right,
+                color-mix(in oklch, var(--color-accent) 5%, transparent) 1px,
+                transparent 1px),
+            linear-gradient(to bottom,
+                color-mix(in oklch, var(--color-accent) 5%, transparent) 1px,
+                transparent 1px);
+        background-size: 1rem 1rem;
+        color: var(--color-invert-1);
+        width: 100%;
+        container: inline-size;
+        max-width: 1280px;
+        margin-inline: auto;
+
+        &:has(> nav[aria-label="Budget sections"]) {
+            padding-block-end: calc(4rem + env(safe-area-inset-bottom));
+        }
+
+        &>header {
+            width: 100%;
+        }
+
+        &>main {
+            display: grid;
+            align-content: start;
+            gap: var(--space-v-2);
+            container: inline-size;
+            width: 100%;
+            height: 100%;
+            padding: var(--space-v-2) var(--space-h);
+            margin-inline: auto;
+
+            &[data-anchor="footer"] {
+                margin-block-start: auto;
+                padding-block-end: var(--space-v-half);
+                view-transition-name: budget-panel;
+
+                &>article>footer {
+                    position: sticky;
+                    z-index: 1;
+                    bottom: calc(4rem + env(safe-area-inset-bottom));
+                    background: var(--color-1);
+                    border-top: var(--border-subtle);
+                }
+            }
+
+            &[data-size="xs"] {
+                max-width: 376px;
+            }
+
+            &[data-size="sm"] {
+                max-width: 640px;
+            }
+
+            &[data-size="lg"] {
+                max-width: 800px;
+            }
+
+            &[data-size="xl"] {
+                max-width: 1280px;
+            }
+        }
+
+        &>main:has(> article > main > form):not([data-anchor="footer"]) {
+            flex: 1 1 0;
+            align-content: center;
+        }
+
+        &>footer {
+            margin-inline: auto;
+            width: 100%;
+        }
+
+        &>nav[aria-label="Budget sections"] {
+            view-transition-name: budget-tabbar;
+        }
+    }
+
+    div {
+        &[data-layout="flex"] {
+            display: flex;
+            gap: var(--space-h-half);
+        }
+
+        &[data-layout="grid"] {
+            display: grid;
+            gap: var(--space-v);
+        }
+    }
+
+    section {
+
+        &[data-layout="grid"] {
+            --grid-columns: auto-fit;
+            --grid-column-size: 200px;
+
+            display: grid;
+            gap: var(--space-v);
+            grid-template-columns: repeat(var(--grid-columns), minmax(var(--grid-column-size), 1fr));
+        }
+
+        &[data-layout="flex"] {
+            display: flex;
+            flex: 1 1 0;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-h);
+
+            &>div {
+                display: flex;
+                align-items: center;
+                gap: var(--space-h);
+            }
+        }
+
+    }
+
+}

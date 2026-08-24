@@ -1,7 +1,8 @@
-<%# locals: (form:, attribute:, select_data: {}, filter_autofocus: false) %>
+<%# locals: (form:, attribute:, select_data: {}, filter_data: {}, filter_autofocus: false, rate_attribute: nil, base_currency_code: nil) %>
 <% selected_code = form.object.public_send(attribute) %>
 <% ordered_options = Currency.options.partition { |_, code| code == selected_code }.reduce(:+) %>
-<div data-controller="currency-picker">
+<% rate_help_id = form.field_id(rate_attribute, :help) if rate_attribute %>
+<div class="currency-picker" data-controller="currency-picker">
   <%= form.select attribute,
     Currency.options,
     { include_blank: "Choose a currency" }, required: true,
@@ -9,32 +10,60 @@
     aria: { label: "Currency" },
     data: { currency_picker_target: "select" }.merge(select_data) %>
 
-  <%= tag.input type: "search", placeholder: "Search by name or code",
-    autocomplete: "off",
-    autofocus: filter_autofocus,
-    aria: { label: "Search currencies" },
-    data: {
-      currency_picker_target: "filter",
-      action: "input->currency-picker#filter"
-    } %>
+  <input type="search" placeholder="Search by name or code" autocomplete="off"
+    <%= "autofocus" if filter_autofocus %>
+    aria-label="Search currencies"
+    data-currency-picker-target="filter"
+    data-action="input->currency-picker#filter"
+    <% filter_data.each do |name, value| %> data-<%= name.to_s.dasherize %>="<%= value %>"<% end %>>
 
   <div data-layout="grid" data-currency-picker-target="options">
     <% ordered_options.each do |label, code| %>
       <% popular = Currency::POPULAR_CODES.include?(code) %>
       <% default = code == selected_code %>
-      <label data-currency-picker-target="option" data-filter-value="<%= label %>"
-        <% if popular %> data-popular="true"<% end %>
-        <% if default %> data-default="true"<% end %>
-        <% unless popular || default %> hidden<% end %>>
-        <input type="radio" value="<%= code %>"
-          <%= "checked" if code == selected_code %>
-          data-currency-picker-target="radio"
-          data-action="change->currency-picker#choose">
+      <div data-currency-picker-option<% unless popular || default %> hidden<% end %>>
+        <label data-currency-picker-target="option" data-filter-value="<%= label %>"
+          <% if popular %> data-popular="true"<% end %>
+          <% if default %> data-default="true"<% end %>
+          <% unless popular || default %> hidden<% end %>>
+          <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
+            <%= "checked" if code == selected_code %>
+            data-currency-picker-target="radio"
+            data-action="change->currency-picker#choose">
 
-        <span><%= label %></span>
-      </label>
+          <span><%= label %></span>
+        </label>
+      </div>
     <% end %>
   </div>
+
+  <% if rate_attribute %>
+    <div data-currency-picker-target="attachment"
+      data-currency-conversion-target="rateFields"
+      <%= "hidden" if selected_code.blank? || selected_code == base_currency_code %>>
+      <small id="<%= rate_help_id %>">
+        Units per 1 <%= base_currency_code %>
+      </small>
+
+      <div data-currency-rate-input>
+        <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
+          aria: { label: "Rate in selected currency", description: rate_help_id },
+          data: {
+            controller: "money-input",
+            money_input_start_value: form.object.public_send(rate_attribute)&.to_s("F"),
+            money_input_fraction_digits_value: 12,
+            currency_conversion_target: "rate",
+            form_details_target: "input",
+            action: "input->currency-conversion#calculate"
+          } %>
+
+        <output aria-label="Converted amount in <%= base_currency_code %>"
+          aria-live="polite"
+          data-currency-conversion-target="converted"></output>
+      </div>
+
+    </div>
+  <% end %>
 
   <small data-currency-picker-target="emptyState" hidden> No currencies found </small>
 </div>

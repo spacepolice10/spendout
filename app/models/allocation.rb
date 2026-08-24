@@ -16,6 +16,12 @@ class Allocation < ApplicationRecord
     deleted_at.present?
   end
 
+  def spent_amount
+    expenses.pluck(:amount, :rate).sum(BigDecimal("0")) do |expense_amount, expense_rate|
+      expense_amount / expense_rate * rate
+    end
+  end
+
   private
     def currency_is_available_in_budget
       return if currency_code.blank? || Currency::CATALOG.key?(currency_code)

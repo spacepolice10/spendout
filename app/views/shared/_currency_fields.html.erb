@@ -1,49 +1,29 @@
-<details name="form-details" data-controller="form-details">
+<%# locals: (form:, currency_attribute:, rate_attribute:, base_currency_code:, open: false) %>
+<% currency_code = form.object.public_send(currency_attribute).presence || base_currency_code %>
+<details name="form-details" data-controller="form-details"<%= " open" if open %>>
   <summary data-form-details-target="summary">
     <span> Currency: </span>
-    <small data-form-details-target="summaryContent"><%= base_currency_code %></small>
+    <small data-form-details-target="summaryContent"><%= currency_code %></small>
   </summary>
 
   <div>
     <small> What currency is used? </small>
-    <%= form.label currency_attribute, "Currency", hidden: true %>
+    <%= form.label currency_attribute, "Currency", class: "utilities--sr-only" %>
 
     <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
           select_data: {
             currency_conversion_target: "currency",
             action: "change->currency-conversion#currencyChanged input->form-details#updateSummaryContent"
-          } %>
+          },
+          filter_data: { form_details_target: "input" },
+          rate_attribute: rate_attribute,
+          base_currency_code: base_currency_code %>
+    <small>
+      Use <kbd>arrow keys</kbd> to switch.
+    </small>
 
-    <%= tag.div data: { currency_conversion_target: "rateFields" },
-            hidden: form.object.public_send(currency_attribute).blank? ||
-              form.object.public_send(currency_attribute) == base_currency_code do %>
-      <small id="currency-rate-help">
-        How many units of the selected currency equal 1
-        <%= base_currency_code %>.
-      </small>
-
-      <div style="position: relative;">
-        <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
-          aria: { label: "Rate in selected currency", description: "currency-rate-help" },
-          data: {
-            controller: "money-input",
-            money_input_start_value: form.object.public_send(rate_attribute)&.to_s("F"),
-            money_input_fraction_digits_value: 12,
-            currency_conversion_target: "rate",
-            action: "input->currency-conversion#calculate"
-          } %>
-
-        <input type="text" readonly tabindex="-1"
-          aria-label="Converted amount in <%= base_currency_code %>"
-          style="position: absolute; inset-block-start: var(--space-v-half);
-            inset-inline-end: var(--space-h-half); width: auto; max-width: 60%;
-            font-size: var(--font-size-xs); padding-block: 0;"
-          data-currency-conversion-target="converted">
-      </div>
-
-      <small data-currency-conversion-target="rateCode">
-        <%= form.object.public_send(currency_attribute) %>
-      </small>
-    <% end %>
+    <small>
+      Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+    </small>
   </div>
 </details>

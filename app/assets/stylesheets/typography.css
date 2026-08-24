@@ -1,0 +1,60 @@
+/* Typography element styles */
+
+@layer base {
+
+    h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    h2 {
+        font-size: var(--font-size-base-type);
+    }
+
+    h3 {
+        font-size: var(--font-size-base-read);
+    }
+
+    h4 {
+        font-size: var(--font-size-xs);
+    }
+
+    /* Typography */
+    h1,
+    h2,
+    h3,
+    h4 {
+        text-wrap: balance;
+    }
+
+    p,
+    li {
+        text-wrap: pretty;
+    }
+
+    p,
+    li,
+    h1,
+    h2,
+    h3,
+    h4 {
+        overflow-wrap: break-word;
+    }
+
+    a {
+        text-decoration-skip-ink: auto;
+        color: var(--color-invert-1);
+    }
+
+    li {
+        list-style: none;
+    }
+
+    /* *+ :is(h1, h2, h3, h4, h5, h6) {
+        margin-top: 1em;
+    } */
+
+    *+ :is(p, ul, ol, blockquote, table, article, aside, details) {
+        margin-top: 0.5em;
+    }
+
+}

@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 const MAX_VISIBLE = 4
 
 export default class extends Controller {
-  static targets = ["select", "filter", "option", "radio", "emptyState"]
+  static targets = ["select", "filter", "option", "radio", "emptyState", "attachment"]
 
   connect() {
     this.markSelected()
@@ -20,6 +20,7 @@ export default class extends Controller {
       const shown = wanted && visible < MAX_VISIBLE
 
       option.hidden = !shown
+      option.closest("[data-currency-picker-option]").hidden = !shown
       if (shown) visible += 1
     })
 
@@ -35,13 +36,20 @@ export default class extends Controller {
   }
 
   markSelected() {
+    let selectedOption
+
     this.optionTargets.forEach((option) => {
       const input = option.querySelector("input")
       const selected = input.value === this.selectTarget.value
 
       input.checked = selected
       option.dataset.default = selected ? "true" : null
+      if (selected) selectedOption = option
     })
+
+    if (this.hasAttachmentTarget && selectedOption) {
+      selectedOption.closest("[data-currency-picker-option]").append(this.attachmentTarget)
+    }
   }
 
   isPopular(option) {

@@ -1,0 +1,33 @@
+@layer components {
+    .currency-picker {
+        & [data-currency-picker-option] {
+            min-width: 0;
+
+            &:has(input[type="radio"]:checked) {
+                background: var(--color-4);
+            }
+
+            &>[data-currency-conversion-target~="rateFields"] {
+                display: grid;
+                gap: var(--space-v-half);
+                padding: var(--space-v-half) var(--form-space-h);
+            }
+
+            & [data-currency-rate-input] {
+                display: flex;
+                gap: var(--space-h-half);
+
+                &:first-child {
+                    flex: 2;
+                }
+
+                &>:is(input, output) {
+                    flex: 1;
+                    height: fit-content;
+                    padding: var(--space-v-half) var(--space-h-half);
+                    font-size: var(--font-size-xs);
+                }
+            }
+        }
+    }
+}

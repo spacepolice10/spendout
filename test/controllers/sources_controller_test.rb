@@ -19,6 +19,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     get budget_sources_path(@budget)
 
     assert_response :success
+    assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='source-card']", count: 1
     assert_select "[data-testid='source-card']", text: /Main source/
     assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
@@ -59,17 +60,16 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
     assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
-    assert_select "[data-currency-picker-target='options'] > label:first-child input[value='USD'][checked]"
+    assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='source[rate]'][type='text'][inputmode='decimal'][required][data-controller='money-input'][data-currency-conversion-target='rate']"
     assert_select "input[name='source[rate]'][data-money-input-fraction-digits-value='12']"
-    assert_select "input[type='text'][readonly][data-currency-conversion-target='converted']"
+    assert_select "output[aria-live='polite'][data-currency-conversion-target='converted']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='source[amount]'][data-currency-conversion-target='amount']"
-    assert_select "small[data-currency-conversion-target='rateCode']"
   end
 
   test "creates a source from catalog values" do

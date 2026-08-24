@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root "budgets#current"
 
-  resources :budgets, only: %i[ new create show destroy ] do
+  resources :budgets, only: %i[ new create destroy ] do
     resources :allocations, shallow: true
     resources :expenses, shallow: true
     resources :sources, shallow: true

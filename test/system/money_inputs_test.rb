@@ -114,8 +114,7 @@ class MoneyInputsTest < ApplicationSystemTestCase
     input_value(rate, "26000")
 
     assert_equal "26.000", rate.value
-    assert_equal "2", find("[data-currency-conversion-target='converted']").value
-    assert_equal "VND", find("[data-currency-conversion-target='rateCode']").text
+    assert_equal "2", find("[data-currency-conversion-target='converted']").text
   end
 
   private

@@ -1,31 +1,17 @@
 class BudgetsController < ApplicationController
-  before_action :set_budget, only: %i[ show destroy ]
+  before_action :set_budget, only: :destroy
 
   def current
     if budget = Current.user.current_budget
-      redirect_to budget
+      redirect_to budget_expenses_path(budget)
     else
       redirect_to new_budget_path
     end
   end
 
-  def show
-    if @budget.archived?
-      redirect_to Current.user.current_budget || new_budget_path
-      return
-    end
-
-    @expenses = @budget.expenses.includes(:source, :allocation)
-      .order(occurred_on: :desc, created_at: :desc, id: :desc)
-    @expenses_by_date = @expenses.group_by(&:occurred_on)
-    @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
-      expenses.sum(&:amount_in_base)
-    end
-  end
-
   def new
     if budget = Current.user.current_budget
-      redirect_to budget
+      redirect_to budget_expenses_path(budget)
     else
       @budget = Current.user.budgets.new(period_from: Date.current)
     end

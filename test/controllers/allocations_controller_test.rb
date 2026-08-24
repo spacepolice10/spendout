@@ -19,7 +19,11 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     get budget_allocations_path(@budget)
 
     assert_response :success
+    assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='allocation-card']", count: 1, text: /Housing/
+    assert_select "progress[data-testid='allocation-progress'][value='125.0'][max='300.0']"
+    assert_select "progress[aria-label='$125 spent of $300 planned']"
+    assert_select "[data-testid='allocation-card'] small", text: /\$125 spent of \$300 planned/
     assert_select "dt", text: "Remaining"
     assert_select "dd", text: /1,200.25 USD/
     assert_select "[data-testid='overallocation-warning']", count: 0
@@ -34,6 +38,18 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "[data-testid='allocation-card']", count: 0
+  end
+
+  test "index shows when spending exceeds an allocation" do
+    sign_in_as(@user)
+    @allocation.update!(amount: 100)
+
+    get budget_allocations_path(@budget)
+
+    assert_response :success
+    assert_select "progress[data-testid='allocation-progress'][value='100.0'][max='100.0']"
+    assert_select "progress[aria-label='$125 spent of $100 planned']"
+    assert_select "[data-testid='allocation-card'] small", text: /\$25 over plan/
   end
 
   test "index subtracts a different-currency plan from the base currency remainder" do
@@ -56,17 +72,16 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='allocation[currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
-    assert_select "[data-currency-picker-target='options'] > label:first-child input[value='USD'][checked]"
+    assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
     assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][required][data-controller='money-input'][data-currency-conversion-target='rate']"
     assert_select "input[name='allocation[rate]'][data-money-input-fraction-digits-value='12']"
-    assert_select "input[type='text'][readonly][data-currency-conversion-target='converted']"
+    assert_select "output[aria-live='polite'][data-currency-conversion-target='converted']"
     assert_select "[data-currency-conversion-target='rateFields'][hidden]"
     assert_select "form[data-controller='currency-conversion'][data-currency-conversion-base-currency-value='USD']"
     assert_select "input[name='allocation[amount]'][data-currency-conversion-target='amount']"
-    assert_select "small[data-currency-conversion-target='rateCode']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
@@ -163,7 +178,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "[data-currency-picker-target='options'] > label:first-child input[value='VND'][checked]"
+    assert_select "[data-currency-picker-option]:first-child > label input[value='VND'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size + 1
   end
 
@@ -176,7 +191,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: @allocation.name
     assert_select "dd", text: /300 USD/
     assert_select "dt", text: "Source", count: 0
-    assert_select "a[href='#{budget_path(@budget)}']", text: @budget.name
+    assert_select "a[href='#{budget_expenses_path(@budget)}']", text: @budget.name
     assert_select "a[aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']"
   end
 

@@ -1,8 +1,8 @@
-<main data-size="sm">
+<main data-size="sm" data-anchor="footer">
   <article data-elevation="1">
     <header>
       <nav>
-        <%= link_to icon_tag("chevron-left"), budget_path(@budget), aria: { label: "Back to budget" } %>
+        <%= link_to icon_tag("chevron-left"), budget_expenses_path(@budget), aria: { label: "Back to expenses" } %>
         <h1>Expense</h1>
       </nav>
       <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= @expense.occurred_on.to_fs(:long) %></time>

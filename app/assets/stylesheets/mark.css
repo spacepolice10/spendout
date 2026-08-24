@@ -1,0 +1,31 @@
+/* Mark element styles */
+
+@layer base {
+
+    mark {
+        z-index: 0;
+        &[data-type="pill"] {
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--space-v-3);
+            padding-inline: var(--space-h-half);
+            border-radius: var(--radius-full);
+            background: var(--mark-colour);
+        }
+
+        &[data-type="highlight"] {
+            position: relative;
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: var(--radius-1);
+                border: 1px solid var(--color-accent);
+                transform: skewX(-10deg);
+                z-index: -1;
+            }
+        }
+    }
+
+}
+

@@ -12,7 +12,7 @@
 
       <%= form_with url: session_auth_code_path do |form| %>
         <%= form.text_field :code, required: true, autofocus: true, placeholder: "123456", autocomplete: "one-time-code", inputmode: "text", maxlength: 7 %>
-        <%= form.button type: "submit", data: { appearance: "keycap" } do %>
+        <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
           <span>Sign in</span>
           <%= icon_tag("chevron-right") %>
         <% end %>

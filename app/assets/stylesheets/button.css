@@ -1,0 +1,177 @@
+@layer base {
+    :is(button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"]) {
+        --button-background: var(--color-2);
+        --button-background-hovered: var(--color-1);
+        --button-background-active: var(--color-2);
+        --button-color: var(--color-invert-1);
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        height: auto;
+        gap: var(--space-h-half);
+        padding: var(--space-v) var(--space-h);
+        color: var(--button-color);
+        background: var(--button-background);
+        border: 0;
+        border-radius: var(--radius-2);
+        text-decoration: none;
+        cursor: pointer;
+        user-select: none;
+        transition: background 150ms ease, color 150ms ease;
+
+        &[data-size="xs"] {
+            height: var(--button-height-xs);
+            padding-block: var(--space-v-half);
+        }
+
+        &[data-size="sm"] {
+            padding-block: var(--space-v-half);
+        }
+
+        &[data-size="lg"] {
+            height: var(--space-v-4);
+        }
+
+        &[data-size="xl"] {
+            height: var(--button-height-xl);
+            padding-block: var(--space-v-2);
+        }
+
+        &[data-radius="base"] {
+            border-radius: var(--radius-2);
+        }
+
+        &[data-radius="full"] {
+            border-radius: var(--radius-full);
+        }
+
+        &[data-intent="primary"] {
+            --button-background: var(--color-invert-1);
+            --button-background-hovered: var(--color-invert-2);
+            --button-background-active: var(--color-invert-3);
+            --button-color: var(--color-1);
+        }
+
+        &[data-intent="secondary"] {
+            --button-background: var(--color-2);
+            --button-background-hovered: var(--color-1);
+            --button-background-active: var(--color-2);
+            --button-color: var(--color-invert-1);
+        }
+
+        &[data-intent="accent"] {
+            --button-background: var(--color-palette-blue);
+            --button-background-hovered: color-mix(
+                in oklch,
+                var(--color-palette-blue) 90%,
+                var(--color-invert-1)
+            );
+            --button-background-active: color-mix(
+                in oklch,
+                var(--color-palette-blue) 80%,
+                var(--color-invert-1)
+            );
+            --button-color: var(--color-invert-1);
+        }
+
+        &[data-intent="negative"] {
+            --button-background: var(--color-negative);
+            --button-background-hovered: color-mix(in oklch, var(--color-negative) 90%, var(--color-invert-negative));
+            --button-background-active: color-mix(in oklch, var(--color-negative) 80%, var(--color-invert-negative));
+            --button-color: var(--color-invert-negative);
+        }
+
+        &[data-intent="positive"] {
+            --button-background: var(--color-positive);
+            --button-background-hovered: color-mix(in oklch, var(--color-positive) 90%, var(--color-invert-positive));
+            --button-background-active: color-mix(in oklch, var(--color-positive) 80%, var(--color-invert-positive));
+            --button-color: var(--color-invert-positive);
+        }
+
+        &:disabled,
+        &[aria-disabled="true"] {
+            opacity: var(--opacity-50);
+            cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled, [aria-disabled="true"]) {
+            background: var(--button-background-hovered);
+        }
+
+        &:active:not(:disabled, [aria-disabled="true"]) {
+            background: var(--button-background-active);
+        }
+
+        &:focus-visible {
+            outline: 1px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+    }
+}
+
+@layer components {
+    :is(button, [role="button"])[data-appearance="keycap"] {
+        --keycap-base: light-dark(oklch(0.98 0 0), oklch(0.34 0 0));
+        --keycap-base-dark: light-dark(oklch(86.995% 0.0001 271.152), oklch(0.22 0 0));
+        --keycap-inner-starts: light-dark(oklch(89.755% 0.0001 271.152), oklch(0.20 0 0));
+        --keycap-inner-ends: light-dark(oklch(0.96 0 0), oklch(0.38 0 0));
+        --button-background: linear-gradient(to bottom, var(--keycap-base), var(--keycap-base-dark));
+        --button-background-hovered: var(--button-background);
+        --button-background-active: var(--button-background);
+        --button-color: var(--color-invert-1);
+
+        position: relative;
+        isolation: isolate;
+        min-width: fit-content;
+        min-height: var(--keycap-min-height, 2rem);
+        gap: var(--space-h-half);
+        margin-bottom: 0.5rem;
+        border: var(--border-subtle);
+        border-radius: var(--radius-3);
+        font-weight: var(--font-weight-bold);
+        transition: background 150ms ease, filter 150ms ease;
+
+        &[data-intent="primary"] {
+            --keycap-base: var(--color-invert-3);
+            --keycap-base-dark: var(--color-invert-1);
+            --keycap-inner-starts: var(--color-invert-1);
+            --keycap-inner-ends: var(--color-invert-3);
+            --button-color: var(--color-1);
+        }
+
+        &[data-intent="secondary"] {
+            --keycap-base: light-dark(oklch(0.98 0 0), oklch(0.34 0 0));
+            --keycap-base-dark: light-dark(oklch(86.995% 0.0001 271.152), oklch(0.22 0 0));
+            --keycap-inner-starts: light-dark(oklch(89.755% 0.0001 271.152), oklch(0.20 0 0));
+            --keycap-inner-ends: light-dark(oklch(0.96 0 0), oklch(0.38 0 0));
+            --button-color: var(--color-invert-1);
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0.22rem;
+            z-index: -1;
+            border: var(--border-subtle);
+            border-radius: calc(var(--radius-3) - 1px);
+            background: linear-gradient(to bottom, var(--keycap-inner-starts), var(--keycap-inner-ends));
+            pointer-events: none;
+            transition: inset 100ms ease;
+        }
+
+        &:hover:not(:disabled, [aria-disabled="true"]) {
+            filter: brightness(0.95);
+        }
+
+        &:active:not(:disabled, [aria-disabled="true"])::before {
+            inset: 0.05rem 0.07rem 0.14rem;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--keycap-base);
+            outline-offset: 3px;
+        }
+    }
+}

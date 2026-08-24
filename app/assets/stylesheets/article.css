@@ -1,0 +1,64 @@
+/* Article element styles */
+
+@layer base {
+
+    article {
+        border-radius: var(--radius-2);
+
+        &>* {
+            padding: var(--space-v) var(--space-v);
+        }
+
+        &>header,
+        &>main,
+        &>footer {
+            padding: var(--space-v) var(--space-v);
+        }
+
+        &>header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--border-subtle);
+            width: 100%;
+            height: fit-content;
+
+            &>nav {
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                gap: var(--space-h);
+            }
+        }
+
+        &>main {
+            display: grid;
+            gap: var(--space-v);
+            flex: 1 1 0;
+            width: 100%;
+
+            &>article {
+                margin-top: 0;
+            }
+        }
+
+        &>footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+            gap: var(--space-h);
+        }
+
+        &[data-elevation="1"] {
+            background: var(--color-1);
+            border: var(--border-subtle);
+        }
+
+        &[data-elevation="2"] {
+            background: var(--color-2);
+            border: var(--border-subtle);
+        }
+    }
+
+}
+

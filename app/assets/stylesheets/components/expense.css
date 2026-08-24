@@ -2,7 +2,6 @@
     form[data-expense-form] {
         inline-size: 100%;
         min-inline-size: 0;
-        padding-bottom: calc(2.5rem + var(--space-v-4));
 
         & input[type="date"] {
             display: block;
@@ -82,14 +81,8 @@
 
     }
 
-    :is([data-create-expense], form[data-expense-form] > input[type="submit"]) {
-        position: fixed;
-        inset: auto auto calc(var(--space-v-2) + env(safe-area-inset-bottom)) 50%;
-        z-index: var(--z-toasts);
-        translate: -50% 0;
-    }
-
     article.expense-list {
+
         & > main {
             gap: var(--space-v-2);
         }

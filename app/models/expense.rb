@@ -7,7 +7,7 @@ class Expense < ApplicationRecord
 
   attr_accessor :category_name_to_create
 
-  before_validation :set_default_occurred_on
+  before_validation :change_default_occurred_on
   before_validation :inherit_currency_from_source
 
   validates :amount, numericality: { greater_than: 0 }
@@ -20,7 +20,7 @@ class Expense < ApplicationRecord
   validate :amount_fits_source
 
   def save_with_source_capacity
-    build_category_to_create
+    initialize_category_to_create
 
     return save unless source&.persisted?
 
@@ -32,7 +32,7 @@ class Expense < ApplicationRecord
   end
 
   private
-    def build_category_to_create
+    def initialize_category_to_create
       return if category_name_to_create.blank? || allocation&.new_record?
 
       self.allocation = budget.allocations.build(
@@ -44,7 +44,7 @@ class Expense < ApplicationRecord
       )
     end
 
-    def set_default_occurred_on
+    def change_default_occurred_on
       return if occurred_on.present? || budget.nil?
 
       self.occurred_on = Date.current.clamp(budget.period_from, budget.period_to)

@@ -1,4 +1,4 @@
-<main data-size="sm">
+<main data-size="sm" data-anchor="footer">
   <article data-elevation="1" style="<%= colour_styles(@allocation.colour) %>">
     <header>
       <nav>
@@ -14,7 +14,7 @@
         <dt>Amount</dt>
         <dd><%= formatted_amount(@allocation.amount, @allocation.currency_code) %> <%= @allocation.currency_code %></dd>
         <dt>Budget</dt>
-        <dd><%= link_to @budget.name, budget_path(@budget) %></dd>
+        <dd><%= link_to @budget.name, budget_expenses_path(@budget) %></dd>
       </dl>
     </main>
   </article>
