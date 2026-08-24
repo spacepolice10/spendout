@@ -42,17 +42,37 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
   end
 
-  test "keeps filtered options open when the search field loses focus" do
+  test "closes filtered options when focus leaves the picker" do
     filter.set("dong")
     find("body").click
 
-    assert_selector "[role='combobox'][aria-expanded='true']"
-    assert_visible_option "VND Dong, 🇻🇳"
-
-    find(visible_option, text: "VND Dong, 🇻🇳").click
-
-    assert_equal "VND Dong, 🇻🇳", filter.value
     assert_selector "[role='combobox'][aria-expanded='false']"
+    assert_selector "[role='listbox'][hidden]", visible: :all
+  end
+
+  test "chooses the active option with the keyboard and focuses its rate" do
+    filter.set("dong")
+    filter.send_keys(:arrow_down, :enter)
+
+    assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
+    assert_selector "[role='combobox'][aria-expanded='false']"
+    assert_selector "input[name='source[rate]']:focus"
+  end
+
+  test "does not close between pointer down and clicking an option" do
+    filter.set("dong")
+    option = find(visible_option, text: "VND Dong, 🇻🇳")
+
+    page.execute_script(<<~JAVASCRIPT, option, filter)
+      arguments[0].dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }))
+      arguments[1].blur()
+    JAVASCRIPT
+
+    assert_selector "[role='combobox'][aria-expanded='true']"
+    option.click
+
+    assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
+    assert_selector "input[name='source[rate]']:focus"
   end
 
   test "shows at most seven options at once" do
@@ -79,8 +99,29 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_selector "[role='listbox'][hidden]", visible: :all
     assert_selector "[data-currency-fields-target='rateFields']:not([hidden])"
     assert_selector ".currency-picker > [data-currency-fields-target='rateFields']"
+    assert_no_selector "input[data-currency-picker-target='filter']:focus"
+    assert_selector "input[name='source[rate]']:focus"
+
+    filter.click
+    assert_no_selector "[data-currency-fields-target='rateFields']", visible: true
+
+    find("body").click
+    assert_selector "[data-currency-fields-target='rateFields']", visible: true
+
+    picker_children = page.evaluate_script(<<~JAVASCRIPT)
+      Array.from(document.querySelector(".currency-picker").children).map((element) =>
+        element.matches("[data-currency-combobox]") ? "combobox" :
+          element.matches("[data-currency-fields-target='rateFields']") ? "rate" : null
+      ).filter(Boolean)
+    JAVASCRIPT
+    assert_equal ["combobox", "rate"], picker_children
 
     rate = find("input[name='source[rate]']")
+    filter_rect = filter.rect
+    rate_rect = rate.rect
+    assert_in_delta filter_rect.width, rate_rect.width, 1
+    assert_in_delta filter_rect.height, rate_rect.height, 1
+
     send_input(rate, "26600")
     assert_equal "1", find("[data-currency-fields-target='converted']", visible: :all).text
 

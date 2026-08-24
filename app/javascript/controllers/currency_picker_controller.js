@@ -7,12 +7,22 @@ export default class extends Controller {
 
   connect() {
     this.events = new AbortController()
+    const { signal } = this.events
     this.selectTarget.addEventListener("invalid", this.focusVisibleInput, {
-      signal: this.events.signal
+      signal
     })
+    this.element.addEventListener("focusout", this.leave, { signal })
+    this.element.addEventListener("currency-picker:availability-changed", this.availabilityChanged, { signal })
+    this.optionsTarget.addEventListener("pointerdown", this.beginOptionSelection, { signal })
+    document.addEventListener("pointerup", this.endOptionSelection, { signal })
+    document.addEventListener("pointercancel", this.endOptionSelection, { signal })
 
     this.markSelected()
     this.showSelection()
+    this.opened = false
+    this.attachmentAvailable = this.hasAttachmentTarget &&
+      (this.attachmentTarget.dataset.currencyPickerAvailable === "true" || !this.attachmentTarget.hidden)
+    this.render()
     if (this.filterTarget.autofocus) queueMicrotask(() => this.open())
   }
 
@@ -28,23 +38,56 @@ export default class extends Controller {
   }
 
   open() {
-    this.optionsTarget.hidden = false
-    this.filterTarget.setAttribute("aria-expanded", "true")
+    this.opened = true
+    this.render()
     this.filter()
     this.filterTarget.select()
   }
 
   close() {
-    this.optionsTarget.hidden = true
-    this.emptyStateTarget.hidden = true
-    this.filterTarget.setAttribute("aria-expanded", "false")
+    this.opened = false
+    this.activeOption = null
     this.showSelection()
+    this.render()
   }
 
   search() {
-    this.optionsTarget.hidden = false
-    this.filterTarget.setAttribute("aria-expanded", "true")
+    this.opened = true
+    this.render()
     this.filter()
+  }
+
+  keydown(event) {
+    if (event.key === "Escape") {
+      this.close()
+      this.filterTarget.blur()
+      return
+    }
+
+    if (!["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) return
+    if (!this.opened) {
+      if (event.key === "Enter") return
+      this.open()
+    }
+
+    const options = this.visibleOptions
+    if (options.length === 0) return
+
+    if (event.key === "Enter") {
+      if (!this.activeOption) return
+
+      event.preventDefault()
+      event.stopPropagation()
+      this.activeOption.querySelector("input").click()
+      return
+    }
+
+    event.preventDefault()
+    const currentIndex = options.indexOf(this.activeOption)
+    const offset = event.key === "ArrowDown" ? 1 : -1
+    const nextIndex = currentIndex === -1 ? (offset === 1 ? 0 : options.length - 1) :
+      (currentIndex + offset + options.length) % options.length
+    this.activate(options[nextIndex])
   }
 
   filter() {
@@ -63,6 +106,7 @@ export default class extends Controller {
     })
 
     this.emptyStateTarget.hidden = visible > 0
+    if (this.activeOption?.hidden) this.activate(null)
   }
 
   choose(event) {
@@ -71,8 +115,67 @@ export default class extends Controller {
     this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
 
     this.markSelected()
-    this.filterTarget.focus()
     this.close()
+    requestAnimationFrame(() => this.finishSelection())
+  }
+
+  availabilityChanged = (event) => {
+    this.attachmentAvailable = event.detail.available
+    this.render()
+  }
+
+  beginOptionSelection = () => {
+    this.selectingOption = true
+  }
+
+  endOptionSelection = () => {
+    setTimeout(() => {
+      this.selectingOption = false
+      if (this.opened && !this.element.contains(document.activeElement)) this.close()
+    })
+  }
+
+  leave = (event) => {
+    if (event.relatedTarget && this.element.contains(event.relatedTarget)) return
+
+    requestAnimationFrame(() => {
+      if (!this.selectingOption && !this.element.contains(document.activeElement)) this.close()
+    })
+  }
+
+  finishSelection() {
+    const rate = this.attachmentAvailable && this.hasAttachmentTarget ?
+      this.attachmentTarget.querySelector("input") : null
+
+    if (rate && !rate.disabled) {
+      rate.focus()
+    } else {
+      this.filterTarget.focus()
+      this.filterTarget.blur()
+    }
+  }
+
+  activate(option) {
+    this.activeOption = option
+    if (option) {
+      this.filterTarget.setAttribute("aria-activedescendant", option.id)
+      option.scrollIntoView({ block: "nearest" })
+    } else {
+      this.filterTarget.removeAttribute("aria-activedescendant")
+    }
+  }
+
+  render() {
+    this.optionsTarget.hidden = !this.opened
+    this.filterTarget.setAttribute("aria-expanded", String(this.opened))
+    if (!this.opened) this.emptyStateTarget.hidden = true
+    if (this.hasAttachmentTarget) {
+      this.attachmentTarget.hidden = this.opened || !this.attachmentAvailable
+    }
+  }
+
+  get visibleOptions() {
+    return this.optionTargets.filter((option) => !option.hidden)
   }
 
   markSelected() {

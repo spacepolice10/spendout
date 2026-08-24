@@ -19,6 +19,7 @@ export default class extends Controller {
   async currencyChanged() {
     const selectedCurrency = this.currencyTarget.value
     this.validateCurrency()
+    this.updateRateFields()
 
     if (selectedCurrency === this.baseCurrencyValue) {
       this.setRate("1")
@@ -37,7 +38,6 @@ export default class extends Controller {
     }
 
     this.previousCurrency = this.currencyTarget.value
-    this.updateRateFields()
     this.calculate()
   }
 
@@ -92,8 +92,13 @@ export default class extends Controller {
   }
 
   updateRateFields() {
-    this.rateFieldsTarget.hidden = this.currencyTarget.value === "" ||
-      this.currencyTarget.value === this.baseCurrencyValue
+    const available = this.currencyTarget.value !== "" &&
+      this.currencyTarget.value !== this.baseCurrencyValue
+    this.rateFieldsTarget.dataset.currencyPickerAvailable = String(available)
+    this.rateFieldsTarget.dispatchEvent(new CustomEvent("currency-picker:availability-changed", {
+      bubbles: true,
+      detail: { available }
+    }))
   }
 
   updateInitialRateStatus() {

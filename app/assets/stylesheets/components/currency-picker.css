@@ -35,20 +35,21 @@
         &>[data-currency-picker-target="attachment"] {
             display: grid;
             gap: var(--space-v-half);
-            padding: var(--space-v-half) var(--form-space-h);
+            padding-block: var(--space-v-half);
             border-top: var(--border-subtle);
+
         }
 
         & [data-currency-rate-input] {
-            display: flex;
+            display: grid;
             gap: var(--space-h-half);
 
             &>:is(input, output) {
-                flex: 1;
                 padding: var(--space-v-half) var(--space-h-half);
             }
 
             &>input {
+                block-size: var(--form-control-height);
                 font-size: var(--font-size-base-type);
             }
 

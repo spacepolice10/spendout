@@ -38,7 +38,12 @@ export default class extends Controller {
     if (!source) return
 
     const sameCurrency = currency === source.currency
-    this.fieldsTarget.hidden = sameCurrency
+    const available = !sameCurrency
+    this.fieldsTarget.dataset.currencyPickerAvailable = String(available)
+    this.fieldsTarget.dispatchEvent(new CustomEvent("currency-picker:availability-changed", {
+      bubbles: true,
+      detail: { available }
+    }))
     this.rateTarget.disabled = sameCurrency
     this.rateTarget.required = !sameCurrency
     this.previousSourceId = this.sourceId

@@ -26,30 +26,8 @@
       aria-expanded="false"
       aria-controls="<%= listbox_id %>"
       data-currency-picker-target="filter"
-      data-action="focus->currency-picker#open input->currency-picker#search keydown.esc->currency-picker#close"
+      data-action="focus->currency-picker#open input->currency-picker#search keydown->currency-picker#keydown"
       <% filter_data.each do |name, value| %> data-<%= name.to_s.dasherize %>="<%= value %>"<% end %>>
-  </div>
-
-  <div id="<%= listbox_id %>" role="listbox" data-layout="grid" data-currency-picker-target="options" hidden>
-    <% ordered_options.each do |label, code| %>
-      <% popular = Currency::POPULAR_CODES.include?(code) %>
-      <% default = code == selected_code %>
-      <% suggested = code == suggested_code %>
-      <div data-currency-picker-option<% unless popular || default || suggested %> hidden<% end %>>
-        <label role="option" aria-selected="<%= default %>" data-currency-picker-target="option" data-filter-value="<%= label %>"
-          <% if popular %> data-popular="true"<% end %>
-          <% if default %> data-default="true"<% end %>
-          <% if suggested %> data-suggested="true"<% end %>
-          <% unless popular || default || suggested %> hidden<% end %>>
-          <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
-            <%= "checked" if code == selected_code %>
-            data-currency-picker-target="radio"
-            data-action="change->currency-picker#choose">
-
-          <span><%= label %></span>
-        </label>
-      </div>
-    <% end %>
   </div>
 
   <% if rate_attribute && local_assigns.fetch(:rate_mode, :base) == :direct %>
@@ -57,6 +35,7 @@
       <small id="<%= rate_help_id %>" data-expense-fields-target="rateLabel"></small>
       <div data-currency-rate-input>
         <%= form.text_field rate_attribute, inputmode: "decimal",
+          placeholder: "0.00",
           aria: { label: "Direct conversion rate", description: rate_help_id },
           data: {
             controller: "amount-fields",
@@ -105,6 +84,28 @@
 
     </div>
   <% end %>
+
+  <div id="<%= listbox_id %>" role="listbox" data-layout="grid" data-currency-picker-target="options" hidden>
+    <% ordered_options.each do |label, code| %>
+      <% popular = Currency::POPULAR_CODES.include?(code) %>
+      <% default = code == selected_code %>
+      <% suggested = code == suggested_code %>
+      <div data-currency-picker-option<% unless popular || default || suggested %> hidden<% end %>>
+        <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option" aria-selected="<%= default %>" data-currency-picker-target="option" data-filter-value="<%= label %>"
+          <% if popular %> data-popular="true"<% end %>
+          <% if default %> data-default="true"<% end %>
+          <% if suggested %> data-suggested="true"<% end %>
+          <% unless popular || default || suggested %> hidden<% end %>>
+          <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
+            <%= "checked" if code == selected_code %>
+            data-currency-picker-target="radio"
+            data-action="change->currency-picker#choose">
+
+          <span><%= label %></span>
+        </label>
+      </div>
+    <% end %>
+  </div>
 
   <small data-currency-picker-target="emptyState" hidden> No currencies found </small>
 </div>
