@@ -300,13 +300,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", text: "Expense"
+    assert_select "article[data-expense-receipt]"
+    assert_select "[data-expense-total]", text: /\$125.*USD/
+    assert_select "[data-expense-source]", text: /#{Regexp.escape(@source.name)}.*\$125.*USD/
+    assert_select "[data-expense-breakdown] dt", text: "Budget value"
+    assert_select "[data-expense-receipt-note] strong", text: @expense.note
     assert_select "time[datetime='2026-08-19']"
     assert_select "dd", text: /\$125 USD/
-    assert_select "dt", text: "Source debit"
     assert_select "dt", text: "Budget value"
     assert_select "a[href='#{source_path(@source)}']", text: @source.name
     assert_select "a[href='#{allocation_path(@allocation)}']", text: @allocation.name
-    assert_select "dd", text: @expense.note
     assert_select "a[aria-label='Back to expenses'][href='#{budget_expenses_path(@budget)}']"
     assert_select "form[action='#{expense_path(@expense)}'] button[data-turbo-confirm='Delete this expense permanently?']", text: "Delete expense"
   end

@@ -1,0 +1,71 @@
+@layer components {
+    [data-exchange-list] {
+        & > main {
+            gap: var(--space-v-2);
+        }
+
+        & [data-exchange-day] {
+            display: grid;
+            gap: var(--space-v);
+
+            & > header {
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                gap: var(--space-h);
+                padding-bottom: var(--space-v-half);
+                border-bottom: var(--border-strong);
+
+                & h3 {
+                    font-weight: var(--font-weight-medium);
+                }
+
+                & time {
+                    text-transform: uppercase;
+                }
+            }
+
+            & > main {
+                display: grid;
+                gap: var(--space-v);
+            }
+        }
+    }
+
+    [data-exchange-entry] {
+        border-radius: 0;
+
+        & > main {
+            padding: 0;
+        }
+
+        & [data-exchange-line] {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: start;
+            gap: var(--space-v-half) var(--space-h-half);
+            min-width: 0;
+
+            & > .icon-wrap {
+                grid-row: 1 / span 2;
+            }
+        }
+
+        & [data-exchange-name] {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            text-transform: uppercase;
+        }
+
+        & [data-exchange-amounts],
+        & [data-exchange-amounts] > span {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5ch;
+        }
+
+        & [data-exchange-amounts] {
+            flex-wrap: wrap;
+        }
+    }
+}

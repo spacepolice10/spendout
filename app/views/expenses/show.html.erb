@@ -1,45 +1,75 @@
 <main data-size="sm" data-anchor="footer">
-  <article data-elevation="1">
+  <article data-elevation="1" data-expense-receipt>
     <header>
       <nav>
         <%= link_to icon_tag("chevron-left"), budget_expenses_path(@budget), aria: { label: "Back to expenses" } %>
         <h1>Expense</h1>
       </nav>
-      <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= @expense.occurred_on.to_fs(:long) %></time>
+      <small>Receipt</small>
     </header>
 
     <main>
-      <dl>
-        <dt>Amount</dt>
-        <dd><%= formatted_amount(@expense.amount, @expense.currency_code) %> <%= @expense.currency_code %></dd>
-        <dt>Source</dt>
-        <dd>
-          <%= link_to @expense.source.name, source_path(@expense.source) %>
-          <%= "(Deleted)" if @expense.source.deleted? %>
-        </dd>
-        <dt>Source debit</dt>
-        <dd><%= formatted_amount(@expense.source_amount, @expense.source_currency_code) %> <%= @expense.source_currency_code %></dd>
-        <% if @expense.currency_code != @expense.source_currency_code %>
-          <dt>Conversion quote</dt>
-          <dd><%= @expense.conversion_rate.to_s("F") %> <%= @expense.currency_code %> per 1 <%= @expense.source_currency_code %></dd>
-        <% end %>
-        <dt>Budget value</dt>
-        <dd><%= formatted_amount(@expense.amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
-        <dt>Allocation</dt>
-        <dd>
+      <section data-expense-hero>
+        <div data-expense-category>
           <% if @expense.allocation %>
             <%= icon_tag(@expense.allocation.icon, style: icon_colour_styles(@expense.allocation.colour)) %>
-            <%= link_to @expense.allocation.name, allocation_path(@expense.allocation) %>
-            <%= "(Deleted)" if @expense.allocation.deleted? %>
+            <p>
+              <small>Category</small>
+              <strong>
+                <%= link_to @expense.allocation.name, allocation_path(@expense.allocation) %>
+                <%= "(Deleted)" if @expense.allocation.deleted? %>
+              </strong>
+            </p>
           <% else %>
-            No allocation
+            <%= icon_tag("circle-dot") %>
+            <p><small>Category</small><strong>Unallocated</strong></p>
           <% end %>
-        </dd>
-        <% if @expense.note.present? %>
-          <dt>Note</dt>
-          <dd><%= @expense.note %></dd>
+        </div>
+
+        <p data-expense-total>
+          <strong><%= formatted_amount(@expense.amount, @expense.currency_code) %></strong>
+          <small><%= @expense.currency_code %></small>
+        </p>
+
+        <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= @expense.occurred_on.to_fs(:long) %></time>
+      </section>
+
+      <section data-expense-source style="<%= colour_styles(@expense.source.colour) %>">
+        <%= icon_tag(@expense.source.icon) %>
+        <p>
+          <small>Paid from</small>
+          <strong>
+            <%= link_to @expense.source.name, source_path(@expense.source) %>
+            <%= "(Deleted)" if @expense.source.deleted? %>
+          </strong>
+        </p>
+        <p data-expense-source-debit>
+          <strong><%= formatted_amount(@expense.source_amount, @expense.source_currency_code) %></strong>
+          <small><%= @expense.source_currency_code %></small>
+        </p>
+      </section>
+
+      <dl data-expense-breakdown>
+        <% if @expense.currency_code != @expense.source_currency_code %>
+          <div>
+            <dt>Conversion quote</dt>
+            <span aria-hidden="true"></span>
+            <dd><%= @expense.conversion_rate.to_s("F") %> <%= @expense.currency_code %> / <%= @expense.source_currency_code %></dd>
+          </div>
         <% end %>
+        <div>
+          <dt>Budget value</dt>
+          <span aria-hidden="true"></span>
+          <dd><%= formatted_amount(@expense.amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
+        </div>
       </dl>
+
+      <% if @expense.note.present? %>
+        <aside data-expense-receipt-note>
+          <%= icon_tag("note") %>
+          <p><small>Note</small><strong><%= @expense.note %></strong></p>
+        </aside>
+      <% end %>
     </main>
 
     <footer>

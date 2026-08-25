@@ -85,43 +85,7 @@
                 </header>
 
                 <main>
-                  <% exchanges.each do |exchange| %>
-                    <article
-                      data-exchange-entry
-                      data-testid="exchange-history-item"
-                    >
-                      <main>
-                        <div data-exchange-line>
-                          <%= icon_tag(exchange.parent_source.icon, style: icon_colour_styles(exchange.parent_source.colour)) %>
-
-                          <div data-exchange-description>
-                            <strong data-exchange-name>
-                              <%= exchange.parent_source.name %><%= " (Deleted)" if exchange.parent_source.deleted? %>
-
-                              <span aria-hidden="true">→</span>
-                              <%= exchange.child_source.name %><%= " (Deleted)" if exchange.child_source.deleted? %>
-                            </strong>
-                          </div>
-
-                          <span data-exchange-leader aria-hidden="true"></span>
-
-                          <span data-exchange-amounts>
-                            <span>
-                              <strong><%= formatted_amount(exchange.parent_amount, exchange.parent_currency_code) %></strong>
-                              <small><%= exchange.parent_currency_code %></small>
-                            </span>
-
-                            <span aria-hidden="true">→</span>
-
-                            <span>
-                              <strong><%= formatted_amount(exchange.child_amount, exchange.child_currency_code) %></strong>
-                              <small><%= exchange.child_currency_code %></small>
-                            </span>
-                          </span>
-                        </div>
-                      </main>
-                    </article>
-                  <% end %>
+                  <%= render partial: "sources/exchange", collection: exchanges %>
                 </main>
               </section>
             <% end %>

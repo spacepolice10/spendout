@@ -22,10 +22,6 @@
         max-width: 1280px;
         margin-inline: auto;
 
-        &:has(> nav[aria-label="Budget sections"]) {
-            padding-block-end: calc(4rem + env(safe-area-inset-bottom));
-        }
-
         &>header {
             width: 100%;
         }
@@ -44,6 +40,10 @@
                 margin-block-start: auto;
                 padding-block-end: var(--space-v-half);
                 view-transition-name: budget-panel;
+
+                &>article>main {
+                    padding-block-end: calc(4rem + env(safe-area-inset-bottom));
+                }
 
                 &>article>footer {
                     position: sticky;

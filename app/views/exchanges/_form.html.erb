@@ -40,7 +40,7 @@
         base_currency_code: parent_source.currency_code,
         converted_amount_label: "New source amount" %>
 
-  <div data-layout="flex">
+  <div data-layout="flex" style="flex-wrap: wrap;">
     <%= link_to budget_sources_path(budget), role: "button", data: { appearance: "keycap", intent: "secondary", size: "lg" } do %>
       <%= icon_tag("chevron-left") %>
       <span>Cancel</span>
