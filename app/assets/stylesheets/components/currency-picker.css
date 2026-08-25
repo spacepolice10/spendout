@@ -43,10 +43,8 @@
         & dialog {
             inset: 50% auto auto 50%;
             z-index: var(--z-dialog);
-            display: grid;
             width: min(36rem, calc(100vw - var(--space-h-2)));
             max-height: min(42rem, calc(100dvh - var(--space-v-2)));
-            gap: var(--space-v);
             padding: var(--space-v) var(--space-h);
             border: var(--border-subtle);
             border-radius: var(--radius-3);
@@ -76,12 +74,25 @@
                 padding: var(--space-v-half) var(--space-h);
                 background: transparent;
                 color: inherit;
-                font-size: var(--font-size-xl);
+                font-size: var(--font-size-2xl);
             }
 
             & > footer {
                 justify-content: flex-end;
             }
+        }
+
+        & dialog[data-currency-picker-target="currencyDialog"][open] {
+            display: flex;
+            flex-direction: column;
+            height: min(42rem, calc(100dvh - var(--space-v-2)));
+            gap: var(--space-v);
+        }
+
+        & dialog[data-currency-picker-target="rateDialog"][open] {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-v);
         }
 
         & [data-currency-combobox] {
@@ -101,6 +112,7 @@
         }
 
         & [data-currency-picker-target="options"] {
+            flex: 1 1 auto;
             min-height: 0;
             border: var(--border-subtle);
             overflow-y: auto;
