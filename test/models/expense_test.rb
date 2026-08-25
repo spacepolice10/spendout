@@ -121,6 +121,16 @@ class ExpenseTest < ActiveSupport::TestCase
     assert expense.errors.added?(:allocation, "must be active")
   end
 
+  test "does not allow a finished allocation on a new expense" do
+    allocation = allocations(:active)
+    allocation.update!(finished_at: Time.current)
+
+    expense = budgets(:active).expenses.new(source: sources(:active), allocation: allocation, amount: 1)
+
+    assert_not expense.valid?
+    assert expense.errors.added?(:allocation, "must be active")
+  end
+
   test "rejects cumulative spending beyond source capacity" do
     source = sources(:active)
     expense = source.budget.expenses.new(source: source, amount: "1375.2501")

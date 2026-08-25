@@ -1,0 +1,25 @@
+@layer components {
+    [data-finished-allocation] {
+        position: relative;
+
+        & > :not([data-finished-stamp]) {
+            opacity: var(--opacity-50);
+        }
+
+        & > [data-finished-stamp] {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            z-index: 1;
+            padding: var(--space-v-half) var(--space-h);
+            border: var(--border-strong);
+            background: var(--color-1);
+            color: var(--color-accent-negative);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            letter-spacing: 0.08em;
+            pointer-events: none;
+            transform: translate(-50%, -50%) rotate(-8deg);
+        }
+    }
+}

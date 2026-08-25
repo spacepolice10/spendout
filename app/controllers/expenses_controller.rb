@@ -74,7 +74,7 @@ class ExpensesController < ApplicationController
 
     def set_form_collections
       @active_sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
-      @active_allocations = @budget.allocations.where(deleted_at: nil).order(:created_at, :id)
+      @active_allocations = @budget.allocations.active.order(:created_at, :id)
       @expense_currency_context = @active_sources.each_with_object({}) do |source, context|
         context[source.id] = {
           currency: source.currency_code,

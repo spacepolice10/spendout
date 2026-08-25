@@ -62,7 +62,10 @@ class Budget < ApplicationRecord
   end
 
   def allocations_amount_in_base
-    amount_in_base_of(allocations.planned.where(deleted_at: nil))
+    allocations.planned.where(deleted_at: nil).includes(:expenses).sum(BigDecimal("0")) do |allocation|
+      reserved_amount = allocation.finished? ? [ allocation.spent_amount, allocation.amount ].min : allocation.amount
+      reserved_amount / allocation.rate
+    end
   end
 
   def expenses_amount_in_base
@@ -101,7 +104,7 @@ class Budget < ApplicationRecord
       source.spendable_amount / source.rate
     end
 
-    remaining_plans = allocations.planned.where(deleted_at: nil).includes(expenses: :source)
+    remaining_plans = allocations.planned.active.includes(expenses: :source)
       .sum(BigDecimal("0")) do |allocation|
         spent_from_active_sources = allocation.expenses.sum(BigDecimal("0")) do |expense|
           expense.source.deleted? ? BigDecimal("0") : expense.source_amount / expense.source_rate

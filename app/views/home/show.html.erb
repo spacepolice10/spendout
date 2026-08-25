@@ -21,8 +21,7 @@
       <p>
         Spendout turns wallets, plans, and everyday spending into one answer:
         <strong>what's safe to spend today.</strong> No subscription. No lock-in.
-        Run it yourself. And it looks like a tool you'll want to use, not
-        another spreadsheet.
+        Run it yourself. And it has looks, by the way.
       </p>
 
       <div data-landing-actions>
@@ -45,7 +44,7 @@
       <h2 id="control-title">Your daily fuel gauge.</h2>
 
       <p>
-        One glance tells you how much unplanned money is safe to spend today. <strong>Driving the level of stress down and keeping you calm</strong>.
+        One glance tells you how much unplanned money is safe to spend today.
       </p>
     </header>
 
@@ -78,7 +77,7 @@
 
   <section data-landing-chapter aria-labelledby="currency-title">
     <header>
-      <h2 id="currency-title">Currency polyglot.</h2>
+      <h2 id="currency-title">Speaks your currency.</h2>
 
       <p>
         Choose the currency that fits the money in front of you, exchange
@@ -211,7 +210,8 @@
 
         <p>
           Classify expenses with planned allocations or unplanned categories
-          without letting a plan block real spending.
+          without letting a plan block real spending. Finish a plan when it is
+          done and its unspent money becomes available again.
         </p>
       </article>
 
@@ -263,17 +263,20 @@
       <p>Hello,</p>
 
       <p>
-        I created Spendout because I wanted to make expense tracking free and
-        simpler, without depending on huge SaaS alternatives.
+        I created Spendout because I wanted to make expense tracking simple,
+        free, and reasonable, without depending on huge SaaS products or
+        building another spreadsheet.
       </p>
 
       <p>
-        I have a passion for building simple, traditional applications with
-        Rails. Spendout makes it quick to record expenses, handle exchanges,
-        and categorize payments in any browser, without being tied to an App
-        Store. If you want to explore an independent alternative, you can keep
-        control of both your finances and the application that helps manage
-        them.
+        I have a passion for building web software in a traditional fashion,
+        using the modern Rails stack. Spendout makes it quick to record
+        expenses, handle exchanges, and categorize payments in any browser,
+        without being tied to a platform or app store. Its open nature makes
+        it easy to modify any part of the app to suit specific requirements.
+        If you want to try something new, you can explore Spendout while
+        keeping control of both your financial data and the application that
+        helps manage it.
       </p>
 
       <footer>
@@ -328,5 +331,15 @@
       </footer>
     </aside>
   </section>
+
+  <footer data-landing-footer>
+    <p>
+      <strong>Demo data is temporary.</strong> It is not preserved and may be
+      removed within a week.
+    </p>
+
+    <%= link_to authenticated? ? "Open my budget" : "Try the demo", authenticated? ? root_path : new_session_path,
+          role: "button", data: { appearance: "keycap", intent: "primary" } %>
+  </footer>
 
 </main>

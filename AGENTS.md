@@ -1,7 +1,7 @@
 - A user has at most one active budget; archived budgets remain as history. The root shows the active budget or the new-budget form when none is active.
 - A budget has sources, allocations, and expenses.
 - A source is a currency-specific money container with a name, amount, icon, colour, and currency.
-- An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; unplanned categories only classify expenses paid from that remainder.
+- An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; finishing one releases its unspent reservation while preserving history. Unplanned categories only classify expenses paid from that remainder.
 - An expense preserves its purchase amount and currency, directly quoted source-currency debit, immutable source snapshots, optional 200-character note, and user-editable occurrence date; allocations remain currency-independent classifications.
 - An exchange immutably debits one source and atomically creates another in a different currency, snapshotting both amounts and the parent-relative quote.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.

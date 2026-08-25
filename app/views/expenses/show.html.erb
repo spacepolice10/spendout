@@ -17,7 +17,7 @@
               <small>Category</small>
               <strong>
                 <%= link_to @expense.allocation.name, allocation_path(@expense.allocation) %>
-                <%= "(Deleted)" if @expense.allocation.deleted? %>
+                <%= @expense.allocation.deleted? ? "(Deleted)" : ("(Finished)" if @expense.allocation.finished?) %>
               </strong>
             </p>
           <% else %>

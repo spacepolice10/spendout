@@ -68,6 +68,19 @@ class BudgetTest < ActiveSupport::TestCase
     assert_equal BigDecimal("1175.25"), budget.sources_remainder_in_base
   end
 
+  test "finishing a plan releases its unspent reservation" do
+    budget = budgets(:active)
+    allocation = allocations(:active)
+
+    assert_equal BigDecimal("1200.25"), budget.sources_remainder_in_base
+
+    allocation.update!(finished_at: Time.current)
+
+    assert_equal BigDecimal("1375.25"), budget.sources_remainder_in_base
+    assert_equal BigDecimal("125"), budget.allocations_amount_in_base
+    assert_equal BigDecimal("1375.25"), budget.amount_summary
+  end
+
   test "today's remainder rolls unused daily spending forward" do
     budget = budgets(:active)
     source = sources(:active)

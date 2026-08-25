@@ -7,6 +7,7 @@ class Allocation < ApplicationRecord
 
   scope :planned, -> { where(planned: true) }
   scope :unplanned, -> { where(planned: false) }
+  scope :active, -> { where(deleted_at: nil, finished_at: nil) }
 
   validates :name, presence: true
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
@@ -14,6 +15,18 @@ class Allocation < ApplicationRecord
 
   def deleted?
     deleted_at.present?
+  end
+
+  def finished?
+    finished_at.present?
+  end
+
+  def active?
+    !deleted? && !finished?
+  end
+
+  def remaining_amount
+    [ amount - spent_amount, BigDecimal("0") ].max
   end
 
   def spent_amount

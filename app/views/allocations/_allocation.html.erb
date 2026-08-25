@@ -2,7 +2,15 @@
 <% progress_max = allocation.amount.positive? ? allocation.amount : 1 %>
 <% progress_value = allocation.amount.positive? ? [ spent_amount, allocation.amount ].min : (spent_amount.positive? ? 1 : 0) %>
 
-<article data-elevation="1" data-testid="allocation-card">
+<%= tag.article data: {
+      elevation: "1",
+      testid: "allocation-card",
+      finished_allocation: allocation.finished? || nil
+    } do %>
+  <% if allocation.finished? %>
+    <mark data-finished-stamp>FINISHED</mark>
+  <% end %>
+
   <header>
     <nav>
       <%= icon_tag(allocation.icon, style: colour_styles(allocation.colour)) %>
@@ -37,8 +45,20 @@
       <%= allocation.currency_code %>.
     <% end %>
 
-    <%= button_to allocation_path(allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
-      <%= icon_tag("trash-simple") %>
+    <% if allocation.finished? %>
+      <% unless budget.archived? %>
+        <%= button_to "Reopen", reopen_allocation_path(allocation), method: :patch,
+              data: { turbo_confirm: "Reopen #{allocation.name} and reserve its remaining amount again?" } %>
+      <% end %>
+    <% else %>
+      <%= button_to "Finish", finish_allocation_path(allocation), method: :patch, data: {
+            intent: "primary",
+            turbo_confirm: "Finish #{allocation.name} and release #{formatted_amount(allocation.remaining_amount, allocation.currency_code)}?"
+          } %>
+
+      <%= button_to allocation_path(allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
+        <%= icon_tag("trash-simple") %>
+      <% end %>
     <% end %>
   </footer>
-</article>
+<% end %>

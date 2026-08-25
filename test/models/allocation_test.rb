@@ -68,4 +68,25 @@ class AllocationTest < ActiveSupport::TestCase
     assert_not budget.overallocated?
     assert_equal allocation, Allocation.find(allocation.id)
   end
+
+  test "remaining amount never falls below zero" do
+    allocation = allocations(:active)
+
+    assert_equal BigDecimal("175"), allocation.remaining_amount
+
+    allocation.update!(amount: 100)
+    assert_equal BigDecimal("0"), allocation.remaining_amount
+  end
+
+  test "finished allocations are inactive but preserve their facts" do
+    allocation = allocations(:active)
+
+    allocation.update!(finished_at: Time.current)
+
+    assert_predicate allocation, :finished?
+    assert_not_predicate allocation, :active?
+    assert_equal BigDecimal("300"), allocation.amount
+    assert_equal BigDecimal("125"), allocation.spent_amount
+    assert_equal allocation, Allocation.find(allocation.id)
+  end
 end

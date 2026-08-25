@@ -155,6 +155,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "fieldset[data-expense-allocations] button", count: 0
   end
 
+  test "new expense excludes finished allocations" do
+    sign_in_as(@user)
+    @allocation.update!(finished_at: Time.current)
+
+    get new_budget_expense_path(@budget)
+
+    assert_response :success
+    assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}']", count: 0
+  end
+
   test "creates an allocated expense in a currency independent from its source" do
     sign_in_as(@user)
 

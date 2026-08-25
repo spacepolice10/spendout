@@ -6,7 +6,7 @@
         <%= icon_tag(@allocation.icon) %>
         <h1><%= @allocation.name %></h1>
       </nav>
-      <small><%= "Deleted" if @allocation.deleted? %></small>
+      <small><%= @allocation.deleted? ? "Deleted" : ("Finished" if @allocation.finished?) %></small>
     </header>
 
     <main>
@@ -17,5 +17,12 @@
         <dd><%= link_to @budget.name, budget_expenses_path(@budget) %></dd>
       </dl>
     </main>
+
+    <% if @allocation.finished? && !@allocation.deleted? && !@budget.archived? %>
+      <footer>
+        <%= button_to "Reopen allocation", reopen_allocation_path(@allocation), method: :patch,
+              data: { turbo_confirm: "Reopen #{@allocation.name} and reserve its remaining amount again?" } %>
+      </footer>
+    <% end %>
   </article>
 </main>

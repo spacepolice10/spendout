@@ -24,6 +24,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "progress[data-testid='allocation-progress'][value='125.0'][max='300.0']"
     assert_select "progress[aria-label='$125 spent of $300 planned']"
     assert_select "[data-testid='allocation-card'] small", text: /\$125 spent of \$300 planned/
+    assert_select "form[action='#{finish_allocation_path(@allocation)}'] button", text: "Finish"
     assert_select "dt", text: "Remaining"
     assert_select "dd", text: /1,200.25 USD/
     assert_select "[data-testid='overallocation-warning']", count: 0
@@ -38,6 +39,20 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "[data-testid='allocation-card']", count: 0
+  end
+
+  test "index keeps finished allocations dimmed with a stamp and reopen action" do
+    sign_in_as(@user)
+    @allocation.update!(finished_at: Time.current)
+
+    get budget_allocations_path(@budget)
+
+    assert_response :success
+    assert_select "[data-testid='allocation-card'][data-finished-allocation]", count: 1 do
+      assert_select "[data-finished-stamp]", text: "FINISHED"
+      assert_select "form[action='#{finish_allocation_path(@allocation)}']", count: 0
+      assert_select "form[action='#{reopen_allocation_path(@allocation)}'] button", text: "Reopen"
+    end
   end
 
   test "index shows when spending exceeds an allocation" do
@@ -213,6 +228,69 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "small", text: "Deleted"
   end
 
+  test "show labels a finished allocation" do
+    sign_in_as(@user)
+    @allocation.update!(finished_at: Time.current)
+
+    get allocation_path(@allocation)
+
+    assert_response :success
+    assert_select "small", text: "Finished"
+    assert_select "form[action='#{reopen_allocation_path(@allocation)}'] button", text: "Reopen allocation"
+  end
+
+  test "finishes a planned allocation and preserves its historical expenses" do
+    sign_in_as(@user)
+    expense = expenses(:active)
+
+    assert_no_difference("Allocation.count") do
+      patch finish_allocation_path(@allocation)
+    end
+
+    assert_redirected_to budget_allocations_path(@budget)
+    assert_equal "Allocation was finished.", flash[:notice]
+    assert_predicate @allocation.reload, :finished?
+    assert_equal @allocation, expense.reload.allocation
+  end
+
+  test "does not finish an unplanned or inactive allocation" do
+    sign_in_as(@user)
+    @allocation.update!(planned: false)
+
+    patch finish_allocation_path(@allocation)
+
+    assert_redirected_to budget_allocations_path(@budget)
+    assert_equal "Allocation could not be finished.", flash[:alert]
+    assert_not_predicate @allocation.reload, :finished?
+
+    @allocation.update!(planned: true, deleted_at: Time.current)
+    patch finish_allocation_path(@allocation)
+    assert_not_predicate @allocation.reload, :finished?
+  end
+
+  test "reopens a finished allocation in an active budget" do
+    sign_in_as(@user)
+    @allocation.update!(finished_at: Time.current)
+
+    patch reopen_allocation_path(@allocation)
+
+    assert_redirected_to budget_allocations_path(@budget)
+    assert_equal "Allocation was reopened.", flash[:notice]
+    assert_predicate @allocation.reload, :active?
+  end
+
+  test "does not reopen an allocation in an archived budget" do
+    sign_in_as(@user)
+    allocation = allocations(:archived)
+    allocation.update!(finished_at: Time.current)
+
+    patch reopen_allocation_path(allocation)
+
+    assert_redirected_to allocation_path(allocation)
+    assert_equal "Allocation could not be reopened.", flash[:alert]
+    assert_predicate allocation.reload, :finished?
+  end
+
   test "removes an allocation without deleting it from historical expenses" do
     sign_in_as(@user)
     expense = expenses(:active)
@@ -234,6 +312,12 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
 
     get allocation_path(allocations(:other))
+    assert_response :not_found
+
+    patch finish_allocation_path(allocations(:other))
+    assert_response :not_found
+
+    patch reopen_allocation_path(allocations(:other))
     assert_response :not_found
   end
 end

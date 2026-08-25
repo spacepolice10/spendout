@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_010000) do
     t.datetime "created_at", null: false
     t.string "currency_code", limit: 3, null: false
     t.datetime "deleted_at"
+    t.datetime "finished_at"
     t.string "icon", default: "wallet", null: false
     t.string "name", null: false
     t.boolean "planned", default: true, null: false
@@ -26,6 +27,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_010000) do
     t.index ["budget_id"], name: "index_allocations_on_budget_id"
     t.index ["budget_id"], name: "index_allocations_on_budget_id_and_currency_code"
     t.index ["deleted_at"], name: "index_allocations_on_deleted_at"
+    t.index ["finished_at"], name: "index_allocations_on_finished_at"
     t.check_constraint "amount >= 0", name: "allocations_amount_non_negative"
     t.check_constraint "rate > 0", name: "allocations_rate_positive"
   end

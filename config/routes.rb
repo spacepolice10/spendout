@@ -4,7 +4,10 @@ Rails.application.routes.draw do
   resource :currency_reference, only: :show
 
   resources :budgets, only: %i[ new create destroy ] do
-    resources :allocations, shallow: true
+    resources :allocations, shallow: true do
+      patch :finish, on: :member
+      patch :reopen, on: :member
+    end
     resources :expenses, shallow: true
     resources :sources, shallow: true do
       resources :exchanges, only: %i[ new create ]

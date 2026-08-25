@@ -12,7 +12,7 @@
           <strong data-expense-name>
             <% if expense.allocation %>
               <%= expense.allocation.name %>
-              <%= "(Deleted)" if expense.allocation.deleted? %>
+              <%= expense.allocation.deleted? ? "(Deleted)" : ("(Finished)" if expense.allocation.finished?) %>
             <% else %>
               Unallocated
             <% end %>

@@ -100,7 +100,7 @@ class Expense < ApplicationRecord
     end
 
     def allocation_is_active
-      errors.add(:allocation, "must be active") if allocation&.deleted?
+      errors.add(:allocation, "must be active") if allocation && !allocation.active?
     end
 
     def amount_fits_source

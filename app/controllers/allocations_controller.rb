@@ -1,9 +1,9 @@
 class AllocationsController < ApplicationController
   before_action :set_budget, only: %i[ index new create ]
-  before_action :set_allocation, only: %i[ show destroy ]
+  before_action :set_allocation, only: %i[ show finish reopen destroy ]
 
   def index
-    @allocations = @budget.allocations.includes(:expenses).where(deleted_at: nil, planned: true).order(:created_at, :id)
+    @allocations = @budget.allocations.includes(:expenses).planned.where(deleted_at: nil).order(:created_at, :id)
   end
 
   def show
@@ -25,6 +25,23 @@ class AllocationsController < ApplicationController
       redirect_to budget_allocations_path(@budget), notice: notice
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def finish
+    if @allocation.planned? && @allocation.active? && @allocation.update(finished_at: Time.current)
+      redirect_to budget_allocations_path(@budget), notice: "Allocation was finished."
+    else
+      redirect_to budget_allocations_path(@budget), alert: "Allocation could not be finished."
+    end
+  end
+
+  def reopen
+    if @allocation.planned? && @allocation.finished? && !@allocation.deleted? && !@budget.archived? &&
+        @allocation.update(finished_at: nil)
+      redirect_to budget_allocations_path(@budget), notice: "Allocation was reopened."
+    else
+      redirect_to allocation_path(@allocation), alert: "Allocation could not be reopened."
     end
   end
 

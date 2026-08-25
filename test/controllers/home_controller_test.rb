@@ -17,7 +17,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-hero-cybercat] h1", text: "Spendout", count: 1
     assert_select "[data-landing-hero] strong", text: "what's safe to spend today."
     assert_select "[data-landing-hero]", text: /No subscription\. No lock-in\. Run it yourself\./
-    assert_select "[data-landing-hero]", text: /not another spreadsheet/
+    assert_select "[data-landing-hero]", text: /And it has looks, by the way\./
     assert_select "[data-landing-price]", text: "$0 · self-hosted · your server, your data"
     assert_select "[data-landing-steps]", count: 0
     assert_select "[data-floating-ui], [data-float]", count: 0
@@ -31,6 +31,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
       assert_select "strong", text: "never touches this number"
     end
     assert_select "[data-landing-chapter] > header h2", text: "Your daily fuel gauge."
+    assert_select "[data-landing-chapter]", text: /stress down|keeping you calm/, count: 0
     assert_select "[data-section-number]", count: 0
     assert_select "a[role='button'][href='#{new_session_path}']", text: "Try Spendout", minimum: 1
     assert_select "[data-landing-actions] a[role='button'][href='https://github.com/spacepolice10/spendout']", text: "GitHub", count: 1
@@ -43,6 +44,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a[role='button'][href='#{root_path}']", text: "Open my budget", minimum: 1
+    assert_select "[data-landing-footer] a[role='button'][href='#{root_path}']", text: "Open my budget", count: 1
     assert_select "nav[aria-label='Budget sections']", count: 0
   end
 
@@ -61,14 +63,15 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-rate-board-snapshots-value*='29,454.59']", count: 1
     assert_select "[data-currency-story] [data-rate-copy] article", count: 1
     assert_select "[data-currency-story] [data-rate-copy] h3", text: "Real currencies. Honest history."
-    assert_select "[data-landing-chapter] > header h2", text: "Currency polyglot."
+    assert_select "[data-landing-chapter] > header h2", text: "Speaks your currency."
     assert_select "[data-currency-story] [data-rate-copy]", text: /base currency stays fixed/
     assert_select "[data-currency-story] [data-rate-copy]", text: /saved amounts never revalue themselves/
     assert_select "[data-landing-letter]" do
       assert_select "h2", text: "Why I made Spendout"
-      assert_select "p", text: /expense tracking free and simpler/
-      assert_select "p", text: /traditional applications with Rails/
-      assert_select "p", text: /in any browser/
+      assert_select "p", text: /expense tracking simple, free, and reasonable/
+      assert_select "p", text: /modern Rails stack/
+      assert_select "p", text: /open nature.*specific requirements/m
+      assert_select "p", text: /financial data.*helps manage it/m
       assert_select "footer", text: "— Vlad Kov"
     end
     assert_select "#details > header h2", text: "Features"
@@ -83,6 +86,10 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/we buy|we sell/i, response.body)
     assert_select "[data-landing-ownership]", text: /currently deployed with Kamal/
     assert_select "[data-landing-ownership]", text: /ONCE is planned/
-    assert_select "[data-landing-footer]", count: 0
+    assert_select "[data-landing-footer]", count: 1 do
+      assert_select "strong", text: "Demo data is temporary."
+      assert_select "p", text: /not preserved.*removed within a week/m
+      assert_select "a[role='button'][href='#{new_session_path}']", text: "Try the demo"
+    end
   end
 end
