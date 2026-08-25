@@ -19,7 +19,7 @@ export default class extends Controller {
     const source = this.source
     if (!source) return
 
-    this.currencyTarget.dispatchEvent(new CustomEvent("currency-picker:recommend", {
+    this.currencyTarget.dispatchEvent(new CustomEvent("currency-picker:select", {
       bubbles: true,
       detail: { currency: source.currency }
     }))

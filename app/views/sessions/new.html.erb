@@ -14,7 +14,7 @@
       <p>We’ll email you a six-character sign-in code.</p>
 
       <%= form_with url: session_path do |form| %>
-        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
+        <%= form.email_field :email_address, required: true, autofocus: !mobile_variant?, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
 
         <%= form.button "Email me a code", type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
           <span>Email me a code</span>

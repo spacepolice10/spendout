@@ -95,6 +95,23 @@ class Budget < ApplicationRecord
     sources_amount_in_base - expenses_amount_in_base
   end
 
+  def sources_remainder_in_base
+    active_sources = sources.where(deleted_at: nil).includes(:expenses, :outgoing_exchanges)
+    source_balances = active_sources.sum(BigDecimal("0")) do |source|
+      source.spendable_amount / source.rate
+    end
+
+    remaining_plans = allocations.planned.where(deleted_at: nil).includes(expenses: :source)
+      .sum(BigDecimal("0")) do |allocation|
+        spent_from_active_sources = allocation.expenses.sum(BigDecimal("0")) do |expense|
+          expense.source.deleted? ? BigDecimal("0") : expense.source_amount / expense.source_rate
+        end
+        [ allocation.amount_in_base - spent_from_active_sources, BigDecimal("0") ].max
+      end
+
+    source_balances - remaining_plans
+  end
+
   def last_expense_currency_code
     expenses.order(created_at: :desc, id: :desc).pick(:currency_code)
   end

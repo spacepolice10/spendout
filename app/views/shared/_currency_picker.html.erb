@@ -17,7 +17,7 @@
 <div class="currency-picker" data-controller="currency-picker"
   data-action="currency-picker:recommend->currency-picker#recommend"
   data-currency-picker-base-currency-value="<%= base_currency_code %>"
-  data-currency-picker-autofocus-value="<%= filter_autofocus %>">
+  data-currency-picker-autofocus-value="<%= filter_autofocus && !mobile_variant? %>">
   <%= form.select attribute, Currency.options, { include_blank: "Choose a currency" }, required: true,
     class: "utilities--sr-only", aria: { label: "Currency" },
     data: { currency_picker_target: "select" }.merge(select_data) %>
@@ -38,7 +38,7 @@
     <div data-currency-combobox>
       <%= icon_tag("search", data: { currency_search_icon: true }) %>
       <input type="search" placeholder="Search by name or code" autocomplete="off" role="combobox"
-        <%= "autofocus" if filter_autofocus %>
+        <%= "autofocus" if filter_autofocus && !mobile_variant? %>
         aria-label="Search currencies" aria-autocomplete="list" aria-expanded="true"
         aria-controls="<%= listbox_id %>" data-currency-picker-target="filter"
         data-action="input->currency-picker#search keydown->currency-picker#keydown"
@@ -70,7 +70,7 @@
       <%= "hidden" unless rate_available %>>
       <button type="button" aria-haspopup="dialog" aria-controls="<%= rate_dialog_id %>"
         data-currency-picker-target="rateTrigger" data-action="currency-picker#openRate">
-        <span data-currency-picker-target="rateSummary"><%= rate.present? ? rate.to_s("F") : rate_prompt %></span>
+        <span data-currency-picker-target="rateSummary"><%= rate.present? ? rate.to_s("F") : "Enter rate" %></span>
         <%= icon_tag("chevron-right", aria: { hidden: true }) %>
       </button>
       <dialog id="<%= rate_dialog_id %>" aria-labelledby="<%= rate_title_id %>"

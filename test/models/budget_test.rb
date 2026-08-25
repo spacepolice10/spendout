@@ -57,6 +57,17 @@ class BudgetTest < ActiveSupport::TestCase
     assert_equal BigDecimal("1262.75"), budget.amount_summary
   end
 
+  test "source remainder subtracts expenses and only the unspent part of plans" do
+    budget = budgets(:active)
+    source = sources(:active)
+
+    assert_equal BigDecimal("1200.25"), budget.sources_remainder_in_base
+
+    budget.expenses.create!(source: source, amount: 25, occurred_on: Date.current)
+
+    assert_equal BigDecimal("1175.25"), budget.sources_remainder_in_base
+  end
+
   test "today's remainder rolls unused daily spending forward" do
     budget = budgets(:active)
     source = sources(:active)

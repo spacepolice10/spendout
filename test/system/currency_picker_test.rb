@@ -109,7 +109,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   test "offers manual entry when no reference quote exists" do
     choose_currency("dong", "VND Dong, 🇻🇳")
 
-    assert_selector rate_trigger, text: "Enter how many units of VND are in 1 USD"
+    assert_selector rate_trigger, text: "Enter rate"
     find(rate_trigger).click
     assert_selector "input[name='source[rate]']:focus"
     within rate_dialog("[open]") do

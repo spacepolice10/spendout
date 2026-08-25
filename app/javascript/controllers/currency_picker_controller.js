@@ -16,6 +16,7 @@ export default class extends Controller {
       this.rateTarget.addEventListener("change", this.rateChanged, { signal })
     }
     this.element.addEventListener("currency-picker:availability-changed", this.availabilityChanged, { signal })
+    this.element.addEventListener("currency-picker:select", this.selectCurrency, { signal })
     this.markSelected()
     this.renderRateSummary()
     if (this.autofocusValue) queueMicrotask(() => this.openCurrency())
@@ -54,6 +55,14 @@ export default class extends Controller {
     )
     const wrapper = option?.closest("[data-currency-picker-option]")
     if (wrapper) wrapper.parentElement.prepend(wrapper)
+  }
+
+  selectCurrency = (event) => {
+    this.selectTarget.value = event.detail.currency
+    this.markSelected()
+    this.renderRateSummary()
+    this.selectTarget.dispatchEvent(new Event("change", { bubbles: true }))
+    this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
   }
 
   keydown(event) {
@@ -185,7 +194,7 @@ export default class extends Controller {
     if (this.hasRatePromptTarget) this.ratePromptTarget.textContent = prompt
     this.rateTarget.setAttribute("aria-label", prompt)
     if (rate === "") {
-      this.rateSummaryTarget.textContent = prompt
+      this.rateSummaryTarget.textContent = "Enter rate"
       return
     }
     this.rateSummaryTarget.textContent = `1 ${base} = ${rate} ${selected}`

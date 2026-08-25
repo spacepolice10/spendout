@@ -10,7 +10,8 @@
     <small> How much money is in this <%= form.object.class.name.downcase %>? </small>
 
     <%= form.label amount_attribute, "Amount", class: "utilities--sr-only" %>
-    <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0", autofocus: open, required: true,
+    <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0",
+      autofocus: open && !mobile_variant?, required: true,
       value: default_amount ? amount || 0 : amount,
       data: {
         controller: "amount-fields",

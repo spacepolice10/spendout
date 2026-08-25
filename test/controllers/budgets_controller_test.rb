@@ -87,6 +87,18 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
   end
 
+  test "new does not autofocus the currency picker on mobile devices" do
+    budgets(:active).update_columns(period_to: Date.yesterday)
+
+    get new_budget_path, headers: {
+      "User-Agent" => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"
+    }
+
+    assert_response :success
+    assert_select "[data-currency-picker-autofocus-value='false']"
+    assert_select "form input[autofocus]", count: 0
+  end
+
   test "new does not duplicate a popular timezone currency" do
     budgets(:active).update_columns(period_to: Date.yesterday)
     cookies[:timezone] = "America/New_York"

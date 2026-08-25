@@ -22,6 +22,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='source-card']", count: 1
     assert_select "[data-testid='source-card']", text: /Main source/
+    assert_select "header", text: /Actual remainder:.*\$1,200\.25/m
     assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
   end
 
@@ -115,6 +116,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "form kbd", count: 0
+    assert_select "form input[autofocus]", count: 0
   end
 
   test "new shows keyboard tips on desktop devices" do

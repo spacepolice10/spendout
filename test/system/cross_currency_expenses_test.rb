@@ -16,7 +16,7 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
     Rails.cache.delete(CurrencyReference::CACHE_KEY)
   end
 
-  test "preserves purchase currency and recalculates a direct quote when the source changes" do
+  test "switches the purchase currency to the source currency when the source changes" do
     input_value(find("input[name='expense[amount]']", visible: :all), "1601200")
 
     find("details", text: /currency:/i).find("summary").click
@@ -29,12 +29,11 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
     find("details", text: /from:/i).find("summary").click
     find("label", text: /Rubles/).click
 
-    assert_equal "VND", find("select[name='expense[currency_code]']", visible: :all).value
-    assert_equal "RUB", first("[data-currency-picker-option] input", visible: :all).value
-    assert_field "expense_conversion_rate", with: "320", visible: :all
-    find("details", text: /currency:/i).find("summary").click
-    find("button[data-currency-picker-target='rateTrigger']").click
-    assert_selector "input[name='expense[conversion_rate]']:focus"
+    assert_equal "RUB", find("select[name='expense[currency_code]']", visible: :all).value
+    assert_selector "input[data-currency-picker-target='radio'][value='RUB']:checked", visible: :all
+    assert_selector "details > summary", text: /Currency:\s+RUB/i
+    assert_field "expense_conversion_rate", with: "1", disabled: true, visible: :all
+    assert_selector "[data-currency-picker-target='attachment'][hidden]", visible: :all
     assert_no_selector "[data-expense-fields-target='sourceDebit'], [data-expense-fields-target='budgetValue']",
       visible: :all
   end

@@ -15,7 +15,8 @@
 
     <%= form.label name_attribute, "Name", class: "utilities--sr-only" %>
 
-    <%= form.text_field name_attribute, required: true, placeholder: placeholder, autofocus: open,
+    <%= form.text_field name_attribute, required: true, placeholder: placeholder,
+      autofocus: open && !mobile_variant?,
       data: input_data.merge({
         form_target: "focus",
         action: "input->form#updateSummary"
