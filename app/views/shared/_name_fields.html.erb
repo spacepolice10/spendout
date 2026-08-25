@@ -1,4 +1,4 @@
-<%# locals: (form:, name_attribute: :name, placeholder: nil, open: true) %>
+<%# locals: (form:, name_attribute: :name, placeholder: nil, open: true, input_data: {}) %>
 <%= tag.details name: "form-details", data: { form_target: "section" }, open: open do %>
   <%= tag.summary data: { form_target: "summary" } do %>
     <%= tag.span " Name: " %>
@@ -16,10 +16,10 @@
     <%= form.label name_attribute, "Name", class: "utilities--sr-only" %>
 
     <%= form.text_field name_attribute, required: true, placeholder: placeholder, autofocus: open,
-      data: {
+      data: input_data.merge({
         form_target: "focus",
         action: "input->form#updateSummary"
-      } %>
+      }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
 
     <% unless mobile_variant? %>
       <%= tag.small do %>

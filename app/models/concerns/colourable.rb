@@ -10,7 +10,13 @@ module Colourable
     "blue" => "Blue",
     "yellow" => "Yellow",
     "violet" => "Violet",
-    "pink" => "Pink"
+    "pink" => "Pink",
+    "orange" => "Orange",
+    "lime" => "Lime",
+    "teal" => "Teal",
+    "cyan" => "Cyan",
+    "indigo" => "Indigo",
+    "coral" => "Coral"
   }.freeze
 
   included do

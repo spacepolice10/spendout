@@ -14,6 +14,8 @@ class SourceTest < ActiveSupport::TestCase
     assert_includes Source.icon_options, [ "Credit card", "credit-card" ]
     assert_includes Source.colour_options, [ "Green", "green" ]
     assert_includes Source.colour_options, [ "Pink", "pink" ]
+    assert_includes Source.colour_options, [ "Cyan", "cyan" ]
+    assert_includes Source.colour_options, [ "Coral", "coral" ]
   end
 
   test "uses fixed icon and colour defaults" do

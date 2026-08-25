@@ -40,8 +40,12 @@ class Expense < ApplicationRecord
     def initialize_category_to_create
       return if category_name_to_create.blank? || allocation&.new_record?
 
+      category_icon = CategoryIcon.new(category_name_to_create)
+
       self.allocation = budget.allocations.build(
         name: category_name_to_create,
+        icon: category_icon.match,
+        colour: category_icon.colour,
         amount: 0,
         planned: false,
         currency_code: currency_code.presence || source&.currency_code,

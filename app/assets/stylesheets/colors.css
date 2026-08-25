@@ -6,6 +6,12 @@
     --color-palette-yellow: light-dark(oklch(0.827 0.171 80.5), oklch(82.223% 0.15291 76.793));
     --color-palette-violet: light-dark(oklch(0.606 0.219 292.7), oklch(0.68 0.12 292.7));
     --color-palette-pink: light-dark(oklch(0.716 0.176 345.0), oklch(0.68 0.11 345.0));
+    --color-palette-orange: light-dark(oklch(0.740 0.180 55.0), oklch(0.72 0.12 55.0));
+    --color-palette-lime: light-dark(oklch(0.800 0.170 120.0), oklch(0.72 0.12 120.0));
+    --color-palette-teal: light-dark(oklch(0.700 0.140 175.0), oklch(0.75 0.10 175.0));
+    --color-palette-cyan: light-dark(oklch(0.760 0.140 220.0), oklch(0.78 0.10 220.0));
+    --color-palette-indigo: light-dark(oklch(0.620 0.200 275.0), oklch(0.72 0.12 275.0));
+    --color-palette-coral: light-dark(oklch(0.720 0.180 20.0), oklch(0.72 0.11 20.0));
     --color-palette-black: light-dark(oklch(0.000 0.000 0.000), oklch(0.000 0.000 0.000));
     
     --color-accent: light-dark(oklch(60.244% 0.20809 256.313), oklch(0.88 0.10 143.8));

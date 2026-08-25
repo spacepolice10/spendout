@@ -149,6 +149,8 @@ class ExpenseTest < ActiveSupport::TestCase
     end
 
     assert_equal "Coffee", expense.allocation.name
+    assert_equal "coffee", expense.allocation.icon
+    assert_equal "coral", expense.allocation.colour
     assert_not expense.allocation.planned?
   end
 

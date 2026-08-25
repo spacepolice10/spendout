@@ -1,6 +1,8 @@
 <%= form_with model: [ budget, allocation ], data: {
       allocation_form: true,
-      controller: "form currency-fields",
+      controller: "form currency-fields category-icon",
+      category_icon_keywords_value: CategoryIcon::KEYWORDS,
+      category_icon_colours_value: CategoryIcon::COLOURS,
       currency_fields_base_currency_value: budget.base_currency_code,
       currency_fields_reference_url_value: currency_reference_path
     } do |form| %>
@@ -19,15 +21,25 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, placeholder: "Rent, groceries, emergency fund, etc." %>
+  <%= render "shared/name_fields", form: form, placeholder: "Rent, groceries, emergency fund, etc.",
+        input_data: {
+          category_icon_target: "name",
+          action: "input->form#updateSummary input->category-icon#suggest"
+        } %>
   <%= render "shared/amount_fields", form: form, amount_attribute: :amount %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,
         base_currency_code: budget.base_currency_code %>
 
-  <%= render "shared/icon_fields", form: form %>
-  <%= render "shared/colour_fields", form: form %>
+  <%= render "shared/icon_fields", form: form, input_data: {
+        category_icon_target: "icon",
+        action: "input->form#updateSummary input->category-icon#chooseIcon"
+      } %>
+  <%= render "shared/colour_fields", form: form, input_data: {
+        category_icon_target: "colour",
+        action: "input->form#updateSummary input->category-icon#chooseColour"
+      } %>
 
   <div data-layout="flex">
     <%= link_to budget_allocations_path(budget), role: "button", data: {

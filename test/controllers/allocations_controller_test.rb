@@ -88,6 +88,10 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='allocation[amount]'][data-currency-fields-target='amount']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
+    assert_select "form[data-controller~='category-icon'][data-category-icon-keywords-value]"
+    assert_select "form[data-category-icon-colours-value]"
+    assert_select "input[name='allocation[name]'][data-category-icon-target='name']"
+    assert_select "input[name='allocation[colour]'][data-category-icon-target='colour']"
     assert_select "input[name='allocation[icon]'][value='wallet'][checked][aria-label='Wallet']"
     assert_select "input[name='allocation[colour]'][type='radio']", count: Allocation.colour_options.size
     assert_select "input[name='allocation[colour]'][value='green'][checked]"

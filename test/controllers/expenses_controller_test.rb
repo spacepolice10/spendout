@@ -223,8 +223,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_not category.planned?
     assert_equal BigDecimal("0"), category.amount
     assert_equal @source.currency_code, category.currency_code
-    assert_equal Iconable::DEFAULT_ICON, category.icon
-    assert_equal Colourable::DEFAULT_COLOUR, category.colour
+    assert_equal "coffee", category.icon
+    assert_equal "coral", category.colour
   end
 
   test "does not leave a category behind when its expense is invalid" do

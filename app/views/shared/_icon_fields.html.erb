@@ -1,4 +1,4 @@
-<%# locals: (form:, open: false) %>
+<%# locals: (form:, open: false, input_data: {}) %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
     <span> Icon: </span>
@@ -10,10 +10,10 @@
     <div>
       <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text do %>
-          <%= radio.radio_button aria: { label: radio.text }, data: {
+          <%= radio.radio_button aria: { label: radio.text }, data: input_data.merge({
                 form_target: "focus",
                 action: "input->form#updateSummary"
-              } %>
+              }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
           <%= icon_tag(radio.value) %>
         <% end %>
       <% end %>

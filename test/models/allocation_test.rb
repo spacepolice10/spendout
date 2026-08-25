@@ -29,8 +29,17 @@ class AllocationTest < ActiveSupport::TestCase
     assert_equal "wallet", allocation.icon
     assert_equal "green", allocation.colour
     assert_includes Allocation.icon_options, [ "Wallet", "wallet" ]
+    assert_includes Allocation.icon_options, [ "Food", "burger" ]
+    assert_includes Allocation.icon_options, [ "Flowers", "flower" ]
+    assert_includes Allocation.icon_options, [ "Jewellery", "diamond" ]
+    assert_includes Allocation.icon_options, [ "Pets", "paw" ]
+    assert_includes Allocation.icon_options, [ "Subscriptions", "repeat" ]
+    assert_includes Allocation.icon_options, [ "Household supplies", "spray" ]
     assert_includes Allocation.colour_options, [ "Green", "green" ]
     assert_includes Allocation.colour_options, [ "Pink", "pink" ]
+    assert_includes Allocation.colour_options, [ "Orange", "orange" ]
+    assert_includes Allocation.colour_options, [ "Teal", "teal" ]
+    assert_includes Allocation.colour_options, [ "Indigo", "indigo" ]
   end
 
   test "rejects an unsupported currency" do
