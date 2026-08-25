@@ -9,10 +9,15 @@
   >
     <main>
       <% if (todays_remainder = @budget.todays_remainder) %>
-        <article data-elevation="2">
-          <header>
-            <h2>Can I spend more today?</h2>
-          </header>
+        <article data-elevation="2" data-gauge-plate>
+          <h2>Can I spend more today?</h2>
+
+          <div data-gauge-bolts aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
 
           <main>
             <%= render "shared/daily_gauge",

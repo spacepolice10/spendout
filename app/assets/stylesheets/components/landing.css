@@ -54,15 +54,7 @@
   }
 
   :is([data-landing-fuel], [data-rate-board]) { height: 30rem; }
-  [data-landing-fuel] { position: relative; margin-block-start: 0; padding: var(--space-v-2) var(--space-h-2); border: var(--border-subtle); background: var(--color-2); box-shadow: inset 0 0 0 3px color-mix(in oklch, var(--color-invert-1) 5%, transparent), inset 0 0 2rem color-mix(in oklch, black 18%, transparent); }
   [data-landing-fuel] > [data-daily-gauge] { display: grid; align-items: center; height: 100%; margin-block-start: 0; color: var(--color-invert-1); }
-  [data-gauge-bolts] { position: absolute; inset: var(--space-v) var(--space-h); pointer-events: none; }
-  [data-gauge-bolts] span { position: absolute; width: 0.9rem; aspect-ratio: 1; border: 1px solid color-mix(in oklch, black 55%, transparent); border-radius: 50%; background: radial-gradient(circle at 35% 28%, white 0 7%, transparent 9%), radial-gradient(circle at 38% 32%, var(--color-invert-3), var(--color-3) 48%, var(--color-1) 72%); box-shadow: 0 2px 3px color-mix(in oklch, black 45%, transparent); }
-  [data-gauge-bolts] span::after { content: ""; position: absolute; inset: 43% 18%; border-radius: var(--radius-full); background: color-mix(in oklch, black 65%, transparent); transform: rotate(-35deg); }
-  [data-gauge-bolts] span:nth-child(1) { inset: 0 auto auto 0; }
-  [data-gauge-bolts] span:nth-child(2) { inset: 0 0 auto auto; }
-  [data-gauge-bolts] span:nth-child(3) { inset: auto auto 0 0; }
-  [data-gauge-bolts] span:nth-child(4) { inset: auto 0 0 auto; }
   :is([data-control-layout], [data-currency-story]) {
     display: grid; grid-template-columns: minmax(24rem, 0.95fr) minmax(20rem, 1.05fr);
     gap: var(--space-h-4); align-items: start;

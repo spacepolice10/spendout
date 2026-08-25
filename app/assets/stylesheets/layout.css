@@ -48,7 +48,7 @@
                 &>article>footer {
                     position: sticky;
                     z-index: 1;
-                    bottom: calc(4rem + env(safe-area-inset-bottom));
+                    bottom: 0;
                     background: var(--color-1);
                     border-top: var(--border-subtle);
                 }

@@ -24,7 +24,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "meta[name='view-transition'][content='same-origin']", count: 1
     assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='expense-card']", count: 1
-    assert_select "article[data-elevation='2'] > header h2", text: "Can I spend more today?", count: 1
+    assert_select "article[data-elevation='2'][data-gauge-plate] > h2", text: "Can I spend more today?", count: 1
+    assert_select "article[data-elevation='2'] > header", count: 0
+    assert_select "article[data-elevation='2'] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
     assert_select "[data-daily-gauge][data-controller='gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
     assert_select "a[href='#{new_budget_expense_path(@budget)}']"
