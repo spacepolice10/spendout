@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root "budgets#current"
   get "landing" => "home#show", as: :landing
   resource :currency_reference, only: :show
+  resource :user, only: :show
 
   resources :budgets, only: %i[ new create destroy ] do
     resources :allocations, shallow: true do

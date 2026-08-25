@@ -2,6 +2,7 @@
   <% expenses_active = controller_name == "expenses" %>
   <% money_active = controller_name == "sources" %>
   <% categories_active = controller_name == "allocations" %>
+  <% user_active = controller_name == "users" %>
 
   <nav
     aria-label="Budget sections"
@@ -12,10 +13,11 @@
     >
       <%= link_to budget_sources_path(budget),
             role: "button",
-            data: (money_active ? { current: "page" } : {}).merge(
+            aria: (money_active ? { current: "page" } : {}),
+            data: {
               controller: "pressable",
               action: "keydown.1@document->pressable#click"
-            ),
+            },
             style: "flex:1;width:auto;#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if money_active}" do %>
         <span>My money</span>
         <kbd aria-hidden="true">1</kbd>
@@ -23,10 +25,11 @@
 
       <%= link_to budget_expenses_path(budget),
         role: "button",
-        data: (expenses_active ? { current: "page" } : {}).merge(
+        aria: (expenses_active ? { current: "page" } : {}),
+        data: {
           controller: "pressable",
           action: "keydown.2@document->pressable#click"
-        ),
+        },
         style: "flex:1;width:auto;#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if expenses_active}" do %>
         <span>Expenses</span>
         <kbd aria-hidden="true">2</kbd>
@@ -34,13 +37,21 @@
 
       <%= link_to budget_allocations_path(budget),
             role: "button",
-            data: (categories_active ? { current: "page" } : {}).merge(
+            aria: (categories_active ? { current: "page" } : {}),
+            data: {
               controller: "pressable",
               action: "keydown.3@document->pressable#click"
-            ),
+            },
             style: "flex:1;width:auto;#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if categories_active}" do %>
         <span>Categories</span>
         <kbd aria-hidden="true">3</kbd>
+      <% end %>
+
+      <%= link_to user_path,
+            aria: { label: "User", current: ("page" if user_active) },
+            style: "flex:0 0 auto;width:3.25rem;padding:var(--space-v-half);#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if user_active}" do %>
+        <%= image_tag "cybercat.png", alt: "", width: 32, height: 32,
+              style: "display:block;width:2rem;height:2rem;object-fit:contain;image-rendering:pixelated;" %>
       <% end %>
     </div>
   </nav>

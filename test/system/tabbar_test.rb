@@ -37,6 +37,18 @@ class TabbarTest < ApplicationSystemTestCase
     end
   end
 
+  test "Cybercat opens the user page and marks the tab active" do
+    within "nav[aria-label='Budget sections']" do
+      find("a[aria-label='User']").click
+    end
+
+    assert_current_path user_path
+    assert_selector "h1", text: "User"
+    within "nav[aria-label='Budget sections']" do
+      assert_selector "a[aria-label='User'][aria-current='page'] img[src*='cybercat']"
+    end
+  end
+
   test "tabbar is absent when signed out" do
     sign_out
     visit new_session_path
