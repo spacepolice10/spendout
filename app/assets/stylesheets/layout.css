@@ -48,9 +48,14 @@
                 &>article>footer {
                     position: sticky;
                     z-index: 1;
-                    bottom: 0;
+                    bottom: calc(4rem + env(safe-area-inset-bottom));
+                    width: calc(100% - var(--space-v-2));
+                    margin-inline: auto;
+                    padding: var(--space-v-half) var(--space-h-half);
+                    justify-content: center;
+                    border: var(--border-subtle);
+                    border-radius: var(--radius-2);
                     background: var(--color-1);
-                    border-top: var(--border-subtle);
                 }
             }
 
