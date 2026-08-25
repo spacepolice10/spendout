@@ -20,6 +20,7 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
     input_value(find("input[name='expense[amount]']", visible: :all), "1601200")
 
     find("details", text: /currency:/i).find("summary").click
+    find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
 
@@ -29,29 +30,13 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
     find("label", text: /Rubles/).click
 
     assert_equal "VND", find("select[name='expense[currency_code]']", visible: :all).value
+    assert_equal "RUB", first("[data-currency-picker-option] input", visible: :all).value
     assert_field "expense_conversion_rate", with: "320", visible: :all
-    assert_equal "5003.75 RUB from Rubles",
-      find("[data-expense-fields-target='sourceDebit']", visible: :all).text(:all)
-    assert_equal "62.5469 USD in this budget",
-      find("[data-expense-fields-target='budgetValue']", visible: :all).text(:all)
-
-    rate = find("input[name='expense[conversion_rate]']", visible: :all)
-    source_debit = find("[data-expense-fields-target='sourceDebit']", visible: :all)
-    styles = page.evaluate_script(<<~JAVASCRIPT, rate, source_debit)
-      ({
-        rateFontSize: parseFloat(getComputedStyle(arguments[0]).fontSize),
-        outputHeight: parseFloat(getComputedStyle(arguments[1]).height)
-      })
-    JAVASCRIPT
-
-    assert_operator styles["rateFontSize"], :>=, 16
-    assert_operator styles["outputHeight"], :>, 0
-
-    input_value(find("input[name='expense[amount]']", visible: :all), "")
-    empty_height = page.evaluate_script(
-      "parseFloat(getComputedStyle(arguments[0]).height)", source_debit
-    )
-    assert_equal styles["outputHeight"], empty_height
+    find("details", text: /currency:/i).find("summary").click
+    find("button[data-currency-picker-target='rateTrigger']").click
+    assert_selector "input[name='expense[conversion_rate]']:focus"
+    assert_no_selector "[data-expense-fields-target='sourceDebit'], [data-expense-fields-target='budgetValue']",
+      visible: :all
   end
 
   private

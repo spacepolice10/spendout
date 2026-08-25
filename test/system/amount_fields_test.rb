@@ -77,8 +77,10 @@ class AmountFieldsTest < ApplicationSystemTestCase
   test "requires conversion rates to be greater than zero" do
     visit new_budget_source_path(budgets(:active))
     find("details", text: /currency:/i).find("summary").click
+    find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
+    find("button[data-currency-picker-target='rateTrigger']").click
     rate = find("input[name='source[rate]']")
 
     input_value(rate, "0")
@@ -128,20 +130,22 @@ class AmountFieldsTest < ApplicationSystemTestCase
     assert_operator sizes["current"], :>=, 16
   end
 
-  test "formats a rate and converts the entered amount in the overlay" do
+  test "formats a rate without showing a real-time conversion" do
     visit new_budget_source_path(budgets(:active))
 
     find("details", text: /currency:/i).find("summary").click
+    find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
 
     input_value(find("input[name='source[amount]']", visible: :all), "52000")
 
+    find("button[data-currency-picker-target='rateTrigger']").click
     rate = find("input[name='source[rate]']")
     input_value(rate, "26000")
 
     assert_equal "26.000", rate.value
-    assert_equal "2", find("[data-currency-fields-target='converted']").text
+    assert_no_selector "[data-currency-fields-target='converted']", visible: :all
   end
 
   private

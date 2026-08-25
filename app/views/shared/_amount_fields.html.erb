@@ -3,7 +3,7 @@
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
     <span> Amount: </span>
-    <small data-form-target="summaryContent"><%= amount || 0 %></small>
+    <small data-form-target="summaryContent"><%= number_with_delimiter(amount || 0, delimiter: ".", separator: ",") %></small>
   </summary>
 
   <div>

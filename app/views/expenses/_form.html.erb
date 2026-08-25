@@ -42,7 +42,11 @@
                 <%= form.label :source_id, value: source.id,
                       style: "--source-colour: var(--color-palette-#{source.colour});" do %>
                   <%= form.radio_button :source_id, source.id, required: true,
-                        data: { form_target: "focus", expense_fields_target: "source" } %>
+                        data: {
+                          form_target: "focus",
+                          expense_fields_target: "source",
+                          action: "change->expense-fields#sourceChanged"
+                        } %>
 
                   <span>
                     <strong><%= source.name %></strong>

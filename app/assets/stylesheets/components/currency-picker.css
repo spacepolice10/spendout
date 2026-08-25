@@ -1,6 +1,88 @@
 @layer components {
     .currency-picker {
-        border: var(--border-subtle);
+        display: grid;
+        gap: var(--space-v-half);
+        min-width: 0;
+
+        & > button,
+        & > [data-currency-picker-target="attachment"] > button {
+            justify-content: space-between;
+            width: 100%;
+            min-height: var(--form-control-height);
+            border: var(--border-subtle);
+            background: transparent;
+            color: var(--color-accent);
+        }
+
+        & button::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                var(--bracket), var(--bracket), var(--bracket),
+                var(--bracket), var(--bracket), var(--bracket);
+            background-position:
+                left center, left top, left bottom,
+                right center, right top, right bottom;
+            background-repeat: no-repeat;
+            background-size: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+            pointer-events: none;
+            transition: background-size 160ms ease;
+        }
+
+        & button:focus-visible {
+            outline: none;
+
+            &::after {
+                background-size:
+                    2px 100%, 0.75em 2px, 0.75em 2px,
+                    2px 100%, 0.75em 2px, 0.75em 2px;
+            }
+        }
+
+        & dialog {
+            inset: 50% auto auto 50%;
+            z-index: var(--z-dialog);
+            display: grid;
+            width: min(36rem, calc(100vw - var(--space-h-2)));
+            max-height: min(42rem, calc(100dvh - var(--space-v-2)));
+            gap: var(--space-v);
+            padding: var(--space-v) var(--space-h);
+            border: var(--border-subtle);
+            border-radius: var(--radius-3);
+            background: var(--color-1);
+            translate: -50% -50%;
+            overflow: hidden;
+
+            &:not([open]) {
+                display: none;
+            }
+
+            &::backdrop {
+                z-index: var(--z-dialog-backdrop);
+                background: color-mix(in oklch, var(--color-invert-1) 45%, transparent);
+            }
+
+            & > header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: var(--space-h);
+            }
+
+            & > header > button {
+                min-width: var(--space-h-3);
+                min-height: var(--space-v-3);
+                padding: var(--space-v-half) var(--space-h);
+                background: transparent;
+                color: inherit;
+                font-size: var(--font-size-xl);
+            }
+
+            & > footer {
+                justify-content: flex-end;
+            }
+        }
 
         & [data-currency-combobox] {
             position: relative;
@@ -15,12 +97,14 @@
         }
 
         & input[type="search"] {
-            border: 0;
             padding-inline-start: calc(var(--form-space-h) + var(--space-h-2));
         }
 
         & [data-currency-picker-target="options"] {
-            border-top: var(--border-subtle);
+            min-height: 0;
+            border: var(--border-subtle);
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
 
         & [data-currency-picker-option] {
@@ -29,14 +113,21 @@
             &:has(input[type="radio"]:checked) {
                 background: var(--color-2);
             }
-
         }
 
-        &>[data-currency-picker-target="attachment"] {
+        & [data-currency-picker-active]::before,
+        & [data-currency-picker-active]::after {
+            opacity: 1;
+            background-size: 2px 100%, 100% 2px, 100% 2px;
+        }
+
+        & [data-currency-picker-target="attachment"] {
             display: grid;
             gap: var(--space-v-half);
-            padding-block: var(--space-v-half);
-            border-top: var(--border-subtle);
+
+            &[hidden] {
+                display: none;
+            }
 
         }
 
@@ -44,29 +135,11 @@
             display: grid;
             gap: var(--space-h-half);
 
-            &>:is(input, output) {
+            & > input {
                 padding: var(--space-v-half) var(--space-h-half);
-            }
-
-            &>input {
                 block-size: var(--form-control-height);
                 font-size: var(--font-size-base-type);
             }
-
-            &>output {
-                font-size: var(--font-size-xs);
-            }
-        }
-
-        & [data-currency-picker-target="attachment"] :is(
-            output,
-            [data-expense-fields-target~="sourceDebit"],
-            [data-expense-fields-target~="budgetValue"]
-        ) {
-            display: flex;
-            align-items: center;
-            block-size: var(--form-control-height);
-            padding: var(--space-v-half) var(--space-h-half);
         }
     }
 }

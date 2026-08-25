@@ -1,6 +1,9 @@
 <% content_for :title, "Spendout — Everyday money, under control" %>
 <% content_for :description, "A simple budget that turns your plans, currencies, and expenses into one answer: what is safe to spend today?" %>
 <% content_for :hide_tabbar, true %>
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;600&amp;family=Silkscreen:wght@700&amp;display=swap">
+<% end %>
 
 <a href="#main-content" data-skip-link>Skip to content</a>
 
@@ -166,80 +169,98 @@
       </p>
     </header>
 
+    <% rate_snapshots = [
+      {
+        base: "USD",
+        rows: [
+          { code: "EUR", name: "Euro", rate: "0.8929" },
+          { code: "CAD", name: "Canadian dollar", rate: "1.3800" },
+          { code: "GBP", name: "Pound sterling", rate: "0.7450" },
+          { code: "JPY", name: "Japanese yen", rate: "147.20" },
+          { code: "VND", name: "Vietnamese dong", rate: "26,300" }
+        ]
+      },
+      {
+        base: "EUR",
+        rows: [
+          { code: "USD", name: "US dollar", rate: "1.1200" },
+          { code: "CAD", name: "Canadian dollar", rate: "1.5455" },
+          { code: "GBP", name: "Pound sterling", rate: "0.8344" },
+          { code: "JPY", name: "Japanese yen", rate: "164.86" },
+          { code: "VND", name: "Vietnamese dong", rate: "29,454.59" }
+        ]
+      }
+    ] %>
+
     <div data-currency-story>
-      <article data-elevation="1">
+      <section
+        data-rate-board
+        data-controller="rate-board"
+        data-rate-board-snapshots-value="<%= rate_snapshots.to_json %>"
+        aria-labelledby="rate-board-title"
+        tabindex="0"
+      >
         <header>
-          <h3>Switch currencies as you go</h3>
+          <p data-rate-board-status>Sample rates</p>
+          <h3 id="rate-board-title">Exchange rates</h3>
         </header>
 
-        <main>
+        <table>
+          <caption>
+            Spendout suggests dated reference rates for review. You confirm the
+            direct quote before anything is saved.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Currency</th>
+              <th scope="col">Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rate_snapshots.first[:rows].each do |row| %>
+              <tr data-rate-board-target="row">
+                <th scope="row">
+                  <strong data-rate-code><%= row[:code] %></strong>
+                  <span data-rate-name><%= row[:name] %></span>
+                </th>
+                <td>
+                  <output data-rate-board-target="rate" data-rate-display><%= row[:rate] %></output>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </section>
+
+      <div data-rate-copy>
+        <article>
+          <p data-rate-copy-number>01</p>
+          <h3>Use the currency in front of you</h3>
           <p>
-            Keep cash, plans, and purchases in the currencies they really use.
-            A purchase can differ from its source while the original amount
-            stays visible while the budget's base currency stays fixed.
-            <strong>Every piece of UI will adapt</strong>.
+            Keep cash, sources, and purchases in their real currencies while
+            the budget's base currency stays fixed.
           </p>
+        </article>
 
-          <div data-currency-visual>
-
-            <div data-currency-example data-selected>
-              <span>🇪🇺</span><strong>EUR</strong><span>Euro</span><small>Selected</small>
-            </div>
-
-            <div data-currency-example>
-              <span>🇨🇦</span><strong>CAD</strong><span>Canadian Dollar</span>
-            </div>
-          </div>
-        </main>
-      </article>
-
-      <article data-elevation="1">
-        <header>
+        <article>
+          <p data-rate-copy-number>02</p>
           <h3>Exchange into another wallet</h3>
-        </header>
-
-        <main>
           <p>
-            Exchange from one source and Spendout creates another in the new
-            currency—ready to spend from like any other wallet. Both sides stay
-            together in your history. <strong>No need to convert back and forth</strong>.
+            An exchange debits one source and creates another in the new
+            currency. Both sides stay together in your history.
           </p>
+        </article>
 
-          <div data-currency-visual>
-            <div data-rate-example>
-              <span>Everyday card</span><span aria-hidden="true">→</span><strong>Euro wallet</strong>
-            </div>
-
-            <div data-rate-example>
-              <span>$100 USD</span><span aria-hidden="true">→</span><strong>€86 EUR</strong>
-            </div>
-          </div>
-        </main>
-      </article>
-
-      <article data-elevation="1">
-        <header>
+        <article>
+          <p data-rate-copy-number>03</p>
           <h3>Easy conversions, honest rates</h3>
-        </header>
-
-        <main>
           <p>
-            We know that rates are unstable. So we start with a dated Frankfurter reference rate, show the source debit
-            immediately, then let you confirm the direct quote. <strong>Historical amounts never revalue themselves</strong>.
+            Pick a currency in the searchable dialog, review the editable,
+            dated Frankfurter suggestion, and confirm the direct quote.
+            <strong>Historical amounts never revalue themselves.</strong>
           </p>
-
-          <div data-currency-visual>
-            <div data-rate-example>
-              <span>1 USD</span><span aria-hidden="true"></span><strong>26,300 VND</strong>
-            </div>
-            <div data-rate-example>
-              <span>1 EUR</span><span aria-hidden="true"></span><strong>1.12 USD</strong>
-            </div>
-
-          </div>
-          <small>Historical values never update silently.</small>
-        </main>
-      </article>
+        </article>
+      </div>
     </div>
   </section>
 

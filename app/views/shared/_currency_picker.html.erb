@@ -1,111 +1,110 @@
 <%# locals: (form:, attribute:, select_data: {}, filter_data: {}, filter_autofocus: false, rate_attribute: nil, base_currency_code: nil, converted_amount_label: nil, rate_mode: :base, preferred_currency_codes: []) %>
 <% selected_code = form.object.public_send(attribute) %>
 <% suggested_code = Current.suggested_currency_code %>
-<% priority_codes = [*local_assigns.fetch(:preferred_currency_codes, []), selected_code, suggested_code, *Currency::POPULAR_CODES].compact.uniq %>
+<% priority_codes = [selected_code, suggested_code, *local_assigns.fetch(:preferred_currency_codes, []), *Currency::POPULAR_CODES].compact.uniq %>
 <% options_by_code = Currency.options.index_by(&:last) %>
 <% selected_label = options_by_code[selected_code]&.first %>
 <% ordered_options = priority_codes.filter_map { |code| options_by_code.delete(code) } + options_by_code.values %>
-<% rate_help_id = form.field_id(rate_attribute, :help) if rate_attribute %>
+<% currency_dialog_id = form.field_id(attribute, :dialog) %>
+<% currency_title_id = form.field_id(attribute, :dialog_title) %>
 <% listbox_id = form.field_id(attribute, :listbox) %>
-<div class="currency-picker" data-controller="currency-picker">
-  <%= form.select attribute,
-    Currency.options,
-    { include_blank: "Choose a currency" }, required: true,
-    class: "utilities--sr-only",
-    aria: { label: "Currency" },
+<% rate_dialog_id = form.field_id(rate_attribute, :dialog) if rate_attribute %>
+<% rate_title_id = form.field_id(rate_attribute, :dialog_title) if rate_attribute %>
+<% rate = form.object.public_send(rate_attribute) if rate_attribute %>
+<% rate_available = rate_attribute && selected_code.present? && selected_code != base_currency_code %>
+
+<div class="currency-picker" data-controller="currency-picker"
+  data-action="currency-picker:recommend->currency-picker#recommend"
+  data-currency-picker-base-currency-value="<%= base_currency_code %>"
+  data-currency-picker-autofocus-value="<%= filter_autofocus %>">
+  <%= form.select attribute, Currency.options, { include_blank: "Choose a currency" }, required: true,
+    class: "utilities--sr-only", aria: { label: "Currency" },
     data: { currency_picker_target: "select" }.merge(select_data) %>
 
-  <div data-currency-combobox>
-    <%= icon_tag("search", data: { currency_search_icon: true }) %>
-    <input type="search" placeholder="Search by name or code" autocomplete="off"
-      value="<%= selected_label %>"
-      <%= "autofocus" if filter_autofocus %>
-      role="combobox"
-      aria-label="Currency"
-      aria-autocomplete="list"
-      aria-expanded="false"
-      aria-controls="<%= listbox_id %>"
-      data-currency-picker-target="filter"
-      data-action="focus->currency-picker#open input->currency-picker#search keydown->currency-picker#keydown"
-      <% filter_data.each do |name, value| %> data-<%= name.to_s.dasherize %>="<%= value %>"<% end %>>
-  </div>
+  <button type="button" aria-haspopup="dialog" aria-controls="<%= currency_dialog_id %>"
+    data-currency-picker-target="currencyTrigger" data-action="currency-picker#openCurrency">
+    <span data-currency-picker-target="selection"><%= selected_label || "Choose a currency" %></span>
+    <%= icon_tag("chevron-right", aria: { hidden: true }) %>
+  </button>
 
-  <% if rate_attribute && local_assigns.fetch(:rate_mode, :base) == :direct %>
-    <div data-currency-picker-target="attachment" data-expense-fields-target="fields" hidden>
-      <small id="<%= rate_help_id %>" data-expense-fields-target="rateLabel"></small>
-      <div data-currency-rate-input>
-        <%= form.text_field rate_attribute, inputmode: "decimal",
-          placeholder: "0.00",
-          aria: { label: "Direct conversion rate", description: rate_help_id },
-          data: {
-            controller: "amount-fields",
-            amount_fields_start_value: form.object.public_send(rate_attribute)&.to_s("F"),
-            amount_fields_fraction_digits_value: 12,
-            amount_fields_minimum_value: "0",
-            amount_fields_minimum_exclusive_value: true,
-            expense_fields_target: "rate",
-            form_target: "focus",
-            action: "input->expense-fields#rateEdited"
-          } %>
-      </div>
-      <div data-layout="flex">
-      <small aria-live="polite" data-expense-fields-target="sourceDebit"></small>
-      <small aria-live="polite" data-expense-fields-target="budgetValue"></small>
-      </div>
+  <dialog id="<%= currency_dialog_id %>" aria-labelledby="<%= currency_title_id %>"
+    data-currency-picker-target="currencyDialog"
+    data-action="cancel->currency-picker#cancelCurrency close->currency-picker#currencyClosed">
+    <header>
+      <h2 id="<%= currency_title_id %>">Choose a currency</h2>
+      <button type="button" aria-label="Close currency picker" data-action="currency-picker#closeCurrency">&times;</button>
+    </header>
+    <div data-currency-combobox>
+      <%= icon_tag("search", data: { currency_search_icon: true }) %>
+      <input type="search" placeholder="Search by name or code" autocomplete="off" role="combobox"
+        <%= "autofocus" if filter_autofocus %>
+        aria-label="Search currencies" aria-autocomplete="list" aria-expanded="true"
+        aria-controls="<%= listbox_id %>" data-currency-picker-target="filter"
+        data-action="input->currency-picker#search keydown->currency-picker#keydown"
+        <% filter_data.each do |name, value| %> data-<%= name.to_s.dasherize %>="<%= value %>"<% end %>>
     </div>
-  <% elsif rate_attribute %>
-    <div data-currency-picker-target="attachment"
-      data-currency-fields-target="rateFields"
-      <%= "hidden" if selected_code.blank? || selected_code == base_currency_code %>>
-      <small id="<%= rate_help_id %>">
-        Units per 1 <%= base_currency_code %>
-      </small>
+    <div id="<%= listbox_id %>" role="listbox" data-currency-picker-target="options">
+      <% ordered_options.each do |label, code| %>
+        <div data-currency-picker-option>
+          <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option"
+            aria-selected="<%= code == selected_code %>" data-currency-picker-target="option"
+            data-filter-value="<%= label %>"
+            <% if Currency::POPULAR_CODES.include?(code) %>data-popular="true"<% end %>
+            <% if code == selected_code %>data-default="true"<% end %>
+            <% if code == suggested_code %>data-suggested="true"<% end %>>
+            <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
+              <%= "checked" if code == selected_code %> data-currency-picker-target="radio"
+              data-action="change->currency-picker#choose">
+            <span><%= label %></span>
+          </label>
+        </div>
+      <% end %>
+    </div>
+    <small data-currency-picker-target="emptyState" hidden>No currencies found</small>
+  </dialog>
 
-      <div data-currency-rate-input>
-        <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
-          aria: { label: "Rate in selected currency", description: rate_help_id },
-          data: {
-            controller: "amount-fields",
-            amount_fields_start_value: form.object.public_send(rate_attribute)&.to_s("F"),
-            amount_fields_fraction_digits_value: 12,
-            amount_fields_minimum_value: "0",
-            amount_fields_minimum_exclusive_value: true,
-            currency_fields_target: "rate",
-            form_target: "focus",
-            action: "input->currency-fields#rateEdited input->currency-fields#calculate"
-          } %>
-
-        <output aria-label="<%= converted_amount_label || "Converted amount in #{base_currency_code}" %>"
-          aria-live="polite"
-          data-currency-fields-target="converted"></output>
-      </div>
-
-      <small aria-live="polite" data-currency-fields-target="rateStatus"></small>
-
+  <% if rate_attribute %>
+    <div data-currency-picker-target="attachment" data-currency-picker-base-currency="<%= base_currency_code %>"
+      <% if local_assigns.fetch(:rate_mode, :base) == :direct %>data-expense-fields-target="fields"<% else %>data-currency-fields-target="rateFields"<% end %>
+      <%= "hidden" unless rate_available %>>
+      <button type="button" aria-haspopup="dialog" aria-controls="<%= rate_dialog_id %>"
+        data-currency-picker-target="rateTrigger" data-action="currency-picker#openRate">
+        <span data-currency-picker-target="rateSummary"><%= rate.present? ? rate.to_s("F") : "Enter rate" %></span>
+        <%= icon_tag("chevron-right", aria: { hidden: true }) %>
+      </button>
+      <dialog id="<%= rate_dialog_id %>" aria-labelledby="<%= rate_title_id %>"
+        data-currency-picker-target="rateDialog"
+        data-action="cancel->currency-picker#cancelRate close->currency-picker#rateClosed">
+        <header>
+          <h2 id="<%= rate_title_id %>">Confirm conversion rate</h2>
+          <button type="button" aria-label="Cancel rate changes" data-action="currency-picker#cancelRate">&times;</button>
+        </header>
+        <% if local_assigns.fetch(:rate_mode, :base) == :direct %>
+          <div data-currency-rate-input>
+            <%= form.text_field rate_attribute, inputmode: "decimal", placeholder: "0.00",
+              aria: { label: "Direct conversion rate" },
+              data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
+                amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
+                amount_fields_minimum_exclusive_value: true, expense_fields_target: "rate",
+                form_target: "focus", currency_picker_target: "rate",
+                action: "input->currency-picker#rateEdited" } %>
+          </div>
+        <% else %>
+          <div data-currency-rate-input>
+            <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
+              aria: { label: "Rate in selected currency" },
+              data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
+                amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
+                amount_fields_minimum_exclusive_value: true, currency_fields_target: "rate",
+                form_target: "focus", currency_picker_target: "rate",
+                action: "input->currency-fields#rateEdited input->currency-picker#rateEdited" } %>
+          </div>
+        <% end %>
+        <footer data-layout="flex">
+          <button type="button" data-appearance="keycap" data-intent="primary"
+            data-action="currency-picker#applyRate">Apply</button>
+        </footer>
+      </dialog>
     </div>
   <% end %>
-
-  <div id="<%= listbox_id %>" role="listbox" data-layout="grid" data-currency-picker-target="options" hidden>
-    <% ordered_options.each do |label, code| %>
-      <% popular = Currency::POPULAR_CODES.include?(code) %>
-      <% default = code == selected_code %>
-      <% suggested = code == suggested_code %>
-      <div data-currency-picker-option<% unless popular || default || suggested %> hidden<% end %>>
-        <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option" aria-selected="<%= default %>" data-currency-picker-target="option" data-filter-value="<%= label %>"
-          <% if popular %> data-popular="true"<% end %>
-          <% if default %> data-default="true"<% end %>
-          <% if suggested %> data-suggested="true"<% end %>
-          <% unless popular || default || suggested %> hidden<% end %>>
-          <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
-            <%= "checked" if code == selected_code %>
-            data-currency-picker-target="radio"
-            data-action="change->currency-picker#choose">
-
-          <span><%= label %></span>
-        </label>
-      </div>
-    <% end %>
-  </div>
-
-  <small data-currency-picker-target="emptyState" hidden> No currencies found </small>
 </div>

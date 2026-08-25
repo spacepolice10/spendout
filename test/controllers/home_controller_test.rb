@@ -38,16 +38,20 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   test "landing distinguishes available behavior from planned work" do
     get landing_path
 
-    assert_select "[data-currency-story] > article", count: 3
-    assert_select "[data-currency-story]", text: /Switch currencies as you go/
-    assert_select "[data-currency-story]", text: /Exchange into another wallet/
-    assert_select "[data-currency-story]", text: /Easy conversions, honest rates/
-    assert_select "[data-currency-story] [data-status]", count: 0
-    assert_select "[data-currency-story] [data-currency-visual]", count: 3
-    assert_select "[data-currency-story]", text: /budget's base currency stays fixed/
-    assert_select "[data-currency-story]", text: /dated Frankfurter reference rate/
-    assert_select "[data-rate-example]", text: /1 USD.*26,300 VND/
-    assert_select "small", text: /Historical values never update silently/
+    assert_select "[data-currency-story] [data-rate-board][data-controller='rate-board']", count: 1
+    assert_select "[data-rate-board] table", count: 1
+    assert_select "[data-rate-board] caption", text: /dated reference rates.*confirm the direct quote/m
+    assert_select "[data-rate-board-status]", text: "Sample rates"
+    assert_select "[data-rate-board-interval-value]", count: 0
+    assert_select "[data-rate-board] tbody tr", count: 5
+    assert_select "[data-rate-board-target='base']", count: 0
+    assert_select "[data-rate-display]", text: "26,300"
+    assert_select "[data-rate-board-snapshots-value*='29,454.59']", count: 1
+    assert_select "[data-rate-copy] article", count: 3
+    assert_select "[data-rate-copy]", text: /searchable dialog/
+    assert_select "[data-rate-copy]", text: /base currency stays fixed/
+    assert_select "[data-rate-copy]", text: /Historical amounts never revalue themselves/
+    assert_no_match(/we buy|we sell/i, response.body)
     assert_select "[data-landing-ownership]", text: /currently deployed with Kamal/
     assert_select "[data-landing-ownership]", text: /ONCE is planned/
     assert_select "[data-landing-footer]", text: /planned, not yet available/

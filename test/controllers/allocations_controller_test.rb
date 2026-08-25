@@ -73,16 +73,18 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
     assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
-    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size
-    assert_select "label[data-currency-picker-target='option'][hidden]", count: Currency.options.size - Currency.popular_options.size
+    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
     assert_select "input[name='allocation[rate]'][type='text'][inputmode='decimal'][required][data-controller='amount-fields'][data-currency-fields-target='rate']"
     assert_select "input[name='allocation[rate]'][data-amount-fields-fraction-digits-value='12']"
-    assert_select "output[aria-live='polite'][data-currency-fields-target='converted']"
+    assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
+    assert_select "dialog[data-currency-picker-target='rateDialog'][aria-labelledby]"
+    assert_select "button[data-currency-picker-target='rateTrigger'][aria-haspopup='dialog']"
     assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
     assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-url-value='#{currency_reference_path}']"
-    assert_select "[data-currency-fields-target='rateStatus'][aria-live='polite']"
+    assert_select "[data-currency-fields-target='rateStatus']", count: 0
+    assert_select "dialog[data-currency-picker-target='rateDialog'] button[data-appearance='keycap']", text: "Apply"
     assert_select "input[name='allocation[amount]'][data-currency-fields-target='amount']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size
@@ -181,7 +183,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "[data-currency-picker-option]:first-child > label input[value='VND'][checked]"
-    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.popular_options.size + 1
+    assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
   end
 
   test "show displays allocation amount and budget without a source" do

@@ -6,7 +6,7 @@ class ExchangesTest < ApplicationSystemTestCase
     visit new_source_exchange_path(sources(:active))
   end
 
-  test "calculates the generated source amount from parent amount and rate" do
+  test "does not show a real-time generated amount" do
     amount = find("input[name='exchange[parent_amount]']", visible: :all)
     rate = find("input[name='exchange[rate]']", visible: :all)
 
@@ -18,6 +18,6 @@ class ExchangesTest < ApplicationSystemTestCase
       rate.dispatchEvent(new Event("input", { bubbles: true }))
     JAVASCRIPT
 
-    assert_selector "output[data-currency-fields-target='converted']", text: "80", visible: :all
+    assert_no_selector "output[data-currency-fields-target='converted']", visible: :all
   end
 end

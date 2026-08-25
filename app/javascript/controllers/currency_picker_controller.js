@@ -1,81 +1,73 @@
 import { Controller } from "@hotwired/stimulus"
 
-const MAX_VISIBLE = 4
-
 export default class extends Controller {
-  static targets = ["select", "filter", "options", "option", "radio", "emptyState", "attachment"]
+  static targets = [
+    "select", "currencyTrigger", "selection", "currencyDialog", "filter", "option", "radio",
+    "emptyState", "attachment", "rateTrigger", "rateSummary", "rateDialog", "rate"
+  ]
+  static values = { baseCurrency: String, autofocus: Boolean }
 
   connect() {
     this.events = new AbortController()
     const { signal } = this.events
-    this.selectTarget.addEventListener("invalid", this.focusVisibleInput, {
-      signal
-    })
-    this.element.addEventListener("focusout", this.leave, { signal })
+    this.selectTarget.addEventListener("invalid", this.openInvalidCurrency, { signal })
+    if (this.hasRateTarget) {
+      this.rateTarget.addEventListener("invalid", this.openInvalidRate, { signal })
+      this.rateTarget.addEventListener("change", this.rateChanged, { signal })
+    }
     this.element.addEventListener("currency-picker:availability-changed", this.availabilityChanged, { signal })
-    this.optionsTarget.addEventListener("pointerdown", this.beginOptionSelection, { signal })
-    document.addEventListener("pointerup", this.endOptionSelection, { signal })
-    document.addEventListener("pointercancel", this.endOptionSelection, { signal })
-
     this.markSelected()
-    this.showSelection()
-    this.opened = false
-    this.attachmentAvailable = this.hasAttachmentTarget &&
-      (this.attachmentTarget.dataset.currencyPickerAvailable === "true" || !this.attachmentTarget.hidden)
-    this.render()
-    if (this.filterTarget.autofocus) queueMicrotask(() => this.open())
+    this.renderRateSummary()
+    if (this.autofocusValue) queueMicrotask(() => this.openCurrency())
   }
 
-  disconnect() {
-    this.events.abort()
+  disconnect() { this.events.abort() }
+
+  openInvalidCurrency = (event) => {
+    event.preventDefault()
+    this.openCurrency()
   }
 
-  focusVisibleInput = () => {
-    requestAnimationFrame(() => {
-      this.filterTarget.focus()
-      this.open()
-    })
+  openInvalidRate = (event) => {
+    event.preventDefault()
+    this.openRate()
   }
 
-  open() {
-    this.opened = true
-    this.render()
+  openCurrency() {
+    if (!this.currencyDialogTarget.open) this.currencyDialogTarget.showModal()
+    this.filterTarget.value = ""
     this.filter()
-    this.filterTarget.select()
+    queueMicrotask(() => this.filterTarget.focus())
   }
 
-  close() {
-    this.opened = false
-    this.activeOption = null
-    this.showSelection()
-    this.render()
+  closeCurrency() { this.currencyDialogTarget.close() }
+  cancelCurrency() { /* Selection commits only when an option is chosen. */ }
+  currencyClosed() {
+    this.activate(null)
+    this.currencyTriggerTarget.focus()
   }
+  search() { this.filter() }
 
-  search() {
-    this.opened = true
-    this.render()
-    this.filter()
+  recommend(event) {
+    const option = this.optionTargets.find((candidate) =>
+      candidate.querySelector("input").value === event.detail.currency
+    )
+    const wrapper = option?.closest("[data-currency-picker-option]")
+    if (wrapper) wrapper.parentElement.prepend(wrapper)
   }
 
   keydown(event) {
     if (event.key === "Escape") {
-      this.close()
-      this.filterTarget.blur()
+      event.preventDefault()
+      this.currencyDialogTarget.close("cancel")
       return
     }
-
     if (!["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) return
-    if (!this.opened) {
-      if (event.key === "Enter") return
-      this.open()
-    }
-
     const options = this.visibleOptions
     if (options.length === 0) return
 
     if (event.key === "Enter") {
       if (!this.activeOption) return
-
       event.preventDefault()
       event.stopPropagation()
       this.activeOption.querySelector("input").click()
@@ -91,71 +83,78 @@ export default class extends Controller {
   }
 
   filter() {
-    const typed = this.filterTarget.value.trim()
-    const requestString = typed === this.selectedLabel ? "" : typed.toLocaleLowerCase()
+    const query = this.filterTarget.value.trim().toLocaleLowerCase()
     let visible = 0
-
     this.optionTargets.forEach((option) => {
-      const matches = option.dataset.filterValue.toLocaleLowerCase().includes(requestString)
-      const wanted = requestString === "" ? matches && this.isPreselected(option) : matches
-      const shown = wanted && visible < MAX_VISIBLE
-
+      const shown = option.dataset.filterValue.toLocaleLowerCase().includes(query)
       option.hidden = !shown
       option.closest("[data-currency-picker-option]").hidden = !shown
       if (shown) visible += 1
     })
-
     this.emptyStateTarget.hidden = visible > 0
-    if (this.activeOption?.hidden) this.activate(null)
+    if (!this.activeOption || this.activeOption.hidden) this.activate(this.visibleOptions[0] || null)
   }
 
   choose(event) {
     this.selectTarget.value = event.currentTarget.value
     this.selectTarget.dispatchEvent(new Event("change", { bubbles: true }))
     this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
-
     this.markSelected()
-    this.close()
-    requestAnimationFrame(() => this.finishSelection())
+    this.renderRateSummary()
+    this.currencyDialogTarget.close()
+  }
+
+  openRate() {
+    this.rateBeforeEdit = this.rateTarget.value
+    this.rateStartBeforeEdit = this.rateTarget.dataset.amountFieldsStartValue
+    if (!this.rateDialogTarget.open) this.rateDialogTarget.showModal()
+    queueMicrotask(() => this.rateTarget.focus())
+  }
+
+  applyRate() {
+    if (!this.rateTarget.reportValidity()) return
+    this.rateTarget.dataset.amountFieldsStartValue = this.rateTarget.value
+    this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
+    this.renderRateSummary()
+    this.rateDialogTarget.close("apply")
+  }
+
+  cancelRate(event) {
+    event?.preventDefault()
+    if (this.rateBeforeEdit !== undefined) {
+      this.rateTarget.value = this.rateBeforeEdit
+      this.rateTarget.dataset.amountFieldsStartValue = this.rateStartBeforeEdit || this.rateBeforeEdit
+      this.rateTarget.dispatchEvent(new Event("input", { bubbles: true }))
+      this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
+    }
+    if (this.rateDialogTarget.open) this.rateDialogTarget.close("cancel")
+  }
+
+  rateClosed() {
+    this.renderRateSummary()
+    this.rateTriggerTarget.focus()
+    this.rateBeforeEdit = undefined
+  }
+
+  rateEdited() { /* Calculations update live; trigger text updates only after Apply. */ }
+
+  rateChanged = () => {
+    if (!this.hasRateDialogTarget || !this.rateDialogTarget.open) this.renderRateSummary()
   }
 
   availabilityChanged = (event) => {
-    this.attachmentAvailable = event.detail.available
-    this.render()
-  }
-
-  beginOptionSelection = () => {
-    this.selectingOption = true
-  }
-
-  endOptionSelection = () => {
-    setTimeout(() => {
-      this.selectingOption = false
-      if (this.opened && !this.element.contains(document.activeElement)) this.close()
-    })
-  }
-
-  leave = (event) => {
-    if (event.relatedTarget && this.element.contains(event.relatedTarget)) return
-
-    requestAnimationFrame(() => {
-      if (!this.selectingOption && !this.element.contains(document.activeElement)) this.close()
-    })
-  }
-
-  finishSelection() {
-    const rate = this.attachmentAvailable && this.hasAttachmentTarget ?
-      this.attachmentTarget.querySelector("input") : null
-
-    if (rate && !rate.disabled) {
-      rate.focus()
-    } else {
-      this.filterTarget.focus()
-      this.filterTarget.blur()
+    if (!this.hasAttachmentTarget) return
+    this.attachmentTarget.hidden = !event.detail.available
+    if (event.detail.baseCurrency) {
+      this.attachmentTarget.dataset.currencyPickerBaseCurrency = event.detail.baseCurrency
     }
+    this.renderRateSummary()
   }
 
   activate(option) {
+    this.optionTargets.forEach((candidate) => {
+      candidate.toggleAttribute("data-currency-picker-active", candidate === option)
+    })
     this.activeOption = option
     if (option) {
       this.filterTarget.setAttribute("aria-activedescendant", option.id)
@@ -165,52 +164,28 @@ export default class extends Controller {
     }
   }
 
-  render() {
-    this.optionsTarget.hidden = !this.opened
-    this.filterTarget.setAttribute("aria-expanded", String(this.opened))
-    if (!this.opened) this.emptyStateTarget.hidden = true
-    if (this.hasAttachmentTarget) {
-      this.attachmentTarget.hidden = this.opened || !this.attachmentAvailable
-    }
-  }
-
-  get visibleOptions() {
-    return this.optionTargets.filter((option) => !option.hidden)
-  }
-
   markSelected() {
     let selectedOption
-
     this.optionTargets.forEach((option) => {
       const input = option.querySelector("input")
       const selected = input.value === this.selectTarget.value
-
       input.checked = selected
-      option.dataset.default = selected ? "true" : null
       option.setAttribute("aria-selected", String(selected))
       if (selected) selectedOption = option
     })
-
-    this.selectedLabel = selectedOption?.dataset.filterValue || ""
+    this.selectionTarget.textContent = selectedOption?.dataset.filterValue || "Choose a currency"
   }
 
-  showSelection() {
-    this.filterTarget.value = this.selectedLabel || ""
+  renderRateSummary() {
+    if (!this.hasRateSummaryTarget || !this.hasRateTarget) return
+    const rate = this.rateTarget.value.trim()
+    if (rate === "") {
+      this.rateSummaryTarget.textContent = "Enter rate"
+      return
+    }
+    const base = this.attachmentTarget.dataset.currencyPickerBaseCurrency || this.baseCurrencyValue
+    this.rateSummaryTarget.textContent = `1 ${base} = ${rate} ${this.selectTarget.value}`
   }
 
-  isPopular(option) {
-    return option.dataset.popular === "true"
-  }
-
-  isDefault(option) {
-    return option.dataset.default === "true"
-  }
-
-  isSuggested(option) {
-    return option.dataset.suggested === "true"
-  }
-
-  isPreselected(option) {
-    return this.isPopular(option) || this.isDefault(option) || this.isSuggested(option)
-  }
+  get visibleOptions() { return this.optionTargets.filter((option) => !option.hidden) }
 }

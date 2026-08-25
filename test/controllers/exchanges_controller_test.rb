@@ -27,8 +27,9 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='exchange[parent_amount]'][data-currency-fields-target='amount']"
     assert_select "select[name='exchange[child_currency_code]'][data-currency-fields-target='currency']"
     assert_select "input[name='exchange[rate]'][data-currency-fields-target='rate']"
-    assert_select "output[data-currency-fields-target='converted'][aria-label='New source amount']"
-    assert_select "[data-currency-fields-target='rateStatus'][aria-live='polite']"
+    assert_select "output[data-currency-fields-target='converted']", count: 0
+    assert_select "[data-currency-fields-target='rateStatus']", count: 0
+    assert_select "dialog[data-currency-picker-target='rateDialog'] button[data-appearance='keycap']", text: "Apply"
   end
 
   test "creates an exchange and its generated source" do

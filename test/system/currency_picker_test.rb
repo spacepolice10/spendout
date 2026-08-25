@@ -5,7 +5,6 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     Rails.cache.delete(CurrencyReference::CACHE_KEY)
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
-
     find("details", text: /currency:/i).find("summary").click
   end
 
@@ -13,161 +12,165 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     Rails.cache.delete(CurrencyReference::CACHE_KEY)
   end
 
-  test "shows popular currencies before filtering" do
-    filter.click
-    assert_visible_option "USD US Dollar, 🇺🇸"
-    assert_visible_option "EUR Euro, 🇪🇺"
-    assert_visible_option "GBP Pound Sterling, 🇬🇧"
-    assert_selector visible_options, maximum: 4
-    assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
-  end
+  test "opens a native dialog with every currency and filters it" do
+    open_currency
 
-  test "filters by code and name replacing the popular list" do
-    filter.set("yen")
-    assert_visible_option "JPY Yen, 🇯🇵"
-    assert_no_visible_option "USD US Dollar, 🇺🇸"
+    assert_selector currency_dialog("[open]")
+    assert_selector visible_options, count: Currency.options.size, visible: :all
+    assert_selector "input[data-currency-picker-target='filter']:focus"
 
-    filter.set("vnd")
+    filter.set("dong")
     assert_visible_option "VND Dong, 🇻🇳"
-
-    filter.set("usd")
-    assert_visible_option "USD US Dollar, 🇺🇸"
+    assert_no_visible_option "USD US Dollar, 🇺🇸"
 
     filter.set("zzzz")
     assert_text "No currencies found"
-
-    filter.set("")
-    assert_visible_option "EUR Euro, 🇪🇺"
-    assert_selector visible_options, maximum: 4
-    assert_no_selector "[data-currency-picker-target='emptyState']:not([hidden])"
   end
 
-  test "closes filtered options when focus leaves the picker" do
+  test "selects a currency, closes the dialog, and restores trigger focus" do
+    choose_currency("dong", "VND Dong, 🇻🇳")
+
+    assert_equal "VND", hidden_currency.value
+    assert_no_selector currency_dialog("[open]")
+    assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
+    assert_selector "button[data-currency-picker-target='currencyTrigger']", text: "VND Dong, 🇻🇳"
+    assert_selector "[data-currency-picker-target='attachment']:not([hidden])"
+  end
+
+  test "selects the active filtered currency with Enter and closes the dialog" do
+    open_currency
     filter.set("dong")
-    find("body").click
+    filter.send_keys(:enter)
 
-    assert_selector "[role='combobox'][aria-expanded='false']"
-    assert_selector "[role='listbox'][hidden]", visible: :all
+    assert_equal "VND", hidden_currency.value
+    assert_no_selector currency_dialog("[open]")
+    assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
   end
 
-  test "chooses the active option with the keyboard and focuses its rate" do
+  test "moves through currencies with arrow keys and closes after keyboard selection" do
+    open_currency
+    expected_code = all("[data-currency-picker-option] input", visible: :all)[1].value
+
+    filter.send_keys(:arrow_down)
+    assert_selector "label[data-currency-picker-active] input[value='#{expected_code}']", visible: :all
+    assert_equal filter["aria-activedescendant"],
+      find("label[data-currency-picker-active]", visible: :all)["id"]
+    filter.send_keys(:enter)
+
+    assert_equal expected_code, hidden_currency.value
+    assert_no_selector currency_dialog("[open]")
+    assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
+  end
+
+  test "Escape closes currency selection without changing it" do
+    open_currency
     filter.set("dong")
-    filter.send_keys(:arrow_down, :enter)
+    filter.send_keys(:escape)
 
-    assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
-    assert_selector "[role='combobox'][aria-expanded='false']"
-    assert_selector "input[name='source[rate]']:focus"
+    assert_equal "USD", hidden_currency.value
+    assert_no_selector currency_dialog("[open]")
+    assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
   end
 
-  test "does not close between pointer down and clicking an option" do
-    filter.set("dong")
-    option = find(visible_option, text: "VND Dong, 🇻🇳")
-
-    page.execute_script(<<~JAVASCRIPT, option, filter)
-      arguments[0].dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }))
-      arguments[1].blur()
-    JAVASCRIPT
-
-    assert_selector "[role='combobox'][aria-expanded='true']"
-    option.click
-
-    assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
-    assert_selector "input[name='source[rate]']:focus"
-  end
-
-  test "shows at most seven options at once" do
-    filter.set("a")
-
-    assert_selector visible_options, count: 4
-  end
-
-  test "choosing a currency replaces the search text and collapses the listbox" do
-    # The form sections are an accordion (shared name), so only one is open at a time.
-    # Enter the amount first, then open the currency section to choose.
-    find("details", text: /amount:/i).find("summary").click
-    send_input(find("input[name='source[amount]']"), "26600")
-
-    find("details", text: /currency:/i).find("summary").click
-    filter.set("dong")
-
-    find(visible_option, text: "VND Dong, 🇻🇳").click
-
-    assert_equal "VND", find("select[name='source[currency_code]']", visible: :all).value
-    assert find("input[type='radio'][value='VND']", visible: :all).checked?
-    assert_equal "VND Dong, 🇻🇳", filter.value
-    assert_selector "[role='combobox'][aria-expanded='false']"
-    assert_selector "[role='listbox'][hidden]", visible: :all
-    assert_selector "[data-currency-fields-target='rateFields']:not([hidden])"
-    assert_selector ".currency-picker > [data-currency-fields-target='rateFields']"
-    assert_no_selector "input[data-currency-picker-target='filter']:focus"
-    assert_selector "input[name='source[rate]']:focus"
-
-    filter.click
-    assert_no_selector "[data-currency-fields-target='rateFields']", visible: true
-
-    find("body").click
-    assert_selector "[data-currency-fields-target='rateFields']", visible: true
-
-    picker_children = page.evaluate_script(<<~JAVASCRIPT)
-      Array.from(document.querySelector(".currency-picker").children).map((element) =>
-        element.matches("[data-currency-combobox]") ? "combobox" :
-          element.matches("[data-currency-fields-target='rateFields']") ? "rate" : null
-      ).filter(Boolean)
-    JAVASCRIPT
-    assert_equal ["combobox", "rate"], picker_children
-
-    rate = find("input[name='source[rate]']")
-    filter_rect = filter.rect
-    rate_rect = rate.rect
-    assert_in_delta filter_rect.width, rate_rect.width, 1
-    assert_in_delta filter_rect.height, rate_rect.height, 1
-
-    send_input(rate, "26600")
-    assert_equal "1", find("[data-currency-fields-target='converted']", visible: :all).text
-
-    # The summary value preview is only shown once the details is collapsed.
-    find("details", text: /currency:/i).find("summary").click
-    assert_selector "summary small", text: "VND"
-  end
-
-  test "autofills an editable reference rate" do
+  test "autofills a reference quote and applies an edited rate" do
     Rails.cache.write(CurrencyReference::CACHE_KEY, {
       "reference_date" => Date.current.iso8601,
       "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" }
     })
     visit new_budget_source_path(budgets(:active))
     find("details", text: /currency:/i).find("summary").click
-    filter.set("dong")
-    find(visible_option, text: "VND Dong, 🇻🇳").click
+    choose_currency("dong", "VND Dong, 🇻🇳")
 
-    rate = find("input[name='source[rate]']")
-    assert_equal "25.000", rate.value
-
+    assert_selector rate_trigger, text: "1 USD = 25.000 VND"
+    find(rate_trigger).click
+    assert_selector rate_dialog("[open]")
     send_input(rate, "24950")
+    click_button "Apply"
+
+    assert_no_selector rate_dialog("[open]")
+    assert_selector rate_trigger, text: "1 USD = 24.950 VND"
     assert_equal "24.950", rate.value
   end
 
-  test "asks for a manual rate when the selected currency has no suggestion" do
-    filter.set("dong")
-    find(visible_option, text: "VND Dong, 🇻🇳").click
+  test "the dialog close button restores the confirmed rate" do
+    choose_currency("dong", "VND Dong, 🇻🇳")
+    find(rate_trigger).click
+    send_input(rate, "25000")
+    click_button "Apply"
 
-    assert_equal "", find("input[name='source[rate]']").value
-    assert_text "Reference rate unavailable. Enter a rate manually."
+    find(rate_trigger).click
+    send_input(rate, "26000")
+    find("button[aria-label='Cancel rate changes']").click
+
+    assert_equal "25.000", rate.value
+    assert_selector rate_trigger, text: "1 USD = 25.000 VND"
   end
 
-  test "focuses the visible picker when the required currency is invalid" do
+  test "offers manual entry when no reference quote exists" do
+    choose_currency("dong", "VND Dong, 🇻🇳")
+
+    assert_selector rate_trigger, text: "Enter rate"
+    find(rate_trigger).click
+    assert_selector "input[name='source[rate]']:focus"
+    within rate_dialog("[open]") do
+      assert_selector "input[name='source[rate]']"
+      assert_selector "button[data-appearance='keycap']", text: "Apply"
+      assert_no_selector "small, output"
+    end
+  end
+
+  test "same-currency selection hides the rate trigger and normalizes rate" do
+    choose_currency("dong", "VND Dong, 🇻🇳")
+    choose_currency("dollar", "USD US Dollar, 🇺🇸")
+
+    assert_selector "[data-currency-picker-target='attachment'][hidden]", visible: :all
+    assert_equal "1", rate.value
+  end
+
+  test "invalid required currency opens its dialog" do
     budgets(:active).update_columns(period_to: Date.yesterday)
     visit new_budget_path
+    find(currency_dialog("[open]")).send_keys(:escape)
 
     click_button "Next step"
 
+    assert_selector currency_dialog("[open]")
     assert_selector "input[data-currency-picker-target='filter']:focus"
-    assert_selector "[role='combobox'][aria-expanded='true']"
   end
 
   private
+    def open_currency
+      find("button[data-currency-picker-target='currencyTrigger']").click
+    end
+
+    def choose_currency(query, label)
+      open_currency
+      filter.set(query)
+      find(visible_option, text: label).click
+    end
+
     def filter
       find("input[data-currency-picker-target='filter']")
+    end
+
+    def hidden_currency
+      find("select[name='source[currency_code]']", visible: :all)
+    end
+
+    def rate
+      find("input[name='source[rate]']", visible: :all)
+    end
+
+    def rate_trigger
+      "button[data-currency-picker-target='rateTrigger']"
+    end
+
+    def currency_dialog(suffix = "")
+      "dialog[data-currency-picker-target='currencyDialog']#{suffix}"
+    end
+
+    def rate_dialog(suffix = "")
+      "dialog[data-currency-picker-target='rateDialog']#{suffix}"
     end
 
     def visible_option

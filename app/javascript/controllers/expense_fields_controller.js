@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "currency", "source", "fields", "rate", "rateLabel", "rateStatus", "sourceDebit", "budgetValue" ]
+  static targets = [ "currency", "source", "fields", "rate" ]
   static values = { sources: Object, budgetCurrency: String, referenceUrl: String }
 
   connect() {
@@ -15,6 +15,16 @@ export default class extends Controller {
     this.updateFields({ preserveRate: false })
   }
 
+  sourceChanged() {
+    const source = this.source
+    if (!source) return
+
+    this.currencyTarget.dispatchEvent(new CustomEvent("currency-picker:recommend", {
+      bubbles: true,
+      detail: { currency: source.currency }
+    }))
+  }
+
   refresh(event) {
     const sourceChanged = this.sourceId !== this.previousSourceId
     const currencyChanged = this.currencyTarget.value !== this.previousCurrency
@@ -24,11 +34,6 @@ export default class extends Controller {
     } else {
       this.render()
     }
-  }
-
-  rateEdited() {
-    this.rateStatusTarget.textContent = ""
-    this.render()
   }
 
   async updateFields({ preserveRate }) {
@@ -42,7 +47,7 @@ export default class extends Controller {
     this.fieldsTarget.dataset.currencyPickerAvailable = String(available)
     this.fieldsTarget.dispatchEvent(new CustomEvent("currency-picker:availability-changed", {
       bubbles: true,
-      detail: { available }
+      detail: { available, baseCurrency: source.currency }
     }))
     this.rateTarget.disabled = sameCurrency
     this.rateTarget.required = !sameCurrency
@@ -51,57 +56,23 @@ export default class extends Controller {
 
     if (sameCurrency) {
       this.setRate("1")
-      this.rateStatusTarget.textContent = ""
     } else {
-      this.rateLabelTarget.textContent = `${currency} units per 1 ${source.currency}`
       if (!preserveRate || this.rateTarget.value === "" || this.rateTarget.value === "1") {
+        this.setRate("")
         const suggestion = await this.rateBetween(source.currency, currency)
         if (sourceId !== this.sourceId || currency !== this.currencyTarget.value) return
 
         this.setRate(suggestion || "")
-        this.rateStatusTarget.textContent = suggestion ?
-          "" :
-          "Reference rate unavailable. Enter a rate manually."
       }
     }
-
-    this.render()
   }
 
-  render() {
-    const source = this.source
-    const amount = this.parse(this.amountInput?.value)
-    const directRate = this.parse(this.rateTarget.value)
-    const sourceRate = Number(source?.rate)
-    const valid = source && Number.isFinite(amount) && Number.isFinite(directRate) &&
-      Number.isFinite(sourceRate) && directRate > 0 && sourceRate > 0
-
-    if (!valid) {
-      this.sourceDebitTarget.textContent = ""
-      this.budgetValueTarget.textContent = ""
-      return
-    }
-
-    const sourceAmount = amount / directRate
-    const baseAmount = sourceAmount / sourceRate
-    this.sourceDebitTarget.textContent = `${this.format(sourceAmount)} ${source.currency} from ${this.sourceName}`
-    this.budgetValueTarget.textContent = `${this.format(baseAmount)} ${this.budgetCurrencyValue} in this budget`
-  }
+  render() {}
 
   setRate(value) {
     this.rateTarget.value = value
     this.rateTarget.dataset.amountFieldsStartValue = value
     this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
-  }
-
-  parse(value) {
-    const normalized = String(value || "").trim().replaceAll(".", "").replace(",", ".")
-    if (normalized === "") return 0
-    return Number(normalized)
-  }
-
-  format(value) {
-    return value.toFixed(4).replace(/\.?0+$/, "")
   }
 
   get sourceId() {
@@ -110,10 +81,6 @@ export default class extends Controller {
 
   get source() {
     return this.sourcesValue[this.sourceId]
-  }
-
-  get sourceName() {
-    return this.sourceTargets.find((input) => input.checked)?.closest("label")?.querySelector("strong")?.textContent.trim()
   }
 
   async rateBetween(from, to) {

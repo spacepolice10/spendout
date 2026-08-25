@@ -135,9 +135,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     get new_budget_expense_path(@budget)
 
-    assert_select "[data-currency-picker-option]:nth-child(1) input[value='THB']"
-    assert_select "[data-currency-picker-option]:nth-child(2) input[value='USD']"
-    assert_select "[data-currency-picker-option]:nth-child(3) input[value='EUR']"
+    assert_select "[data-currency-picker-option]:nth-child(1) input[value='EUR']"
+    assert_select "[data-currency-picker-option]:nth-child(2) input[value='THB']"
+    assert_select "[data-currency-picker-option]:nth-child(3) input[value='USD']"
     assert_select "select[name='expense[currency_code]'] option[value='EUR'][selected]"
   end
 
@@ -263,6 +263,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: /Amount must be less than or equal to 1375.25/
+    assert_select "summary [data-form-target='summaryContent']", text: "1.375,2501"
 
     assert_no_difference("Expense.count") do
       post budget_expenses_path(@budget), params: {

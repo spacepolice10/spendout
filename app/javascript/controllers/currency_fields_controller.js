@@ -12,7 +12,6 @@ export default class extends Controller {
     this.previousCurrency = this.currencyTarget.value
     this.validateCurrency()
     this.updateRateFields()
-    this.updateInitialRateStatus()
     this.calculate()
   }
 
@@ -23,17 +22,13 @@ export default class extends Controller {
 
     if (selectedCurrency === this.baseCurrencyValue) {
       this.setRate("1")
-      this.clearRateStatus()
     } else {
+      this.setRate("")
       const suggestedRate = await this.rateBetween(this.baseCurrencyValue, selectedCurrency)
       if (this.currencyTarget.value !== selectedCurrency) return
 
       if (suggestedRate) {
         this.setRate(suggestedRate)
-        this.clearRateStatus()
-      } else {
-        this.setRate("")
-        this.rateStatusTarget.textContent = "Reference rate unavailable. Enter a rate manually."
       }
     }
 
@@ -54,11 +49,10 @@ export default class extends Controller {
     queueMicrotask(() => this.render())
   }
 
-  rateEdited() {
-    this.clearRateStatus()
-  }
+  rateEdited() {}
 
   render() {
+    if (!this.hasConvertedTarget) return
     const amount = this.parsedAmount(this.amountTarget.value)
     const rate = this.parsedAmount(this.rateTarget.value)
     const valid = Number.isFinite(amount) && Number.isFinite(rate) && rate > 0
@@ -97,20 +91,8 @@ export default class extends Controller {
     this.rateFieldsTarget.dataset.currencyPickerAvailable = String(available)
     this.rateFieldsTarget.dispatchEvent(new CustomEvent("currency-picker:availability-changed", {
       bubbles: true,
-      detail: { available }
+      detail: { available, baseCurrency: this.baseCurrencyValue }
     }))
-  }
-
-  updateInitialRateStatus() {
-    if (this.currencyTarget.value !== "" &&
-        this.currencyTarget.value !== this.baseCurrencyValue &&
-        this.rateTarget.value === "") {
-      this.rateStatusTarget.textContent = "Reference rate unavailable. Enter a rate manually."
-    }
-  }
-
-  clearRateStatus() {
-    this.rateStatusTarget.textContent = ""
   }
 
   async rateBetween(from, to) {
