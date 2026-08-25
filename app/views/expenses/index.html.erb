@@ -12,6 +12,14 @@
         <article data-elevation="2" data-gauge-plate>
           <h2>Can I spend more today?</h2>
 
+          <aside data-cybercat-answer>
+            <%= image_tag "cybercat.png", alt: "Cybercat", width: 40, height: 40 %>
+            <p><%= cybercat_spending_answer(
+              @budget.todays_remainder_percentage,
+              no_expenses: @budget.expenses.none?
+            ) %></p>
+          </aside>
+
           <div data-gauge-bolts aria-hidden="true">
             <span></span>
             <span></span>

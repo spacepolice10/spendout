@@ -104,21 +104,6 @@
                     white-space: nowrap;
                 }
 
-                &>a[aria-label="User"] {
-                    display: flex;
-                    flex: 0 0 3.25rem;
-                    align-items: center;
-                    justify-content: center;
-                    width: 3.25rem;
-                    padding: var(--space-v-half);
-                    border-radius: var(--radius-2);
-
-                    &>img {
-                        display: block;
-                        width: 1.5rem;
-                        height: 1.5rem;
-                    }
-                }
             }
         }
     }
@@ -171,19 +156,9 @@
         padding: var(--space-v-half) var(--space-h-half);
 
         &>a[role="button"] {
-            padding: var(--space-v-half) var(--space-h-half);
-            font-size: var(--font-size-xs);
+            padding: calc(var(--space-v-half) + 0.15rem) var(--space-h-half);
+            font-size: calc(var(--font-size-xs) + 0.05rem);
         }
 
-        &>a[aria-label="User"] {
-            flex-basis: 2.5rem;
-            width: 2.5rem;
-            padding: var(--space-v-half);
-
-            &>img {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
-        }
     }
 }

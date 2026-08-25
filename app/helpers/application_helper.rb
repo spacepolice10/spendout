@@ -15,6 +15,23 @@ module ApplicationHelper
     )
   end
 
+  def cybercat_spending_answer(percentage, no_expenses: false)
+    return "Nothing spent yet—nice." if no_expenses
+
+    case percentage.to_d
+    when ..0
+      "That’s enough spending for today."
+    when ...25
+      "You can, but tomorrow will be tighter."
+    when ...50
+      "Better save some for tomorrow."
+    when ...80
+      "Yep, still good to go."
+    else
+      "You’re ahead today—nice."
+    end
+  end
+
   def colour_styles(colour)
     return unless Colourable::CATALOG.key?(colour)
 

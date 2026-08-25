@@ -14,6 +14,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "main[data-page='landing']"
     assert_select "[data-landing-header]", count: 0
     assert_select "[data-hero-cybercat] img[alt='Cybercat'][width='100']", count: 1
+    assert_select "[data-cybercat-dialog] p", text: "I live on your server now.", count: 1
     assert_select "[data-hero-cybercat] h1", text: "Spendout", count: 1
     assert_select "[data-landing-hero] strong", text: "what's safe to spend today."
     assert_select "[data-landing-hero]", text: /No subscription\. No lock-in\. Run it yourself\./
@@ -85,7 +86,9 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-detail-grid] h3", text: "Add useful context"
     assert_no_match(/we buy|we sell/i, response.body)
     assert_select "[data-landing-ownership]", text: /currently deployed with Kamal/
-    assert_select "[data-landing-ownership]", text: /ONCE is planned/
+    assert_select "[data-landing-ownership]", text: /ONCE-ready version.*first-run administrator setup.*backup and restore hooks/m
+    assert_select "[data-landing-ownership] a[href='https://github.com/spacepolice10/spendout/tree/codex/once-adaptation']", text: "Install with ONCE ↗"
+    assert_select "[data-deployment-terminal]", text: /once deploy ghcr\.io\/spacepolice10\/spendout:latest.*--host spendout\.example\.com/m
     assert_select "[data-landing-footer]", count: 1 do
       assert_select "strong", text: "Demo data is temporary."
       assert_select "p", text: /not preserved.*removed within a week/m

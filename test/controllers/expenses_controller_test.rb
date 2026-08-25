@@ -25,6 +25,11 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='expense-card']", count: 1
     assert_select "article[data-elevation='2'][data-gauge-plate] > h2", text: "Can I spend more today?", count: 1
+    assert_select "[data-cybercat-answer]" do
+      assert_select "img[alt='Cybercat'][width='40'][height='40']", count: 1
+      expected_answer = ApplicationController.helpers.cybercat_spending_answer(@budget.todays_remainder_percentage)
+      assert_select "p", text: expected_answer, count: 1
+    end
     assert_select "article[data-elevation='2'] > header", count: 0
     assert_select "article[data-elevation='2'] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
@@ -58,6 +63,15 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "nav[aria-label='Pagination for expenses']", text: /Page 2 of 2/
     assert_select "nav[aria-label='Pagination for expenses'] a", text: "Previous"
     assert_select "nav[aria-label='Pagination for expenses'] a", text: "Next", count: 0
+  end
+
+  test "index shows Cybercat's no-spending answer when the budget has no expenses" do
+    @budget.expenses.delete_all
+    sign_in_as(@user)
+
+    get budget_expenses_path(@budget)
+
+    assert_select "[data-cybercat-answer] p", text: "Nothing spent yet—nice.", count: 1
   end
 
   test "index redirects an archived budget to creation when no budget is active" do

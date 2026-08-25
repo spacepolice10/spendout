@@ -46,6 +46,28 @@
         }
     }
 
+    [data-cybercat-answer] {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-h-half);
+        margin-block-start: var(--space-v-2);
+
+        & img {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius-full);
+            image-rendering: pixelated;
+        }
+
+        & p {
+            margin: 0;
+            font-size: var(--font-size-sm);
+        }
+    }
+
     article.budget [data-daily-gauge] {
         justify-items: center;
         text-align: center;

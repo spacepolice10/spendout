@@ -21,35 +21,35 @@
         <kbd aria-hidden="true">1</kbd>
       <% end %>
 
-      <%= link_to budget_expenses_path(budget),
-        role: "button",
-        aria: (expenses_active ? { current: "page" } : {}),
-        data: {
-          controller: "pressable",
-          action: "keydown.2@document->pressable#click"
-        },
-        style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if expenses_active}" do %>
-        <span>Expenses</span>
-        <kbd aria-hidden="true">2</kbd>
-      <% end %>
-
       <%= link_to budget_allocations_path(budget),
             role: "button",
             aria: (categories_active ? { current: "page" } : {}),
             data: {
               controller: "pressable",
-              action: "keydown.3@document->pressable#click"
+              action: "keydown.2@document->pressable#click"
             },
             style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if categories_active}" do %>
-        <span>Categories</span>
+        <span>Plan</span>
+        <kbd aria-hidden="true">2</kbd>
+      <% end %>
+
+      <%= link_to budget_expenses_path(budget),
+        role: "button",
+        aria: (expenses_active ? { current: "page" } : {}),
+        data: {
+          controller: "pressable",
+          action: "keydown.3@document->pressable#click"
+        },
+        style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if expenses_active}" do %>
+        <span>Expenses</span>
         <kbd aria-hidden="true">3</kbd>
       <% end %>
 
       <%= link_to user_path,
+            role: "button",
             aria: { label: "User", current: ("page" if user_active) },
             style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if user_active}" do %>
-        <%= image_tag "cybercat.png", alt: "", width: 32, height: 32,
-              style: "object-fit:contain;image-rendering:pixelated;" %>
+        <span>User</span>
       <% end %>
     </div>
   </nav>

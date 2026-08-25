@@ -28,16 +28,16 @@ class TabbarTest < ApplicationSystemTestCase
     end
 
     within "nav[aria-label='Budget sections']" do
-      click_on "Categories"
+      click_on "Plan"
     end
     assert_current_path budget_allocations_path(budgets(:active))
 
     within "nav[aria-label='Budget sections']" do
-      assert_selector "a[aria-current='page']", text: "Categories"
+      assert_selector "a[aria-current='page']", text: "Plan"
     end
   end
 
-  test "Cybercat opens the user page and marks the tab active" do
+  test "User tab opens the user page and marks itself active" do
     within "nav[aria-label='Budget sections']" do
       find("a[aria-label='User']").click
     end
@@ -45,7 +45,7 @@ class TabbarTest < ApplicationSystemTestCase
     assert_current_path user_path
     assert_selector "h1", text: "User"
     within "nav[aria-label='Budget sections']" do
-      assert_selector "a[aria-label='User'][aria-current='page'] img[src*='cybercat']"
+      assert_selector "a[aria-label='User'][aria-current='page']", text: "User"
     end
   end
 

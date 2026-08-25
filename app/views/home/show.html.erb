@@ -11,7 +11,10 @@
   <section data-landing-hero aria-labelledby="landing-title">
     <div>
       <header data-hero-cybercat>
-        <%= image_tag "cybercat.png", alt: "Cybercat", width: 100 %>
+        <div data-cybercat-dialog>
+          <%= image_tag "cybercat.png", alt: "Cybercat", width: 100 %>
+          <p>I live on your server now.</p>
+        </div>
 
         <h1>Spendout</h1>
       </header>
@@ -290,11 +293,12 @@
       <h2 id="ownership-title">Built to be self-hosted.</h2>
 
       <p>
-        Spendout is a compact Rails application currently deployed with Kamal. A
-        simpler guided installation with ONCE is planned.
+        Spendout is a compact Rails application currently deployed with Kamal.
+        An ONCE-ready version adds guided first-run administrator setup, managed
+        HTTPS, updates, persistent storage, and backup and restore hooks.
       </p>
 
-      <a href="https://github.com/spacepolice10/spendout">View the source on GitHub ↗</a>
+      <a href="https://github.com/spacepolice10/spendout/tree/codex/once-adaptation">Install with ONCE ↗</a>
     </div>
 
     <aside data-deployment-terminal aria-label="Deployment terminal">
@@ -315,9 +319,9 @@
 
         <hr data-terminal-rule>
 
-        <p data-terminal-comment># guided self-hosting · planned</p>
-        <p data-terminal-command>$ once deploy spendout</p>
-        <p data-terminal-output>guided install + backups · coming later</p>
+        <p data-terminal-comment># guided self-hosting with ONCE</p>
+        <p data-terminal-command>$ once deploy ghcr.io/spacepolice10/spendout:latest \\</p>
+        <p data-terminal-output>  --host spendout.example.com</p>
 
         <p data-terminal-prompt>
           <span data-terminal-command>$</span>

@@ -43,7 +43,7 @@
     <legend>When does your budget start and end?</legend>
     <small>Mostly people select a period in 1 month between the paydays</small>
 
-    <div style="flex-wrap: nowrap;">
+    <div>
       <%= form.date_field :period_from, value: Date.today.beginning_of_month, required: true,
             data: { date_fields_target: "start" } %>
       <%= form.date_field :period_to, value: Date.today.end_of_month, required: true,

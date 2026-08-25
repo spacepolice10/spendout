@@ -44,7 +44,17 @@
   [data-status] { width: fit-content; padding: 0.3em 0.55em; border: 1px solid currentColor; border-radius: var(--radius-full); color: var(--color-accent); font-size: var(--font-size-2xs); font-weight: var(--font-weight-bold); letter-spacing: 0.05em; }
 
   [data-hero-cybercat] { display: grid; justify-items: center; gap: var(--space-v-half); padding-block: var(--space-v-2); text-align: center; }
-  [data-hero-cybercat] img { width: 100px; image-rendering: pixelated; }
+  [data-cybercat-dialog] { display: flex; align-items: start; gap: var(--space-h); }
+  [data-cybercat-dialog] img { width: 100px; image-rendering: pixelated; }
+  [data-cybercat-dialog] p {
+    position: relative; max-width: 13ch; margin-block-start: var(--space-v-half); padding: var(--space-v) var(--space-h);
+    border: 2px solid var(--color-invert-1); background: var(--color-1); box-shadow: 4px 4px 0 var(--color-accent);
+    font-family: "Silkscreen", var(--font-family-mono); font-size: var(--font-size-2xs); line-height: 1.5; text-align: left; text-transform: uppercase;
+  }
+  [data-cybercat-dialog] p::before {
+    content: ""; position: absolute; inset: auto auto -10px 8px; width: 14px; height: 10px;
+    border-inline: 2px solid var(--color-invert-1); background: var(--color-1); transform: skewX(-35deg);
+  }
   [data-hero-cybercat] h1 { color: var(--color-accent); font-family: var(--font-family-sans); font-size: var(--font-size-2xl); letter-spacing: 0.04em; text-transform: uppercase; }
 
   [data-landing-chapter] {
