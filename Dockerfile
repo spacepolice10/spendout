@@ -25,6 +25,7 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
+    SOLID_QUEUE_IN_PUMA="true" \
     LD_PRELOAD="/usr/local/lib/libjemalloc.so"
 
 # Throw-away build stage to reduce size of final image
@@ -60,6 +61,20 @@ RUN SECRET_KEY_BASE_DUMMY=1 APP_HOST=localhost ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+ARG APP_VERSION
+ARG GIT_REVISION
+ARG OCI_SOURCE="https://github.com/spacepolice10/spendout"
+
+LABEL org.opencontainers.image.title="Spendout" \
+      org.opencontainers.image.description="A simple, self-hosted budgeting application" \
+      org.opencontainers.image.source="${OCI_SOURCE}" \
+      org.opencontainers.image.licenses="LicenseRef-O-Saasy" \
+      org.opencontainers.image.version="${APP_VERSION}" \
+      org.opencontainers.image.revision="${GIT_REVISION}"
+
+ENV APP_VERSION=$APP_VERSION \
+    GIT_REVISION=$GIT_REVISION
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
@@ -68,6 +83,7 @@ USER 1000:1000
 # Copy built artifacts: gems, application
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
+COPY --chmod=755 hooks /hooks
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

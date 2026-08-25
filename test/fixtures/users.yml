@@ -1,5 +1,8 @@
 one:
   email_address: one@example.com
+  password_digest: <%= BCrypt::Password.create("correct horse battery staple") %>
+  role: 1
 
 two:
   email_address: two@example.com
+  role: 0

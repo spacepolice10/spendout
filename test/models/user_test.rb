@@ -17,4 +17,27 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.valid?
     assert user.errors.added?(:email_address, :taken, value: "one@example.com")
   end
+
+  test "requires an administrator to have a password" do
+    user = User.new(email_address: "admin@example.com", role: :administrator)
+
+    assert_not user.valid?
+    assert user.errors.added?(:password_digest, :blank)
+  end
+
+  test "accepts a password of at least twelve characters" do
+    user = User.new(
+      email_address: "admin@example.com",
+      role: :administrator,
+      password: "twelve characters",
+      password_confirmation: "twelve characters"
+    )
+
+    assert user.valid?
+    assert user.authenticate("twelve characters")
+  end
+
+  test "allows a member to rely on emailed codes" do
+    assert User.new(email_address: "member@example.com", role: :member).valid?
+  end
 end

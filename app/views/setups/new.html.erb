@@ -1,0 +1,42 @@
+<main class="session-page" data-size="sm">
+  <header>
+    <%= image_tag "cybercat.png", alt: "Cybercat", width: 100 %>
+    <h1>Set up Spendout</h1>
+    <p>Create the administrator account for this installation.</p>
+  </header>
+
+  <article data-elevation="1">
+    <header>
+      <h2>Administrator</h2>
+    </header>
+
+    <main>
+      <% if @user.errors.any? %>
+        <p><%= @user.errors.full_messages.to_sentence %></p>
+      <% end %>
+
+      <%= form_with model: @user, url: setup_path do |form| %>
+        <label>
+          Email address
+          <%= form.email_field :email_address, required: true, autofocus: !mobile_variant?, autocomplete: "email" %>
+        </label>
+
+        <label>
+          Password
+          <%= form.password_field :password, required: true, minlength: 12, autocomplete: "new-password" %>
+          <small>Use at least 12 characters.</small>
+        </label>
+
+        <label>
+          Confirm password
+          <%= form.password_field :password_confirmation, required: true, minlength: 12, autocomplete: "new-password" %>
+        </label>
+
+        <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
+          <span>Create administrator</span>
+          <%= icon_tag("chevron-right") %>
+        <% end %>
+      <% end %>
+    </main>
+  </article>
+</main>

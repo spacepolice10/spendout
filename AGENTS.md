@@ -7,8 +7,7 @@
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
 - A budget snapshots its immutable base currency at creation. Sources are created in the next step; the first source defaults to that currency and cannot be deleted independently.
 - Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-confirmed quote expressed as selected-currency units per one base-currency unit. Dated external reference rates may be offered as editable suggestions; never silently update historical records or create budget-owned currencies.
-- Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
-- Replace the generated password authentication; do not extend it.
+- A fresh installation creates one password-protected administrator. Only administrators add users; users may sign in with a password or an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
 - Store money with precision-safe types.
 - Follow Basecamp conventions and reference projects such as Fizzy and Writebook when writing Ruby or Hotwire code.
 - Reuse the variables and semantic rules in `base.css`. Agents must not create CSS classes; use existing classes only for business semantics, never for layouts or generic components.

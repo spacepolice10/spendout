@@ -9,7 +9,7 @@ class Sessions::AuthCodesController < ApplicationController
 
   def create
     if email_address = AuthCode.consume(params[:code], email_address: pending_email_address)
-      user = User.find_or_create_by!(email_address: email_address)
+      user = User.find_by!(email_address: email_address)
       clear_pending_email_address
       start_new_session_for(user)
       redirect_to after_authentication_url

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_010000) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -131,8 +131,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
+    t.string "password_digest"
+    t.integer "role", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.check_constraint "role IN (0, 1)", name: "users_role_valid"
   end
 
   add_foreign_key "allocations", "budgets"

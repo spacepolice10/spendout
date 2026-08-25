@@ -11,12 +11,25 @@
     </header>
 
     <main>
-      <p>We’ll email you a six-character sign-in code.</p>
+      <p>Use your password, or ask for a six-character sign-in code.</p>
 
       <%= form_with url: session_path do |form| %>
-        <%= form.email_field :email_address, required: true, autofocus: !mobile_variant?, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
+        <label>
+          Email address
+          <%= form.email_field :email_address, required: true, autofocus: !mobile_variant?, autocomplete: "email", placeholder: "you@example.com", value: params[:email_address] %>
+        </label>
 
-        <%= form.button "Email me a code", type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
+        <label>
+          Password
+          <%= form.password_field :password, autocomplete: "current-password" %>
+        </label>
+
+        <%= form.button type: "submit", name: "authentication_method", value: "password", data: { appearance: "keycap", intent: "primary" } do %>
+          <span>Sign in with password</span>
+          <%= icon_tag("chevron-right") %>
+        <% end %>
+
+        <%= form.button type: "submit", name: "authentication_method", value: "code" do %>
           <span>Email me a code</span>
           <%= icon_tag("chevron-right") %>
         <% end %>

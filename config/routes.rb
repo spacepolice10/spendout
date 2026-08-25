@@ -3,6 +3,12 @@ Rails.application.routes.draw do
   get "landing" => "home#show", as: :landing
   resource :currency_reference, only: :show
   resource :user, only: :show
+  resource :setup, only: %i[ new create ]
+
+  namespace :admin do
+    root "users#index"
+    resources :users, only: %i[ index new create ]
+  end
 
   resources :budgets, only: %i[ new create destroy ] do
     resources :allocations, shallow: true do

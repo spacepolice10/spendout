@@ -1,0 +1,27 @@
+<% content_for :title, "Users" %>
+
+<main data-size="sm">
+  <article data-elevation="1">
+    <header>
+      <nav>
+        <h1>Users</h1>
+      </nav>
+      <%= link_to "Add user", new_admin_user_path, role: "button", data: { intent: "primary" } %>
+    </header>
+
+    <main>
+      <ul>
+        <% @users.each do |user| %>
+          <li>
+            <strong><%= user.email_address %></strong>
+            <span><%= user.administrator? ? "Administrator" : "Member" %></span>
+          </li>
+        <% end %>
+      </ul>
+    </main>
+
+    <footer>
+      <%= link_to "Back to account", user_path %>
+    </footer>
+  </article>
+</main>

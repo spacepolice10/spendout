@@ -24,11 +24,10 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # ONCE terminates SSL by default and explicitly marks installations that run without it.
+  ssl_enabled = ENV["DISABLE_SSL"] != "true"
+  config.assume_ssl = ssl_enabled
+  config.force_ssl = ssl_enabled
 
   # Skip http-to-https redirect for the default health check endpoint.
   config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -59,29 +58,29 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
 
   # Set host to be used by links generated in mailer templates.
-  app_host = ENV.fetch("APP_HOST")
-  app_protocol = ENV["DISABLE_SSL"] == "true" ? "http" : "https"
-  config.action_mailer.default_url_options = { host: app_host, protocol: app_protocol }
-
-  config.hosts << app_host
+  if app_host = ENV["APP_HOST"].presence
+    app_protocol = ENV["DISABLE_SSL"] == "true" ? "http" : "https"
+    config.action_mailer.default_url_options = { host: app_host, protocol: app_protocol }
+    config.hosts << app_host
+  end
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # Specify outgoing SMTP server. ONCE provides these settings as environment variables.
-  smtp_credentials = if ENV["SMTP_USERNAME"] || ENV["SMTP_PASSWORD"]
-    {}
+  if ENV["SMTP_ADDRESS"].present?
+    smtp_credentials = ENV["RAILS_MASTER_KEY"].present? ? Rails.application.credentials.smtp || {} : {}
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      user_name: ENV["SMTP_USERNAME"] || smtp_credentials[:user_name],
+      password: ENV["SMTP_PASSWORD"] || smtp_credentials[:password],
+      address: ENV.fetch("SMTP_ADDRESS"),
+      domain: ENV["SMTP_DOMAIN"],
+      port: Integer(ENV.fetch("SMTP_PORT", 587)),
+      authentication: :plain,
+      enable_starttls_auto: true
+    }.compact
   else
-    Rails.application.credentials.smtp || {}
+    config.action_mailer.perform_deliveries = false
   end
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    user_name: ENV["SMTP_USERNAME"] || smtp_credentials[:user_name],
-    password: ENV["SMTP_PASSWORD"] || smtp_credentials[:password],
-    address: ENV.fetch("SMTP_ADDRESS"),
-    domain: ENV.fetch("SMTP_DOMAIN"),
-    port: Integer(ENV.fetch("SMTP_PORT", 587)),
-    authentication: :plain,
-    enable_starttls_auto: true
-  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

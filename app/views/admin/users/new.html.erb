@@ -1,0 +1,43 @@
+<% content_for :title, "Add user" %>
+
+<main data-size="sm">
+  <article data-elevation="1">
+    <header>
+      <nav>
+        <%= link_to icon_tag("chevron-left"), admin_users_path, aria: { label: "Back to users" } %>
+        <h1>Add user</h1>
+      </nav>
+    </header>
+
+    <main>
+      <% if @user.errors.any? %>
+        <p><%= @user.errors.full_messages.to_sentence %></p>
+      <% end %>
+
+      <p>Set a password for this user, or leave it blank to email an initial sign-in code.</p>
+
+      <%= form_with model: [ :admin, @user ] do |form| %>
+        <label>
+          Email address
+          <%= form.email_field :email_address, required: true, autofocus: !mobile_variant?, autocomplete: "email" %>
+        </label>
+
+        <label>
+          Password
+          <%= form.password_field :password, minlength: 12, autocomplete: "new-password" %>
+          <small>Optional. Use at least 12 characters.</small>
+        </label>
+
+        <label>
+          Confirm password
+          <%= form.password_field :password_confirmation, minlength: 12, autocomplete: "new-password" %>
+        </label>
+
+        <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
+          <span>Add user</span>
+          <%= icon_tag("chevron-right") %>
+        <% end %>
+      <% end %>
+    </main>
+  </article>
+</main>

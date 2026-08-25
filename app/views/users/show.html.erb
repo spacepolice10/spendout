@@ -14,6 +14,14 @@
         <p><%= Current.user.email_address %></p>
       </section>
 
+      <% if Current.user.administrator? %>
+        <section>
+          <h2>Administration</h2>
+          <p>Add people who may use this Spendout installation.</p>
+          <%= link_to "Manage users", admin_users_path %>
+        </section>
+      <% end %>
+
       <% if @budget %>
         <section>
           <h2>Budget</h2>

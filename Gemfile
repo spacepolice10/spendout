@@ -17,6 +17,9 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Secure password authentication for installation administrators and invited users
+gem "bcrypt", "~> 3.1"
+
 # Paginate record streams at progressively larger page sizes
 gem "geared_pagination"
 
