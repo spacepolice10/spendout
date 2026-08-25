@@ -75,7 +75,7 @@ Application data is stored in the `spendout_storage` Docker volume mounted at `/
 
 ## Development
 
-Spendout requires Ruby 3.4.9 and SQLite.
+Spendout requires Ruby 3.4.10 and SQLite.
 
 ```sh
 bin/setup

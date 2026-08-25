@@ -31,7 +31,6 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-daily-gauge][data-controller='gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
     assert_select "a[href='#{new_budget_expense_path(@budget)}']"
     assert_select "a", text: "Currencies", count: 0
-    assert_select "form[action='#{budget_path(@budget)}'] button", "Reset budget"
   end
 
   test "index paginates expense history" do

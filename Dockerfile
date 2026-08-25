@@ -8,7 +8,7 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.9
+ARG RUBY_VERSION=3.4.10
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -51,8 +51,12 @@ COPY . .
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 APP_HOST=localhost ./bin/rails assets:precompile
+# Precompile assets with build-only placeholders for required runtime configuration.
+RUN SECRET_KEY_BASE_DUMMY=1 \
+    APP_HOST=localhost \
+    SMTP_ADDRESS=localhost \
+    SMTP_DOMAIN=localhost \
+    ./bin/rails assets:precompile
 
 
 

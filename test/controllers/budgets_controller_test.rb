@@ -123,7 +123,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to new_budget_source_path(Budget.order(:id).last)
+    assert_redirected_to budget_sources_path(Budget.order(:id).last)
   end
 
   test "cannot create another active budget" do

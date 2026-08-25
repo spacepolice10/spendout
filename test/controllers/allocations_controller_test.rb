@@ -25,8 +25,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "progress[aria-label='$125 spent of $300 planned']"
     assert_select "[data-testid='allocation-card'] small", text: /\$125 spent of \$300 planned/
     assert_select "form[action='#{finish_allocation_path(@allocation)}'] button", text: "Finish"
-    assert_select "dt", text: "Remaining"
-    assert_select "dd", text: /1,200.25 USD/
+    assert_select "[data-testid='budget-remainder']", text: /Remaining:.*1,200.25 USD/
     assert_select "[data-testid='overallocation-warning']", count: 0
     assert_select "a[href='#{new_budget_allocation_path(@budget)}']", text: /New category/
   end
@@ -74,7 +73,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     get budget_allocations_path(@budget)
 
     assert_response :success
-    assert_select "dd", text: /1,137.75 USD/
+    assert_select "[data-testid='budget-remainder']", text: /Remaining:.*1,137.75 USD/
   end
 
   test "new defaults to base currency and renders shared appearance options" do

@@ -6,8 +6,11 @@
           <h1>Categories</h1>
         </div>
       </nav>
-      Remaining:
-      <%= formatted_amount(@budget.amount_summary, @budget.base_currency_code) %>
+      <p data-testid="budget-remainder">
+        Remaining:
+        <%= formatted_amount(@budget.amount_summary, @budget.base_currency_code) %>
+        <%= @budget.base_currency_code %>
+      </p>
     </header>
 
     <main>
