@@ -59,19 +59,26 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "spendout.naysdemo.online", protocol: "https" }
+  app_host = ENV.fetch("APP_HOST")
+  app_protocol = ENV["DISABLE_SSL"] == "true" ? "http" : "https"
+  config.action_mailer.default_url_options = { host: app_host, protocol: app_protocol }
 
-  config.hosts << "spendout.naysdemo.online"
+  config.hosts << app_host
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
+  # Specify outgoing SMTP server. ONCE provides these settings as environment variables.
+  smtp_credentials = if ENV["SMTP_USERNAME"] || ENV["SMTP_PASSWORD"]
+    {}
+  else
+    Rails.application.credentials.smtp || {}
+  end
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    user_name: Rails.application.credentials.dig(:smtp, :user_name),
-    password: Rails.application.credentials.dig(:smtp, :password),
-    address: "smtp.zoho.com",
-    domain: "zohomail.com",
-    port: 587,
+    user_name: ENV["SMTP_USERNAME"] || smtp_credentials[:user_name],
+    password: ENV["SMTP_PASSWORD"] || smtp_credentials[:password],
+    address: ENV.fetch("SMTP_ADDRESS"),
+    domain: ENV.fetch("SMTP_DOMAIN"),
+    port: Integer(ENV.fetch("SMTP_PORT", 587)),
     authentication: :plain,
     enable_starttls_auto: true
   }

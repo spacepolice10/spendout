@@ -33,3 +33,7 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Keep machine-specific Kamal deployment settings local. Safe templates live
+# alongside these files with an .example suffix.
+/config/deploy.yml
+/.kamal/secrets

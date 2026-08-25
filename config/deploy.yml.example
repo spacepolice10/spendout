@@ -1,0 +1,44 @@
+# Copy this file to config/deploy.yml and replace the example values.
+# The real config/deploy.yml is ignored so server details stay local.
+
+service: spendout
+image: YOUR_REGISTRY_USERNAME/spendout
+
+servers:
+  web:
+    - YOUR_SERVER_IP
+
+proxy:
+  ssl: true
+  host: spendout.example.com
+  forward_headers: true
+
+registry:
+  username: YOUR_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    APP_HOST: spendout.example.com
+    SMTP_ADDRESS: smtp.example.com
+    SMTP_DOMAIN: example.com
+    SMTP_PORT: 587
+    SOLID_QUEUE_IN_PUMA: true
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+volumes:
+  - "spendout_storage:/rails/storage"
+
+asset_path: /rails/public/assets
+
+builder:
+  arch: amd64
+  context: .
