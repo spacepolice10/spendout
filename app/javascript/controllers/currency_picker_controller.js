@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "select", "currencyTrigger", "selection", "currencyDialog", "filter", "option", "radio",
-    "emptyState", "attachment", "rateTrigger", "rateSummary", "rateDialog", "rate"
+    "emptyState", "attachment", "rateTrigger", "rateSummary", "rateDialog", "rate", "ratePrompt"
   ]
   static values = { baseCurrency: String, autofocus: Boolean }
 
@@ -179,12 +179,16 @@ export default class extends Controller {
   renderRateSummary() {
     if (!this.hasRateSummaryTarget || !this.hasRateTarget) return
     const rate = this.rateTarget.value.trim()
+    const base = this.attachmentTarget.dataset.currencyPickerBaseCurrency || this.baseCurrencyValue
+    const selected = this.selectTarget.value
+    const prompt = `Enter how many units of ${selected} are in 1 ${base}`
+    if (this.hasRatePromptTarget) this.ratePromptTarget.textContent = prompt
+    this.rateTarget.setAttribute("aria-label", prompt)
     if (rate === "") {
-      this.rateSummaryTarget.textContent = "Enter rate"
+      this.rateSummaryTarget.textContent = prompt
       return
     }
-    const base = this.attachmentTarget.dataset.currencyPickerBaseCurrency || this.baseCurrencyValue
-    this.rateSummaryTarget.textContent = `1 ${base} = ${rate} ${this.selectTarget.value}`
+    this.rateSummaryTarget.textContent = `1 ${base} = ${rate} ${selected}`
   }
 
   get visibleOptions() { return this.optionTargets.filter((option) => !option.hidden) }

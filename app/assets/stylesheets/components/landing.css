@@ -228,11 +228,7 @@
     :is([data-landing-fuel], [data-rate-board]) { height: auto; }
     [data-deployment-terminal] { height: auto; }
     [data-terminal-body] { min-height: 16rem; }
-    [data-currency-story] { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
-    [data-rate-board] { position: sticky; top: var(--space-v); z-index: 0; width: 100%; max-height: calc(100svh - var(--space-v-2)); }
-    [data-rate-copy] { position: relative; z-index: 1; }
-    [data-rate-copy] article { align-content: center; border-color: oklch(0.42 0.012 70); background: oklch(0.16 0.008 55 / 92%); color: oklch(0.96 0.01 75); box-shadow: 0 -1rem 2rem rgb(0 0 0 / 45%); color-scheme: dark; }
-    [data-rate-copy] article > p:last-child { color: oklch(0.82 0.018 75); }
+    [data-currency-story] { display: grid; grid-template-columns: minmax(0, 1fr); }
   }
   @media (max-width: 520px) {
     [data-landing-hero] > div h2 { font-size: clamp(1.8rem, 9vw, 2.6rem); }
@@ -240,16 +236,14 @@
     [data-landing-chapter] > header > * { grid-column: 1 !important; }
     [data-rate-board] { padding-inline: 0.85rem; }
     :is([data-rate-code], [data-rate-name]) { font-size: 0.78em; }
+    [data-landing-letter] article { padding: var(--space-v-4) var(--space-h-2); transform: none; }
+    [data-landing-letter] article::before { position: static; display: block; width: fit-content; margin-block-end: var(--space-v-2); }
+    [data-landing-letter] header { padding-inline-end: 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     [data-rate-display], [data-rate-board-target="base"] { transition: none; }
     [data-currency-story] { gap: var(--space-v-2); }
-    [data-rate-board] { position: static; max-height: none; }
-    [data-rate-copy] { padding-block-start: 0; }
     [data-rate-copy] article { min-height: auto; }
-    [data-landing-letter] article { padding: var(--space-v-4) var(--space-h-2); transform: none; }
-    [data-landing-letter] article::before { position: static; display: block; width: fit-content; margin-block-end: var(--space-v-2); }
-    [data-landing-letter] header { padding-inline-end: 0; }
   }
 }

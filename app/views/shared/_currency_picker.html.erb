@@ -12,6 +12,7 @@
 <% rate_title_id = form.field_id(rate_attribute, :dialog_title) if rate_attribute %>
 <% rate = form.object.public_send(rate_attribute) if rate_attribute %>
 <% rate_available = rate_attribute && selected_code.present? && selected_code != base_currency_code %>
+<% rate_prompt = "Enter how many units of #{selected_code} are in 1 #{base_currency_code}" if rate_attribute %>
 
 <div class="currency-picker" data-controller="currency-picker"
   data-action="currency-picker:recommend->currency-picker#recommend"
@@ -69,7 +70,7 @@
       <%= "hidden" unless rate_available %>>
       <button type="button" aria-haspopup="dialog" aria-controls="<%= rate_dialog_id %>"
         data-currency-picker-target="rateTrigger" data-action="currency-picker#openRate">
-        <span data-currency-picker-target="rateSummary"><%= rate.present? ? rate.to_s("F") : "Enter rate" %></span>
+        <span data-currency-picker-target="rateSummary"><%= rate.present? ? rate.to_s("F") : rate_prompt %></span>
         <%= icon_tag("chevron-right", aria: { hidden: true }) %>
       </button>
       <dialog id="<%= rate_dialog_id %>" aria-labelledby="<%= rate_title_id %>"
@@ -79,10 +80,11 @@
           <h2 id="<%= rate_title_id %>">Confirm conversion rate</h2>
           <button type="button" aria-label="Cancel rate changes" data-action="currency-picker#cancelRate">&times;</button>
         </header>
+        <label for="<%= form.field_id(rate_attribute) %>" data-currency-picker-target="ratePrompt"><%= rate_prompt %></label>
         <% if local_assigns.fetch(:rate_mode, :base) == :direct %>
           <div data-currency-rate-input>
             <%= form.text_field rate_attribute, inputmode: "decimal", placeholder: "0.00",
-              aria: { label: "Direct conversion rate" },
+              aria: { label: rate_prompt },
               data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
                 amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
                 amount_fields_minimum_exclusive_value: true, expense_fields_target: "rate",
@@ -92,7 +94,7 @@
         <% else %>
           <div data-currency-rate-input>
             <%= form.text_field rate_attribute, inputmode: "decimal", required: true,
-              aria: { label: "Rate in selected currency" },
+              aria: { label: rate_prompt },
               data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
                 amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
                 amount_fields_minimum_exclusive_value: true, currency_fields_target: "rate",

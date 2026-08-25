@@ -73,8 +73,10 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     end
     assert_select "#details > header h2", text: "Features"
     assert_select "#details > header p", text: "Quick highlights."
-    assert_select "[data-detail-grid] article", count: 8
+    assert_select "[data-detail-grid] article", count: 9
     assert_select "[data-detail-grid] h3", text: "Categorize spending"
+    assert_select "[data-detail-grid] h3", text: "Categories style themselves"
+    assert_select "[data-detail-grid] article", text: /automatically suggests a fitting icon.*and colour/m
     assert_select "[data-detail-grid] h3", text: "Confirm every rate"
     assert_select "[data-detail-grid] h3", text: "Exchange between sources"
     assert_select "[data-detail-grid] h3", text: "Add useful context"

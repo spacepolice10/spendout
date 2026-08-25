@@ -40,15 +40,15 @@ class LandingRateBoardTest < ApplicationSystemTestCase
     page.driver.browser.execute_cdp("Emulation.setEmulatedMedia", features: [])
   end
 
-  test "mobile layout keeps the board behind scrolling copy" do
+  test "mobile layout keeps the board and copy in the document flow" do
     page.current_window.resize_to(320, 800)
     visit landing_path
 
     board_position = evaluate_script("getComputedStyle(document.querySelector('[data-rate-board]')).position")
-    copy_layer = evaluate_script("getComputedStyle(document.querySelector('[data-rate-copy]')).zIndex")
+    copy_position = evaluate_script("getComputedStyle(document.querySelector('[data-currency-story] [data-rate-copy]')).position")
 
-    assert_equal "sticky", board_position
-    assert_equal "1", copy_layer
+    assert_equal "relative", board_position
+    assert_equal "static", copy_position
     assert_selector "[data-rate-board] table", visible: true
   end
 end
