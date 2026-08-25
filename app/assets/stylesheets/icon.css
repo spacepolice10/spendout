@@ -47,5 +47,14 @@
      --icon-wallet: url(/icon-wallet.svg);
      --icon-circle-dot: url(/icon-circle-dot.svg);
      --icon-trash-simple: url(/icon-trash-simple.svg);
+     --icon-keyboard: url(/icon-keyboard.svg);
+     --icon-currency-dollar: url(/icon-currency-dollar.svg);
+     --icon-edit: url(/icon-edit.svg);
+     --icon-history: url(/icon-history.svg);
+     --icon-category: url(/icon-category.svg);
+     --icon-receipt-dollar: url(/icon-receipt-dollar.svg);
+     --icon-arrows-exchange: url(/icon-arrows-exchange.svg);
+     --icon-note: url(/icon-note.svg);
+     --icon-brand-github: url(/icon-brand-github.svg);
     }
   }

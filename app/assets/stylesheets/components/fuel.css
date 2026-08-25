@@ -1,14 +1,7 @@
 @layer components {
     article.budget [data-daily-gauge] {
-        &>main {
-            justify-items: center;
-            text-align: center;
-        }
-
-        &>main dl h2 {
-            margin-block-start: var(--space-v-half);
-            font-size: var(--font-size-xl);
-        }
+        justify-items: center;
+        text-align: center;
     }
 
     article.budget [data-remainder-gauge] {

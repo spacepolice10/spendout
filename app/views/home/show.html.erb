@@ -16,89 +16,27 @@
         <h1>Spendout</h1>
       </header>
 
-      <h2 id="landing-title">Know what you can spend.<br>Everyday.</h2>
+      <h2 id="landing-title">Know what you can spend.</h2>
 
       <p>
-        Spendout keeps your wallets, important plans, and everyday expenses in
-        one calm instrument panel.
+        Spendout turns wallets, plans, and everyday spending into one answer:
+        <strong>what's safe to spend today.</strong> No subscription. No lock-in.
+        Run it yourself. And it looks like a tool you'll want to use, not
+        another spreadsheet.
       </p>
 
       <div data-landing-actions>
         <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path,
               role: "button", data: { appearance: "keycap", intent: "primary" } %>
+
+        <%= link_to "https://github.com/spacepolice10/spendout",
+              role: "button", data: { appearance: "keycap" } do %>
+          <%= icon_tag("brand-github") %>
+          <span>GitHub</span>
+        <% end %>
       </div>
-    </div>
-  </section>
 
-  <section
-    id="how-it-works"
-    data-landing-chapter
-    aria-labelledby="simple-title"
-  >
-    <header>
-      <h2 id="simple-title">Money, but simple.</h2>
-
-      <p>
-        A budget should answer questions. How much I have? What needs to be covered? How much is safe to spend today? Spendout keeps answering those questions.
-      </p>
-    </header>
-
-    <div data-landing-steps>
-      <article data-elevation="1">
-        <header>
-          <span>01</span>
-          <h3>Add your money</h3>
-        </header>
-
-        <main>
-          <p>
-            Bring together cash, cards, bank accounts, or any other source you
-            actually spend from.
-          </p>
-
-          <div data-mini-source>
-            <span></span><span>Everyday card</span><strong>$2,140</strong>
-            <span></span><span>Cash</span><strong>$19</strong>
-          </div>
-        </main>
-      </article>
-
-      <article data-elevation="1">
-        <header>
-          <span>02</span>
-          <h3>Protect your plans</h3>
-        </header>
-
-        <main>
-          <p>
-            Set aside rent, bills, and savings first. Plans guide you without
-            blocking a real expense.
-          </p>
-
-          <div data-mini-plan>
-            <span>Rent</span><strong>$1,200 / $1,200</strong>
-            <progress value="100" max="100">100%</progress>
-          </div>
-        </main>
-      </article>
-
-      <article data-elevation="1">
-        <header>
-          <span>03</span>
-          <h3>Record what happened</h3>
-        </header>
-
-        <main>
-          <p>
-            Choose the source, optionally classify it, and move on. The
-            dashboard recalculates immediately.
-          </p>
-
-          <div data-mini-expense>
-            <span>🍔</span><span>Coffee</span><strong>−$4.50</strong><small>Today · Everyday card</small>
-          </div>
-        </main>
-      </article>
+      <p data-landing-price>$0 · self-hosted · your server, your data</p>
     </div>
   </section>
 
@@ -113,47 +51,26 @@
 
     <div data-control-layout>
       <article class="budget" data-landing-fuel>
+        <div data-gauge-bolts aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
         <%= render "shared/daily_gauge", amount: 74, currency_code: "USD", percentage: 68 %>
       </article>
 
-      <div data-control-notes>
+      <div data-control-notes data-rate-copy>
         <article>
-          <span aria-hidden="true">🎢</span>
+          <h3>A signal. Never a gate.</h3>
 
-          <div>
-            <h3>Unused money rolls forward</h3>
-
-            <p>
-              Spend less today and tomorrow's safe remainder grows. Spend more
-              and the meter adjusts.
-            </p>
-          </div>
-        </article>
-
-        <article>
-          <span aria-hidden="true">🛡️</span>
-
-          <div>
-            <h3>Plans stay protected</h3>
-
-            <p>
-              Spending assigned to rent, bills, or another planned category does
-              not consume the everyday remainder.
-            </p>
-          </div>
-        </article>
-
-        <article>
-          <span aria-hidden="true">🚦</span>
-
-          <div>
-            <h3>A signal, never a gate</h3>
-
-            <p>
-              Over-planning produces a warning, not a lock. Spendout informs
-              your decision and stays out of the way.
-            </p>
-          </div>
+          <p>
+            Spend less today, tomorrow's number grows. Spend more, the meter
+            adjusts. Money for rent and bills is set aside first and
+            <strong>never touches this number</strong> — over-planning gets a
+            warning, not a lock.
+          </p>
         </article>
       </div>
     </div>
@@ -175,7 +92,6 @@
         rows: [
           { code: "EUR", name: "Euro", rate: "0.8929" },
           { code: "CAD", name: "Canadian dollar", rate: "1.3800" },
-          { code: "GBP", name: "Pound sterling", rate: "0.7450" },
           { code: "JPY", name: "Japanese yen", rate: "147.20" },
           { code: "VND", name: "Vietnamese dong", rate: "26,300" }
         ]
@@ -185,7 +101,6 @@
         rows: [
           { code: "USD", name: "US dollar", rate: "1.1200" },
           { code: "CAD", name: "Canadian dollar", rate: "1.5455" },
-          { code: "GBP", name: "Pound sterling", rate: "0.8344" },
           { code: "JPY", name: "Japanese yen", rate: "164.86" },
           { code: "VND", name: "Vietnamese dong", rate: "29,454.59" }
         ]
@@ -234,46 +149,58 @@
 
       <div data-rate-copy>
         <article>
-          <p data-rate-copy-number>01</p>
-          <h3>Use the currency in front of you</h3>
-          <p>
-            Keep cash, sources, and purchases in their real currencies while
-            the budget's base currency stays fixed.
-          </p>
-        </article>
+          <h3>Real currencies. Honest history.</h3>
 
-        <article>
-          <p data-rate-copy-number>02</p>
-          <h3>Exchange into another wallet</h3>
           <p>
-            An exchange debits one source and creates another in the new
-            currency. Both sides stay together in your history.
-          </p>
-        </article>
-
-        <article>
-          <p data-rate-copy-number>03</p>
-          <h3>Easy conversions, honest rates</h3>
-          <p>
-            Pick a currency in the searchable dialog, review the editable,
-            dated Frankfurter suggestion, and confirm the direct quote.
-            <strong>Historical amounts never revalue themselves.</strong>
+            Keep each source and purchase in its real currency while your
+            budget's base currency stays fixed. Exchange money between sources
+            and both sides remain together in your history. Reference rates are
+            dated, editable suggestions you confirm —
+            <strong>saved amounts never revalue themselves.</strong>
           </p>
         </article>
       </div>
     </div>
   </section>
 
+  <section data-landing-letter aria-labelledby="letter-title">
+    <article>
+      <header>
+        <p>A note from the maker</p>
+        <h2 id="letter-title">Why I made Spendout</h2>
+      </header>
+
+      <p>Hello,</p>
+
+      <p>
+        I created Spendout because I wanted to make expense tracking free and
+        simpler, without depending on huge SaaS alternatives.
+      </p>
+
+      <p>
+        I have a passion for building simple, traditional applications with
+        Rails. Spendout makes it quick to record expenses, handle exchanges,
+        and categorize payments in any browser, without being tied to an App
+        Store. If you want to explore an independent alternative, you can keep
+        control of both your finances and the application that helps manage
+        them.
+      </p>
+
+      <footer>
+        <p>— Vlad Kov</p>
+      </footer>
+    </article>
+  </section>
+
   <section id="details" data-landing-chapter aria-labelledby="details-title">
     <header>
-      <h2 id="details-title">Fast when you know what you want.</h2>
-      <p>Friendly defaults for beginners. Short paths for everyone else.</p>
+      <h2 id="details-title">Features</h2>
+      <p>Quick highlights.</p>
     </header>
 
     <div data-detail-grid>
       <article>
-        <div><kbd>⇧</kbd><span>+</span><kbd>E</kbd></div>
-        <h3>Keyboard friendly</h3>
+        <h3><%= icon_tag("keyboard") %> Keyboard friendly</h3>
 
         <p>
           Jump between sections and add an expense without reaching for the
@@ -282,8 +209,7 @@
       </article>
 
       <article>
-        <div><span>⌖</span><strong>VND</strong></div>
-        <h3>Currency suggested</h3>
+        <h3><%= icon_tag("currency-dollar") %> Currency suggested</h3>
 
         <p>
           Your timezone brings the likely currency forward without silently
@@ -292,8 +218,7 @@
       </article>
 
       <article>
-        <div><span>Aug 24</span><span>→</span><span>Aug 22</span></div>
-        <h3>Easy to correct</h3>
+        <h3><%= icon_tag("edit") %> Easy to correct</h3>
 
         <p>
           Edit the amount, note, category, source, or occurrence date when
@@ -302,12 +227,47 @@
       </article>
 
       <article>
-        <div><span>Rent</span><span>·</span><span>Deleted source</span></div>
-        <h3>History stays honest</h3>
+        <h3><%= icon_tag("history") %> History stays honest</h3>
 
         <p>
           Removed sources and categories remain visible on the expenses that
           used them.
+        </p>
+      </article>
+
+      <article>
+        <h3><%= icon_tag("category") %> Categorize spending</h3>
+
+        <p>
+          Classify expenses with planned allocations or unplanned categories
+          without letting a plan block real spending.
+        </p>
+      </article>
+
+      <article>
+        <h3><%= icon_tag("receipt-dollar") %> Confirm every rate</h3>
+
+        <p>
+          Enter a direct quote yourself or edit a dated reference suggestion
+          before saving it.
+        </p>
+      </article>
+
+      <article>
+        <h3><%= icon_tag("arrows-exchange") %> Exchange between sources</h3>
+
+        <p>
+          Debit one source and create the destination source together, with
+          both amounts and the confirmed quote preserved.
+        </p>
+      </article>
+
+      <article>
+        <h3><%= icon_tag("note") %> Add useful context</h3>
+
+        <p>
+          Attach an optional note to an expense and edit it later when the
+          purchase needs more explanation.
         </p>
       </article>
     </div>
@@ -326,30 +286,38 @@
     </div>
 
     <aside data-deployment-terminal aria-label="Deployment terminal">
-      <header>
-        <span aria-hidden="true">● ● ●</span><small>spendout@server:~</small>
+      <header data-terminal-bar>
+        <span data-terminal-pills aria-hidden="true">
+          <i></i>
+          <i></i>
+          <i></i>
+        </span>
+
+        <small>deploy · your.server</small>
       </header>
 
-      <div>
-        <p><span>$</span> kamal deploy</p>
-        <p><strong>✓</strong> Spendout is running</p>
-        <p><span>$</span> once deploy spendout</p>
-        <p><small>↳ planned: guided install + backups</small></p>
+      <div data-terminal-body>
+        <p data-terminal-comment># deploy Spendout to your server</p>
+        <p data-terminal-command>$ kamal deploy</p>
+        <p data-terminal-ok><i>✓</i><span>Spendout is running</span></p>
+
+        <hr data-terminal-rule>
+
+        <p data-terminal-comment># guided self-hosting · planned</p>
+        <p data-terminal-command>$ once deploy spendout</p>
+        <p data-terminal-output>guided install + backups · coming later</p>
+
+        <p data-terminal-prompt>
+          <span data-terminal-command>$</span>
+          <span data-terminal-cursor aria-hidden="true"></span>
+        </p>
       </div>
+
+      <footer data-terminal-foot>
+        <span data-terminal-live aria-hidden="true"></span>
+        <small>1 app · SQLite · no add-ons</small>
+      </footer>
     </aside>
   </section>
 
-  <footer data-landing-footer>
-    <div>
-      <strong>Spendout</strong>
-      <p>A quieter way to decide what is safe to spend.</p>
-    </div>
-
-    <p>
-      <strong>ROADMAP</strong> · Reports · CLI access · Automatic sorting
-      <small>— planned, not yet available</small>
-    </p>
-
-    <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path, role: "button", data: { appearance: "keycap", intent: "primary" } %>
-  </footer>
 </main>

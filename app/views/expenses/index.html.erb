@@ -9,10 +9,18 @@
   >
     <main>
       <% if (todays_remainder = @budget.todays_remainder) %>
-        <%= render "shared/daily_gauge",
-                amount: todays_remainder,
-                currency_code: @budget.base_currency_code,
-                percentage: @budget.todays_remainder_percentage %>
+        <article data-elevation="2">
+          <header>
+            <h2>Can I spend more today?</h2>
+          </header>
+
+          <main>
+            <%= render "shared/daily_gauge",
+                    amount: todays_remainder,
+                    currency_code: @budget.base_currency_code,
+                    percentage: @budget.todays_remainder_percentage %>
+          </main>
+        </article>
       <% end %>
 
       <% if @expenses.any? %>
