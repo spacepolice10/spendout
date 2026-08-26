@@ -13,7 +13,7 @@ class BudgetsController < ApplicationController
     if budget = Current.user.current_budget
       redirect_to budget_expenses_path(budget)
     else
-      @budget = Current.user.budgets.new(period_from: Date.current)
+      @budget = Current.user.budgets.new(starts_date: Date.current)
     end
   end
 
@@ -39,8 +39,8 @@ class BudgetsController < ApplicationController
 
     def budget_params
       params.require(:budget).permit(
-        :period_from,
-        :duration,
+        :starts_date,
+        :ends_date,
         :base_currency_code
       )
     end

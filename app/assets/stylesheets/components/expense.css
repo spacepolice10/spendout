@@ -65,8 +65,22 @@
 
         & [data-expense-options]>div {
             display: grid;
+            grid-template-columns: minmax(0, 1fr);
             justify-items: start;
+            inline-size: 100%;
+            min-inline-size: 0;
             gap: var(--space-v-half);
+
+            & :is(details, [data-optional-item-control], label, textarea) {
+                min-inline-size: 0;
+                max-inline-size: 100%;
+            }
+
+            & textarea {
+                inline-size: 100%;
+                field-sizing: fixed;
+                overflow-y: hidden;
+            }
         }
 
     }

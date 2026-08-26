@@ -1,6 +1,7 @@
 <%= form_with model: [ budget, allocation ], data: {
       allocation_form: true,
       controller: "form currency-fields category-icon",
+      form_focus_on_toggle_value: !mobile_variant?,
       category_icon_keywords_value: CategoryIcon::KEYWORDS,
       category_icon_colours_value: CategoryIcon::COLOURS,
       currency_fields_base_currency_value: budget.base_currency_code,

@@ -1,6 +1,7 @@
 <%= form_with model: [ budget, source ], data: {
       source_form: true,
       controller: "form currency-fields",
+      form_focus_on_toggle_value: !mobile_variant?,
       currency_fields_base_currency_value: budget.base_currency_code,
       currency_fields_reference_url_value: currency_reference_path
     } do |form| %>

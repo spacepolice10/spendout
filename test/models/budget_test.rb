@@ -21,7 +21,7 @@ class BudgetTest < ActiveSupport::TestCase
 
   test "creates a budget without creating a source" do
     budgets(:active).update_columns(period_to: Date.yesterday)
-    budget = users(:one).budgets.new(period_from: Date.current, duration: "14_days",
+    budget = users(:one).budgets.new(starts_date: Date.current, ends_date: Date.current + 13.days,
       base_currency_code: "EUR")
 
     assert_difference("Budget.count", 1) do
@@ -40,7 +40,7 @@ class BudgetTest < ActiveSupport::TestCase
   end
 
   test "allows only one current budget" do
-    budget = users(:one).budgets.new(period_from: Date.current, duration: "14_days",
+    budget = users(:one).budgets.new(starts_date: Date.current, ends_date: Date.current + 13.days,
       base_currency_code: "USD")
 
     assert_not budget.save

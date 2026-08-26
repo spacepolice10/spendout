@@ -24,7 +24,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "meta[name='view-transition'][content='same-origin']", count: 1
     assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='expense-card']", count: 1
-    assert_select "article[data-elevation='2'][data-gauge-plate] > h2", text: "Can I spend more today?", count: 1
+    assert_select "article[data-elevation='2'][data-gauge-plate] > h2", count: 0
     assert_select "[data-cybercat-answer]" do
       assert_select "img[alt='Cybercat'][width='40'][height='40']", count: 1
       expected_answer = ApplicationController.helpers.cybercat_spending_answer(@budget.todays_remainder_percentage)
@@ -118,8 +118,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-optional-item-control] label[for='expense_occurred_on']"
     assert_select "[data-optional-item-control] label[for='expense_note']"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
-    assert_select "input[name='expense[note]'][maxlength='200']"
-    assert_select "input[name='expense[note]'][size]", count: 0
+    assert_select "textarea[name='expense[note]'][maxlength='200'][data-form-target~='autosize'][data-action='input->form#resizeToContent']"
+    assert_select "textarea[name='expense[note]'][rows]", count: 0
     assert_select "input[type='text'][name]#expense_category_filter", count: 0
     assert_select "details[data-controller~='category-fields'] fieldset[data-expense-allocations]"
     assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-fields-target='filter'][data-action='input->category-fields#filter']"
@@ -335,7 +335,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "dt", text: "Budget value"
     assert_select "a[href='#{source_path(@source)}']", text: @source.name
     assert_select "a[href='#{allocation_path(@allocation)}']", text: @allocation.name
-    assert_select "a[aria-label='Back to expenses'][href='#{budget_expenses_path(@budget)}']"
+    assert_select "a[aria-label='Back to expenses']", count: 0
     assert_select "form[action='#{expense_path(@expense)}'] button[data-turbo-confirm='Delete this expense permanently?']", text: "Delete expense"
   end
 

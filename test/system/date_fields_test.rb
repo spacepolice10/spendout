@@ -8,8 +8,8 @@ class DateFieldsTest < ApplicationSystemTestCase
   end
 
   test "requires the budget end date to follow its start date" do
-    start_date = find("input[name='budget[period_from]']")
-    end_date = find("input[name='budget[period_to]']")
+    start_date = find("input[name='budget[starts_date]']")
+    end_date = find("input[name='budget[ends_date]']")
 
     set_date(start_date, "2026-08-20")
     set_date(end_date, "2026-08-19")

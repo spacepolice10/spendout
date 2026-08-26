@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["section", "focus", "summary", "summaryContent"]
+  static targets = ["section", "focus", "summary", "summaryContent", "autosize"]
+  static values = { focusOnToggle: { type: Boolean, default: true } }
 
   connect() {
     this.events = new AbortController()
@@ -10,6 +11,8 @@ export default class extends Controller {
     this.element.addEventListener("invalid", this.openInvalidSection, { capture: true, signal })
     this.element.addEventListener("keydown", this.navigate, { signal })
     this.element.addEventListener("toggle", this.focusOpenedSection, { capture: true, signal })
+
+    requestAnimationFrame(() => this.autosizeTargets.forEach(this.resizeToContent))
   }
 
   disconnect() {
@@ -38,11 +41,20 @@ export default class extends Controller {
   }
 
   focusOpenedSection = (event) => {
+    if (!this.focusOnToggleValue) return
+
     const section = event.target
     if (!section.matches?.('[data-form-target~="section"]') || !section.open) return
 
     const summary = section.querySelector('[data-form-target~="summary"]')
     if (document.activeElement === summary) this.focusSection(section)
+    section.querySelectorAll('[data-form-target~="autosize"]').forEach(this.resizeToContent)
+  }
+
+  resizeToContent = (textareaOrEvent) => {
+    const textarea = textareaOrEvent.currentTarget || textareaOrEvent
+    textarea.style.blockSize = "auto"
+    textarea.style.blockSize = `${textarea.scrollHeight}px`
   }
 
   focusSection(section) {

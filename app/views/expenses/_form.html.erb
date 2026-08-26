@@ -1,6 +1,7 @@
 <%= form_with model: [ budget, expense ], data: {
       expense_form: true,
       controller: "form expense-fields",
+      form_focus_on_toggle_value: !mobile_variant?,
       action: "input->expense-fields#refresh change->expense-fields#refresh",
       expense_fields_sources_value: expense_currency_context.to_json,
       expense_fields_budget_currency_value: budget.base_currency_code,
@@ -168,8 +169,11 @@
 
         <div data-optional-item-control>
           <%= form.label :note do %>
-            <%= form.text_field :note, maxlength: 200, size: nil, placeholder: "Optional",
-                  data: { form_target: "focus" } %>
+            <%= form.text_area :note, maxlength: 200, placeholder: "Optional",
+                  data: {
+                    form_target: "focus autosize",
+                    action: "input->form#resizeToContent"
+                  } %>
           <% end %>
         </div>
       <% end %>

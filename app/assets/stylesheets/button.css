@@ -149,6 +149,15 @@
             --button-color: var(--color-invert-1);
         }
 
+        &[data-intent="negative"] {
+            --keycap-red: color-mix(in oklch, var(--color-palette-red) 70%, red);
+            --keycap-base: var(--keycap-red);
+            --keycap-base-dark: color-mix(in oklch, var(--keycap-red) 84%, black);
+            --keycap-inner-starts: color-mix(in oklch, var(--keycap-red) 94%, white);
+            --keycap-inner-ends: var(--keycap-red);
+            --button-color: white;
+        }
+
         &::before {
             content: "";
             position: absolute;

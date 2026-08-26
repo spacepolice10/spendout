@@ -1,22 +1,14 @@
 class Budget < ApplicationRecord
-  DURATIONS = {
-    "14_days" => 14,
-    "30_days" => 30,
-    "90_days" => 90
-  }.freeze
-
   belongs_to :user
   has_many :expenses, dependent: :destroy, inverse_of: :budget
   has_many :allocations, dependent: :destroy, inverse_of: :budget
   has_many :exchanges, dependent: :destroy, inverse_of: :budget
   has_many :sources, dependent: :destroy, inverse_of: :budget
 
-  attribute :duration, :string, default: "30_days"
+  alias_attribute :starts_date, :period_from
+  alias_attribute :ends_date, :period_to
 
-  before_validation :calculate_period_to, on: :create
-
-  validates :period_from, :period_to, presence: true
-  validates :duration, inclusion: { in: DURATIONS.keys }
+  validates :starts_date, :ends_date, presence: true
   validates :base_currency_code, inclusion: { in: Currency::CATALOG.keys }
   validate :period_starts_before_ends
   validate :single_current_budget_possible, on: :create
@@ -192,11 +184,6 @@ class Budget < ApplicationRecord
           .where(occurred_on: Date.current, sources: { deleted_at: nil })
           .where("expenses.allocation_id IS NULL OR allocations.planned = ?", false)
       )
-    end
-
-    def calculate_period_to
-      days = DURATIONS[duration]
-      self.period_to = period_from + days - 1 if period_from && days
     end
 
     def period_starts_before_ends

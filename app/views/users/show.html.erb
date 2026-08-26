@@ -25,11 +25,13 @@
 
     <footer>
       <nav aria-label="User actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-v) var(--space-h);">
-        <%= button_to "Sign out", session_path, method: :delete %>
+        <%= button_to "Sign out", session_path, method: :delete,
+              data: { appearance: "keycap", intent: "primary" } %>
 
         <% if @budget %>
           <%= button_to "Remove budget", budget_path(@budget), method: :delete,
                 data: {
+                  appearance: "keycap",
                   intent: "negative",
                   turbo_confirm: "Remove this budget and all of its data permanently? This cannot be undone."
                 } %>

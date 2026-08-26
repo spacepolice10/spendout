@@ -1,5 +1,6 @@
 <%= form_with model: exchange, url: source_exchanges_path(parent_source), data: {
       controller: "form currency-fields",
+      form_focus_on_toggle_value: !mobile_variant?,
       currency_fields_base_currency_value: parent_source.currency_code,
       currency_fields_operation_value: "multiply",
       currency_fields_reference_url_value: currency_reference_path

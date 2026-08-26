@@ -10,8 +10,6 @@
     <main>
       <% if (todays_remainder = @budget.todays_remainder) %>
         <article data-elevation="2" data-gauge-plate>
-          <h2>Can I spend more today?</h2>
-
           <aside data-cybercat-answer>
             <%= image_tag "cybercat.png", alt: "Cybercat", width: 40, height: 40 %>
             <p><%= cybercat_spending_answer(
@@ -77,6 +75,7 @@
     <footer>
       <%= link_to new_budget_expense_path(@budget), role: "button", data: {
             appearance: "keycap",
+            intent: "primary",
             controller: "pressable",
             action: "keydown.shift+e@document->pressable#click"
           } do %>

@@ -117,6 +117,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "form kbd", count: 0
     assert_select "form input[autofocus]", count: 0
+    assert_select "form[data-form-focus-on-toggle-value='false']"
   end
 
   test "new shows keyboard tips on desktop devices" do
@@ -128,6 +129,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "form kbd"
+    assert_select "form[data-form-focus-on-toggle-value='true']"
   end
 
   test "creates a source from catalog values" do

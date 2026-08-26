@@ -24,7 +24,7 @@
             <p>An expense needs an active source.</p>
           </main>
         </article>
-        <%= link_to new_budget_source_path(@budget), role: "button", data: { appearance: "keycap" } do %>
+        <%= link_to new_budget_source_path(@budget), role: "button", data: { appearance: "keycap", intent: "primary" } do %>
           <%= icon_tag("plus") %>
           <span>New source</span>
         <% end %>

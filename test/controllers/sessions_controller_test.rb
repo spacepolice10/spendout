@@ -12,6 +12,36 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "new autofocuses the email field only on desktop devices" do
+    get new_session_path, headers: {
+      "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"
+    }
+
+    assert_select "input[name='email_address'][autofocus]"
+
+    get new_session_path, headers: {
+      "User-Agent" => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"
+    }
+
+    assert_select "input[name='email_address'][autofocus]", count: 0
+  end
+
+  test "code entry autofocuses the code field only on desktop devices" do
+    post session_path, params: { email_address: @user.email_address }
+
+    get session_auth_code_path, headers: {
+      "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"
+    }
+
+    assert_select "input[name='code'][autofocus]"
+
+    get session_auth_code_path, headers: {
+      "User-Agent" => "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"
+    }
+
+    assert_select "input[name='code'][autofocus]", count: 0
+  end
+
   test "submitting an email stores pending authentication and sends a code" do
     assert_no_difference("User.count") do
       assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do

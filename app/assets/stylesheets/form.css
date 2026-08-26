@@ -168,7 +168,7 @@
             }
         }
 
-        & :is(button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"]) {
+        & :is(button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"]):not([data-intent]) {
             --button-background: var(--color-invert-1);
             --button-background-hovered: var(--color-invert-2);
             --button-background-active: var(--color-invert-3);

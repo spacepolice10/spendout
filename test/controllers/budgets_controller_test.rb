@@ -70,7 +70,8 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='budget[source_amount]']", count: 0
     assert_select "input[name='budget[source_rate]']", count: 0
     assert_select "form legend", text: "When does your budget start and end?"
-    assert_select "form input[type='date'][name='budget[period_from]'][required]"
+    assert_select "form input[type='date'][name='budget[starts_date]'][required]"
+    assert_select "form input[type='date'][name='budget[ends_date]'][required]"
   end
 
   test "new includes the timezone currency without selecting it" do
@@ -116,8 +117,8 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Budget.count", 1) do
       assert_no_difference("Source.count") do
         post budgets_path, params: { budget: {
-          period_from: Date.current,
-          duration: "30_days",
+          starts_date: Date.current,
+          ends_date: Date.current + 29.days,
           base_currency_code: "USD"
         } }
       end
@@ -129,8 +130,8 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
   test "cannot create another active budget" do
     assert_no_difference("Budget.count") do
       post budgets_path, params: { budget: {
-        period_from: Date.current,
-        duration: "30_days",
+        starts_date: Date.current,
+        ends_date: Date.current + 29.days,
         base_currency_code: "USD"
       } }
     end
