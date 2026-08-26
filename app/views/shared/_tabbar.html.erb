@@ -4,10 +4,7 @@
   <% categories_active = controller_name == "allocations" %>
   <% user_active = controller_name == "users" %>
 
-  <nav
-    aria-label="Budget sections"
-    style="position:fixed;left:0;right:0;bottom:0;z-index:10;padding-bottom:env(safe-area-inset-bottom);background:var(--color-2);border-top:var(--border-subtle);"
-  >
+  <nav aria-label="Budget sections">
     <div>
       <%= link_to budget_sources_path(budget),
             role: "button",
