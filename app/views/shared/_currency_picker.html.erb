@@ -25,7 +25,7 @@
   <button type="button" aria-haspopup="dialog" aria-controls="<%= currency_dialog_id %>"
     data-currency-picker-target="currencyTrigger" data-action="currency-picker#openCurrency">
     <span data-currency-picker-target="selection"><%= selected_label || "Choose a currency" %></span>
-    <%= icon_tag("chevron-right", aria: { hidden: true }) %>
+    <%= icon("chevron-right", aria: { hidden: true }) %>
   </button>
 
   <dialog id="<%= currency_dialog_id %>" aria-labelledby="<%= currency_title_id %>"
@@ -36,7 +36,7 @@
       <button type="button" aria-label="Close currency picker" data-action="currency-picker#closeCurrency">&times;</button>
     </header>
     <div data-currency-combobox>
-      <%= icon_tag("search", data: { currency_search_icon: true }) %>
+      <%= icon("search", data: { currency_search_icon: true }) %>
       <input type="search" placeholder="Search by name or code" autocomplete="off" role="combobox"
         <%= "autofocus" if filter_autofocus && !mobile_variant? %>
         aria-label="Search currencies" aria-autocomplete="list" aria-expanded="true"
@@ -71,7 +71,7 @@
       <button type="button" aria-haspopup="dialog" aria-controls="<%= rate_dialog_id %>"
         data-currency-picker-target="rateTrigger" data-action="currency-picker#openRate">
         <span data-currency-picker-target="rateSummary"><%= rate.present? ? rate.to_s("F") : "Enter rate" %></span>
-        <%= icon_tag("chevron-right", aria: { hidden: true }) %>
+        <%= icon("chevron-right", aria: { hidden: true }) %>
       </button>
       <dialog id="<%= rate_dialog_id %>" aria-labelledby="<%= rate_title_id %>"
         data-currency-picker-target="rateDialog"

@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["section", "focus", "summary", "summaryContent", "autosize"]
-  static values = { focusOnToggle: { type: Boolean, default: true } }
+  static values = { focusedOnToggle: { type: Boolean, default: true } }
 
   connect() {
     this.events = new AbortController()
@@ -10,7 +10,7 @@ export default class extends Controller {
 
     this.element.addEventListener("invalid", this.openInvalidSection, { capture: true, signal })
     this.element.addEventListener("keydown", this.navigate, { signal })
-    this.element.addEventListener("toggle", this.focusOpenedSection, { capture: true, signal })
+    this.element.addEventListener("toggle", this.focusingOpenedSection, { capture: true, signal })
 
     requestAnimationFrame(() => this.autosizeTargets.forEach(this.resizeToContent))
   }
@@ -40,8 +40,8 @@ export default class extends Controller {
     if (section) section.open = true
   }
 
-  focusOpenedSection = (event) => {
-    if (!this.focusOnToggleValue) return
+  focusingOpenedSection = (event) => {
+    if (!this.focusedOnToggleValue) return
 
     const section = event.target
     if (!section.matches?.('[data-form-target~="section"]') || !section.open) return

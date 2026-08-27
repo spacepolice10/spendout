@@ -23,11 +23,11 @@ class CurrencyReference
       rate_metadata = Rails.cache.read(CACHE_KEY)
       return {} unless current?(rate_metadata, today:)
 
-      rates = rate_metadata.fetch("rates")
-      base_rate = BigDecimal(rates.fetch(base_currency))
+      rate_catalog   = rate_metadata.fetch("rates")
+      base_rate = BigDecimal(rate_catalog.fetch(base_currency))
       return {} unless base_rate.positive?
 
-      rates.each_with_object({ base_currency => "1" }) do |(currency, rate), normalized|
+      rate_catalog.each_with_object({ base_currency => "1" }) do |(currency, rate), normalized|
         next if currency == base_currency
 
         rate = BigDecimal(rate)

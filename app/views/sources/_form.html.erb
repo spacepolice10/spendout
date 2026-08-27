@@ -1,7 +1,7 @@
 <%= form_with model: [ budget, source ], data: {
       source_form: true,
       controller: "form currency-fields",
-      form_focus_on_toggle_value: !mobile_variant?,
+      form_focused_on_toggle_value: !mobile_variant?,
       currency_fields_base_currency_value: budget.base_currency_code,
       currency_fields_reference_url_value: currency_reference_path
     } do |form| %>
@@ -35,7 +35,7 @@
           appearance: "keycap", intent: "secondary", size: "lg",
           controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
         } do %>
-      <%= icon_tag("chevron-left") %>
+      <%= icon("chevron-left") %>
       <span>Cancel</span>
       <% unless mobile_variant? %>
         <kbd aria-hidden="true">Shift + Escape</kbd>
@@ -46,7 +46,7 @@
           controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
         } do %>
       <span>Confirm</span>
-      <%= icon_tag("chevron-right") %>
+      <%= icon("chevron-right") %>
       <% unless mobile_variant? %>
         <kbd aria-hidden="true">Cmd + Enter</kbd>
       <% end %>

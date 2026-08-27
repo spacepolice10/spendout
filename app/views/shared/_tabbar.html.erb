@@ -1,14 +1,14 @@
 <% if (budget = Current.user&.current_budget) %>
   <% expenses_active = controller_name == "expenses" %>
-  <% money_active = controller_name == "sources" %>
-  <% categories_active = controller_name == "allocations" %>
+  <% sources_active = controller_name == "sources" %>
+  <% allocations_active = controller_name == "allocations" %>
   <% user_active = controller_name == "users" %>
 
   <nav aria-label="Budget sections">
     <div>
       <%= link_to budget_sources_path(budget),
             role: "button",
-            aria: (money_active ? { current: "page" } : {}),
+            aria: (sources_active ? { current: "page" } : {}),
             data: {
               controller: "pressable",
               action: "keydown.1@document->pressable#click"
@@ -20,7 +20,7 @@
 
       <%= link_to budget_allocations_path(budget),
             role: "button",
-            aria: (categories_active ? { current: "page" } : {}),
+            aria: (allocations_active ? { current: "page" } : {}),
             data: {
               controller: "pressable",
               action: "keydown.2@document->pressable#click"

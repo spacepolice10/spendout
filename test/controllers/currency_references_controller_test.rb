@@ -26,7 +26,7 @@ class CurrencyReferencesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "USD", response.parsed_body.fetch("base")
     assert_equal({ "USD" => "1", "EUR" => "0.833333333333", "VND" => "25000" },
-      response.parsed_body.fetch("rates"))
+      response.parsed_body.fetch("rate_catalog"))
   end
 
   test "normalizes the table against a requested base" do
@@ -37,6 +37,6 @@ class CurrencyReferencesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "EUR", response.parsed_body.fetch("base")
     assert_equal({ "EUR" => "1", "USD" => "1.2", "VND" => "30000" },
-      response.parsed_body.fetch("rates"))
+      response.parsed_body.fetch("rate_catalog"))
   end
 end

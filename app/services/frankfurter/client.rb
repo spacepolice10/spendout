@@ -7,11 +7,11 @@ module Frankfurter
     ENDPOINT = "https://api.frankfurter.dev/v2/rates?base=EUR&date=%<date>s"
     class Error < StandardError; end
 
-    def fetch
+    def handle_request
       response = perform_request
       raise Error, "Frankfurter returned HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
-      parse(response.body)
+      parsed(response.body)
     rescue JSON::ParserError, ArgumentError, KeyError, TypeError => error
       raise Error, "Invalid Frankfurter response: #{error.message}"
     rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, SystemCallError => error
@@ -29,37 +29,37 @@ module Frankfurter
         end
       end
 
-      def parse(body)
-        rows = JSON.parse(body, decimal_class: BigDecimal)
-        raise Error, "expected a non-empty array" unless rows.is_a?(Array) && rows.any?
+      def parsed(body)
+        rate_list = JSON.parse(body, decimal_class: BigDecimal)
+        raise Error, "expected a non-empty array" unless rate_list.is_a?(Array) && rate_list.any?
 
-        dates = []
-        rates = { "EUR" => "1" }
+        date_list = []
+        rate_catalog = { "EUR" => "1" }
 
-        rows.each do |row|
-          raise Error, "expected an object for every rate" unless row.is_a?(Hash)
+        rate_list.each do |rate|
+          raise Error, "expected an object for every rate" unless rate.is_a?(Hash)
 
-          date = Date.iso8601(row.fetch("date"))
-          base = row.fetch("base")
-          quote = row.fetch("quote")
-          rate = decimal(row.fetch("rate"))
+          date = Date.iso8601(rate.fetch("date"))
+          base = rate.fetch("base")
+          quoted_currency = rate.fetch("quote")
+          rate = decimal(rate.fetch("rate"))
 
           raise Error, "unexpected base currency" unless base == "EUR"
           raise Error, "rate must be positive" unless rate.positive?
-          next if quote == "EUR"
-          next unless Currency::CATALOG.key?(quote)
+          next if quoted_currency == "EUR"
+          next unless Currency::CATALOG.key?(quoted_currency)
 
-          raise Error, "duplicate quote currency" if rates.key?(quote)
+          raise Error, "duplicate quoted currency" if rate_catalog.key?(quoted_currency)
 
-          dates << date
-          rates[quote] = rate.to_s("F")
+          date_list << date
+          rate_catalog[quoted_currency] = rate.to_s("F")
         end
 
-        raise Error, "rates have inconsistent reference dates" unless dates.uniq.one?
+        raise Error, "rates have inconsistent reference dates" unless date_list.uniq.one?
 
         {
-          "reference_date" => dates.first.iso8601,
-          "rates" => rates
+          "reference_date" => date_list.first.iso8601,
+          "rates" => rate_catalog
         }
       end
 

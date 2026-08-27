@@ -1,8 +1,8 @@
 <%= form_with model: budget, data: {
       budget_form: true,
       controller: "form date-fields",
-      form_focus_on_toggle_value: !mobile_variant?,
-      action: "input->date-fields#validate change->date-fields#validate"
+      form_focused_on_toggle_value: !mobile_variant?,
+      action: "change->date-fields#validate"
     } do |form| %>
   <% if budget.errors.any? %>
     <section role="alert" data-form-errors>
@@ -34,16 +34,14 @@
     <small>Mostly people select a period in 1 month between the paydays</small>
 
     <div>
-      <%= form.date_field :starts_date, value: Date.today.beginning_of_month, required: true,
-            data: { date_fields_target: "start" } %>
-      <%= form.date_field :ends_date, value: Date.today.end_of_month, required: true,
-            data: { date_fields_target: "end" } %>
+      <%= form.date_field :starts_date, value: Date.today.beginning_of_month, required: true %>
+      <%= form.date_field :ends_date, value: Date.today.end_of_month, required: true %>
     </div>
   </fieldset>
 
   <br>
 
   <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
-    Next step <%= icon_tag("chevron-right") %>
+    Next step <%= icon("chevron-right") %>
   <% end %>
 <% end %>

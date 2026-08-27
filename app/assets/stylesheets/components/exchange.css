@@ -32,7 +32,7 @@
         }
     }
 
-    [data-exchange-entry] {
+    [data-exchange] {
         border-radius: 0;
 
         & > main {

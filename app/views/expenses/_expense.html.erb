@@ -3,9 +3,9 @@
     <main>
       <div data-expense-line>
         <% if expense.allocation %>
-          <%= icon_tag(expense.allocation.icon, style: icon_colour_styles(expense.allocation.colour)) %>
+          <%= icon(expense.allocation.icon, style: icon_colour_styles(expense.allocation.colour)) %>
         <% else %>
-          <%= icon_tag(expense.source.icon, style: icon_colour_styles(expense.source.colour)) %>
+          <%= icon(expense.source.icon, style: icon_colour_styles(expense.source.colour)) %>
         <% end %>
 
         <div data-expense-description>

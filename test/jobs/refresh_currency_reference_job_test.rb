@@ -12,7 +12,7 @@ class RefreshCurrencyReferenceJobTest < ActiveJob::TestCase
   test "replaces the cached table after a successful fetch" do
     fresh = payload("USD" => "1.2")
     client = Object.new
-    client.define_singleton_method(:fetch) { fresh }
+    client.define_singleton_method(:handle_request) { fresh }
 
     job = RefreshCurrencyReferenceJob.new
     job.define_singleton_method(:client) { client }
@@ -25,7 +25,7 @@ class RefreshCurrencyReferenceJobTest < ActiveJob::TestCase
     previous = payload("USD" => "1.1")
     CurrencyReference.preserve(previous)
     client = Object.new
-    client.define_singleton_method(:fetch) { raise Frankfurter::Client::Error, "unavailable" }
+    client.define_singleton_method(:handle_request) { raise Frankfurter::Client::Error, "unavailable" }
 
     job = RefreshCurrencyReferenceJob.new
     job.define_singleton_method(:client) { client }

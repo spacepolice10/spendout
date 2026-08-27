@@ -14,7 +14,7 @@
                 form_target: "focus",
                 action: "input->form#updateSummary"
               }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
-          <%= icon_tag(radio.value) %>
+          <%= icon(radio.value) %>
         <% end %>
       <% end %>
     </div>

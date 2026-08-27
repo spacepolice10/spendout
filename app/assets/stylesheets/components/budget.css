@@ -1,6 +1,6 @@
 @layer components {
     article.budget {
-        --budget-surrounding-colour: var(--color-3);
+        --budget-surrounding-colour: var(--color-2);
 
         position: relative;
 

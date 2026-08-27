@@ -11,7 +11,7 @@
       <section data-expense-hero>
         <div data-expense-category>
           <% if @expense.allocation %>
-            <%= icon_tag(@expense.allocation.icon, style: icon_colour_styles(@expense.allocation.colour)) %>
+            <%= icon(@expense.allocation.icon, style: icon_colour_styles(@expense.allocation.colour)) %>
             <p>
               <small>Category</small>
               <strong>
@@ -20,7 +20,7 @@
               </strong>
             </p>
           <% else %>
-            <%= icon_tag("circle-dot") %>
+            <%= icon("circle-dot") %>
             <p><small>Category</small><strong>Unallocated</strong></p>
           <% end %>
         </div>
@@ -34,7 +34,7 @@
       </section>
 
       <section data-expense-source style="<%= colour_styles(@expense.source.colour) %>">
-        <%= icon_tag(@expense.source.icon) %>
+        <%= icon(@expense.source.icon) %>
         <p>
           <small>Paid from</small>
           <strong>
@@ -65,7 +65,7 @@
 
       <% if @expense.note.present? %>
         <aside data-expense-receipt-note>
-          <%= icon_tag("note") %>
+          <%= icon("note") %>
           <p><small>Note</small><strong><%= @expense.note %></strong></p>
         </aside>
       <% end %>

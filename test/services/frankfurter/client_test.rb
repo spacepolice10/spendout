@@ -34,18 +34,18 @@ module Frankfurter
       unavailable = Net::HTTPServiceUnavailable.new("1.1", "503", "Service Unavailable")
       client = Client.new
       client.define_singleton_method(:perform_request) { unavailable }
-      error = assert_raises(Client::Error) { client.fetch }
+      error = assert_raises(Client::Error) { client.handle_request }
       assert_match(/HTTP 503/, error.message)
 
       client = Client.new
       client.define_singleton_method(:perform_request) { raise Net::ReadTimeout, "timed out" }
-      error = assert_raises(Client::Error) { client.fetch }
+      error = assert_raises(Client::Error) { client.handle_request }
       assert_match(/request failed.*timed out/, error.message)
     end
 
     private
       def parse(json)
-        Client.new.send(:parse, json)
+        Client.new.send(:parsed, json)
       end
   end
 end

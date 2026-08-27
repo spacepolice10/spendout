@@ -44,8 +44,8 @@ module ApplicationHelper
     "color: var(--color-palette-#{colour});"
   end
 
-  def icon_tag(icon, options = {})
-    icon_name = icon.presence
+  def icon(name, options = {})
+    icon_name = name.presence
     tag.span(
       tag.i("", class: "icon", style: "--icon-mask: var(--icon-#{icon_name});", aria: { hidden: true }),
       **options,

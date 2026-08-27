@@ -19,7 +19,7 @@ class ExpensesController < ApplicationController
   end
 
   def new
-    set_form_collections
+    predefine_form_collections
     @expense = @budget.expenses.new(
       source: @active_sources.first,
       allocation: @active_allocations.first,
@@ -30,7 +30,7 @@ class ExpensesController < ApplicationController
   end
 
   def create
-    set_form_collections
+    predefine_form_collections
     @expense = @budget.expenses.new(expense_params)
 
     if @expense.save_with_source_capacity
@@ -72,7 +72,7 @@ class ExpensesController < ApplicationController
       )
     end
 
-    def set_form_collections
+    def predefine_form_collections
       @active_sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
       @active_allocations = @budget.allocations.active.order(:created_at, :id)
       @expense_currency_context = @active_sources.each_with_object({}) do |source, context|

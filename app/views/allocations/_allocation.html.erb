@@ -13,7 +13,7 @@
 
   <header>
     <nav>
-      <%= icon_tag(allocation.icon, style: colour_styles(allocation.colour)) %>
+      <%= icon(allocation.icon, style: colour_styles(allocation.colour)) %>
       <h2><%= allocation.name %></h2>
     </nav>
 
@@ -57,7 +57,7 @@
           } %>
 
       <%= button_to allocation_path(allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
-        <%= icon_tag("trash-simple") %>
+        <%= icon("trash-simple") %>
       <% end %>
     <% end %>
   </footer>

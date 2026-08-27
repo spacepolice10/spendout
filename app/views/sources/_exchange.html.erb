@@ -1,7 +1,7 @@
-<article data-exchange-entry data-testid="exchange-history-item">
+<article data-exchange data-testid="exchange-history-item">
   <main>
     <div data-exchange-line>
-      <%= icon_tag(exchange.sender_source.icon, style: icon_colour_styles(exchange.sender_source.colour)) %>
+      <%= icon(exchange.sender_source.icon, style: icon_colour_styles(exchange.sender_source.colour)) %>
 
       <strong data-exchange-name>
         <%= exchange.sender_source.name %><%= " (Deleted)" if exchange.sender_source.deleted? %>

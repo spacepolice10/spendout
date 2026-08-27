@@ -2,8 +2,8 @@
   <article data-elevation="1" style="<%= colour_styles(@allocation.colour) %>">
     <header>
       <nav>
-        <%= link_to icon_tag("chevron-left"), budget_allocations_path(@budget), aria: { label: "Back to allocations" } %>
-        <%= icon_tag(@allocation.icon) %>
+        <%= link_to icon("chevron-left"), budget_allocations_path(@budget), aria: { label: "Back to allocations" } %>
+        <%= icon(@allocation.icon) %>
         <h1><%= @allocation.name %></h1>
       </nav>
       <small><%= @allocation.deleted? ? "Deleted" : ("Finished" if @allocation.finished?) %></small>

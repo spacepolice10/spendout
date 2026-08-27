@@ -96,9 +96,9 @@ export default class extends Controller {
   }
 
   async rateBetween(from, to) {
-    const rates = await this.referenceRates()
-    const fromRate = Number(rates[from])
-    const toRate = Number(rates[to])
+    const rate_catalog = await this.referenceRates()
+    const fromRate = Number(rate_catalog[from])
+    const toRate = Number(rate_catalog[to])
     if (!Number.isFinite(fromRate) || !Number.isFinite(toRate) || fromRate <= 0 || toRate <= 0) return null
 
     return this.canonicalize(toRate / fromRate)
@@ -114,7 +114,7 @@ export default class extends Controller {
       const response = await fetch(request, { headers: { Accept: "application/json" } })
       if (!response.ok) return {}
 
-      return (await response.json()).rates || {}
+      return (await response.json()).rate_catalog || {}
     })().catch(() => ({}))
 
     return this.referenceRatesPromise
