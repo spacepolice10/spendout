@@ -14,7 +14,7 @@ class ExpensesController < ApplicationController
     )
     @expenses_by_date = @expenses.group_by(&:occurred_on)
     @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
-      expenses.sum(&:amount_in_base)
+      expenses.sum(&:amount_in_base_currency)
     end
   end
 

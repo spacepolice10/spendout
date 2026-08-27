@@ -183,8 +183,4 @@
             outline-offset: 3px;
         }
     }
-
-    body > main[data-anchor="footer"] > article > footer > :is(button, [role="button"])[data-appearance="keycap"] {
-        margin-bottom: 0;
-    }
 }

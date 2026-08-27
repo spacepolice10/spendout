@@ -1,5 +1,5 @@
 class Currency
-  POPULAR_CODES = %w[USD EUR GBP].freeze
+  POPULAR_CURRENCIES = %w[USD EUR GBP].freeze
 
   # Countries sharing a currency whose flag cannot provide a one-to-one mapping.
   SHARED_CURRENCY_COUNTRIES = {
@@ -220,7 +220,7 @@ class Currency
     [ code, data.merge(flag: flag).freeze ]
   end.freeze
 
-  COUNTRY_CURRENCY_CODES = begin
+  COUNTRY_CURRENCIES = begin
     codes = FLAG_COUNTRIES.each_with_object({}) { |(currency_code, country_code), result| result[country_code] = currency_code }
     SHARED_CURRENCY_COUNTRIES.each do |currency_code, country_codes|
       country_codes.each { |country_code| codes[country_code] = currency_code }
@@ -228,7 +228,7 @@ class Currency
     codes.freeze
   end
 
-  TIMEZONE_COUNTRY_CODES = TZInfo::Country.all.each_with_object({}) do |country, codes|
+  TIMEZONE_COUNTRIES = TZInfo::Country.all.each_with_object({}) do |country, codes|
     country.zone_identifiers.each { |identifier| codes[identifier] ||= country.code }
   end.freeze
 
@@ -238,22 +238,22 @@ class Currency
     end
 
     def options
-      CATALOG.keys.map { |code| option_for(code) }
+      CATALOG.keys.map { |code| option_of(code) }
     end
 
     def popular_options
-      POPULAR_CODES.map { |code| option_for(code) }
+      POPULAR_CURRENCIES.map { |code| option_of(code) }
     end
 
     def currency_code_for_country(country_code)
-      COUNTRY_CURRENCY_CODES[country_code.to_s.upcase]
+      COUNTRY_CURRENCIES[country_code.to_s.upcase]
     end
 
     def currency_code_for_timezone(timezone_identifier)
       identifier = timezone_identifier.to_s
       canonical_identifier = TIMEZONE_ALIASES.fetch(identifier, identifier)
 
-      currency_code_for_country(TIMEZONE_COUNTRY_CODES[canonical_identifier])
+      currency_code_for_country(TIMEZONE_COUNTRIES[canonical_identifier])
     end
 
     def find(code)
@@ -266,7 +266,7 @@ class Currency
 
     private
 
-    def option_for(code)
+    def option_of(code)
       data = CATALOG.fetch(code)
       [ "#{code} #{data[:name]}, #{data[:flag]}", code ]
     end

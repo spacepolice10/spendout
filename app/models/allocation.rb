@@ -26,12 +26,12 @@ class Allocation < ApplicationRecord
   end
 
   def remaining_amount
-    [ amount - spent_amount, BigDecimal("0") ].max
+    [ amount - used_amount, BigDecimal("0") ].max
   end
 
-  def spent_amount
-    expenses.pluck(:amount, :rate).sum(BigDecimal("0")) do |expense_amount, expense_rate|
-      expense_amount / expense_rate * rate
+  def used_amount
+    expenses.joins(:source).pluck(:source_amount, "sources.rate").sum(BigDecimal("0")) do |source_amount, source_rate|
+      source_amount / source_rate * rate
     end
   end
 

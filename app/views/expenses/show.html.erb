@@ -43,23 +43,23 @@
           </strong>
         </p>
         <p data-expense-source-debit>
-          <strong><%= formatted_amount(@expense.source_amount, @expense.source_currency_code) %></strong>
-          <small><%= @expense.source_currency_code %></small>
+          <strong><%= formatted_amount(@expense.source_amount, @expense.source.currency_code) %></strong>
+          <small><%= @expense.source.currency_code %></small>
         </p>
       </section>
 
       <dl data-expense-breakdown>
-        <% if @expense.currency_code != @expense.source_currency_code %>
+        <% if @expense.currency_code != @expense.source.currency_code %>
           <div>
             <dt>Conversion quote</dt>
             <span aria-hidden="true"></span>
-            <dd><%= @expense.conversion_rate.to_s("F") %> <%= @expense.currency_code %> / <%= @expense.source_currency_code %></dd>
+            <dd><%= @expense.conversion_rate.to_s("F") %> <%= @expense.currency_code %> / <%= @expense.source.currency_code %></dd>
           </div>
         <% end %>
         <div>
           <dt>Budget value</dt>
           <span aria-hidden="true"></span>
-          <dd><%= formatted_amount(@expense.amount_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
+          <dd><%= formatted_amount(@expense.amount_in_base_currency, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
         </div>
       </dl>
 

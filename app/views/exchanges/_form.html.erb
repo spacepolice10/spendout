@@ -1,7 +1,7 @@
-<%= form_with model: exchange, url: source_exchanges_path(parent_source), data: {
+<%= form_with model: exchange, url: source_exchanges_path(sender_source), data: {
       controller: "form currency-fields",
       form_focus_on_toggle_value: !mobile_variant?,
-      currency_fields_base_currency_value: parent_source.currency_code,
+      currency_fields_base_currency_value: sender_source.currency_code,
       currency_fields_operation_value: "multiply",
       currency_fields_reference_url_value: currency_reference_path
     } do |form| %>
@@ -16,20 +16,20 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, name_attribute: :child_source_name,
+  <%= render "shared/name_fields", form: form, name_attribute: :receiver_source_name,
         placeholder: "Travel cash, foreign account, etc." %>
 
   <details name="form-details" data-form-target="section">
     <summary data-form-target="summary">
-      <span>Amount from <%= parent_source.currency_code %>:</span>
-      <small data-form-target="summaryContent"><%= exchange.parent_amount || 0 %></small>
+      <span>Amount from <%= sender_source.currency_code %>:</span>
+      <small data-form-target="summaryContent"><%= exchange.sender_amount || 0 %></small>
     </summary>
     <div>
-      <small>How much should be taken from <%= parent_source.name %>?</small>
-      <%= form.label :parent_amount, "Amount from #{parent_source.currency_code}", class: "utilities--sr-only" %>
-      <%= form.text_field :parent_amount, inputmode: "decimal", placeholder: "0", required: true,
+      <small>How much should be taken from <%= sender_source.name %>?</small>
+      <%= form.label :sender_amount, "Amount from #{sender_source.currency_code}", class: "utilities--sr-only" %>
+      <%= form.text_field :sender_amount, inputmode: "decimal", placeholder: "0", required: true,
             data: { controller: "amount-fields", form_target: "focus",
-              amount_fields_start_value: exchange.parent_amount&.to_s("F"),
+              amount_fields_start_value: exchange.sender_amount&.to_s("F"),
               amount_fields_minimum_value: "0", amount_fields_minimum_exclusive_value: true,
               currency_fields_target: "amount",
               action: "input->currency-fields#calculate input->form#updateSummary" } %>
@@ -37,8 +37,8 @@
   </details>
 
   <%= render "shared/currency_fields", form: form,
-        currency_attribute: :child_currency_code, rate_attribute: :rate,
-        base_currency_code: parent_source.currency_code,
+        currency_attribute: :receiver_currency_code, rate_attribute: :rate,
+        base_currency_code: sender_source.currency_code,
         converted_amount_label: "New source amount" %>
 
   <div data-layout="flex" style="flex-wrap: wrap;">

@@ -1,9 +1,9 @@
 - A user has at most one active budget; archived budgets remain as history. The root shows the active budget or the new-budget form when none is active.
 - A budget has sources, allocations, and expenses.
-- A source is a currency-specific money container with a name, amount, icon, colour, and currency.
+- A source is a currency-specific money container with a name, amount, icon, colour, immutable currency, and immutable base-relative quote; its balance may grow through incomes.
 - An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; finishing one releases its unspent reservation while preserving history. Unplanned categories only classify expenses paid from that remainder.
-- An expense preserves its purchase amount and currency, directly quoted source-currency debit, immutable source snapshots, optional 200-character note, and user-editable occurrence date; allocations remain currency-independent classifications.
-- An exchange immutably debits one source and atomically creates another in a different currency, snapshotting both amounts and the parent-relative quote.
+- An expense immutably preserves its purchase amount and currency, directly quoted source-currency debit, conversion quote, optional 200-character note, and occurrence date; it can only be deleted and recreated. Allocations remain currency-independent classifications.
+- An exchange immutably debits a sender source and atomically creates a receiver source, snapshotting both amounts and the sender-relative quote; both sources may use the same currency.
 - Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
 - A budget snapshots its immutable base currency at creation. Sources are created in the next step; the first source defaults to that currency and cannot be deleted independently.
 - Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-confirmed quote expressed as selected-currency units per one base-currency unit. Dated external reference rates may be offered as editable suggestions; never silently update historical records or create budget-owned currencies.

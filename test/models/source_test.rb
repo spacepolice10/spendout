@@ -98,7 +98,7 @@ class SourceTest < ActiveSupport::TestCase
   test "converts its amount using selected-currency units per base-currency unit" do
     source = budgets(:active).sources.build(name: "Test source", amount: "26600", currency_code: "VND", rate: "26600")
 
-    assert_equal BigDecimal("1"), source.amount_in_base
+    assert_equal BigDecimal("1"), source.amount_in_base_currency
   end
 
   test "forces the base currency rate to one" do
@@ -120,6 +120,21 @@ class SourceTest < ActiveSupport::TestCase
 
     assert_not source.valid?
     assert source.errors.added?(:currency_code, :inclusion, value: "XXX")
+  end
+
+  test "currency is immutable while amount remains changeable" do
+    source = sources(:active)
+
+    assert source.update(amount: source.amount + 1)
+    assert_not source.update(currency_code: "EUR")
+    assert source.errors.added?(:currency_code, "cannot be changed")
+  end
+
+  test "rate is immutable" do
+    source = budgets(:active).sources.create!(name: "Euros", amount: 100, currency_code: "EUR", rate: "0.8")
+
+    assert_not source.update(rate: "0.9")
+    assert source.errors.added?(:rate, "cannot be changed")
   end
 
   test "is not constrained by allocation amounts" do

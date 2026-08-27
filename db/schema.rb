@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_000002) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -55,22 +55,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
 
   create_table "exchanges", force: :cascade do |t|
     t.integer "budget_id", null: false
-    t.decimal "child_amount", precision: 19, scale: 4, null: false
-    t.string "child_currency_code", limit: 3, null: false
-    t.integer "child_source_id", null: false
     t.datetime "created_at", null: false
-    t.decimal "parent_amount", precision: 19, scale: 4, null: false
-    t.string "parent_currency_code", limit: 3, null: false
-    t.integer "parent_source_id", null: false
     t.decimal "rate", precision: 24, scale: 12, null: false
+    t.decimal "receiver_amount", precision: 19, scale: 4, null: false
+    t.integer "receiver_source_id", null: false
+    t.decimal "sender_amount", precision: 19, scale: 4, null: false
+    t.integer "sender_source_id", null: false
     t.datetime "updated_at", null: false
     t.index ["budget_id", "created_at"], name: "index_exchanges_on_budget_id_and_created_at"
     t.index ["budget_id"], name: "index_exchanges_on_budget_id"
-    t.index ["child_source_id"], name: "index_exchanges_on_child_source_id", unique: true
-    t.index ["parent_source_id"], name: "index_exchanges_on_parent_source_id"
-    t.check_constraint "child_amount > 0", name: "exchanges_child_amount_positive"
-    t.check_constraint "parent_amount > 0", name: "exchanges_parent_amount_positive"
+    t.index ["receiver_source_id"], name: "index_exchanges_on_receiver_source_id", unique: true
+    t.index ["sender_source_id"], name: "index_exchanges_on_sender_source_id"
     t.check_constraint "rate > 0", name: "exchanges_rate_positive"
+    t.check_constraint "receiver_amount > 0", name: "exchanges_receiver_amount_positive"
+    t.check_constraint "sender_amount > 0", name: "exchanges_sender_amount_positive"
   end
 
   create_table "expenses", force: :cascade do |t|
@@ -82,11 +80,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
     t.string "currency_code", limit: 3, null: false
     t.string "note", limit: 200
     t.date "occurred_on", null: false
-    t.decimal "rate", precision: 24, scale: 12, default: "1.0", null: false
     t.decimal "source_amount", precision: 19, scale: 4, null: false
-    t.string "source_currency_code", limit: 3, null: false
     t.integer "source_id", null: false
-    t.decimal "source_rate", precision: 24, scale: 12, null: false
     t.datetime "updated_at", null: false
     t.index ["allocation_id"], name: "index_expenses_on_allocation_id"
     t.index ["budget_id", "currency_code"], name: "index_expenses_on_budget_id_and_currency_code"
@@ -96,9 +91,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
     t.index ["source_id"], name: "index_expenses_on_source_id"
     t.check_constraint "amount > 0", name: "expenses_amount_positive"
     t.check_constraint "conversion_rate > 0", name: "expenses_conversion_rate_positive"
-    t.check_constraint "rate > 0", name: "expenses_rate_positive"
     t.check_constraint "source_amount > 0", name: "expenses_source_amount_positive"
-    t.check_constraint "source_rate > 0", name: "expenses_source_rate_positive"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -131,15 +124,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_000000) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
+    t.string "password_digest"
+    t.integer "role", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.check_constraint "role IN (0, 1)", name: "users_role_valid"
   end
 
   add_foreign_key "allocations", "budgets"
   add_foreign_key "budgets", "users"
   add_foreign_key "exchanges", "budgets"
-  add_foreign_key "exchanges", "sources", column: "child_source_id"
-  add_foreign_key "exchanges", "sources", column: "parent_source_id"
+  add_foreign_key "exchanges", "sources", column: "receiver_source_id"
+  add_foreign_key "exchanges", "sources", column: "sender_source_id"
   add_foreign_key "expenses", "allocations"
   add_foreign_key "expenses", "budgets"
   add_foreign_key "expenses", "sources"

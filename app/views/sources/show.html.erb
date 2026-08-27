@@ -14,7 +14,7 @@
         <dt>Amount</dt>
         <dd><%= formatted_amount(@source.amount, @source.currency_code) %> <%= @source.currency_code %></dd>
         <dt>Budget</dt>
-        <dd><%= link_to @budget.name, budget_expenses_path(@budget) %></dd>
+        <dd><%= link_to @budget.date_period, budget_expenses_path(@budget) %></dd>
       </dl>
     </main>
   </article>

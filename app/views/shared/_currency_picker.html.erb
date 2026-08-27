@@ -1,7 +1,7 @@
 <%# locals: (form:, attribute:, select_data: {}, filter_data: {}, filter_autofocus: false, rate_attribute: nil, base_currency_code: nil, converted_amount_label: nil, rate_mode: :base, preferred_currency_codes: []) %>
 <% selected_code = form.object.public_send(attribute) %>
 <% suggested_code = Current.suggested_currency_code %>
-<% priority_codes = [selected_code, suggested_code, *local_assigns.fetch(:preferred_currency_codes, []), *Currency::POPULAR_CODES].compact.uniq %>
+<% priority_codes = [selected_code, suggested_code, *local_assigns.fetch(:preferred_currency_codes, []), *Currency::POPULAR_CURRENCIES].compact.uniq %>
 <% options_by_code = Currency.options.index_by(&:last) %>
 <% selected_label = options_by_code[selected_code]&.first %>
 <% ordered_options = priority_codes.filter_map { |code| options_by_code.delete(code) } + options_by_code.values %>
@@ -50,7 +50,7 @@
           <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option"
             aria-selected="<%= code == selected_code %>" data-currency-picker-target="option"
             data-filter-value="<%= label %>"
-            <% if Currency::POPULAR_CODES.include?(code) %>data-popular="true"<% end %>
+            <% if Currency::POPULAR_CURRENCIES.include?(code) %>data-popular="true"<% end %>
             <% if code == selected_code %>data-default="true"<% end %>
             <% if code == suggested_code %>data-suggested="true"<% end %>>
             <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"

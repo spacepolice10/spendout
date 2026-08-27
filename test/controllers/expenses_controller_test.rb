@@ -145,8 +145,9 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
   test "prioritizes the last expense currency then the budget and source currencies" do
     sign_in_as(@user)
-    @source.update!(currency_code: "EUR", rate: "0.8")
-    @budget.expenses.create!(source: @source, amount: 32, currency_code: "THB", conversion_rate: 1)
+    @source.update!(deleted_at: Time.current)
+    euro_source = @budget.sources.create!(name: "Euros", amount: 100, currency_code: "EUR", rate: "0.8")
+    @budget.expenses.create!(source: euro_source, amount: 32, currency_code: "THB", conversion_rate: 1)
 
     get new_budget_expense_path(@budget)
 
@@ -204,8 +205,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Dinner", expense.note
     assert_equal "EUR", expense.currency_code
     assert_equal BigDecimal("50.5"), expense.source_amount
-    assert_equal "USD", expense.source_currency_code
-    assert_equal BigDecimal("0.5"), expense.rate
+    assert_equal "USD", expense.source.currency_code
   end
 
   test "creates an expense without an allocation" do

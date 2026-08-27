@@ -196,7 +196,7 @@
             },
             filter_data: { form_target: "focus" },
             rate_attribute: :conversion_rate,
-            base_currency_code: expense.source_currency_code || expense.source&.currency_code,
+            base_currency_code: expense.source&.currency_code,
             rate_mode: :direct,
             preferred_currency_codes: [
               budget.last_expense_currency_code,

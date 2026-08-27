@@ -3,7 +3,7 @@
 class CategoryIcon
   DEFAULT_ICON = Iconable::DEFAULT_ICON
   DEFAULT_COLOUR = Colourable::DEFAULT_COLOUR
-  MAX_DISTANCE = 1
+  MAXIMUM_DISTANCE = 1
 
   KEYWORDS = {
     "burger" => %w[burger burgers dining dinner fastfood food lunch restaurant restaurants takeaway],
@@ -38,8 +38,9 @@ class CategoryIcon
     "spray" => %w[cleaner cleaning household housewares supplies toiletries],
     "brand-youtube" => %w[youtube youtubemusic youtubepremium],
     "brand-spotify" => %w[spotify spotifypremium],
-    "brand-netflix" => %w[netflix],
-    "headphones" => %w[applemusic deezer pandora soundcloud tidal]
+    "brand-netflix" => %w[netflix hulu kinopoisk],
+    "headphones" => %w[applemusic deezer pandora soundcloud tidal],
+    "guitar-pick" => %w[acousticguitar bassguitar electricguitar acoustic bass band guitar guitars instrument instruments music musical rock strings]
   }.transform_values { |keywords| keywords.map(&:freeze).freeze }.freeze
 
   COLOURS = {
@@ -76,23 +77,24 @@ class CategoryIcon
     "brand-youtube" => "red",
     "brand-spotify" => "lime",
     "brand-netflix" => "red",
-    "headphones" => "coral"
+    "headphones" => "coral",
+    "guitar-pick" => "orange"
   }.freeze
 
-  def self.match(name) = new(name).match
-  def self.colour(name) = new(name).colour
+  def self.matched_name(name) = new(name).matched_name
+  def self.matched_colour(name) = new(name).matched_colour
 
   def initialize(name)
     @words = normalize(name).split.freeze
     @joined_name = @words.join
   end
 
-  def match
-    @match ||= exact_match || fuzzy_match || DEFAULT_ICON
+  def matched_name
+    @matched_name ||= exactly_matched || partially_matched || DEFAULT_ICON
   end
 
-  def colour
-    COLOURS.fetch(match, DEFAULT_COLOUR)
+  def matched_colour
+    COLOURS.fetch(matched_name, DEFAULT_COLOUR)
   end
 
   private
@@ -102,7 +104,7 @@ class CategoryIcon
       @candidates ||= (words + [ joined_name ]).uniq
     end
 
-    def exact_match
+    def exactly_matched
       joined_match = KEYWORDS.find { |_icon, keywords| keywords.include?(joined_name) }
       return joined_match.first if joined_match
 
@@ -112,7 +114,7 @@ class CategoryIcon
       end.max_by(&:first)&.last
     end
 
-    def fuzzy_match
+    def partially_matched
       KEYWORDS.each do |icon, keywords|
         return icon if keywords.any? { |keyword| fuzzy_keyword_match?(keyword) }
       end
@@ -122,8 +124,8 @@ class CategoryIcon
     def fuzzy_keyword_match?(keyword)
       candidates.any? do |candidate|
         candidate.length >= 4 && keyword.length >= 4 &&
-          (candidate.length - keyword.length).abs <= MAX_DISTANCE &&
-          levenshtein_distance(candidate, keyword) <= MAX_DISTANCE
+          (candidate.length - keyword.length).abs <= MAXIMUM_DISTANCE &&
+          levenshtein_distance(candidate, keyword) <= MAXIMUM_DISTANCE
       end
     end
 

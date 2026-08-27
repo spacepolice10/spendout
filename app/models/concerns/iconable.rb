@@ -42,7 +42,8 @@ module Iconable
     "brand-youtube" => "YouTube",
     "brand-spotify" => "Spotify",
     "brand-netflix" => "Netflix",
-    "headphones" => "Music streaming"
+    "headphones" => "Music streaming",
+    "guitar-pick" => "Guitar"
   }.freeze
 
   included do

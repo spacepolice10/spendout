@@ -13,8 +13,8 @@ class CurrencyTest < ActiveSupport::TestCase
     assert_includes Currency.options, [ "USD US Dollar, 🇺🇸", "USD" ]
   end
 
-  test "exposes popular currency codes" do
-    assert_equal %w[USD EUR GBP], Currency::POPULAR_CODES
+  test "exposes popular currencies" do
+    assert_equal %w[USD EUR GBP], Currency::POPULAR_CURRENCIES
   end
 
   test "provides popular currencies as form options" do

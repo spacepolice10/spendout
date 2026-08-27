@@ -10,7 +10,6 @@ class ExpenseTest < ActiveSupport::TestCase
       assert expense.valid?
       assert_equal Date.current, expense.occurred_on
       assert_equal "USD", expense.currency_code
-      assert_equal sources(:active).rate, expense.rate
       assert_equal "$", expense.currency_symbol
       assert_equal "US Dollar", expense.currency_name
     end
@@ -23,14 +22,11 @@ class ExpenseTest < ActiveSupport::TestCase
     end
   end
 
-  test "snapshots the source currency rate" do
+  test "uses the source currency rate" do
     source = budgets(:active).sources.create!(name: "Dong", amount: 266000, currency_code: "VND", rate: "26600")
     expense = budgets(:active).expenses.create!(source: source, amount: 10)
 
-    source.update!(rate: "27000")
-
-    assert_equal BigDecimal("26600"), expense.reload.rate
-    assert_equal BigDecimal("10") / BigDecimal("26600"), expense.amount_in_base
+    assert_equal BigDecimal("10") / BigDecimal("26600"), expense.reload.amount_in_base_currency
   end
 
   test "converts a purchase through its source into the budget and allocation currencies" do
@@ -47,12 +43,10 @@ class ExpenseTest < ActiveSupport::TestCase
 
     assert expense.save_with_source_capacity
     assert_equal BigDecimal("5003.75"), expense.source_amount
-    assert_equal "RUB", expense.source_currency_code
-    assert_equal BigDecimal("80"), expense.source_rate
-    assert_equal BigDecimal("25600"), expense.rate
-    assert_equal BigDecimal("62.546875"), expense.amount_in_base
+    assert_equal "RUB", expense.source.currency_code
+    assert_equal BigDecimal("62.546875"), expense.amount_in_base_currency
     assert_equal BigDecimal("44996.25"), source.reload.spendable_amount
-    assert_equal BigDecimal("2189.140625"), allocation.reload.spent_amount
+    assert_equal BigDecimal("2189.140625"), allocation.reload.used_amount
   end
 
   test "rejects a cross-currency debit that rounds to zero" do
@@ -200,14 +194,6 @@ class ExpenseTest < ActiveSupport::TestCase
 
     assert_equal source, expense.reload.source
     assert_equal allocation, expense.allocation
-  end
-
-  test "does not change recorded monetary facts" do
-    expense = expenses(:active)
-
-    assert_not expense.update(amount: 1)
-    assert expense.errors.added?(:base, "expense monetary facts cannot be changed")
-    assert_equal BigDecimal("125"), expense.reload.amount
   end
 
   test "deletion restores source capacity" do

@@ -5,7 +5,7 @@ class SourcesController < ApplicationController
   def index
     @sources = @budget.sources.where(deleted_at: nil).order(:created_at, :id)
     @exchanges = set_page_and_extract_portion_from(
-      @budget.exchanges.includes(:parent_source, :child_source).order(created_at: :desc, id: :desc)
+      @budget.exchanges.includes(:sender_source, :receiver_source).order(created_at: :desc, id: :desc)
     )
     @exchanges_by_date = @exchanges.group_by { |exchange| exchange.created_at.to_date }
   end

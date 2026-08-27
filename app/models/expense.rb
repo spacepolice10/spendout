@@ -1,6 +1,4 @@
 class Expense < ApplicationRecord
-  include Currencyable
-
   belongs_to :budget, inverse_of: :expenses
   belongs_to :source, inverse_of: :expenses
   belongs_to :allocation, optional: true, inverse_of: :expenses, autosave: true
@@ -8,12 +6,12 @@ class Expense < ApplicationRecord
   attr_accessor :category_name_to_create
 
   before_validation :change_default_occurred_on
-  before_validation :set_currency_and_source_snapshot
+  before_validation :predefine_currency_and_source_amount
 
   validates :amount, numericality: { greater_than: 0 }
   validates :source_amount, numericality: { greater_than: 0 }
-  validates :source_currency_code, inclusion: { in: Currency::CATALOG.keys }
-  validates :source_rate, :conversion_rate, numericality: { greater_than: 0 }
+  validates :currency_code, inclusion: { in: Currency::CATALOG.keys }
+  validates :conversion_rate, numericality: { greater_than: 0 }
   validates :note, length: { maximum: 200 }, allow_blank: true
   validate :occurred_during_budget
   validate :source_belongs_to_budget
@@ -21,10 +19,8 @@ class Expense < ApplicationRecord
   validate :source_is_active
   validate :allocation_is_active
   validate :amount_fits_source
-  validate :monetary_facts_cannot_change, on: :update
-
   def save_with_source_capacity
-    set_currency_and_source_snapshot
+    predefine_currency_and_source_amount
     initialize_category_to_create
 
     return save unless source&.persisted?
@@ -36,6 +32,18 @@ class Expense < ApplicationRecord
     source.with_lock { destroy! }
   end
 
+  def amount_in_base_currency
+    source_amount / source.rate
+  end
+
+  def currency_name
+    currency_metadata[:name]
+  end
+
+  def currency_symbol
+    currency_metadata[:symbol]
+  end
+
   private
     def initialize_category_to_create
       return if category_name_to_create.blank? || allocation&.new_record?
@@ -44,12 +52,12 @@ class Expense < ApplicationRecord
 
       self.allocation = budget.allocations.build(
         name: category_name_to_create,
-        icon: category_icon.match,
-        colour: category_icon.colour,
+        icon: category_icon.matched_name,
+        colour: category_icon.matched_colour,
         amount: 0,
         planned: false,
         currency_code: currency_code.presence || source&.currency_code,
-        rate: rate.presence || source&.rate
+        rate: source&.rate && conversion_rate ? source.rate * conversion_rate : source&.rate
       )
     end
 
@@ -59,21 +67,21 @@ class Expense < ApplicationRecord
       self.occurred_on = Date.current.clamp(budget.period_from, budget.period_to)
     end
 
-    def set_currency_and_source_snapshot
+    def predefine_currency_and_source_amount
       return unless source
 
       self.currency_code ||= source.currency_code
-      self.source_currency_code = source.currency_code
-      self.source_rate = source.rate
 
-      if currency_code == source_currency_code
+      if currency_code == source.currency_code
         self.conversion_rate = 1
         self.source_amount = amount
       elsif amount.present? && conversion_rate.present? && conversion_rate.positive?
         self.source_amount = (amount / conversion_rate).round(4)
       end
+    end
 
-      self.rate = source_rate * conversion_rate if source_rate.present? && conversion_rate.present?
+    def currency_metadata
+      Currency.find!(currency_code)
     end
 
     def occurred_during_budget
@@ -110,15 +118,9 @@ class Expense < ApplicationRecord
 
       available = source.spendable_amount(excluding: self)
       if source_amount > available
-        attribute = currency_code == source_currency_code ? :amount : :source_amount
+        attribute = currency_code == source.currency_code ? :amount : :source_amount
         errors.add(attribute, "must be less than or equal to #{available.to_s("F")}")
       end
     end
 
-    def monetary_facts_cannot_change
-      attributes = %w[
-        amount currency_code rate source_id source_amount source_currency_code source_rate conversion_rate
-      ]
-      errors.add(:base, "expense monetary facts cannot be changed") if attributes.any? { |attribute| will_save_change_to_attribute?(attribute) }
-    end
 end

@@ -5,8 +5,6 @@ active:
   currency_code: USD
   amount: 125.0000
   source_amount: 125.0000
-  source_currency_code: USD
-  source_rate: 1
   conversion_rate: 1
   occurred_on: 2026-08-19
   note: Groceries
@@ -18,8 +16,6 @@ archived:
   currency_code: EUR
   amount: 50.0000
   source_amount: 50.0000
-  source_currency_code: EUR
-  source_rate: 1
   conversion_rate: 1
   occurred_on: 2026-06-03
   note: Museum tickets
@@ -31,8 +27,6 @@ other:
   currency_code: VND
   amount: 100000.0000
   source_amount: 100000.0000
-  source_currency_code: VND
-  source_rate: 1
   conversion_rate: 1
   occurred_on: 2026-08-10
   note: Lunch

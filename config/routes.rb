@@ -9,7 +9,7 @@ Rails.application.routes.draw do
       patch :finish, on: :member
       patch :reopen, on: :member
     end
-    resources :expenses, shallow: true
+    resources :expenses, only: %i[ index new create show destroy ], shallow: true
     resources :sources, shallow: true do
       resources :exchanges, only: %i[ new create ]
     end

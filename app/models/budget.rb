@@ -14,7 +14,7 @@ class Budget < ApplicationRecord
   validate :single_current_budget_possible, on: :create
   validate :base_currency_cannot_change, on: :update
 
-  def name
+  def date_period
     return unless period_from && period_to
 
     if period_from.year != period_to.year
@@ -30,24 +30,12 @@ class Budget < ApplicationRecord
     period_to.present? && period_to < Date.current
   end
 
-  def currency_code
-    base_currency_code
-  end
-
-  def base_currency_metadata
-    Currency.find!(base_currency_code)
-  end
-
-  def base_currency_symbol
-    base_currency_metadata[:symbol]
-  end
-
   def sources_amount_in_base
     active_sources = sources.where(deleted_at: nil)
     exchanged_amount_in_base = exchanges
-      .joins(:parent_source)
+      .joins(:sender_source)
       .where(sources: { deleted_at: nil })
-      .pluck(:parent_amount, "sources.rate")
+      .pluck(:sender_amount, "sources.rate")
       .sum(BigDecimal("0")) { |amount, rate| amount / rate }
 
     amount_in_base_of(active_sources) - exchanged_amount_in_base
@@ -55,17 +43,17 @@ class Budget < ApplicationRecord
 
   def allocations_amount_in_base
     allocations.planned.where(deleted_at: nil).includes(:expenses).sum(BigDecimal("0")) do |allocation|
-      reserved_amount = allocation.finished? ? [ allocation.spent_amount, allocation.amount ].min : allocation.amount
+      reserved_amount = allocation.finished? ? [ allocation.used_amount, allocation.amount ].min : allocation.amount
       reserved_amount / allocation.rate
     end
   end
 
   def expenses_amount_in_base
-    amount_in_base_of(expenses.joins(:source).where(sources: { deleted_at: nil }))
+    expenses_amount_in_base_of(expenses.joins(:source).where(sources: { deleted_at: nil }))
   end
 
   def unallocated_expenses_amount_in_base
-    amount_in_base_of(
+    expenses_amount_in_base_of(
       expenses
         .joins(:source)
         .left_outer_joins(:allocation)
@@ -96,15 +84,15 @@ class Budget < ApplicationRecord
       source.spendable_amount / source.rate
     end
 
-    remaining_plans = allocations.planned.active.includes(expenses: :source)
+    remaining_planned = allocations.planned.active.includes(expenses: :source)
       .sum(BigDecimal("0")) do |allocation|
-        spent_from_active_sources = allocation.expenses.sum(BigDecimal("0")) do |expense|
-          expense.source.deleted? ? BigDecimal("0") : expense.source_amount / expense.source_rate
+        used_from_active_sources = allocation.expenses.sum(BigDecimal("0")) do |expense|
+          expense.source.deleted? ? BigDecimal("0") : expense.source_amount / expense.source.rate
         end
-        [ allocation.amount_in_base - spent_from_active_sources, BigDecimal("0") ].max
+        [ allocation.amount_in_base_currency - used_from_active_sources, BigDecimal("0") ].max
       end
 
-    source_balances - remaining_plans
+    source_balances - remaining_planned
   end
 
   def last_expense_currency_code
@@ -114,8 +102,8 @@ class Budget < ApplicationRecord
   def todays_remainder
     return unless period_from <= Date.current && Date.current <= period_to
 
-    daily_target = amount_summary / period_days
-    planned_remainder = daily_target * days_elapsed - unallocated_expenses_amount_in_base
+    everyday_target = amount_summary / period_days
+    planned_remainder = everyday_target * days_elapsed - unallocated_expenses_amount_in_base
     actual_remainder = available_summary
 
     [ planned_remainder, actual_remainder ].min
@@ -125,8 +113,8 @@ class Budget < ApplicationRecord
     remainder = todays_remainder
     return unless remainder
 
-    daily_target = amount_summary / period_days
-    planned_opening_remainder = daily_target * days_elapsed -
+    everyday_target = amount_summary / period_days
+    planned_opening_remainder = everyday_target * days_elapsed -
       unallocated_expenses_amount_in_base + todays_unallocated_expenses_amount_in_base
     actual_opening_remainder = available_summary + todays_expenses_amount_in_base
     opening_remainder = [ planned_opening_remainder, actual_opening_remainder ].min
@@ -147,10 +135,6 @@ class Budget < ApplicationRecord
     [ (Date.current - period_from + 1).to_i, period_days ].min
   end
 
-  def currency_code=(value)
-    self.base_currency_code = value
-  end
-
   def base_currency_code=(value)
     super(value.to_s.strip.upcase.presence)
   end
@@ -168,8 +152,14 @@ class Budget < ApplicationRecord
       end
     end
 
+    def expenses_amount_in_base_of(records)
+      records.joins(:source).pluck(:source_amount, "sources.rate").sum(BigDecimal("0")) do |amount, rate|
+        amount / rate
+      end
+    end
+
     def todays_expenses_amount_in_base
-      amount_in_base_of(
+      expenses_amount_in_base_of(
         expenses
           .joins(:source)
           .where(occurred_on: Date.current, sources: { deleted_at: nil })
@@ -177,7 +167,7 @@ class Budget < ApplicationRecord
     end
 
     def todays_unallocated_expenses_amount_in_base
-      amount_in_base_of(
+      expenses_amount_in_base_of(
         expenses
           .joins(:source)
           .left_outer_joins(:allocation)

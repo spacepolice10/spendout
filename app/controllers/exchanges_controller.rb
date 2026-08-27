@@ -1,19 +1,18 @@
 class ExchangesController < ApplicationController
-  before_action :set_parent_source
+  before_action :set_sender_source
 
   def new
-    @exchange = @parent_source.outgoing_exchanges.new(
+    @exchange = @sender_source.outgoing_exchanges.new(
       budget: @budget,
-      parent_currency_code: @parent_source.currency_code,
-      child_source_name: "#{@parent_source.name} exchange"
+      receiver_source_name: "#{@sender_source.name} exchange"
     )
   end
 
   def create
-    @exchange = @parent_source.outgoing_exchanges.new(exchange_params)
+    @exchange = @sender_source.outgoing_exchanges.new(exchange_params)
     @exchange.budget = @budget
 
-    if @exchange.save_with_child_source
+    if @exchange.save_with_receiver_source
       redirect_to budget_sources_path(@budget), notice: "Exchange was created."
     else
       render :new, status: :unprocessable_entity
@@ -21,12 +20,12 @@ class ExchangesController < ApplicationController
   end
 
   private
-    def set_parent_source
-      @parent_source = Source.where(budget: Current.user.budgets, deleted_at: nil).find(params[:source_id])
-      @budget = @parent_source.budget
+    def set_sender_source
+      @sender_source = Source.where(budget: Current.user.budgets, deleted_at: nil).find(params[:source_id])
+      @budget = @sender_source.budget
     end
 
     def exchange_params
-      params.require(:exchange).permit(:child_source_name, :child_currency_code, :parent_amount, :rate)
+      params.require(:exchange).permit(:receiver_source_name, :receiver_currency_code, :sender_amount, :rate)
     end
 end

@@ -1,41 +1,39 @@
 class Exchange < ApplicationRecord
   belongs_to :budget, inverse_of: :exchanges
-  belongs_to :parent_source, class_name: "Source", inverse_of: :outgoing_exchanges
-  belongs_to :child_source, class_name: "Source", inverse_of: :incoming_exchange
+  belongs_to :sender_source, class_name: "Source", inverse_of: :outgoing_exchanges
+  belongs_to :receiver_source, class_name: "Source", inverse_of: :incoming_exchange
 
-  attr_accessor :child_source_name
+  attr_accessor :receiver_source_name, :receiver_currency_code
 
-  validates :child_source_name, presence: true, on: :create
-  validates :parent_amount, numericality: { greater_than: 0 }
-  validates :child_amount, numericality: { greater_than: 0 }
+  validates :receiver_source_name, presence: true, on: :create
+  validates :sender_amount, numericality: { greater_than: 0 }
+  validates :receiver_amount, numericality: { greater_than: 0 }
   validates :rate, numericality: { greater_than: 0 }
-  validates :parent_currency_code, :child_currency_code, inclusion: { in: Currency::CATALOG.keys }
   validate :sources_belong_to_budget
-  validate :currencies_are_different
-  validate :parent_source_is_active
-  validate :parent_amount_fits_source
-  validate :snapshots_match_sources
+  validate :sender_source_is_active
+  validate :sender_amount_fits_source
+  validate :receiver_amount_matches_source
 
-  before_validation :set_derived_attributes
   before_update :prevent_mutation
   before_destroy :prevent_direct_destruction
 
-  def save_with_child_source
-    return false unless parent_source&.persisted?
+  def save_with_receiver_source
+    return false unless sender_source&.persisted?
 
-    parent_source.with_lock do
-      set_derived_attributes
-      self.child_source ||= build_child_source
+    sender_source.with_lock do
+      self.budget ||= sender_source.budget
+      derive_receiver_amount
+      self.receiver_source ||= create_receiver_source
 
       transaction do
-        exchange_valid = valid?
-        child_valid = child_source.valid?
+        valid?
+        receiver_source.valid?
 
-        if exchange_valid && child_valid
+        if errors.empty? && receiver_source.errors.empty?
           save!
           true
         else
-          copy_child_errors unless child_valid
+          copy_receiver_errors if receiver_source.errors.any?
           false
         end
       end
@@ -43,61 +41,45 @@ class Exchange < ApplicationRecord
   end
 
   private
-    def set_derived_attributes
-      return unless parent_source
+    def derive_receiver_amount
+      return unless sender_amount.present? && rate.present?
 
-      self.budget ||= parent_source.budget
-      self.parent_currency_code = parent_source.currency_code
-      return unless parent_amount.present? && rate.present?
-
-      self.child_amount = (parent_amount * rate).round(4)
+      self.receiver_amount = (sender_amount * rate).round(4)
     end
 
-    def build_child_source
+    def create_receiver_source
       budget.sources.build(
-        name: child_source_name,
-        amount: child_amount,
-        currency_code: child_currency_code,
-        rate: child_currency_code == budget.base_currency_code ? 1 : parent_source.rate * rate
+        name: receiver_source_name,
+        amount: receiver_amount,
+        currency_code: receiver_currency_code,
+        rate: receiver_currency_code == budget.base_currency_code ? 1 : sender_source.rate * rate
       )
     end
 
     def sources_belong_to_budget
-      errors.add(:parent_source, "must belong to this budget") if parent_source && budget && parent_source.budget_id != budget.id
-      errors.add(:child_source, "must belong to this budget") if child_source && budget && child_source.budget_id != budget.id
+      errors.add(:sender_source, "must belong to this budget") if sender_source && budget && sender_source.budget_id != budget.id
+      errors.add(:receiver_source, "must belong to this budget") if receiver_source && budget && receiver_source.budget_id != budget.id
     end
 
-    def currencies_are_different
-      return if parent_currency_code.blank? || child_currency_code.blank?
-
-      errors.add(:child_currency_code, "must differ from the parent currency") if parent_currency_code == child_currency_code
+    def sender_source_is_active
+      errors.add(:sender_source, "must be active") if sender_source&.deleted?
     end
 
-    def parent_source_is_active
-      errors.add(:parent_source, "must be active") if parent_source&.deleted?
+    def sender_amount_fits_source
+      return if sender_source.nil? || sender_amount.nil?
+
+      available = sender_source.spendable_amount(excluding_exchange: self)
+      errors.add(:sender_amount, "must be less than or equal to #{available.to_s("F")}") if sender_amount > available
     end
 
-    def parent_amount_fits_source
-      return if parent_source.nil? || parent_amount.nil?
-
-      available = parent_source.spendable_amount(excluding_exchange: self)
-      errors.add(:parent_amount, "must be less than or equal to #{available.to_s("F")}") if parent_amount > available
-    end
-
-    def snapshots_match_sources
-      if parent_source && parent_currency_code.present? && parent_currency_code != parent_source.currency_code
-        errors.add(:parent_currency_code, "must match the parent source")
-      end
-      if child_source && child_currency_code.present? && child_currency_code != child_source.currency_code
-        errors.add(:child_currency_code, "must match the child source")
-      end
-      if child_source && child_amount.present? && child_amount != child_source.amount
-        errors.add(:child_amount, "must match the child source")
+    def receiver_amount_matches_source
+      if receiver_source && receiver_amount.present? && receiver_amount != receiver_source.amount
+        errors.add(:receiver_amount, "must match the receiver source")
       end
     end
 
-    def copy_child_errors
-      child_source.errors.full_messages.each { |message| errors.add(:base, "New source #{message.downcase}") }
+    def copy_receiver_errors
+      receiver_source.errors.full_messages.each { |message| errors.add(:base, "New source #{message.downcase}") }
     end
 
     def prevent_mutation

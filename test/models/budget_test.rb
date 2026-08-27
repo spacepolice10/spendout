@@ -13,10 +13,22 @@ class BudgetTest < ActiveSupport::TestCase
     budget = budgets(:active)
 
     assert_equal "USD", budget.base_currency_code
-    assert_equal "$", budget.base_currency_symbol
 
     sources(:active).update_column(:currency_code, "EUR")
     assert_equal "USD", budget.reload.base_currency_code
+  end
+
+  test "formats its date period" do
+    budget = budgets(:active)
+
+    budget.assign_attributes(period_from: Date.new(2026, 8, 1), period_to: Date.new(2026, 8, 30))
+    assert_equal "Aug 1 – 30, 2026", budget.date_period
+
+    budget.period_to = Date.new(2026, 9, 2)
+    assert_equal "Aug 1 – Sep 2, 2026", budget.date_period
+
+    budget.period_to = Date.new(2027, 1, 2)
+    assert_equal "Aug 1, 2026 – Jan 2, 2027", budget.date_period
   end
 
   test "creates a budget without creating a source" do

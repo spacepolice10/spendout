@@ -57,7 +57,7 @@
         }
     }
 
-    @keyframes budget-panel-in {
+    @keyframes budget-section-in {
         from {
             opacity: 0;
             clip-path: inset(100% 0 0 0 round var(--radius-4));
@@ -71,7 +71,7 @@
         }
     }
 
-    @keyframes budget-panel-out {
+    @keyframes budget-section-back {
         from {
             opacity: 1;
             clip-path: inset(0 round var(--radius-4));
@@ -83,7 +83,7 @@
         }
     }
 
-    @supports (view-transition-name: budget-panel) {
+    @supports (view-transition-name: budget-section) {
         ::view-transition-old(root),
         ::view-transition-new(root),
         ::view-transition-old(budget-tabbar),
@@ -91,19 +91,19 @@
             animation: none;
         }
 
-        ::view-transition-group(budget-panel) {
+        ::view-transition-group(budget-section) {
             animation-duration: 360ms;
             animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        ::view-transition-old(budget-panel) {
+        ::view-transition-old(budget-section) {
             transform-origin: center bottom;
-            animation: budget-panel-out 180ms ease-in both;
+            animation: budget-section-back 180ms ease-in both;
         }
 
-        ::view-transition-new(budget-panel) {
+        ::view-transition-new(budget-section) {
             transform-origin: center bottom;
-            animation: budget-panel-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: budget-section-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
     }
@@ -125,9 +125,9 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-        ::view-transition-group(budget-panel),
-        ::view-transition-old(budget-panel),
-        ::view-transition-new(budget-panel) {
+        ::view-transition-group(budget-section),
+        ::view-transition-old(budget-section),
+        ::view-transition-new(budget-section) {
             animation: none;
         }
     }

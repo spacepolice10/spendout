@@ -1,25 +1,25 @@
 <article data-exchange-entry data-testid="exchange-history-item">
   <main>
     <div data-exchange-line>
-      <%= icon_tag(exchange.parent_source.icon, style: icon_colour_styles(exchange.parent_source.colour)) %>
+      <%= icon_tag(exchange.sender_source.icon, style: icon_colour_styles(exchange.sender_source.colour)) %>
 
       <strong data-exchange-name>
-        <%= exchange.parent_source.name %><%= " (Deleted)" if exchange.parent_source.deleted? %>
+        <%= exchange.sender_source.name %><%= " (Deleted)" if exchange.sender_source.deleted? %>
         <span aria-hidden="true">→</span>
-        <%= exchange.child_source.name %><%= " (Deleted)" if exchange.child_source.deleted? %>
+        <%= exchange.receiver_source.name %><%= " (Deleted)" if exchange.receiver_source.deleted? %>
       </strong>
 
       <span data-exchange-amounts>
         <span>
-          <strong><%= formatted_amount(exchange.parent_amount, exchange.parent_currency_code) %></strong>
-          <small><%= exchange.parent_currency_code %></small>
+          <strong><%= formatted_amount(exchange.sender_amount, exchange.sender_source.currency_code) %></strong>
+          <small><%= exchange.sender_source.currency_code %></small>
         </span>
 
         <span aria-hidden="true">→</span>
 
         <span>
-          <strong><%= formatted_amount(exchange.child_amount, exchange.child_currency_code) %></strong>
-          <small><%= exchange.child_currency_code %></small>
+          <strong><%= formatted_amount(exchange.receiver_amount, exchange.receiver_source.currency_code) %></strong>
+          <small><%= exchange.receiver_source.currency_code %></small>
         </span>
       </span>
     </div>

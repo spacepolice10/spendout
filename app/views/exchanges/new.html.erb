@@ -2,17 +2,17 @@
   <article data-elevation="1">
     <header>
       <nav>
-        <h1>Exchange from <%= @parent_source.name %></h1>
+        <h1>Exchange from <%= @sender_source.name %></h1>
       </nav>
       <small>
         Available:
-        <%= formatted_amount(@parent_source.spendable_amount, @parent_source.currency_code) %>
-        <%= @parent_source.currency_code %>
+        <%= formatted_amount(@sender_source.spendable_amount, @sender_source.currency_code) %>
+        <%= @sender_source.currency_code %>
       </small>
     </header>
 
     <main>
-      <%= render "form", budget: @budget, parent_source: @parent_source, exchange: @exchange %>
+      <%= render "form", budget: @budget, sender_source: @sender_source, exchange: @exchange %>
     </main>
   </article>
 </main>

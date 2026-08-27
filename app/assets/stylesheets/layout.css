@@ -40,7 +40,7 @@
 
             &[data-anchor="footer"] {
                 margin-block-start: auto;
-                view-transition-name: budget-panel;
+                view-transition-name: budget-section;
             }
 
             &[data-size="xs"] {

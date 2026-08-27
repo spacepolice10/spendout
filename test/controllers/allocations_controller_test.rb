@@ -213,7 +213,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: @allocation.name
     assert_select "dd", text: /300 USD/
     assert_select "dt", text: "Source", count: 0
-    assert_select "a[href='#{budget_expenses_path(@budget)}']", text: @budget.name
+    assert_select "a[href='#{budget_expenses_path(@budget)}']", text: @budget.date_period
     assert_select "a[aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']"
   end
 

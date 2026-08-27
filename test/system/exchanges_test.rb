@@ -7,7 +7,7 @@ class ExchangesTest < ApplicationSystemTestCase
   end
 
   test "does not show a real-time generated amount" do
-    amount = find("input[name='exchange[parent_amount]']", visible: :all)
+    amount = find("input[name='exchange[sender_amount]']", visible: :all)
     rate = find("input[name='exchange[rate]']", visible: :all)
 
     page.execute_script(<<~JAVASCRIPT, amount, rate)

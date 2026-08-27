@@ -31,12 +31,12 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     16.times do |index|
       exchange = @source.outgoing_exchanges.new(
         budget: @budget,
-        child_source_name: "Euro cash #{index}",
-        child_currency_code: "EUR",
-        parent_amount: 1,
+        receiver_source_name: "Euro cash #{index}",
+        receiver_currency_code: "EUR",
+        sender_amount: 1,
         rate: 1
       )
-      assert exchange.save_with_child_source
+      assert exchange.save_with_receiver_source
     end
 
     get budget_sources_path(@budget)
