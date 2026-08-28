@@ -1,0 +1,15 @@
+@layer base {
+
+    div {
+        &[data-layout="flex"] {
+            display: flex;
+            gap: var(--space-h-half);
+        }
+
+        &[data-layout="grid"] {
+            display: grid;
+            gap: var(--space-v);
+        }
+    }
+
+}

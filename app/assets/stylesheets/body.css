@@ -1,5 +1,3 @@
-/* Generic semantic layout styles */
-
 @layer base {
 
     body {
@@ -97,68 +95,8 @@
                     font-size: var(--font-size-xs);
                     white-space: nowrap;
                 }
-
             }
         }
     }
 
-    .sticky-action-footer {
-        position: sticky;
-        z-index: 1;
-        bottom: calc(var(--budget-tabbar-height) * 4);
-    }
-
-    div {
-        &[data-layout="flex"] {
-            display: flex;
-            gap: var(--space-h-half);
-        }
-
-        &[data-layout="grid"] {
-            display: grid;
-            gap: var(--space-v);
-        }
-    }
-
-    section {
-
-        &[data-layout="grid"] {
-            --grid-columns: auto-fit;
-            --grid-column-size: 200px;
-
-            display: grid;
-            gap: var(--space-v);
-            grid-template-columns: repeat(var(--grid-columns), minmax(var(--grid-column-size), 1fr));
-        }
-
-        &[data-layout="flex"] {
-            display: flex;
-            flex: 1 1 0;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: var(--space-h);
-
-            &>div {
-                display: flex;
-                align-items: center;
-                gap: var(--space-h);
-            }
-        }
-
-    }
-
-}
-
-@media (max-width: 520px) {
-    body>nav[aria-label="Budget sections"]>div {
-        gap: var(--space-h-half);
-        padding: var(--space-v-half) var(--space-h-half);
-
-        &>a[role="button"] {
-            padding: calc(var(--space-v-half) + 0.35rem) var(--space-h-half);
-            font-size: calc(var(--font-size-xs) + 0.05rem);
-        }
-
-    }
 }

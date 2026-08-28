@@ -12,7 +12,7 @@ module CurrentTimezone
   private
     def set_current_timezone(&)
       Current.timezone = timezone_from_cookie
-      Current.suggested_currency_code = Currency.currency_code_for_timezone(Current.timezone&.tzinfo&.identifier)
+      Current.suggested_currency_code = Currency.of_timezone(Current.timezone&.tzinfo&.identifier)
 
       Time.use_zone(Current.timezone || Time.zone_default, &)
     end

@@ -1,4 +1,4 @@
-<%# locals: (form:, currency_attribute:, rate_attribute:, base_currency_code:, open: false, converted_amount_label: nil) %>
+<%# locals: (form:, currency_attribute:, rate_attribute:, base_currency_code:, open: false, preferred_currencies: []) %>
 <% currency_code = form.object.public_send(currency_attribute).presence || base_currency_code %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
@@ -6,19 +6,15 @@
     <small data-form-target="summaryContent"><%= currency_code %></small>
   </summary>
 
-  <div>
-    <small> What currency is used? </small>
+  <div data-currency-fields>
+    <small>What currency is used?</small>
     <%= form.label currency_attribute, "Currency", class: "utilities--sr-only" %>
 
     <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
-          select_data: {
-            currency_fields_target: "currency",
-            action: "change->currency-fields#currencyChanged input->form#updateSummary"
-          },
-          filter_data: { form_target: "focus" },
-          rate_attribute: rate_attribute,
-          base_currency_code: base_currency_code,
-          converted_amount_label: converted_amount_label %>
+          filter_data: { form_target: "toBeFocused" },
+          preferred_currencies: preferred_currencies %>
+    <%= render "shared/currency_rate_picker", form: form, attribute: rate_attribute,
+          currency_code: currency_code, base_currency_code: base_currency_code %>
     <% unless mobile_variant? %>
       <small>
         Use <kbd>arrow keys</kbd> to switch.

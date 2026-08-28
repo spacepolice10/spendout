@@ -63,7 +63,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[data-currency-picker-target='filter'][autofocus]"
     assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
-    assert_select "dialog[data-currency-picker-target='currencyDialog'][aria-labelledby]"
+    assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency']"
     assert_select "button[data-currency-picker-target='currencyTrigger'][aria-haspopup='dialog']"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"

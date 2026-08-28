@@ -85,7 +85,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='allocation[currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
-    assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
+    assert_select "input[type='radio'][value='USD'][checked]"
     assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
@@ -93,12 +93,12 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='allocation[rate]'][data-amount-fields-fraction-digits-value='12']"
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
-    assert_select "dialog[data-currency-picker-target='rateDialog'][aria-labelledby]"
-    assert_select "button[data-currency-picker-target='rateTrigger'][aria-haspopup='dialog']"
+    assert_select "dialog#currency-rate-picker-dialog[data-currency-rate-picker-target='dialog'][aria-label='Confirm conversion rate']"
+    assert_select "button[data-currency-rate-picker-target='trigger'][aria-haspopup='dialog']"
     assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
-    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-url-value='#{currency_reference_path}']"
+    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
-    assert_select "dialog[data-currency-picker-target='rateDialog'] button[data-appearance='keycap']", text: "Apply"
+    assert_select "dialog[data-currency-rate-picker-target='dialog'] button[data-appearance='keycap']", text: "Apply"
     assert_select "input[name='allocation[amount]'][data-currency-fields-target='amount']"
     assert_select "select[name='allocation[source_id]']", count: 0
     assert_select "input[name='allocation[icon]'][type='radio']", count: Allocation.icon_options.size

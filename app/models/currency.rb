@@ -241,19 +241,24 @@ class Currency
       CATALOG.keys.map { |code| option_of(code) }
     end
 
+    def options_prioritizing(currencies)
+      options_by_code = options.index_by(&:last)
+      currencies.compact.uniq.filter_map { |code| options_by_code.delete(code) } + options_by_code.values
+    end
+
     def popular_options
       POPULAR_CURRENCIES.map { |code| option_of(code) }
     end
 
-    def currency_code_for_country(country_code)
+    def of_country(country_code)
       COUNTRY_CURRENCIES[country_code.to_s.upcase]
     end
 
-    def currency_code_for_timezone(timezone_identifier)
+    def of_timezone(timezone_identifier)
       identifier = timezone_identifier.to_s
       canonical_identifier = TIMEZONE_ALIASES.fetch(identifier, identifier)
 
-      currency_code_for_country(TIMEZONE_COUNTRIES[canonical_identifier])
+      of_country(TIMEZONE_COUNTRIES[canonical_identifier])
     end
 
     def find(code)

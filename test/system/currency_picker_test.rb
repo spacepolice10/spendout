@@ -34,7 +34,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_no_selector currency_dialog("[open]")
     assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
     assert_selector "button[data-currency-picker-target='currencyTrigger']", text: "VND Dong, 🇻🇳"
-    assert_selector "[data-currency-picker-target='attachment']:not([hidden])"
+    assert_selector "[data-controller~='currency-rate-picker']:not([hidden])"
   end
 
   test "selects the active filtered currency with Enter and closes the dialog" do
@@ -124,7 +124,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     choose_currency("dong", "VND Dong, 🇻🇳")
     choose_currency("dollar", "USD US Dollar, 🇺🇸")
 
-    assert_selector "[data-currency-picker-target='attachment'][hidden]", visible: :all
+    assert_selector "[data-controller~='currency-rate-picker'][hidden]", visible: :all
     assert_equal "1", rate.value
   end
 
@@ -163,7 +163,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     end
 
     def rate_trigger
-      "button[data-currency-picker-target='rateTrigger']"
+      "button[data-currency-rate-picker-target='trigger']"
     end
 
     def currency_dialog(suffix = "")
@@ -171,7 +171,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     end
 
     def rate_dialog(suffix = "")
-      "dialog[data-currency-picker-target='rateDialog']#{suffix}"
+      "dialog[data-currency-rate-picker-target='dialog']#{suffix}"
     end
 
     def visible_option

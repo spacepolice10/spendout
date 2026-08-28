@@ -22,7 +22,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-landing-price]", text: "$0 · self-hosted · your server, your data"
     assert_select "[data-landing-steps]", count: 0
     assert_select "[data-floating-ui], [data-float]", count: 0
-    assert_select "[data-landing-fuel] [data-daily-gauge][data-controller='gauge']", count: 1
+    assert_select "[data-landing-fuel] [data-daily-gauge][data-controller='daily-gauge']", count: 1
     assert_select "[data-landing-fuel] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[data-landing-fuel] [role='progressbar'][aria-valuenow='68.0']", count: 1
     assert_select "[data-landing-fuel] [data-daily-gauge] > header h2", count: 0
@@ -52,16 +52,15 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   test "landing distinguishes available behavior from planned work" do
     get landing_path
 
-    assert_select "[data-currency-story] [data-rate-board][data-controller='rate-board']", count: 1
+    assert_select "[data-currency-story] [data-rate-board]", count: 1
+    assert_select "[data-rate-board][data-controller]", count: 0
     assert_select "[data-rate-board] table", count: 1
     assert_select "[data-rate-board] caption", text: /dated reference rates.*confirm the direct quote/m
     assert_select "[data-rate-board-status]", text: "Sample rates"
-    assert_select "[data-rate-board-interval-value]", count: 0
     assert_select "[data-rate-board] tbody tr", count: 4
     assert_select "[data-rate-board]", text: /Pound sterling/, count: 0
-    assert_select "[data-rate-board-target='base']", count: 0
     assert_select "[data-rate-display]", text: "26,300"
-    assert_select "[data-rate-board-snapshots-value*='29,454.59']", count: 1
+    assert_select "[data-rate-board-snapshots-value]", count: 0
     assert_select "[data-currency-story] [data-rate-copy] article", count: 1
     assert_select "[data-currency-story] [data-rate-copy] h3", text: "Real currencies. Honest history."
     assert_select "[data-landing-chapter] > header h2", text: "Speaks your currency."

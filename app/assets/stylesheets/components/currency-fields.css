@@ -1,11 +1,11 @@
 @layer components {
-    .currency-picker {
+    :is(.currency-picker, [data-currency-fields]) {
         display: grid;
         gap: var(--space-v-half);
         min-width: 0;
 
         & > button,
-        & > [data-currency-picker-target="attachment"] > button {
+        & > [data-controller~="currency-rate-picker"] > button {
             justify-content: space-between;
             width: 100%;
             min-height: var(--form-control-height);
@@ -89,7 +89,7 @@
             gap: var(--space-v);
         }
 
-        & dialog[data-currency-picker-target="rateDialog"][open] {
+        & dialog[data-currency-rate-picker-target="dialog"][open] {
             display: flex;
             flex-direction: column;
             gap: var(--space-v);
@@ -133,7 +133,7 @@
             background-size: 2px 100%, 100% 2px, 100% 2px;
         }
 
-        & [data-currency-picker-target="attachment"] {
+        & [data-controller~="currency-rate-picker"] {
             display: grid;
             gap: var(--space-v-half);
 
@@ -143,7 +143,7 @@
 
         }
 
-        & [data-currency-rate-input] {
+        & [data-currency-rate-picker-textform] {
             display: grid;
             gap: var(--space-h-half);
 

@@ -30,10 +30,10 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
     find("label", text: /Rubles/).click
 
     assert_equal "RUB", find("select[name='expense[currency_code]']", visible: :all).value
-    assert_selector "input[data-currency-picker-target='radio'][value='RUB']:checked", visible: :all
+    assert_selector "input[value='RUB']:checked", visible: :all
     assert_selector "details > summary", text: /Currency:\s+RUB/i
     assert_field "expense_conversion_rate", with: "1", disabled: true, visible: :all
-    assert_selector "[data-currency-picker-target='attachment'][hidden]", visible: :all
+    assert_selector "[data-controller~='currency-rate-picker'][hidden]", visible: :all
     assert_no_selector "[data-expense-fields-target='sourceDebit'], [data-expense-fields-target='budgetValue']",
       visible: :all
   end

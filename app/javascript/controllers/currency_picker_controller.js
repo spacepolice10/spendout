@@ -2,23 +2,16 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "select", "currencyTrigger", "selection", "currencyDialog", "filter", "option", "radio",
-    "emptyState", "attachment", "rateTrigger", "rateSummary", "rateDialog", "rate", "ratePrompt"
+    "select", "currencyTrigger", "selection", "currencyDialog", "filter", "option", "emptyState"
   ]
-  static values = { baseCurrency: String, autofocus: Boolean }
+  static values = { autofocus: Boolean }
 
   connect() {
     this.events = new AbortController()
     const { signal } = this.events
     this.selectTarget.addEventListener("invalid", this.openInvalidCurrency, { signal })
-    if (this.hasRateTarget) {
-      this.rateTarget.addEventListener("invalid", this.openInvalidRate, { signal })
-      this.rateTarget.addEventListener("change", this.rateChanged, { signal })
-    }
-    this.element.addEventListener("currency-picker:availability-changed", this.availabilityChanged, { signal })
     this.element.addEventListener("currency-picker:select", this.selectCurrency, { signal })
     this.markSelected()
-    this.renderRateSummary()
     if (this.autofocusValue) queueMicrotask(() => this.openCurrency())
   }
 
@@ -29,11 +22,6 @@ export default class extends Controller {
     this.openCurrency()
   }
 
-  openInvalidRate = (event) => {
-    event.preventDefault()
-    this.openRate()
-  }
-
   openCurrency() {
     if (!this.currencyDialogTarget.open) this.currencyDialogTarget.showModal()
     this.filterTarget.value = ""
@@ -41,28 +29,15 @@ export default class extends Controller {
     queueMicrotask(() => this.filterTarget.focus())
   }
 
-  closeCurrency() { this.currencyDialogTarget.close() }
-  cancelCurrency() { /* Selection commits only when an option is chosen. */ }
-  currencyClosed() {
+  hideCurrency() { this.currencyDialogTarget.close() }
+  currencyHidden() {
     this.activate(null)
     this.currencyTriggerTarget.focus()
   }
   search() { this.filter() }
 
-  recommend(event) {
-    const option = this.optionTargets.find((candidate) =>
-      candidate.querySelector("input").value === event.detail.currency
-    )
-    const wrapper = option?.closest("[data-currency-picker-option]")
-    if (wrapper) wrapper.parentElement.prepend(wrapper)
-  }
-
   selectCurrency = (event) => {
-    this.selectTarget.value = event.detail.currency
-    this.markSelected()
-    this.renderRateSummary()
-    this.selectTarget.dispatchEvent(new Event("change", { bubbles: true }))
-    this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
+    this.select(event.detail.currency)
   }
 
   keydown(event) {
@@ -105,59 +80,14 @@ export default class extends Controller {
   }
 
   choose(event) {
-    this.selectTarget.value = event.currentTarget.value
-    this.selectTarget.dispatchEvent(new Event("change", { bubbles: true }))
-    this.selectTarget.dispatchEvent(new Event("input", { bubbles: true }))
-    this.markSelected()
-    this.renderRateSummary()
+    this.select(event.currentTarget.value)
     this.currencyDialogTarget.close()
   }
 
-  openRate() {
-    this.rateBeforeEdit = this.rateTarget.value
-    this.rateStartBeforeEdit = this.rateTarget.dataset.amountFieldsStartValue
-    if (!this.rateDialogTarget.open) this.rateDialogTarget.showModal()
-    queueMicrotask(() => this.rateTarget.focus())
-  }
-
-  applyRate() {
-    if (!this.rateTarget.reportValidity()) return
-    this.rateTarget.dataset.amountFieldsStartValue = this.rateTarget.value
-    this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
-    this.renderRateSummary()
-    this.rateDialogTarget.close("apply")
-  }
-
-  cancelRate(event) {
-    event?.preventDefault()
-    if (this.rateBeforeEdit !== undefined) {
-      this.rateTarget.value = this.rateBeforeEdit
-      this.rateTarget.dataset.amountFieldsStartValue = this.rateStartBeforeEdit || this.rateBeforeEdit
-      this.rateTarget.dispatchEvent(new Event("input", { bubbles: true }))
-      this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
-    }
-    if (this.rateDialogTarget.open) this.rateDialogTarget.close("cancel")
-  }
-
-  rateClosed() {
-    this.renderRateSummary()
-    this.rateTriggerTarget.focus()
-    this.rateBeforeEdit = undefined
-  }
-
-  rateEdited() { /* Calculations update live; trigger text updates only after Apply. */ }
-
-  rateChanged = () => {
-    if (!this.hasRateDialogTarget || !this.rateDialogTarget.open) this.renderRateSummary()
-  }
-
-  availabilityChanged = (event) => {
-    if (!this.hasAttachmentTarget) return
-    this.attachmentTarget.hidden = !event.detail.available
-    if (event.detail.baseCurrency) {
-      this.attachmentTarget.dataset.currencyPickerBaseCurrency = event.detail.baseCurrency
-    }
-    this.renderRateSummary()
+  select(currency) {
+    this.selectTarget.value = currency
+    this.markSelected()
+    this.selectTarget.dispatchEvent(new Event("change", { bubbles: true }))
   }
 
   activate(option) {
@@ -183,21 +113,6 @@ export default class extends Controller {
       if (selected) selectedOption = option
     })
     this.selectionTarget.textContent = selectedOption?.dataset.filterValue || "Choose a currency"
-  }
-
-  renderRateSummary() {
-    if (!this.hasRateSummaryTarget || !this.hasRateTarget) return
-    const rate = this.rateTarget.value.trim()
-    const base = this.attachmentTarget.dataset.currencyPickerBaseCurrency || this.baseCurrencyValue
-    const selected = this.selectTarget.value
-    const prompt = `Enter how many units of ${selected} are in 1 ${base}`
-    if (this.hasRatePromptTarget) this.ratePromptTarget.textContent = prompt
-    this.rateTarget.setAttribute("aria-label", prompt)
-    if (rate === "") {
-      this.rateSummaryTarget.textContent = "Enter rate"
-      return
-    }
-    this.rateSummaryTarget.textContent = `1 ${base} = ${rate} ${selected}`
   }
 
   get visibleOptions() { return this.optionTargets.filter((option) => !option.hidden) }

@@ -87,9 +87,9 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[role='combobox'][aria-autocomplete='list'][aria-expanded='true']"
     assert_select "[data-currency-search-icon] .icon[style*='--icon-search']"
-    assert_select "dialog[data-currency-picker-target='currencyDialog'][aria-labelledby]"
+    assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency']"
     assert_select "button[data-currency-picker-target='currencyTrigger'][aria-haspopup='dialog']"
-    assert_select "input[type='radio'][value='USD'][data-currency-picker-target='radio'][checked]"
+    assert_select "input[type='radio'][value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
     assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
@@ -98,12 +98,12 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[rate]'][data-amount-fields-fraction-digits-value='12']"
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
-    assert_select "dialog[data-currency-picker-target='rateDialog'][aria-labelledby]"
-    assert_select "button[data-currency-picker-target='rateTrigger'][aria-haspopup='dialog']"
+    assert_select "dialog#currency-rate-picker-dialog[data-currency-rate-picker-target='dialog'][aria-label='Confirm conversion rate']"
+    assert_select "button[data-currency-rate-picker-target='trigger'][aria-haspopup='dialog']"
     assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
-    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-url-value='#{currency_reference_path}']"
+    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
-    assert_select "dialog[data-currency-picker-target='rateDialog'] button[data-appearance='keycap']", text: "Apply"
+    assert_select "dialog[data-currency-rate-picker-target='dialog'] button[data-appearance='keycap']", text: "Apply"
     assert_select "input[name='source[amount]'][data-currency-fields-target='amount']"
   end
 
@@ -117,7 +117,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "form kbd", count: 0
     assert_select "form input[autofocus]", count: 0
-    assert_select "form[data-form-focus-on-toggle-value='false']"
+    assert_select "form[data-form-focused-on-toggle-value='false']"
   end
 
   test "new shows keyboard tips on desktop devices" do
@@ -129,7 +129,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "form kbd"
-    assert_select "form[data-form-focus-on-toggle-value='true']"
+    assert_select "form[data-form-focused-on-toggle-value='true']"
   end
 
   test "creates a source from catalog values" do

@@ -1,0 +1,31 @@
+@layer base {
+
+    section {
+
+        &[data-layout="grid"] {
+            --grid-columns: auto-fit;
+            --grid-column-size: 200px;
+
+            display: grid;
+            gap: var(--space-v);
+            grid-template-columns: repeat(var(--grid-columns), minmax(var(--grid-column-size), 1fr));
+        }
+
+        &[data-layout="flex"] {
+            display: flex;
+            flex: 1 1 0;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-h);
+
+            &>div {
+                display: flex;
+                align-items: center;
+                gap: var(--space-h);
+            }
+        }
+
+    }
+
+}

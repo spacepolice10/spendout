@@ -11,8 +11,7 @@
       <%= form.collection_radio_buttons :colour, form.object.class.colour_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text, style: "--form-checked-background: var(--color-palette-#{radio.value}); --form-checked-color: var(--color-invert-1);" do %>
           <%= radio.radio_button aria: { label: radio.text }, data: input_data.merge({
-                form_target: "focus",
-                action: "input->form#updateSummary"
+                form_target: "toBeFocused"
               }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
           <%= icon("circle-dot", style: "color: var(--color-palette-#{radio.value});") %>
         <% end %>

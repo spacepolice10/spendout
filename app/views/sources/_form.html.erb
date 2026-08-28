@@ -3,7 +3,7 @@
       controller: "form currency-fields",
       form_focused_on_toggle_value: !mobile_variant?,
       currency_fields_base_currency_value: budget.base_currency_code,
-      currency_fields_reference_url_value: currency_reference_path
+      currency_fields_reference_link_value: currency_reference_path
     } do |form| %>
   <% if source.errors.any? %>
     <section role="alert" data-form-errors>

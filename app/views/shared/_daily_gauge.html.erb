@@ -1,8 +1,8 @@
 <%# locals: (amount:, currency_code:, percentage:) %>
 <% remainder_percentage = percentage.to_f.round(2) %>
-<% needle_angle = (remainder_percentage * 1.8 - 90).round(2) %>
+<% needle_position = (remainder_percentage * 1.8 - 90).round(2) %>
 
-<div data-daily-gauge data-controller="gauge">
+<div data-daily-gauge data-controller="daily-gauge">
   <div
     role="progressbar"
     aria-label="Safe spending available today"
@@ -43,7 +43,7 @@
 
         <g
           data-remainder-gauge-needle
-          transform="rotate(<%= needle_angle %> 120 118)"
+          transform="rotate(<%= needle_position %> 120 118)"
         >
           <rect
             x="117.5"
@@ -55,7 +55,7 @@
 
         <g
           data-remainder-gauge-hub
-          transform="rotate(<%= needle_angle %> 120 118)"
+          transform="rotate(<%= needle_position %> 120 118)"
         >
           <circle cx="120" cy="118" r="12" />
 

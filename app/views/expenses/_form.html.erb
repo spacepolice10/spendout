@@ -1,11 +1,9 @@
 <%= form_with model: [ budget, expense ], data: {
       expense_form: true,
       controller: "form expense-fields",
-      form_focus_on_toggle_value: !mobile_variant?,
-      action: "input->expense-fields#refresh change->expense-fields#refresh",
+      form_focused_on_toggle_value: !mobile_variant?,
       expense_fields_sources_value: expense_currency_context.to_json,
-      expense_fields_budget_currency_value: budget.base_currency_code,
-      expense_fields_reference_url_value: currency_reference_path
+      expense_fields_reference_link_value: currency_reference_path
     } do |form| %>
   <% if expense.errors.any? %>
     <section role="alert" data-form-errors>
@@ -44,7 +42,7 @@
                       style: "--source-colour: var(--color-palette-#{source.colour});" do %>
                   <%= form.radio_button :source_id, source.id, required: true,
                         data: {
-                          form_target: "focus",
+                          form_target: "toBeFocused",
                           expense_fields_target: "source",
                           action: "change->expense-fields#sourceChanged"
                         } %>
@@ -93,7 +91,7 @@
                     aria: { label: "Find or add category" },
                     data: {
                       category_fields_target: "filter",
-                      form_target: "focus",
+                      form_target: "toBeFocused",
                       action: "input->category-fields#filter"
                     } %>
 
@@ -153,7 +151,7 @@
                 min: budget.period_from,
                 max: budget.period_to,
                 required: true,
-                data: { form_target: "focus" } %>
+                data: { form_target: "toBeFocused" } %>
           <% end %>
         </div>
       <% end %>
@@ -170,41 +168,19 @@
         <div data-optional-item-control>
           <%= form.label :note do %>
             <%= form.text_area :note, maxlength: 200, placeholder: "Optional",
-                  data: {
-                    form_target: "focus autosize",
-                    action: "input->form#resizeToContent"
-                  } %>
+                  data: { form_target: "toBeFocused" } %>
           <% end %>
         </div>
       <% end %>
     </div>
   </div>
 
-  <details name="form-details" data-form-target="section"<%= " open" if expense.errors[:currency_code].any? || expense.errors[:conversion_rate].any? %>>
-    <summary data-form-target="summary">
-      <span> Currency: </span>
-      <small data-form-target="summaryContent"><%= expense.currency_code %></small>
-    </summary>
-
-    <div>
-      <small>What currency was the expense in?</small>
-      <%= form.label :currency_code, "Currency", class: "utilities--sr-only" %>
-      <%= render "shared/currency_picker", form: form, attribute: :currency_code,
-            select_data: {
-              expense_fields_target: "currency",
-              action: "change->expense-fields#currencyChanged input->form#updateSummary"
-            },
-            filter_data: { form_target: "focus" },
-            rate_attribute: :conversion_rate,
-            base_currency_code: expense.source&.currency_code,
-            rate_mode: :direct,
-            preferred_currency_codes: [
-              budget.last_expense_currency_code,
-              budget.base_currency_code,
-              expense.source&.currency_code
-            ] %>
-    </div>
-  </details>
+  <%= render "shared/currency_fields", form: form,
+        currency_attribute: :currency_code, rate_attribute: :conversion_rate,
+        base_currency_code: expense.source&.currency_code,
+        open: expense.errors[:currency_code].any? || expense.errors[:conversion_rate].any?,
+        preferred_currencies: [ budget.last_expense_currency_code,
+          budget.base_currency_code, expense.source&.currency_code ] %>
 
   <footer>
     <div data-layout="flex">

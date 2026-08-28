@@ -88,34 +88,17 @@
       </p>
     </header>
 
-    <% rate_snapshots = [
-      {
-        base: "USD",
-        rows: [
-          { code: "EUR", name: "Euro", rate: "0.8929" },
-          { code: "CAD", name: "Canadian dollar", rate: "1.3800" },
-          { code: "JPY", name: "Japanese yen", rate: "147.20" },
-          { code: "VND", name: "Vietnamese dong", rate: "26,300" }
-        ]
-      },
-      {
-        base: "EUR",
-        rows: [
-          { code: "USD", name: "US dollar", rate: "1.1200" },
-          { code: "CAD", name: "Canadian dollar", rate: "1.5455" },
-          { code: "JPY", name: "Japanese yen", rate: "164.86" },
-          { code: "VND", name: "Vietnamese dong", rate: "29,454.59" }
-        ]
-      }
+    <% sample_rates = [
+      { code: "EUR", name: "Euro", rate: "0.8929" },
+      { code: "CAD", name: "Canadian dollar", rate: "1.3800" },
+      { code: "JPY", name: "Japanese yen", rate: "147.20" },
+      { code: "VND", name: "Vietnamese dong", rate: "26,300" }
     ] %>
 
     <div data-currency-story>
       <section
         data-rate-board
-        data-controller="rate-board"
-        data-rate-board-snapshots-value="<%= rate_snapshots.to_json %>"
         aria-labelledby="rate-board-title"
-        tabindex="0"
       >
         <header>
           <p data-rate-board-status>Sample rates</p>
@@ -134,14 +117,14 @@
             </tr>
           </thead>
           <tbody>
-            <% rate_snapshots.first[:rows].each do |row| %>
-              <tr data-rate-board-target="row">
+            <% sample_rates.each do |row| %>
+              <tr>
                 <th scope="row">
                   <strong data-rate-code><%= row[:code] %></strong>
                   <span data-rate-name><%= row[:name] %></span>
                 </th>
                 <td>
-                  <output data-rate-board-target="rate" data-rate-display><%= row[:rate] %></output>
+                  <output data-rate-display><%= row[:rate] %></output>
                 </td>
               </tr>
             <% end %>

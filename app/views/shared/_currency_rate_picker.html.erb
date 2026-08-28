@@ -1,0 +1,38 @@
+<%# locals: (form:, attribute:, currency_code:, base_currency_code:) %>
+<% rate = form.object.public_send(attribute) %>
+<% available = currency_code.present? && currency_code != base_currency_code %>
+
+<div data-controller="currency-rate-picker"
+  data-currency-rate-picker-base-currency-value="<%= base_currency_code %>"
+  data-currency-rate-picker-currency-value="<%= currency_code %>"
+  data-currency-fields-target="rateFields" data-expense-fields-target="fields"
+  <%= "hidden" unless available %>>
+  <button type="button" aria-haspopup="dialog" aria-controls="currency-rate-picker-dialog"
+    data-currency-rate-picker-target="trigger" data-action="currency-rate-picker#open">
+    <span data-currency-rate-picker-target="summary"><%= rate.present? ? rate.to_s("F") : "Enter rate" %></span>
+    <%= icon("chevron-right", aria: { hidden: true }) %>
+  </button>
+  <dialog id="currency-rate-picker-dialog" aria-label="Confirm conversion rate"
+    data-currency-rate-picker-target="dialog"
+    data-action="cancel->currency-rate-picker#hide close->currency-rate-picker#hidden">
+    <header>
+      <h2>Confirm conversion rate</h2>
+      <button type="button" aria-label="Cancel rate changes" data-action="currency-rate-picker#hide">&times;</button>
+    </header>
+    <label for="<%= form.field_id(attribute) %>" data-currency-rate-picker-target="prompt">
+      Enter how many units of <%= currency_code %> are in 1 <%= base_currency_code %>
+    </label>
+    <div data-currency-rate-picker-textform>
+      <%= form.text_field attribute, inputmode: "decimal", required: true,
+        data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
+          amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
+          amount_fields_minimum_exclusive_value: true,
+          expense_fields_target: "rate", currency_fields_target: "rate",
+          form_target: "toBeFocused", currency_rate_picker_target: "rate" } %>
+    </div>
+    <footer data-layout="flex">
+      <button type="button" data-appearance="keycap" data-intent="primary"
+        data-action="currency-rate-picker#apply">Apply</button>
+    </footer>
+  </dialog>
+</div>

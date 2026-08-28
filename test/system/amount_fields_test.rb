@@ -80,7 +80,7 @@ class AmountFieldsTest < ApplicationSystemTestCase
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
-    find("button[data-currency-picker-target='rateTrigger']").click
+    find("button[data-currency-rate-picker-target='trigger']").click
     rate = find("input[name='source[rate]']")
 
     input_value(rate, "0")
@@ -140,7 +140,7 @@ class AmountFieldsTest < ApplicationSystemTestCase
 
     input_value(find("input[name='source[amount]']", visible: :all), "52000")
 
-    find("button[data-currency-picker-target='rateTrigger']").click
+    find("button[data-currency-rate-picker-target='trigger']").click
     rate = find("input[name='source[rate]']")
     input_value(rate, "26000")
 

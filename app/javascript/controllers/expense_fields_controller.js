@@ -2,16 +2,17 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ "currency", "source", "fields", "rate" ]
-  static values = { sources: Object, budgetCurrency: String, referenceUrl: String }
+  static values = { sources: Object, referenceLink: String }
 
   connect() {
-    this.amountInput = this.element.querySelector("input[name='expense[amount]']")
-    this.previousSourceId = this.sourceId
-    this.previousCurrency = this.currencyTarget.value
+    this.events = new AbortController()
+    this.currencyTarget.addEventListener("change", this.currencyChanged, { signal: this.events.signal })
     this.updateFields({ preserveRate: true })
   }
 
-  currencyChanged() {
+  disconnect() { this.events.abort() }
+
+  currencyChanged = () => {
     this.updateFields({ preserveRate: false })
   }
 
@@ -25,17 +26,6 @@ export default class extends Controller {
     }))
   }
 
-  refresh(event) {
-    const sourceChanged = this.sourceId !== this.previousSourceId
-    const currencyChanged = this.currencyTarget.value !== this.previousCurrency
-
-    if (sourceChanged || currencyChanged) {
-      this.updateFields({ preserveRate: false })
-    } else {
-      this.render()
-    }
-  }
-
   async updateFields({ preserveRate }) {
     const source = this.source
     const sourceId = this.sourceId
@@ -45,15 +35,12 @@ export default class extends Controller {
     const sameCurrency = currency === source.currency
     const available = !sameCurrency
     this.fieldsTarget.dataset.currencyPickerAvailable = String(available)
-    this.fieldsTarget.dispatchEvent(new CustomEvent("currency-picker:availability-changed", {
+    this.fieldsTarget.dispatchEvent(new CustomEvent("currency-rate-picker:availability-changed", {
       bubbles: true,
-      detail: { available, baseCurrency: source.currency }
+      detail: { available, baseCurrency: source.currency, currency }
     }))
     this.rateTarget.disabled = sameCurrency
     this.rateTarget.required = !sameCurrency
-    this.previousSourceId = this.sourceId
-    this.previousCurrency = this.currencyTarget.value
-
     if (sameCurrency) {
       this.setRate("1")
     } else {
@@ -66,8 +53,6 @@ export default class extends Controller {
       }
     }
   }
-
-  render() {}
 
   setRate(value) {
     this.rateTarget.value = value
@@ -95,14 +80,14 @@ export default class extends Controller {
   async referenceRates() {
     if (this.referenceRatesPromise) return this.referenceRatesPromise
 
-    const request = new URL(this.referenceUrlValue, window.location.origin)
+    const request = new URL(this.referenceLinkValue, window.location.origin)
     request.searchParams.set("base", "USD")
 
     this.referenceRatesPromise = (async () => {
       const response = await fetch(request, { headers: { Accept: "application/json" } })
       if (!response.ok) return {}
 
-      return (await response.json()).rates || {}
+      return (await response.json()).rate_catalog || {}
     })().catch(() => ({}))
 
     return this.referenceRatesPromise

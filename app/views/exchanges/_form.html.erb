@@ -1,9 +1,9 @@
 <%= form_with model: exchange, url: source_exchanges_path(sender_source), data: {
       controller: "form currency-fields",
-      form_focus_on_toggle_value: !mobile_variant?,
+      form_focused_on_toggle_value: !mobile_variant?,
       currency_fields_base_currency_value: sender_source.currency_code,
       currency_fields_operation_value: "multiply",
-      currency_fields_reference_url_value: currency_reference_path
+      currency_fields_reference_link_value: currency_reference_path
     } do |form| %>
   <% if exchange.errors.any? %>
     <section role="alert" data-form-errors>
@@ -28,18 +28,17 @@
       <small>How much should be taken from <%= sender_source.name %>?</small>
       <%= form.label :sender_amount, "Amount from #{sender_source.currency_code}", class: "utilities--sr-only" %>
       <%= form.text_field :sender_amount, inputmode: "decimal", placeholder: "0", required: true,
-            data: { controller: "amount-fields", form_target: "focus",
+            data: { controller: "amount-fields", form_target: "toBeFocused",
               amount_fields_start_value: exchange.sender_amount&.to_s("F"),
               amount_fields_minimum_value: "0", amount_fields_minimum_exclusive_value: true,
               currency_fields_target: "amount",
-              action: "input->currency-fields#calculate input->form#updateSummary" } %>
+              action: "input->currency-fields#calculate" } %>
     </div>
   </details>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :receiver_currency_code, rate_attribute: :rate,
-        base_currency_code: sender_source.currency_code,
-        converted_amount_label: "New source amount" %>
+        base_currency_code: sender_source.currency_code %>
 
   <div data-layout="flex" style="flex-wrap: wrap;">
     <%= link_to budget_sources_path(budget), role: "button", data: { appearance: "keycap", intent: "secondary", size: "lg" } do %>

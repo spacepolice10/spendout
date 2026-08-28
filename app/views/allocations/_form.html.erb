@@ -1,11 +1,11 @@
 <%= form_with model: [ budget, allocation ], data: {
       allocation_form: true,
       controller: "form currency-fields category-icon",
-      form_focus_on_toggle_value: !mobile_variant?,
+      form_focused_on_toggle_value: !mobile_variant?,
       category_icon_keywords_value: CategoryIcon::KEYWORDS,
       category_icon_colours_value: CategoryIcon::COLOURS,
       currency_fields_base_currency_value: budget.base_currency_code,
-      currency_fields_reference_url_value: currency_reference_path
+      currency_fields_reference_link_value: currency_reference_path
     } do |form| %>
   <% if allocation.errors.any? %>
     <section role="alert" data-form-errors>
@@ -25,7 +25,7 @@
   <%= render "shared/name_fields", form: form, placeholder: "Rent, groceries, emergency fund, etc.",
         input_data: {
           category_icon_target: "name",
-          action: "input->form#updateSummary input->category-icon#suggest"
+          action: "input->category-icon#suggest"
         } %>
   <%= render "shared/amount_fields", form: form, amount_attribute: :amount %>
 
@@ -35,11 +35,11 @@
 
   <%= render "shared/icon_fields", form: form, input_data: {
         category_icon_target: "icon",
-        action: "input->form#updateSummary input->category-icon#chooseIcon"
+        action: "input->category-icon#chooseIcon"
       } %>
   <%= render "shared/colour_fields", form: form, input_data: {
         category_icon_target: "colour",
-        action: "input->form#updateSummary input->category-icon#chooseColour"
+        action: "input->category-icon#chooseColour"
       } %>
 
   <div data-layout="flex">

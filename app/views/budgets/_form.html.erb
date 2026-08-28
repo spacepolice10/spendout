@@ -1,8 +1,7 @@
 <%= form_with model: budget, data: {
       budget_form: true,
-      controller: "form date-fields",
-      form_focused_on_toggle_value: !mobile_variant?,
-      action: "change->date-fields#validate"
+      controller: "form",
+      form_focused_on_toggle_value: !mobile_variant?
     } do |form| %>
   <% if budget.errors.any? %>
     <section role="alert" data-form-errors>

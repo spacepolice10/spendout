@@ -17,4 +17,8 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       )
       visit root_path
     end
+
+    def sign_out
+      page.driver.browser.manage.delete_cookie("session_id")
+    end
 end

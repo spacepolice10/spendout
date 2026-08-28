@@ -33,7 +33,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "article[data-elevation='2'] > header", count: 0
     assert_select "article[data-elevation='2'] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
-    assert_select "[data-daily-gauge][data-controller='gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
+    assert_select "[data-daily-gauge][data-controller='daily-gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
     assert_select "a[href='#{new_budget_expense_path(@budget)}']"
     assert_select "a", text: "Currencies", count: 0
   end
@@ -118,7 +118,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-optional-item-control] label[for='expense_occurred_on']"
     assert_select "[data-optional-item-control] label[for='expense_note']"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
-    assert_select "textarea[name='expense[note]'][maxlength='200'][data-form-target~='autosize'][data-action='input->form#resizeToContent']"
+    assert_select "textarea[name='expense[note]'][maxlength='200']"
     assert_select "textarea[name='expense[note]'][rows]", count: 0
     assert_select "input[type='text'][name]#expense_category_filter", count: 0
     assert_select "details[data-controller~='category-fields'] fieldset[data-expense-allocations]"

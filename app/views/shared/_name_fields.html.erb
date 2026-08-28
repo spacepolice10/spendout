@@ -18,8 +18,7 @@
     <%= form.text_field name_attribute, required: true, placeholder: placeholder,
       autofocus: open && !mobile_variant?,
       data: input_data.merge({
-        form_target: "focus",
-        action: "input->form#updateSummary"
+        form_target: "toBeFocused"
       }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
 
     <% unless mobile_variant? %>

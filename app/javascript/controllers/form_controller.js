@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["section", "focus", "summary", "summaryContent", "autosize"]
+  static targets = ["section", "toBeFocused", "summary", "summaryContent"]
   static values = { focusedOnToggle: { type: Boolean, default: true } }
 
   connect() {
@@ -11,8 +11,7 @@ export default class extends Controller {
     this.element.addEventListener("invalid", this.openInvalidSection, { capture: true, signal })
     this.element.addEventListener("keydown", this.navigate, { signal })
     this.element.addEventListener("toggle", this.focusingOpenedSection, { capture: true, signal })
-
-    requestAnimationFrame(() => this.autosizeTargets.forEach(this.resizeToContent))
+    this.element.addEventListener("change", this.updateSummary, { signal })
   }
 
   disconnect() {
@@ -21,7 +20,7 @@ export default class extends Controller {
 
   navigate = (event) => {
     if (event.key !== "Enter" || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return
-    if (!event.target.matches('[data-form-target~="focus"]')) return
+    if (!event.target.matches('[data-form-target~="toBeFocused"]')) return
 
     const section = event.target.closest('[data-form-target~="section"]')
     const currentSection = this.sectionTargets.indexOf(section)
@@ -48,17 +47,10 @@ export default class extends Controller {
 
     const summary = section.querySelector('[data-form-target~="summary"]')
     if (document.activeElement === summary) this.focusSection(section)
-    section.querySelectorAll('[data-form-target~="autosize"]').forEach(this.resizeToContent)
-  }
-
-  resizeToContent = (textareaOrEvent) => {
-    const textarea = textareaOrEvent.currentTarget || textareaOrEvent
-    textarea.style.blockSize = "auto"
-    textarea.style.blockSize = `${textarea.scrollHeight}px`
   }
 
   focusSection(section) {
-    const inputs = Array.from(section.querySelectorAll('[data-form-target~="focus"]'))
+    const inputs = Array.from(section.querySelectorAll('[data-form-target~="toBeFocused"]'))
       .filter((input) => !input.disabled && !input.hidden)
     const input = inputs.find((input) => input.checked) || inputs[0]
     input?.focus()
@@ -72,7 +64,7 @@ export default class extends Controller {
     return false
   }
 
-  updateSummary(event) {
+  updateSummary = (event) => {
     const summary = event.target
       .closest('[data-form-target~="section"]')
       ?.querySelector('[data-form-target~="summaryContent"]')

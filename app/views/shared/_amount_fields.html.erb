@@ -15,12 +15,12 @@
       value: default_amount ? amount || 0 : amount,
       data: {
         controller: "amount-fields",
-        form_target: "focus",
+        form_target: "toBeFocused",
         amount_fields_start_value: amount ? amount.to_s("F") : (default_amount ? "0" : nil),
         amount_fields_minimum_value: minimum,
         amount_fields_minimum_exclusive_value: minimum_exclusive,
         currency_fields_target: "amount",
-        action: "input->currency-fields#calculate input->form#updateSummary"
+        action: "input->currency-fields#calculate"
       } %>
     <% unless mobile_variant? %>
       <small>

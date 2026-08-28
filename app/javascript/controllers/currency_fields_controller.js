@@ -5,17 +5,20 @@ export default class extends Controller {
   static values = {
     baseCurrency: String,
     operation: { type: String, default: "divide" },
-    referenceUrl: String
+    referenceLink: String
   }
 
   connect() {
-    this.previousCurrency = this.currencyTarget.value
+    this.events = new AbortController()
+    this.currencyTarget.addEventListener("change", this.currencyChanged, { signal: this.events.signal })
     this.validateCurrency()
     this.updateRateFields()
     this.calculate()
   }
 
-  async currencyChanged() {
+  disconnect() { this.events.abort() }
+
+  currencyChanged = async () => {
     const selectedCurrency = this.currencyTarget.value
     this.validateCurrency()
     this.updateRateFields()
@@ -32,7 +35,6 @@ export default class extends Controller {
       }
     }
 
-    this.previousCurrency = this.currencyTarget.value
     this.calculate()
   }
 
@@ -48,8 +50,6 @@ export default class extends Controller {
   calculate() {
     queueMicrotask(() => this.render())
   }
-
-  rateEdited() {}
 
   render() {
     if (!this.hasConvertedTarget) return
@@ -89,9 +89,9 @@ export default class extends Controller {
     const available = this.currencyTarget.value !== "" &&
       this.currencyTarget.value !== this.baseCurrencyValue
     this.rateFieldsTarget.dataset.currencyPickerAvailable = String(available)
-    this.rateFieldsTarget.dispatchEvent(new CustomEvent("currency-picker:availability-changed", {
+    this.rateFieldsTarget.dispatchEvent(new CustomEvent("currency-rate-picker:availability-changed", {
       bubbles: true,
-      detail: { available, baseCurrency: this.baseCurrencyValue }
+      detail: { available, baseCurrency: this.baseCurrencyValue, currency: this.currencyTarget.value }
     }))
   }
 
@@ -107,7 +107,7 @@ export default class extends Controller {
   async referenceRates() {
     if (this.referenceRatesPromise) return this.referenceRatesPromise
 
-    const request = new URL(this.referenceUrlValue, window.location.origin)
+    const request = new URL(this.referenceLinkValue, window.location.origin)
     request.searchParams.set("base", "USD")
 
     this.referenceRatesPromise = (async () => {
