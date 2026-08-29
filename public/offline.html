@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#d92d20">
+    <title>Spendout is offline</title>
+    <style>
+      :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+      body { display: grid; min-height: 100vh; margin: 0; place-items: center; background: Canvas; color: CanvasText; }
+      main { max-width: 32rem; padding: 2rem; text-align: center; }
+      img { width: 8rem; height: 8rem; }
+      button { padding: 0.75rem 1rem; font: inherit; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icon.png" alt="">
+      <h1>You’re offline</h1>
+      <p>Spendout needs a connection to load and change your budget safely.</p>
+      <button type="button" onclick="location.reload()">Try again</button>
+    </main>
+  </body>
+</html>

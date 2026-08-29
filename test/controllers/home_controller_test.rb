@@ -36,7 +36,42 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-section-number]", count: 0
     assert_select "a[role='button'][href='#{new_session_path}']", text: "Try Spendout", minimum: 1
     assert_select "[data-landing-actions] a[role='button'][href='https://github.com/spacepolice10/spendout']", text: "GitHub", count: 1
+    assert_select "[data-landing-actions] a[role='button'][href='#{tour_path}']", text: "Take the tour", count: 1
     assert_select "nav[aria-label='Budget sections']", count: 0
+  end
+
+
+  test "tour is public and links to one page per feature" do
+    get tour_path
+
+    assert_response :success
+    assert_select "title", text: /Tour Spendout/
+    assert_select "main[data-page='tour']"
+    assert_select "[data-tour-slide='welcome']", count: 1
+    assert_select "[data-tour-screen]", count: 0
+    assert_select "a[href='#{tour_path(feature: "keyboard-friendly")}']", text: /Start the tour/
+    assert_select "nav[aria-label='Budget sections']", count: 0
+
+    {
+      "keyboard-friendly" => [ "Keyboard friendly", "tour-expense-form" ],
+      "currency-suggested" => [ "Currency suggested", "tour-currency-open" ],
+      "easy-to-correct" => [ "Easy to correct", "tour-expense-form" ],
+      "honest-history" => [ "History stays honest", "tour-sources" ],
+      "categorize-spending" => [ "Categorize spending", "tour-expense-category-open" ],
+      "styled-categories" => [ "Categories style themselves", "tour-category-style-open" ],
+      "confirm-rates" => [ "Confirm every rate", "tour-rate-confirm-open" ],
+      "source-exchanges" => [ "Exchange between sources", "tour-exchange-amount-open" ],
+      "expense-notes" => [ "Add useful context", "tour-expense-note-open" ]
+    }.each do |feature, (label, image_name)|
+      get tour_path(feature: feature)
+
+      assert_response :success
+      assert_select "[data-tour-slide]", count: 1
+      assert_select "[data-tour-screen] img", count: 1
+      assert_select "[data-tour-screen] img[src*='#{image_name}']", count: 1
+      assert_select "[data-tour-count]", text: label
+      assert_select "[data-tour-pager]", count: 1
+    end
   end
 
   test "landing sends an authenticated visitor to their budget without showing the tab bar" do

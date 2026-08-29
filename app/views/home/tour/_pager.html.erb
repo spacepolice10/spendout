@@ -1,0 +1,19 @@
+<nav data-tour-pager aria-label="<%= label %>">
+  <% if @tour_previous %>
+    <%= link_to tour_path(feature: @tour_previous == "welcome" ? nil : @tour_previous), rel: "prev" do %>
+      <span aria-hidden="true">←</span> Prev
+    <% end %>
+  <% end %>
+
+  <span><%= count %></span>
+
+  <% if @tour_next %>
+    <%= link_to tour_path(feature: @tour_next), rel: "next" do %>
+      <%= @tour_next == "finish" ? "Finish" : "Next" %> <span aria-hidden="true">→</span>
+    <% end %>
+  <% else %>
+    <%= link_to tour_path do %>
+      Again <span aria-hidden="true">↑</span>
+    <% end %>
+  <% end %>
+</nav>

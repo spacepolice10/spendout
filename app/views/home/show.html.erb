@@ -28,6 +28,9 @@
       </p>
 
       <div data-landing-actions>
+        <%= link_to "Take the tour", tour_path,
+              role: "button", data: { appearance: "keycap" } %>
+
         <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path,
               role: "button", data: { appearance: "keycap", intent: "primary" } %>
 
@@ -177,8 +180,8 @@
         <h3><%= icon("edit") %> Easy to correct</h3>
 
         <p>
-          Edit the amount, note, category, source, or occurrence date when
-          reality changes.
+          Delete and recreate an expense when reality changes. The corrected
+          record gets a fresh, honest currency snapshot.
         </p>
       </article>
 
