@@ -20,6 +20,7 @@ export default class extends Controller {
 
   navigate = (event) => {
     if (event.key !== "Enter" || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return
+    if (event.target.closest("dialog[open]")) return
     if (!event.target.matches('[data-form-target~="toBeFocused"]')) return
 
     const section = event.target.closest('[data-form-target~="section"]')

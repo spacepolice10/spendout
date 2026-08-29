@@ -47,16 +47,17 @@ export default class extends Controller {
       return
     }
     if (!["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) return
-    const options = this.visibleOptions
-    if (options.length === 0) return
 
     if (event.key === "Enter") {
-      if (!this.activeOption) return
       event.preventDefault()
       event.stopPropagation()
+      if (!this.activeOption) return
       this.activeOption.querySelector("input").click()
       return
     }
+
+    const options = this.visibleOptions
+    if (options.length === 0) return
 
     event.preventDefault()
     const currentIndex = options.indexOf(this.activeOption)

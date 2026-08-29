@@ -53,7 +53,7 @@
         margin-top: 1em;
     } */
 
-    *+ :is(p, ul, ol, blockquote, table, article, aside, details) {
+    *+ :is(p, ul, ol, blockquote, table, aside, details) {
         margin-top: 0.5em;
     }
 

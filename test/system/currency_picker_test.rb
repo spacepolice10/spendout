@@ -47,6 +47,16 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
   end
 
+  test "Enter stays inside the dialog when no currency matches" do
+    open_currency
+    filter.set("zzzz")
+    filter.send_keys(:enter)
+
+    assert_selector currency_dialog("[open]")
+    assert_selector "input[data-currency-picker-target='filter']:focus"
+    assert_text "No currencies found"
+  end
+
   test "moves through currencies with arrow keys and closes after keyboard selection" do
     open_currency
     expected_code = all("[data-currency-picker-option] input", visible: :all)[1].value

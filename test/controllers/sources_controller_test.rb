@@ -22,7 +22,10 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "body > main[data-anchor='footer']"
     assert_select "[data-testid='source-card']", count: 1
     assert_select "[data-testid='source-card']", text: /Main source/
+    assert_select "[data-source-card][style*='--source-colour: var(--color-palette-green)']"
     assert_select "header", text: /Actual remainder:.*\$1,200\.25/m
+    assert_select "a[href='#{source_path(@source)}']", text: /Details/
+    assert_select "[data-source-card] button[aria-label='Remove source']", count: 0
     assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
   end
 
@@ -184,9 +187,47 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     get source_path(@source)
 
     assert_response :success
+    assert_select "main[data-size='lg'] > article[data-elevation='1']:not([style])"
     assert_select "h1", text: @source.name
-    assert_select "dd", text: /1,500.25 USD/
+    assert_select "article > header > nav > .icon-wrap[style*='color: var(--color-palette-green)']"
+    assert_select "section[data-layout='grid'][aria-label='Source summary']"
+    assert_select "[data-testid='source-initial-amount']", text: /Initial amount.*1,500.25 USD.*Added when this source was created/m
+    assert_select "[data-testid='source-available-amount']", text: /Available now.*1,375.25 USD.*After expenses and exchanges/m
+    assert_select "[data-testid='source-budget'] a[href='#{budget_expenses_path(@budget)}']", text: @budget.date_period
     assert_select "a[aria-label='Back to sources'][href='#{budget_sources_path(@budget)}']"
+    assert_select "[data-testid='expense-card']", count: 1
+    assert_select "[data-testid='expense-day-total']", text: /125 USD/
+    assert_select "a[href='#{new_source_exchange_path(@source)}']", text: /Make exchange/
+    assert_select "form[action='#{source_path(@source)}'] button[aria-label='Remove source']" do
+      assert_select ".icon"
+    end
+  end
+
+  test "show paginates expenses connected to the source" do
+    sign_in_as(@user)
+    other_source = create_secondary_source
+    @budget.expenses.create!(source: other_source, amount: 1, occurred_on: @budget.period_from)
+    15.times do |index|
+      @budget.expenses.create!(
+        source: @source,
+        amount: 1,
+        occurred_on: @budget.period_from + index.days,
+        note: "Source expense #{index}"
+      )
+    end
+
+    get source_path(@source)
+
+    assert_response :success
+    assert_select "[data-testid='expense-card']", count: 15
+    assert_select "nav[aria-label='Pagination for source expenses']", text: /Page 1 of 2/
+    assert_select "nav[aria-label='Pagination for source expenses'] a", text: "Next" do |links|
+      get links.first["href"]
+    end
+
+    assert_response :success
+    assert_select "[data-testid='expense-card']", count: 1
+    assert_select "nav[aria-label='Pagination for source expenses']", text: /Page 2 of 2/
   end
 
   test "show labels deleted historical sources" do
@@ -198,6 +239,8 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "small", text: "Deleted"
+    assert_select "a[href='#{new_source_exchange_path(deleted_source)}']", count: 0
+    assert_select "button[aria-label='Remove source']", count: 0
   end
 
   test "cannot access another user's budget or source" do

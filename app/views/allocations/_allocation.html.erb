@@ -45,6 +45,11 @@
       <%= allocation.currency_code %>.
     <% end %>
 
+    <%= link_to allocation_path(allocation), role: "button", data: { intent: "secondary" } do %>
+      <%= icon("history") %>
+      <span>Details</span>
+    <% end %>
+
     <% if allocation.finished? %>
       <% unless budget.archived? %>
         <%= button_to "Reopen", reopen_allocation_path(allocation), method: :patch,
@@ -55,10 +60,6 @@
             intent: "primary",
             turbo_confirm: "Finish #{allocation.name} and release #{formatted_amount(allocation.remaining_amount, allocation.currency_code)}?"
           } %>
-
-      <%= button_to allocation_path(allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
-        <%= icon("trash-simple") %>
-      <% end %>
     <% end %>
   </footer>
 <% end %>

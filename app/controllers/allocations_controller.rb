@@ -7,6 +7,14 @@ class AllocationsController < ApplicationController
   end
 
   def show
+    @expenses = set_page_and_extract_portion_from(
+      @allocation.expenses.includes(:source, :allocation)
+        .order(occurred_on: :desc, created_at: :desc, id: :desc)
+    )
+    @expenses_by_date = @expenses.group_by(&:occurred_on)
+    @expense_totals_by_date = @expenses_by_date.transform_values do |expenses|
+      expenses.sum { |expense| expense.amount_in_base_currency * @allocation.rate }
+    end
   end
 
   def new

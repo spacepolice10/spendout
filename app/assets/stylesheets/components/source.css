@@ -1,0 +1,10 @@
+@layer components {
+    [data-source-card] {
+        border-color: var(--source-colour);
+        background: color-mix(in oklch, var(--source-colour) 8%, var(--color-1));
+
+        & > header > nav > .icon-wrap {
+            color: var(--source-colour);
+        }
+    }
+}
