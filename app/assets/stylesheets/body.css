@@ -34,11 +34,15 @@
             width: 100%;
             height: 100%;
             padding: 0 var(--space-h);
+            padding-block: var(--space-h);
             margin-inline: auto;
 
             &[data-anchor="footer"] {
                 margin-block-start: auto;
-                view-transition-name: budget-section;
+
+                @media (max-width: 800px) {
+                    view-transition-name: budget-section;
+                }
             }
 
             &[data-size="xs"] {
@@ -77,7 +81,10 @@
             padding-block-end: env(safe-area-inset-bottom);
             border-top: var(--border-subtle);
             background: var(--color-2);
-            view-transition-name: budget-tabbar;
+
+            @media (max-width: 800px) {
+                view-transition-name: budget-tabbar;
+            }
 
             &>div {
                 display: flex;
@@ -95,6 +102,60 @@
                     font-size: var(--font-size-xs);
                     white-space: nowrap;
                 }
+            }
+        }
+
+        &:has(> nav[data-navigation-layout="rail"]) {
+            display: grid;
+            grid-template-columns: 14rem minmax(0, 1fr);
+            grid-template-rows: minmax(100svh, auto);
+            align-items: start;
+
+            & > main,
+            & > footer {
+                grid-column: 2;
+            }
+
+            & > nav[data-navigation-layout="rail"] {
+                position: sticky;
+                top: 0;
+                bottom: auto;
+                grid-column: 1;
+                grid-row: 1;
+                display: flex;
+                flex-direction: column;
+                gap: var(--space-v-2);
+                min-block-size: 100svh;
+                padding: var(--space-v-2) var(--space-h);
+                border-top: 0;
+                border-right: var(--border-subtle);
+                background: transparent;
+
+                & > div {
+                    display: grid;
+                    gap: var(--space-v-half);
+                    width: 100%;
+                    padding: 0;
+
+                    & > a[role="button"] {
+                        justify-content: space-between;
+                        width: 100%;
+                        padding: var(--space-v) var(--space-h);
+                        font-size: var(--font-size-xs);
+                    }
+                }
+
+                & > a[role="button"] {
+                    justify-content: flex-start;
+                    width: 100%;
+                    margin-block-start: auto;
+                    padding: var(--space-v) var(--space-h);
+                    font-size: var(--font-size-xs);
+                }
+            }
+
+            & .sticky-action-footer {
+                bottom: 0;
             }
         }
     }

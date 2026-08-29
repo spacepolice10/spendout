@@ -26,6 +26,10 @@ class Budget < ApplicationRecord
     end
   end
 
+  def report(from: starts_date, to: ends_date)
+    BudgetReport.new(self, from:, to:)
+  end
+
   def archived?
     period_to.present? && period_to < Date.current
   end

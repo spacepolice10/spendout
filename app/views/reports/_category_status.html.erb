@@ -1,0 +1,5 @@
+<% if allocation&.deleted? %>
+  <small data-report-category-status="removed" aria-label="Removed" title="Removed">R</small>
+<% elsif allocation&.finished? %>
+  <small data-report-category-status="finished" aria-label="Finished" title="Finished">F</small>
+<% end %>

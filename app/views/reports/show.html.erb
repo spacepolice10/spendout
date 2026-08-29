@@ -1,0 +1,140 @@
+<% content_for :title, "Report" %>
+
+<main data-size="lg">
+  <article data-elevation="1" data-testid="budget-report">
+    <header>
+      <nav>
+        <%= icon("history") %>
+        <h1>Where did my money go?</h1>
+      </nav>
+      <small><%= @budget.date_period %></small>
+    </header>
+
+    <main>
+      <% category = @report.most_expensive_category %>
+      <section data-layout="grid" data-report-summary aria-label="Spending summary">
+        <% if category %>
+          <article data-elevation="2" data-testid="most-expensive-category">
+            <header>
+              <nav>
+                <%= icon(category.allocation&.icon || "category", style: icon_colour_styles(category.allocation&.colour)) %>
+                <h2>Most expensive category</h2>
+              </nav>
+            </header>
+            <main>
+              <h3 data-report-category-name>
+                <%= category.name %>
+                <%= render "category_status", allocation: category.allocation %>
+              </h3>
+              <p><strong><%= formatted_amount(category.amount, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+              <small><%= pluralize(category.expense_count, "expense") %></small>
+            </main>
+          </article>
+        <% end %>
+
+        <article data-elevation="2" data-testid="report-total-spent">
+          <header><h2>Total spent</h2></header>
+          <main>
+            <p><strong><%= formatted_amount(@report.total_expenses, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <small>Across the budget period</small>
+          </main>
+        </article>
+
+        <article data-elevation="2" data-testid="report-daily-average">
+          <header><h2>Daily average</h2></header>
+          <main>
+            <p><strong><%= formatted_amount(@report.daily_average, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <small>Per elapsed budget day</small>
+          </main>
+        </article>
+
+        <article data-elevation="2" data-testid="report-largest-expense">
+          <header><h2>Largest expense</h2></header>
+          <main>
+            <% if @report.largest_expense %>
+              <p><strong><%= formatted_amount(@report.largest_expense.amount_in_base_currency, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+              <small><%= @report.largest_expense.occurred_on.to_fs(:long) %></small>
+            <% else %>
+              <p><strong>—</strong></p>
+              <small>No expenses recorded</small>
+            <% end %>
+          </main>
+        </article>
+
+        <article data-elevation="2" data-testid="report-transaction-count">
+          <header><h2>Transactions</h2></header>
+          <main>
+            <p><strong><%= @report.transaction_count %></strong></p>
+            <small><%= pluralize(@report.transaction_count, "expense") %> recorded</small>
+          </main>
+        </article>
+
+        <article data-elevation="2" data-testid="report-general-funds">
+          <header><h2>General funds</h2></header>
+          <main>
+            <p><strong><%= formatted_amount(@report.remaining_general_funds, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <small>Available after planned reservations</small>
+          </main>
+        </article>
+      </section>
+
+      <% if category %>
+
+        <article data-elevation="2" data-testid="spending-by-date">
+          <header><h2>Spending by date</h2></header>
+          <main>
+            <div data-spending-calendar role="grid" aria-label="Spending calendar">
+              <% Date::ABBR_DAYNAMES.rotate(1).each do |weekday| %>
+                <small role="columnheader"><%= weekday.first %></small>
+              <% end %>
+
+              <% @report.spending_calendar.each_with_index do |day, index| %>
+                <section
+                  role="gridcell"
+                  data-calendar-day
+                  data-intensity="<%= day.intensity %>"
+                  <%= "data-future" if day.date > Date.current %>
+                  style="grid-column: <%= day.date.cwday %>;"
+                  aria-label="<%= day.date.to_fs(:long) %>: <%= formatted_amount(day.amount, @budget.base_currency_code) %> spent"
+                >
+                  <% if index.zero? || day.date.day == 1 %>
+                    <small data-calendar-month><%= day.date.strftime("%b") %></small>
+                  <% end %>
+                  <time datetime="<%= day.date.iso8601 %>"><%= day.date.day %></time>
+                  <% if day.amount.positive? %>
+                    <strong><%= compact_formatted_amount(day.amount, @budget.base_currency_code) %></strong>
+                  <% end %>
+                </section>
+              <% end %>
+            </div>
+          </main>
+        </article>
+
+        <article data-elevation="2" data-testid="spending-by-category">
+          <header><h2>Spending by category</h2></header>
+          <main>
+            <% @report.spending_by_category.each do |item| %>
+              <section data-report-section>
+                <header>
+                  <%= icon(item.allocation&.icon || "category", style: icon_colour_styles(item.allocation&.colour)) %>
+                  <strong><%= item.name %></strong>
+                  <%= render "category_status", allocation: item.allocation %>
+                </header>
+                <p data-report-category-total>
+                  <strong><%= formatted_amount(item.amount, @budget.base_currency_code) %></strong>
+                  <small><%= pluralize(item.expense_count, "expense") %></small>
+                </p>
+                <progress value="<%= item.amount %>" max="<%= category.amount %>"><%= item.amount %></progress>
+              </section>
+            <% end %>
+          </main>
+        </article>
+      <% else %>
+        <article data-elevation="2" data-testid="empty-report">
+          <header><h2>No spending yet</h2></header>
+          <main><p>Expenses will appear here once they are recorded.</p></main>
+        </article>
+      <% end %>
+    </main>
+  </article>
+</main>

@@ -1,0 +1,149 @@
+@layer components {
+  [data-testid="spending-by-category"] > main {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    align-items: start;
+  }
+
+  [data-report-section] {
+    display: grid;
+    gap: var(--space-v-half);
+    min-width: 0;
+  }
+
+  [data-report-section] > header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-h);
+  }
+
+  [data-testid="spending-by-category"] [data-report-section] {
+    padding: var(--space-v) var(--space-h);
+    border: var(--border-subtle);
+    border-radius: var(--radius-2);
+  }
+
+  [data-testid="spending-by-category"] [data-report-section] > header {
+    align-items: center;
+    justify-content: start;
+  }
+
+  [data-report-category-total] {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-h);
+    margin: 0;
+  }
+
+  [data-report-category-name] {
+    display: flex;
+    align-items: center;
+    gap: var(--space-h-half);
+  }
+
+  [data-report-category-status] {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 1.5em;
+    height: 1.5em;
+    border: var(--border-strong);
+    border-radius: var(--radius-1);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+  }
+
+  [data-report-category-status="removed"] {
+    color: var(--color-negative);
+  }
+
+  [data-report-summary] {
+    --grid-column-size: 13rem;
+  }
+
+  [data-report-summary] > [data-testid="most-expensive-category"] {
+    grid-column: 1 / -1;
+  }
+
+  [data-spending-calendar] {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+    width: 100%;
+  }
+
+  [data-spending-calendar] > [role="columnheader"] {
+    padding-block-end: var(--space-v-half);
+    text-align: center;
+    text-transform: uppercase;
+    opacity: var(--opacity-50);
+  }
+
+  [data-calendar-day] {
+    position: relative;
+    display: grid;
+    align-content: space-between;
+    min-width: 0;
+    min-height: clamp(3.5rem, 11cqi, 6rem);
+    padding: var(--space-v-half) var(--space-h-half);
+    border: var(--border-subtle);
+    background: var(--color-1);
+    overflow: hidden;
+  }
+
+  [data-calendar-day] > time {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  [data-calendar-day] > strong {
+    min-width: 0;
+    font-size: clamp(0.45rem, 1.7cqi, var(--font-size-xs));
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  [data-calendar-month] {
+    position: absolute;
+    inset: var(--space-v-half) var(--space-h-half) auto auto;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    opacity: var(--opacity-50);
+  }
+
+  [data-calendar-day][data-intensity="1"] {
+    background: color-mix(in oklch, var(--color-accent) 12%, var(--color-1));
+  }
+
+  [data-calendar-day][data-intensity="2"] {
+    background: color-mix(in oklch, var(--color-accent) 25%, var(--color-1));
+  }
+
+  [data-calendar-day][data-intensity="3"] {
+    background: color-mix(in oklch, var(--color-accent) 45%, var(--color-1));
+  }
+
+  [data-calendar-day][data-intensity="3"] > time {
+    font-size: var(--font-size-base-type);
+    font-weight: var(--font-weight-bold);
+  }
+
+  [data-calendar-day][data-intensity="4"] {
+    background: var(--color-accent);
+    color: var(--color-1);
+  }
+
+  [data-calendar-day][data-intensity="4"] > time {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+  }
+
+  [data-calendar-day][data-future] {
+    opacity: var(--opacity-50);
+  }
+}

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resource :user, only: :show
 
   resources :budgets, only: %i[ new create destroy ] do
+    resource :report, only: :show
     resources :allocations, shallow: true do
       patch :finish, on: :member
       patch :reopen, on: :member

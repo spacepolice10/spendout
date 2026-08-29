@@ -1,0 +1,91 @@
+<% if (budget = Current.user&.current_budget) %>
+  <% expenses_active = controller_name == "expenses" %>
+  <% sources_active = controller_name == "sources" %>
+  <% allocations_active = controller_name == "allocations" %>
+  <% reports_active = controller_name == "reports" %>
+  <% user_active = controller_name == "users" %>
+
+  <nav aria-label="Budget sections" data-controller="bottom-sheet">
+    <div>
+      <%= link_to budget_sources_path(budget),
+            role: "button",
+            aria: (sources_active ? { current: "page" } : {}),
+            data: {
+              controller: "pressable",
+              action: "keydown.1@document->pressable#click"
+            },
+            style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if sources_active}" do %>
+        <span>My money</span>
+        <kbd aria-hidden="true">1</kbd>
+      <% end %>
+
+      <%= link_to budget_allocations_path(budget),
+            role: "button",
+            aria: (allocations_active ? { current: "page" } : {}),
+            data: {
+              controller: "pressable",
+              action: "keydown.2@document->pressable#click"
+            },
+            style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if allocations_active}" do %>
+        <span>Plan</span>
+        <kbd aria-hidden="true">2</kbd>
+      <% end %>
+
+      <%= link_to budget_expenses_path(budget),
+        role: "button",
+        aria: (expenses_active ? { current: "page" } : {}),
+        data: {
+          controller: "pressable",
+          action: "keydown.3@document->pressable#click"
+        },
+        style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if expenses_active}" do %>
+        <span>Expenses</span>
+        <kbd aria-hidden="true">3</kbd>
+      <% end %>
+
+      <button
+        type="button"
+        aria-label="More"
+        aria-haspopup="dialog"
+        aria-controls="budget-menu"
+        aria-expanded="false"
+        data-bottom-sheet-target="trigger"
+        data-action="bottom-sheet#open"
+        style="<%= 'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if reports_active || user_active %>"
+      ><span aria-hidden="true">•••</span></button>
+
+      <dialog
+        id="budget-menu"
+        aria-label="More budget sections"
+        data-turbo-temporary
+        data-bottom-sheet-target="dialog"
+        data-action="click->bottom-sheet#closeOnBackdrop cancel->bottom-sheet#cancel close->bottom-sheet#closed"
+      >
+        <header>
+          <h2>More</h2>
+          <button type="button" aria-label="Close menu" data-action="bottom-sheet#close">&times;</button>
+        </header>
+        <nav aria-label="More sections">
+          <%= link_to budget_report_path(budget),
+                role: "button",
+                aria: (reports_active ? { current: "page" } : {}),
+                data: {
+                  controller: "pressable",
+                  action: "keydown.4@document->pressable#click"
+                } do %>
+            <%= icon("history") %>
+            <span>Reports</span>
+            <kbd aria-hidden="true">4</kbd>
+          <% end %>
+
+          <%= link_to user_path,
+                role: "button",
+                aria: { current: ("page" if user_active) } do %>
+            <%= icon("circle-dot") %>
+            <span>User</span>
+          <% end %>
+        </nav>
+      </dialog>
+    </div>
+  </nav>
+<% end %>

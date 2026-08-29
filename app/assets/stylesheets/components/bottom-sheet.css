@@ -1,0 +1,96 @@
+@layer components {
+  nav[aria-label="Budget sections"] > div > button[data-bottom-sheet-target="trigger"] {
+    flex: 0 0 auto;
+    min-width: 3rem;
+    padding: calc(var(--space-v-half) + 0.2rem) var(--space-h);
+    font-size: var(--font-size-base-type);
+    letter-spacing: 0.12em;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] {
+    inset: auto 0 0;
+    z-index: var(--z-dialog);
+    width: min(100%, 32rem);
+    max-width: none;
+    margin-inline: auto;
+    padding: var(--space-v-2) var(--space-h-2) calc(var(--space-v-2) + env(safe-area-inset-bottom));
+    border: var(--border-subtle);
+    border-bottom: 0;
+    border-radius: var(--radius-2) var(--radius-2) 0 0;
+    background: var(--color-1);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"][open] {
+    display: grid;
+    gap: var(--space-v-2);
+    animation: bottom-sheet-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"][open][data-closing] {
+    animation: bottom-sheet-out 180ms ease-in forwards;
+    pointer-events: none;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"]::backdrop {
+    background: color-mix(in oklch, var(--color-invert-1) 45%, transparent);
+    animation: bottom-sheet-backdrop-in 220ms ease-out;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"][data-closing]::backdrop {
+    animation: bottom-sheet-backdrop-out 180ms ease-in forwards;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-h);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > header > button {
+    min-width: var(--space-h-3);
+    min-height: var(--space-v-3);
+    padding: var(--space-v-half) var(--space-h);
+    background: transparent;
+    color: inherit;
+    font-size: var(--font-size-2xl);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > nav {
+    display: grid;
+    gap: var(--space-v);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > nav > a {
+    width: 100%;
+    justify-content: start;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > nav > a > kbd {
+    margin-inline-start: auto;
+  }
+
+  @keyframes bottom-sheet-in {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  @keyframes bottom-sheet-out {
+    from { transform: translateY(0); }
+    to { transform: translateY(100%); }
+  }
+
+  @keyframes bottom-sheet-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes bottom-sheet-backdrop-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    dialog[data-bottom-sheet-target="dialog"][open] { animation: none; }
+  }
+}

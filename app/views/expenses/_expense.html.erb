@@ -8,11 +8,16 @@
           <%= icon(expense.source.icon, style: icon_colour_styles(expense.source.colour)) %>
         <% end %>
 
+        <% if expense.note.present? %>
+          <span data-expense-note data-testid="expense-note" aria-label="Has note" title="Has note">
+            <%= icon("note") %>
+          </span>
+        <% end %>
+
         <div data-expense-description>
           <strong data-expense-name>
             <% if expense.allocation %>
               <%= expense.allocation.name %>
-              <%= expense.allocation.deleted? ? "(Deleted)" : ("(Finished)" if expense.allocation.finished?) %>
             <% else %>
               Unallocated
             <% end %>
@@ -27,8 +32,6 @@
         </span>
       </div>
 
-      <%= tag.span("Note", data: { expense_note: true, testid: "expense-note" },
-            aria: { label: "Has note" }, title: "Has note") if expense.note.present? %>
     </main>
   </article>
 <% end %>

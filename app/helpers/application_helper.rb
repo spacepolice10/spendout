@@ -15,6 +15,19 @@ module ApplicationHelper
     )
   end
 
+  def compact_formatted_amount(amount, currency_code)
+    return formatted_amount(amount, currency_code) if amount.abs < 1_000
+
+    compact_number = number_to_human(
+      amount,
+      format: "%n%u",
+      precision: 3,
+      significant: true,
+      units: { thousand: "K", million: "M", billion: "B", trillion: "T" }
+    )
+    "#{Currency.find!(currency_code)[:symbol]}#{compact_number}"
+  end
+
   def cybercat_spending_answer(percentage, no_expenses: false)
     return "Nothing spent yet—nice." if no_expenses
 

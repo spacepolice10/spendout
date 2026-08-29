@@ -37,15 +37,15 @@ class TabbarTest < ApplicationSystemTestCase
     end
   end
 
-  test "User tab opens the user page and marks itself active" do
+  test "desktop rail opens the user page and marks it active" do
     within "nav[aria-label='Budget sections']" do
-      find("a[aria-label='User']").click
+      click_on "User"
     end
 
     assert_current_path user_path
     assert_selector "h1", text: "User"
     within "nav[aria-label='Budget sections']" do
-      assert_selector "a[aria-label='User'][aria-current='page']", text: "User"
+      assert_selector "a[aria-current='page']", text: "User"
     end
   end
 
