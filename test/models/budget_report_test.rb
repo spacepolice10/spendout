@@ -22,16 +22,16 @@ class BudgetReportTest < ActiveSupport::TestCase
     assert_equal 0, @report.spending_calendar.find { |day| day.date == Date.new(2026, 8, 18) }.intensity
     assert_equal "Housing", @report.most_expensive_category.name
     assert_equal [ "Housing", "Coffee", "Uncategorized" ], @report.spending_by_category.map(&:name)
-    assert_equal 3, @report.spending_by_category.sum(&:expense_count)
+    assert_equal 3, @report.spending_by_category.sum(&:expense_number)
   end
 
   test "summarizes expense metrics over elapsed budget days" do
     travel_to Date.new(2026, 8, 20) do
-      assert_equal BigDecimal("125"), @report.total_expenses
-      assert_equal BigDecimal("125") / 3, @report.daily_average
+      assert_equal BigDecimal("125"), @report.totals_expenses
+      assert_equal BigDecimal("125") / 3, @report.everyday_average
       assert_equal expenses(:active), @report.largest_expense
-      assert_equal 1, @report.transaction_count
-      assert_equal BigDecimal("1200.25"), @report.remaining_general_funds
+      assert_equal 1, @report.transaction_number
+      assert_equal BigDecimal("1200.25"), @report.remaining_general_sources
     end
   end
 
@@ -39,7 +39,7 @@ class BudgetReportTest < ActiveSupport::TestCase
     @source.update!(deleted_at: Time.current)
     @allocation.update!(deleted_at: Time.current)
 
-    assert_equal BigDecimal("125"), @report.total_expenses
+    assert_equal BigDecimal("125"), @report.totals_expenses
     assert_equal @allocation, @report.most_expensive_category.allocation
   end
 end

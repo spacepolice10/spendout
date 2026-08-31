@@ -81,7 +81,7 @@
     opacity: var(--opacity-50);
   }
 
-  [data-calendar-day] {
+  [data-calendar-date] {
     position: relative;
     display: grid;
     align-content: space-between;
@@ -93,12 +93,12 @@
     overflow: hidden;
   }
 
-  [data-calendar-day] > time {
+  [data-calendar-date] > time {
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
   }
 
-  [data-calendar-day] > strong {
+  [data-calendar-date] > strong {
     min-width: 0;
     font-size: clamp(0.45rem, 1.7cqi, var(--font-size-xs));
     line-height: 1;
@@ -115,35 +115,35 @@
     opacity: var(--opacity-50);
   }
 
-  [data-calendar-day][data-intensity="1"] {
+  [data-calendar-date][data-intensity="1"] {
     background: color-mix(in oklch, var(--color-accent) 12%, var(--color-1));
   }
 
-  [data-calendar-day][data-intensity="2"] {
+  [data-calendar-date][data-intensity="2"] {
     background: color-mix(in oklch, var(--color-accent) 25%, var(--color-1));
   }
 
-  [data-calendar-day][data-intensity="3"] {
+  [data-calendar-date][data-intensity="3"] {
     background: color-mix(in oklch, var(--color-accent) 45%, var(--color-1));
   }
 
-  [data-calendar-day][data-intensity="3"] > time {
+  [data-calendar-date][data-intensity="3"] > time {
     font-size: var(--font-size-base-type);
     font-weight: var(--font-weight-bold);
   }
 
-  [data-calendar-day][data-intensity="4"] {
+  [data-calendar-date][data-intensity="4"] {
     background: var(--color-accent);
     color: var(--color-1);
   }
 
-  [data-calendar-day][data-intensity="4"] > time {
+  [data-calendar-date][data-intensity="4"] > time {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     line-height: 1;
   }
 
-  [data-calendar-day][data-future] {
+  [data-calendar-date][data-future="true"] {
     opacity: var(--opacity-50);
   }
 }

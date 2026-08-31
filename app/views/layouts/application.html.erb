@@ -41,6 +41,7 @@
 
     <%= yield %>
 
+    <%= yield :budget_action_footer %>
     <%= render "shared/tabbar" unless content_for?(:hide_tabbar) %>
   </body>
 </html>

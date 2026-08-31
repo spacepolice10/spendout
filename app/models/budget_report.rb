@@ -1,6 +1,6 @@
 class BudgetReport
-  Category = Data.define(:allocation, :name, :amount, :expense_count)
-  CalendarDay = Data.define(:date, :amount, :intensity)
+  Category = Data.define(:allocation, :name, :amount, :expense_number)
+  CalendarDate = Data.define(:date, :amount, :intensity)
 
   attr_reader :budget, :from, :to
 
@@ -21,7 +21,7 @@ class BudgetReport
 
       (from..to).map do |date|
         amount = totals.fetch(date, BigDecimal("0"))
-        CalendarDay.new(date:, amount:, intensity: spending_intensity(amount, maximum))
+        CalendarDate.new(date:, amount:, intensity: spending_intensity(amount, maximum))
       end
     end
   end
@@ -32,30 +32,30 @@ class BudgetReport
         allocation:,
         name: allocation&.name || "Uncategorized",
         amount: total(category_expenses),
-        expense_count: category_expenses.size
+        expense_number: category_expenses.size
       )
     end.sort_by { |category| [ -category.amount, category.name ] }
   end
 
-  def total_expenses
-    @total_expenses ||= total(expenses)
+  def totals_expenses
+    @totals_expenses ||= total(expenses)
   end
 
-  def daily_average
+  def everyday_average
     return BigDecimal("0") unless elapsed_days.positive?
 
-    total_expenses / elapsed_days
+    totals_expenses / elapsed_days
   end
 
   def largest_expense
     @largest_expense ||= expenses.max_by(&:amount_in_base_currency)
   end
 
-  def transaction_count
+  def transaction_number
     expenses.size
   end
 
-  def remaining_general_funds
+  def remaining_general_sources
     budget.sources_remainder_in_base
   end
 

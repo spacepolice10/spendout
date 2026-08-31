@@ -21,13 +21,13 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='most-expensive-category']", text: /Housing/
     assert_select "[data-report-summary] > article", count: 6
     assert_select "[data-testid='report-total-spent']", text: /125/
-    assert_select "[data-testid='report-daily-average']"
+    assert_select "[data-testid='report-everyday-average']"
     assert_select "[data-testid='report-largest-expense']", text: /125/
-    assert_select "[data-testid='report-transaction-count']", text: /1/
-    assert_select "[data-testid='report-general-funds']", text: /1,200.25/
+    assert_select "[data-testid='report-transaction-number']", text: /1/
+    assert_select "[data-testid='report-general-sources']", text: /1,200.25/
     assert_select "[data-testid='spending-by-date'] [data-spending-calendar]", count: 1
     assert_select "[data-spending-calendar] [role='columnheader']", count: 7
-    assert_select "[data-spending-calendar] [data-calendar-day]", count: (@budget.starts_date..@budget.ends_date).count
+    assert_select "[data-spending-calendar] [data-calendar-date]", count: (@budget.starts_date..@budget.ends_date).count
     assert_select "[data-spending-calendar] progress", count: 0
     assert_select "[data-testid='spending-by-category'] progress", count: 1
     assert_select "[data-testid='spending-by-category'] [data-report-section]" do

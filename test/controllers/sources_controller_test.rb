@@ -20,13 +20,16 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "body > main[data-anchor='footer']"
+    assert_select "body > footer[data-budget-action]" do
+      assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
+    end
+    assert_select "body > main > article > footer", count: 0
     assert_select "[data-testid='source-card']", count: 1
     assert_select "[data-testid='source-card']", text: /Main source/
     assert_select "[data-source-card][style*='--source-colour: var(--color-palette-green)']"
     assert_select "header", text: /Actual remainder:.*\$1,200\.25/m
     assert_select "a[href='#{source_path(@source)}']", text: /Details/
     assert_select "[data-source-card] button[aria-label='Remove source']", count: 0
-    assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
   end
 
   test "index paginates exchange history" do

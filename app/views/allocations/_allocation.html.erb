@@ -36,14 +36,15 @@
         — <%= formatted_amount(used_amount - allocation.amount, allocation.currency_code) %> over plan
       <% end %>
     </small>
-  </main>
 
-  <footer>
     <% if allocation.rate != 1 %>
       It was planned at a rate of <%= allocation.rate %>
       <%= budget.base_currency_code %> per
       <%= allocation.currency_code %>.
     <% end %>
+  </main>
+
+  <footer>
 
     <%= link_to allocation_path(allocation), role: "button", data: { intent: "secondary" } do %>
       <%= icon("history") %>

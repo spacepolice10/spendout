@@ -1,7 +1,7 @@
 @layer base {
 
     body {
-        --budget-tabbar-height: calc(var(--space-v) + env(safe-area-inset-bottom));
+        --budget-tabbar-height: calc(var(--space-v-4) + var(--space-v) + env(safe-area-inset-bottom));
 
         display: flex;
         flex-direction: column;
@@ -67,9 +67,32 @@
             align-content: center;
         }
 
-        &>footer {
+        &:has(>footer[data-budget-action])>main {
+            padding-block-end: var(--space-v-8);
+        }
+
+        &>footer:not([data-budget-action]) {
             margin-inline: auto;
             width: 100%;
+        }
+
+        &>footer[data-budget-action] {
+            position: fixed;
+            z-index: 1;
+            inset-inline: 0;
+            bottom: var(--budget-tabbar-height);
+            display: flex;
+            justify-content: center;
+            padding: var(--space-v) var(--space-h);
+            pointer-events: none;
+
+            &>a {
+                pointer-events: auto;
+
+                @media (max-width: 800px) {
+                    view-transition-name: budget-action;
+                }
+            }
         }
 
         &>nav[aria-label="Budget sections"] {
@@ -112,8 +135,14 @@
             align-items: start;
 
             & > main,
-            & > footer {
+            & > footer:not([data-budget-action]) {
                 grid-column: 2;
+            }
+
+            & > footer[data-budget-action] {
+                inset-inline-start: max(14rem, calc((100vw - 1280px) / 2 + 14rem));
+                inset-inline-end: max(0px, calc((100vw - 1280px) / 2));
+                bottom: 0;
             }
 
             & > nav[data-navigation-layout="rail"] {
@@ -154,9 +183,6 @@
                 }
             }
 
-            & .sticky-action-footer {
-                bottom: 0;
-            }
         }
     }
 

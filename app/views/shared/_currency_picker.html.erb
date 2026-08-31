@@ -39,9 +39,9 @@
           <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option"
             aria-selected="<%= code == selected_code %>" data-currency-picker-target="option"
             data-filter-value="<%= label %>"
-            <% if Currency::POPULAR_CURRENCIES.include?(code) %>data-popular="true"<% end %>
-            <% if code == selected_code %>data-default="true"<% end %>
-            <% if code == suggested_code %>data-suggested="true"<% end %>>
+            data-popular="<%= Currency::POPULAR_CURRENCIES.include?(code) ? true : false %>"
+            data-default="<%= code == selected_code ? true : false %>"
+            data-suggested="<%= code == suggested_code ? true : false %>">
             <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
               <%= "checked" if code == selected_code %>
               data-action="change->currency-picker#choose">

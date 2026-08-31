@@ -23,6 +23,10 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "meta[name='view-transition'][content='same-origin']", count: 1
     assert_select "body > main[data-anchor='footer']"
+    assert_select "body > footer[data-budget-action]" do
+      assert_select "a[href='#{new_budget_expense_path(@budget)}']"
+    end
+    assert_select "[data-testid='budget-card'] > footer", count: 0
     assert_select "[data-testid='expense-card']", count: 1
     assert_select "article[data-elevation='2'][data-gauge-plate] > h2", count: 0
     assert_select "[data-cybercat-answer]" do
@@ -34,7 +38,6 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "article[data-elevation='2'] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
     assert_select "[data-daily-gauge][data-controller='daily-gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
-    assert_select "a[href='#{new_budget_expense_path(@budget)}']"
     assert_select "a", text: "Currencies", count: 0
   end
 

@@ -96,6 +96,11 @@
             animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        ::view-transition-group(budget-action) {
+            animation-duration: 360ms;
+            animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
         ::view-transition-old(budget-section) {
             transform-origin: center bottom;
             animation: budget-section-back 180ms ease-in both;

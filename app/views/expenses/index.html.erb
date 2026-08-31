@@ -71,18 +71,20 @@
         </article>
       <% end %>
     </main>
-
-    <footer class="sticky-action-footer">
-      <%= link_to new_budget_expense_path(@budget), role: "button", data: {
-            appearance: "keycap",
-            intent: "primary",
-            controller: "pressable",
-            action: "keydown.shift+e@document->pressable#click"
-          } do %>
-        <%= icon("plus") %>
-        <span>Add expense</span>
-        <kbd aria-hidden="true">E</kbd>
-      <% end %>
-    </footer>
   </article>
 </main>
+
+<% content_for :budget_action_footer do %>
+  <footer data-budget-action>
+    <%= link_to new_budget_expense_path(@budget), role: "button", data: {
+          appearance: "keycap",
+          intent: "primary",
+          controller: "pressable",
+          action: "keydown.shift+e@document->pressable#click"
+        } do %>
+      <%= icon("plus") %>
+      <span>Add expense</span>
+      <kbd aria-hidden="true">E</kbd>
+    <% end %>
+  </footer>
+<% end %>

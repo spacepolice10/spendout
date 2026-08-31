@@ -20,6 +20,10 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "body > main[data-anchor='footer']"
+    assert_select "body > footer[data-budget-action]" do
+      assert_select "a[href='#{new_budget_allocation_path(@budget)}']", text: /New category/
+    end
+    assert_select "body > main > article > footer", count: 0
     assert_select "[data-testid='allocation-card']", count: 1, text: /Housing/
     assert_select "progress[data-testid='allocation-progress'][value='125.0'][max='300.0']"
     assert_select "progress[aria-label='$125 spent of $300 planned']"
@@ -29,7 +33,6 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='allocation-card'] button[aria-label='Remove allocation']", count: 0
     assert_select "[data-testid='budget-remainder']", text: /Remaining:.*1,200.25 USD/
     assert_select "[data-testid='overallocation-warning']", count: 0
-    assert_select "a[href='#{new_budget_allocation_path(@budget)}']", text: /New category/
   end
 
   test "index excludes deleted allocations" do

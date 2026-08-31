@@ -1,9 +1,0 @@
-@layer base {
-
-    .sticky-action-footer {
-        position: sticky;
-        z-index: 1;
-        bottom: calc(var(--budget-tabbar-height) * 4);
-    }
-
-}

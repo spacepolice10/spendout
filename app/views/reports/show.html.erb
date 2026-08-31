@@ -27,7 +27,7 @@
                 <%= render "category_status", allocation: category.allocation %>
               </h3>
               <p><strong><%= formatted_amount(category.amount, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
-              <small><%= pluralize(category.expense_count, "expense") %></small>
+              <small><%= pluralize(category.expense_number, "expense") %></small>
             </main>
           </article>
         <% end %>
@@ -35,15 +35,15 @@
         <article data-elevation="2" data-testid="report-total-spent">
           <header><h2>Total spent</h2></header>
           <main>
-            <p><strong><%= formatted_amount(@report.total_expenses, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <p><strong><%= formatted_amount(@report.totals_expenses, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
             <small>Across the budget period</small>
           </main>
         </article>
 
-        <article data-elevation="2" data-testid="report-daily-average">
-          <header><h2>Daily average</h2></header>
+        <article data-elevation="2" data-testid="report-everyday-average">
+          <header><h2>Everyday average</h2></header>
           <main>
-            <p><strong><%= formatted_amount(@report.daily_average, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <p><strong><%= formatted_amount(@report.everyday_average, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
             <small>Per elapsed budget day</small>
           </main>
         </article>
@@ -61,18 +61,18 @@
           </main>
         </article>
 
-        <article data-elevation="2" data-testid="report-transaction-count">
+        <article data-elevation="2" data-testid="report-transaction-number">
           <header><h2>Transactions</h2></header>
           <main>
-            <p><strong><%= @report.transaction_count %></strong></p>
-            <small><%= pluralize(@report.transaction_count, "expense") %> recorded</small>
+            <p><strong><%= @report.transaction_number %></strong></p>
+            <small><%= pluralize(@report.transaction_number, "expense") %> recorded</small>
           </main>
         </article>
 
-        <article data-elevation="2" data-testid="report-general-funds">
-          <header><h2>General funds</h2></header>
+        <article data-elevation="2" data-testid="report-general-sources">
+          <header><h2>General sources</h2></header>
           <main>
-            <p><strong><%= formatted_amount(@report.remaining_general_funds, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <p><strong><%= formatted_amount(@report.remaining_general_sources, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
             <small>Available after planned reservations</small>
           </main>
         </article>
@@ -91,9 +91,9 @@
               <% @report.spending_calendar.each_with_index do |day, index| %>
                 <section
                   role="gridcell"
-                  data-calendar-day
+                  data-calendar-date
                   data-intensity="<%= day.intensity %>"
-                  <%= "data-future" if day.date > Date.current %>
+                  data-future="<%= day.date > Date.current ? true : false %>"
                   style="grid-column: <%= day.date.cwday %>;"
                   aria-label="<%= day.date.to_fs(:long) %>: <%= formatted_amount(day.amount, @budget.base_currency_code) %> spent"
                 >
@@ -122,7 +122,7 @@
                 </header>
                 <p data-report-category-total>
                   <strong><%= formatted_amount(item.amount, @budget.base_currency_code) %></strong>
-                  <small><%= pluralize(item.expense_count, "expense") %></small>
+                  <small><%= pluralize(item.expense_number, "expense") %></small>
                 </p>
                 <progress value="<%= item.amount %>" max="<%= category.amount %>"><%= item.amount %></progress>
               </section>

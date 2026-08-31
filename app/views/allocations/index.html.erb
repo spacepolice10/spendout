@@ -46,18 +46,20 @@
         </article>
       <% end %>
     </main>
-
-    <footer class="sticky-action-footer">
-      <%= link_to new_budget_allocation_path(@budget), role: "button", data: {
-            appearance: "keycap",
-            intent: "primary",
-            controller: "pressable",
-            action: "keydown.shift+c@document->pressable#click"
-          } do %>
-        <%= icon("plus") %>
-        <span>New category</span>
-        <kbd aria-hidden="true">C</kbd>
-      <% end %>
-    </footer>
   </article>
 </main>
+
+<% content_for :budget_action_footer do %>
+  <footer data-budget-action>
+    <%= link_to new_budget_allocation_path(@budget), role: "button", data: {
+          appearance: "keycap",
+          intent: "primary",
+          controller: "pressable",
+          action: "keydown.shift+c@document->pressable#click"
+        } do %>
+      <%= icon("plus") %>
+      <span>New category</span>
+      <kbd aria-hidden="true">C</kbd>
+    <% end %>
+  </footer>
+<% end %>
