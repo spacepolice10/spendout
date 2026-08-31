@@ -1,6 +1,6 @@
 - A user has at most one active budget; archived budgets remain as history. The root shows the active budget or the new-budget form when none is active.
 - A budget has sources, allocations, and expenses.
-- A source is a currency-specific money container with a name, amount, icon, colour, immutable currency, and immutable base-relative quote; its balance may grow through incomes.
+- A source is a currency-specific money container with a name, amount, card design, immutable currency, and immutable base-relative quote; its balance may grow through incomes.
 - An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; explicitly finishing one releases its unspent reservation while preserving history. Fully spent allocations remain active so they can be overspent. Unplanned categories only classify expenses paid from that remainder.
 - An expense immutably preserves its purchase amount and currency, directly quoted source-currency debit, conversion quote, optional 200-character note, and occurrence date; it can only be deleted and recreated. Allocations remain currency-independent classifications.
 - An exchange immutably debits a sender source and atomically creates a receiver source, snapshotting both amounts and the sender-relative quote; both sources may use the same currency.
@@ -14,5 +14,5 @@
 - Reuse the variables and semantic rules in `base.css`. Agents must not create CSS classes; use existing classes only for business semantics, never for layouts or generic components.
 - In templates, prefer native HTML over Ruby-generated markup whenever HTML can express the structure clearly; reserve Ruby for dynamic values, conditions, iteration, and Rails helpers that provide meaningful behavior.
 - Do not conditionally declare attributes in templates. Always write a needed attribute explicitly and make only its value dynamic.
-- Keep `/landing` aligned with the shipped product: fine-tune its copy and demonstrations when features are added, changed, or removed, and label future work explicitly.
+- Keep `/landing` aligned with the shipped product: fine-tune its copy and demonstrations when features are added, changed, or removed, and label future work explicitly. `/once` is the ONCE setup guide.
 - Update these rules when the project requires it, but keep this file concise and free of unnecessary detail.

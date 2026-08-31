@@ -1,7 +1,7 @@
 <%# locals: (form:, name_attribute: :name, placeholder: nil, open: true, input_data: {}) %>
 <%= tag.details name: "form-details", data: { form_target: "section" }, open: open do %>
   <%= tag.summary data: { form_target: "summary" } do %>
-    <%= tag.span " Name: " %>
+    <%= tag.span t(".name") %>
 
     <%= tag.small data: { form_target: "summaryContent" } do %>
       <%= form.object.public_send(name_attribute) %>
@@ -10,10 +10,10 @@
 
   <%= tag.div do %>
     <%= tag.small do %>
-      What is the name of this <%= form.object.class.name.downcase %>?
+      <%= t(".question", model: form.object.model_name.human.downcase) %>
     <% end %>
 
-    <%= form.label name_attribute, "Name", class: "utilities--sr-only" %>
+    <%= form.label name_attribute, t(".name"), class: "utilities--sr-only" %>
 
     <%= form.text_field name_attribute, required: true, placeholder: placeholder,
       autofocus: open && !mobile_variant?,
@@ -23,8 +23,7 @@
 
     <% unless mobile_variant? %>
       <%= tag.small do %>
-        Press <%= tag.kbd "Enter" %> to continue or <%= tag.kbd "Shift" %> +
-        <%= tag.kbd "Enter" %> to go back.
+        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
       <% end %>
     <% end %>
   <% end %>

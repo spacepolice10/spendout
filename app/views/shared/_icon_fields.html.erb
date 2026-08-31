@@ -1,12 +1,12 @@
 <%# locals: (form:, open: false, input_data: {}) %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
-    <span> Icon: </span>
+    <span><%= t(".name") %>:</span>
     <small data-form-target="summaryContent"><%= form.object.icon %></small>
   </summary>
 
   <fieldset data-layout="flex">
-    <legend class="utilities--sr-only">Icon</legend>
+    <legend class="utilities--sr-only"><%= t(".name") %></legend>
     <div>
       <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text do %>
@@ -19,10 +19,10 @@
     </div>
     <% unless mobile_variant? %>
       <small>
-        Use <kbd>arrow keys</kbd> to switch.
+        <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
       </small>
       <small>
-        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
       </small>
     <% end %>
   </fieldset>

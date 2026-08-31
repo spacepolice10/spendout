@@ -1,39 +1,45 @@
-<% content_for :title, "User" %>
+<% content_for :title, t(".name") %>
 
 <main data-size="sm" data-anchor="footer">
   <article data-elevation="1">
     <header>
       <nav>
-        <h1>User</h1>
+        <h1><%= t(".name") %></h1>
       </nav>
     </header>
 
     <main>
       <section>
-        <h2>Account</h2>
+        <h2><%= t(".account") %></h2>
         <p><%= Current.user.email_address %></p>
+      </section>
+
+      <section>
+        <h2><%= t(".language") %></h2>
+        <p><%= t(".language_description") %></p>
+        <%= render "shared/locale_switcher" %>
       </section>
 
       <% if @budget %>
         <section>
-          <h2>Budget</h2>
-          <p>Removing your budget permanently deletes its sources, allocations, expenses, and exchanges.</p>
+          <h2><%= t(".budget") %></h2>
+          <p><%= t(".budget_description") %></p>
         </section>
       <% end %>
 
     </main>
 
     <footer>
-      <nav aria-label="User actions" style="display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-v) var(--space-h);">
-        <%= button_to "Sign out", session_path, method: :delete,
+      <nav aria-label="<%= t(".actions") %>" style="display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-v) var(--space-h);">
+        <%= button_to t(".sign_out"), session_path, method: :delete,
               data: { appearance: "keycap", intent: "primary" } %>
 
         <% if @budget %>
-          <%= button_to "Remove budget", budget_path(@budget), method: :delete,
+          <%= button_to t(".remove_budget"), budget_path(@budget), method: :delete,
                 data: {
                   appearance: "keycap",
                   intent: "negative",
-                  turbo_confirm: "Remove this budget and all of its data permanently? This cannot be undone."
+                  turbo_confirm: t(".remove_budget_confirmation")
                 } %>
         <% end %>
       </nav>

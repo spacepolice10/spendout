@@ -21,7 +21,7 @@ class BudgetsController < ApplicationController
     @budget = Current.user.budgets.new(budget_params)
 
     if Current.user.with_lock { @budget.save }
-      redirect_to budget_sources_path(@budget), notice: "Budget was created. Add your first source."
+      redirect_to budget_sources_path(@budget), notice: t("budgets.create.success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class BudgetsController < ApplicationController
 
   def destroy
     @budget.destroy!
-    redirect_to new_budget_path, notice: "Budget was reset."
+    redirect_to new_budget_path, notice: t("budgets.destroy.success")
   end
 
   private

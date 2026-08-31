@@ -7,19 +7,12 @@
 
 <a href="#main-content" data-skip-link>Skip to content</a>
 
+<%= render "shared/header" %>
+
 <main id="main-content" data-page="landing" data-size="xl">
   <section data-landing-hero aria-labelledby="landing-title">
     <div>
-      <header data-hero-cybercat>
-        <div data-cybercat-dialog>
-          <%= image_tag "cybercat.png", alt: "Cybercat", width: 100 %>
-          <p>I live on your server now.</p>
-        </div>
-
-        <h1>Spendout</h1>
-      </header>
-
-      <h2 id="landing-title">Know what you can spend.</h2>
+      <h1 id="landing-title">Know what you can spend.</h1>
 
       <p>
         Spendout turns wallets, plans, and everyday spending into one answer:
@@ -28,17 +21,8 @@
       </p>
 
       <div data-landing-actions>
-        <%= link_to "Take the tour", tour_path,
-              role: "button", data: { appearance: "keycap" } %>
-
         <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path,
               role: "button", data: { appearance: "keycap", intent: "primary" } %>
-
-        <%= link_to "https://github.com/spacepolice10/spendout",
-              role: "button", data: { appearance: "keycap" } do %>
-          <%= icon("brand-github") %>
-          <span>GitHub</span>
-        <% end %>
       </div>
 
       <p data-landing-price>$0 · self-hosted · your server, your data</p>
@@ -154,91 +138,14 @@
   <section id="details" data-landing-chapter aria-labelledby="details-title">
     <header>
       <h2 id="details-title">Features</h2>
-      <p>Quick highlights.</p>
+      <p>A closer look at how Spendout works, screen by screen.</p>
     </header>
 
-    <div data-detail-grid>
-      <article>
-        <h3><%= icon("keyboard") %> Keyboard friendly</h3>
+    <%= render "home/feature_chips" %>
 
-        <p>
-          Jump between sections and add an expense without reaching for the
-          pointer.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("currency-dollar") %> Currency suggested</h3>
-
-        <p>
-          Your timezone brings the likely currency forward without silently
-          choosing it.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("edit") %> Easy to correct</h3>
-
-        <p>
-          Delete and recreate an expense when reality changes. The corrected
-          record gets a fresh, honest currency snapshot.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("history") %> History stays honest</h3>
-
-        <p>
-          Removed sources and categories remain visible on the expenses that
-          used them.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("category") %> Categorize spending</h3>
-
-        <p>
-          Classify expenses with planned allocations or unplanned categories
-          without letting a plan block real spending. Finish a plan when it is
-          done and its unspent money becomes available again.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("sparkles") %> Categories style themselves</h3>
-
-        <p>
-          Name a category and Spendout automatically suggests a fitting icon
-          and colour. Choose your own whenever you prefer.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("receipt-dollar") %> Confirm every rate</h3>
-
-        <p>
-          Enter a direct quote yourself or edit a dated reference suggestion
-          before saving it.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("arrows-exchange") %> Exchange between sources</h3>
-
-        <p>
-          Debit one source and create the destination source together, with
-          both amounts and the confirmed quote preserved.
-        </p>
-      </article>
-
-      <article>
-        <h3><%= icon("note") %> Add useful context</h3>
-
-        <p>
-          Attach an optional note to an expense and edit it later when the
-          purchase needs more explanation.
-        </p>
-      </article>
+    <div data-landing-actions>
+      <%= link_to "Take the tour", tour_path(feature: Tour::FEATURES.keys.first),
+            role: "button", data: { appearance: "keycap", intent: "primary" } %>
     </div>
   </section>
 
@@ -284,7 +191,7 @@
         HTTPS, updates, persistent storage, and backup and restore hooks.
       </p>
 
-      <a href="https://github.com/spacepolice10/spendout/tree/codex/once-adaptation">Install with ONCE ↗</a>
+      <%= link_to "Install with ONCE", once_path %>
     </div>
 
     <aside data-deployment-terminal aria-label="Deployment terminal">

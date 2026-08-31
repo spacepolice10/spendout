@@ -2,13 +2,13 @@
 <% currency_code = form.object.public_send(currency_attribute).presence || base_currency_code %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
-    <span> Currency: </span>
+    <span><%= t(".name") %></span>
     <small data-form-target="summaryContent"><%= currency_code %></small>
   </summary>
 
   <div data-currency-fields>
-    <small>What currency is used?</small>
-    <%= form.label currency_attribute, "Currency", class: "utilities--sr-only" %>
+    <small><%= t(".question") %></small>
+    <%= form.label currency_attribute, t(".name"), class: "utilities--sr-only" %>
 
     <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
           filter_data: { form_target: "toBeFocused" },
@@ -17,11 +17,11 @@
           currency_code: currency_code, base_currency_code: base_currency_code %>
     <% unless mobile_variant? %>
       <small>
-        Use <kbd>arrow keys</kbd> to switch.
+        <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
       </small>
 
       <small>
-        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
       </small>
     <% end %>
   </div>

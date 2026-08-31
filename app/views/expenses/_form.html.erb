@@ -8,8 +8,7 @@
   <% if expense.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
-        <%= pluralize(expense.errors.count, "error") %> prevented this expense
-        from being saved:
+        <%= t(".errors", count: expense.errors.count) %>
       </h2>
 
       <ul>
@@ -30,7 +29,7 @@
             form_target: "section"
           } do %>
         <summary data-form-target="summary">
-          <span>From:</span>
+          <span><%= t(".source.name") %></span>
           <small><%= expense.source&.name %></small>
         </summary>
 
@@ -38,8 +37,7 @@
           <fieldset data-expense-sources>
             <div>
               <% active_sources.each do |source| %>
-                <%= form.label :source_id, value: source.id,
-                      style: "--source-colour: var(--color-palette-#{source.colour});" do %>
+                <%= form.label :source_id, value: source.id, style: "--source-colour: var(--color-palette-#{source.colour});" do %>
                   <%= form.radio_button :source_id, source.id, required: true,
                         data: {
                           form_target: "toBeFocused",
@@ -47,12 +45,14 @@
                           action: "change->expense-fields#sourceChanged"
                         } %>
 
+                  <%= image_tag source.design_image, alt: "", width: 72, height: 46,
+                        data: { source_design_thumbnail: true } %>
+
                   <span>
                     <strong><%= source.name %></strong>
 
                     <small>
-                      <%= formatted_amount(source.spendable_amount, source.currency_code) %>
-                      available (<%= source.currency_code %>)
+                      <%= t(".source.availability", amount: formatted_amount(source.spendable_amount, source.currency_code), currency: source.currency_code) %>
                     </small>
                   </span>
                 <% end %>
@@ -61,7 +61,7 @@
 
             <% unless mobile_variant? %>
               <small>
-                Use <kbd>arrow keys</kbd> to switch.
+                <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
               </small>
             <% end %>
           </fieldset>
@@ -70,13 +70,14 @@
 
       <%= tag.details name: "form-details", data: {
           optional_item: true,
-          controller: "category-fields", form_target: "section"
+          controller: "category-fields", form_target: "section",
+          category_fields_no_allocation_value: t(".category.no_allocation")
         }, open: expense.category_name_to_create.present? do %>
         <summary data-form-target="summary">
-          <span> Category: </span>
+          <span><%= t(".category.name") %></span>
 
           <small data-category-fields-target="summary">
-            <%= expense.category_name_to_create.presence || expense.allocation&.name || "No allocation" %>
+            <%= expense.category_name_to_create.presence || expense.allocation&.name || t(".category.no_allocation") %>
           </small>
         </summary>
 
@@ -86,9 +87,9 @@
               <%= tag.input type: "text",
                     id: "expense_category_filter",
                     value: expense.category_name_to_create,
-                    placeholder: "Find or add category",
+                    placeholder: t(".category.search"),
                     autocomplete: "off",
-                    aria: { label: "Find or add category" },
+                    aria: { label: t(".category.search") },
                     data: {
                       category_fields_target: "filter",
                       form_target: "toBeFocused",
@@ -101,9 +102,7 @@
                     } %>
             </div>
 
-            <small data-category-fields-target="creationTip" hidden>
-              Category named <strong data-category-fields-target="creationTipName"></strong> will be created
-            </small>
+            <small data-category-fields-target="creationTip" hidden><%= t(".category.creation_html", name: tag.strong("", data: { category_fields_target: "creationTipName" })) %></small>
 
             <div data-category-fields-target="options">
               <% active_allocations.each do |allocation| %>
@@ -128,7 +127,7 @@
 
             <% if active_allocations.any? && !mobile_variant? %>
               <small>
-                Use <kbd>arrow keys</kbd> to switch.
+                <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
               </small>
             <% end %>
 
@@ -141,8 +140,8 @@
             form_target: "section"
           }, open: expense.errors[:occurred_on].any? do %>
         <summary data-form-target="summary">
-          <span> Date: </span>
-          <small><%= expense.occurred_on&.to_fs(:long) %></small>
+          <span><%= t(".date") %></span>
+          <small><%= l(expense.occurred_on, format: :long) if expense.occurred_on %></small>
         </summary>
 
         <div data-optional-item-control>
@@ -161,13 +160,13 @@
             form_target: "section"
           }, open: expense.note.present? do %>
         <summary data-form-target="summary">
-          <span> Note: </span>
-          <%= tag.small("Added", hidden: expense.note.blank?) %>
+          <span><%= t(".note") %></span>
+          <%= tag.small(t(".note_added"), hidden: expense.note.blank?) %>
         </summary>
 
         <div data-optional-item-control>
           <%= form.label :note do %>
-            <%= form.text_area :note, maxlength: 200, placeholder: "Optional",
+            <%= form.text_area :note, maxlength: 200, placeholder: t(".note_placeholder"),
                   data: { form_target: "toBeFocused" } %>
           <% end %>
         </div>
@@ -189,7 +188,7 @@
           controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
         } do %>
         <%= icon("chevron-left") %>
-        <span>Cancel</span>
+        <span><%= t(".cancel") %></span>
         <% unless mobile_variant? %>
           <kbd aria-hidden="true">Shift + Escape</kbd>
         <% end %>
@@ -199,7 +198,7 @@
           appearance: "keycap", intent: "primary", size: "lg",
           controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
         } do %>
-        <span>Confirm</span>
+        <span><%= t(".submit") %></span>
         <%= icon("chevron-right") %>
         <% unless mobile_variant? %>
           <kbd aria-hidden="true">Cmd + Enter</kbd>

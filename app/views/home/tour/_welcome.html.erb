@@ -1,12 +1,12 @@
 <section data-tour-slide="welcome" aria-labelledby="welcome-title">
   <article data-tour-copy>
-    <p data-tour-count>Spendout, screen by screen</p>
     <h1 id="welcome-title">Know what you can spend.<br>See exactly why.</h1>
-    <p data-tour-lead>Nine pages take a closer look at every feature highlighted on the landing page.</p>
+    <h2>Screen by screen</h2>
+    <p>Fifteen pages show how to create sources, plans, and expenses, then how currency, reports, and self-hosting fit together.</p>
   </article>
 
   <nav data-tour-next aria-label="Begin tour">
-    <%= link_to tour_path(feature: HomeController::TOUR_FEATURES.keys.first) do %>
+    <%= link_to tour_path(feature: Tour::FEATURES.keys.first) do %>
       Start the tour <span aria-hidden="true">→</span>
     <% end %>
   </nav>

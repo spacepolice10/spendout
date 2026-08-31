@@ -1,0 +1,336 @@
+ru:
+  sessions:
+    new:
+      logo_description: "Киберкот"
+      tagline: "Spendout — простой и безопасный способ управлять деньгами. Просто расскажите, что у вас есть и чего вы хотите. Spendout подскажет, как правильно распорядиться финансами."
+      name: "Введите адрес электронной почты"
+      instructions: "Мы отправим вам на почту %{count}-значный код для входа."
+      address_placeholder: "you@example.com"
+      submit: "Отправить код"
+    create:
+      code_sent: "Проверьте почту — мы отправили вам код для входа."
+      invalid_address: "Введите корректный адрес электронной почты."
+      rate_limited: "Попробуйте ещё раз позже."
+    auth_codes:
+      show:
+        cybercat_description: "Киберкот"
+        name: "Введите код для входа"
+        instructions: "Найдите в почте %{count}-значный код, который мы отправили на адрес %{address}, и введите его ниже."
+        code_placeholder: "123456"
+        submit: "Войти"
+        type_another_address: "Указать другой адрес"
+      create:
+        invalid_code: "Попробуйте другой код."
+        rate_limited:
+          other: "Попробуйте ещё раз через %{count} мин."
+        missing_address: "Введите адрес электронной почты, чтобы войти."
+
+  authentication_mailer:
+    sign_in_instructions:
+      subject: "Ваш код Spendout: %{code}"
+      introduction: "Ваш код для входа в Spendout:"
+      expiration:
+        one: "Срок действия кода — 1 мин.; использовать его можно только один раз."
+        other: "Срок действия кода — %{count} мин.; использовать его можно только один раз."
+      unrequested: "Если вы не запрашивали этот код, просто проигнорируйте письмо."
+
+  budgets:
+    new:
+      name: "Новый бюджет"
+    form:
+      errors: "Количество ошибок: %{count}. Не удалось сохранить бюджет:"
+      base_currency:
+        name: "Какая у вас основная валюта?"
+        description: "Она будет ориентиром для расчёта сумм в других валютах."
+      period:
+        name: "Когда начинается и заканчивается бюджет?"
+        description: "Обычно выбирают месячный период между днями получения зарплаты"
+      submit: "Далее"
+    create:
+      success: "Бюджет создан. Добавьте первый источник."
+    destroy:
+      success: "Бюджет сброшен."
+
+  sources:
+    index:
+      name: "Источники"
+      actual_remainder: "Фактический остаток:"
+      list_name: "Источники денег"
+      no_data:
+        name: "Добавьте кошельки или карты"
+        description: "Добавьте источник денег для этого бюджета. Например:"
+        salary: "— Зарплата"
+        gift: "— Подарок"
+        loan: "— Заём"
+        credit_card: "— Кредитная карта"
+        debit_card: "— Дебетовая карта"
+        bank_account: "— Банковский счёт"
+        spending_explanation: "Эти источники можно будет выбирать при добавлении расходов."
+      exchanges: "Обмены"
+      exchange_records: "обменов"
+      create_source: "Добавить источник"
+    new:
+      name: "Новый кошелёк"
+    show:
+      back: "Назад к источникам"
+      back_name: "Назад"
+      deleted: "Удалён"
+      design_description: "Дизайн карты «%{design}»"
+      summary_name: "Сводка по источнику"
+      initial_amount: "Начальная сумма:"
+      remainder: "Остаток:"
+      expenses: "Расходы"
+      expense_records: "расходов источника"
+      exchange: "Обменять"
+      remove: "Удалить источник"
+      remove_confirmation: "Удалить этот источник?"
+    form:
+      errors: "Количество ошибок: %{count}. Не удалось сохранить источник:"
+      name_placeholder: "Кредитная карта, наличные, заём и т. п."
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    source:
+      view: "Открыть %{name}"
+    exchange:
+      deleted: "%{name} (удалён)"
+    design_fields:
+      name: "Дизайн"
+      arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
+      continue_html: "Нажмите %{enter}, чтобы продолжить, или %{shift} + %{enter}, чтобы вернуться."
+    designs:
+      americat_express: "Americat Express"
+      mastercat: "Mastercat"
+      meowisa: "Meowisa"
+      unipaw: "Unipaw"
+      cash: "Наличные"
+      bank: "Банк"
+      savings: "Сбережения"
+      digital_wallet: "Электронный кошелёк"
+    create:
+      success: "Источник создан."
+    destroy:
+      success: "Источник удалён."
+      failure: "Не удалось удалить источник."
+
+  allocations:
+    index:
+      name: "Категории"
+      remainder: "Остаток: %{amount} %{currency}"
+      overallocation: "Запланированные суммы превышают доступные средства на %{amount} %{currency}."
+      no_data:
+        name: "Сначала запланируйте важные расходы"
+        description: "Отложите деньги на самое необходимое, например:"
+        rent: "— Аренда"
+        utilities: "— Коммунальные услуги"
+        bill: "— Счета"
+        emergency_fund: "— Резервный фонд"
+        spending_explanation: "Остальные деньги будут учтены при расчёте доступной суммы на день. Так вы сможете тратить свободнее, не рискуя своими планами."
+      create_allocation: "Новая категория"
+    new:
+      name: "Новый план"
+    form:
+      errors: "Количество ошибок: %{count}. Не удалось сохранить план:"
+      name_placeholder: "Аренда, продукты, резервный фонд и т. п."
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    allocation:
+      finished: "ЗАВЕРШЁН"
+      spending: "Использовано %{used} из %{planned}"
+      over_plan: "— превышение на %{amount}"
+      rate: "План создан по курсу %{rate} %{base_currency} за %{currency}."
+      details: "Подробнее"
+      reopen: "Возобновить"
+      reopen_confirmation: "Возобновить %{name} и снова зарезервировать оставшуюся сумму?"
+      finish: "Завершить"
+      finish_confirmation: "Завершить %{name} и освободить %{amount}?"
+    show:
+      back: "Назад к планам"
+      back_name: "Назад"
+      deleted: "Удалён"
+      finished: "Завершён"
+      summary_name: "Сводка по плану"
+      planned: "Запланировано:"
+      used: "Использовано:"
+      remaining: "Осталось:"
+      unplanned: "Без плана"
+      expenses: "Расходы"
+      expense_records: "расходов плана"
+      finish: "Завершить план"
+      finish_confirmation: "Завершить %{name} и освободить %{amount}?"
+      reopen: "Возобновить план"
+      reopen_confirmation: "Возобновить %{name} и снова зарезервировать оставшуюся сумму?"
+      remove: "Удалить план"
+      remove_confirmation: "Удалить этот план?"
+    create:
+      success: "План создан."
+      overallocated: "План создан. Запланированные суммы теперь превышают доступные средства."
+    finish:
+      success: "План завершён."
+      failure: "Не удалось завершить план."
+    reopen:
+      success: "План возобновлён."
+      failure: "Не удалось возобновить план."
+    destroy:
+      success: "План удалён."
+      failure: "Не удалось удалить план."
+
+  expenses:
+    index:
+      name: "Расходы"
+      user: "Пользователь"
+      cybercat_description: "Киберкот"
+      expenses: "Расходы"
+      expense_records: "расходов"
+      create_expense: "Добавить расход"
+      answers:
+        no_expenses: "Пока ничего не потрачено — отлично."
+        "0": "На сегодня трат достаточно."
+        "25": "Можно, но завтра придётся экономить."
+        "50": "Лучше оставить немного на завтра."
+        "80": "Да, всё ещё можно."
+        "100": "Сегодня вы впереди плана — отлично."
+    new:
+      name: "Новый расход"
+      no_sources:
+        name: "Сначала добавьте источник"
+        description: "Для расхода нужен активный источник."
+        create_source: "Новый источник"
+    form:
+      errors: "Количество ошибок: %{count}. Не удалось сохранить расход:"
+      source:
+        name: "Из источника:"
+        availability: "Доступно %{amount} (%{currency})"
+      category:
+        name: "Категория:"
+        no_allocation: "Без категории"
+        search: "Найти или добавить категорию"
+        creation_html: "Будет создана категория %{name}"
+      date: "Дата:"
+      note: "Заметка:"
+      note_added: "Добавлена"
+      note_placeholder: "Необязательно"
+      arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    expense:
+      view: "Открыть расход"
+      with_note: "Есть заметка"
+      unallocated: "Без категории"
+    show:
+      name: "Расход"
+      receipt: "Чек"
+      category: "Категория"
+      deleted: "(удалена)"
+      finished: "(завершена)"
+      unallocated: "Без категории"
+      paid_from: "Оплачено из"
+      conversion_quote: "Курс конвертации"
+      budget_name: "Сумма в валюте бюджета"
+      note: "Заметка"
+      delete: "Удалить расход"
+      delete_confirmation: "Удалить этот расход без возможности восстановления?"
+    create:
+      success: "Расход создан."
+    destroy:
+      success: "Расход удалён."
+
+  users:
+    show:
+      name: "Пользователь"
+      account: "Учётная запись"
+      language: "Язык"
+      language_description: "Выберите язык интерфейса Spendout."
+      budget: "Бюджет"
+      budget_description: "Удаление бюджета навсегда удалит его источники, планы, расходы и обмены."
+      actions: "Действия пользователя"
+      sign_out: "Выйти"
+      remove_budget: "Удалить бюджет"
+      remove_budget_confirmation: "Удалить этот бюджет и все его данные без возможности восстановления? Это действие нельзя отменить."
+
+  shared:
+    locale_switcher:
+      name: "Язык"
+      english: "Английский"
+      russian: "Русский"
+    currency_picker:
+      choose: "Выберите валюту"
+      currency: "Валюта"
+      close: "Закрыть выбор валюты"
+      search_placeholder: "Поиск по названию или коду"
+      search_name: "Поиск валют"
+      no_data: "Валюты не найдены"
+    name_fields:
+      name: "Название"
+      question: "Как называется этот объект (%{model})?"
+    amount_fields:
+      name: "Сумма"
+      question: "Сколько денег находится в объекте «%{model}»?"
+    currency_fields:
+      name: "Валюта"
+      question: "Какая валюта используется?"
+      arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
+    currency_rate_picker:
+      change_rate: "Указать курс"
+      name: "Подтвердите курс конвертации"
+      cancel: "Отменить изменение курса"
+      prompt: "Укажите, сколько единиц %{currency} приходится на 1 %{base_currency}"
+      accept: "Применить"
+    form_navigation:
+      continue_html: "Нажмите %{enter}, чтобы продолжить, или %{shift} + %{enter}, чтобы вернуться."
+      back_html: "Нажмите %{shift} + %{enter}, чтобы вернуться."
+    icon_fields:
+      name: "Значок"
+      arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
+    colour_fields:
+      name: "Цвет"
+      arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
+    pagination:
+      name: "Пагинация: %{records}"
+      previous: "Назад"
+      position: "Страница %{page} из %{pages}"
+      next: "Вперёд"
+    daily_gauge:
+      name: "Доступная сумма на сегодня"
+      remaining: "Осталось %{percentage}% доступной на сегодня суммы"
+      amount: "Сегодня можно потратить: %{amount} %{currency}"
+
+  activerecord:
+    errors:
+      models:
+        budget:
+          attributes:
+            period_to:
+              before_period_from: "должна быть не раньше даты начала"
+            base:
+              current_exists: "Активный бюджет уже существует"
+            base_currency_code:
+              changed: "нельзя изменить"
+        source:
+          attributes:
+            base:
+              direct_destruction: "источник нельзя удалить напрямую"
+            currency_code:
+              unavailable: "не поддерживается"
+              changed: "нельзя изменить"
+            rate:
+              changed: "нельзя изменить"
+        allocation:
+          attributes:
+            currency_code:
+              unavailable: "не поддерживается"
+        expense:
+          attributes:
+            occurred_on:
+              outside_budget_period: "должна входить в период бюджета"
+            source:
+              wrong_budget: "должен относиться к этому бюджету"
+              inactive: "должен быть активным"
+            allocation:
+              wrong_budget: "должен относиться к этому бюджету"
+              inactive: "должен быть активным"
+
+  date:
+    formats:
+      budget_without_year: "%d.%m"
+      budget_with_year: "%d.%m.%Y"
+      budget_date_with_year: "%d.%m.%Y"

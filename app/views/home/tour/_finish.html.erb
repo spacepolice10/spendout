@@ -1,9 +1,9 @@
 <section data-tour-slide="finish" aria-labelledby="finish-title">
   <%= render "home/tour/pager", label: "End of tour navigation", count: "Tour complete" %>
   <article data-tour-copy>
-    <p data-tour-count>That is the whole loop</p>
     <h1 id="finish-title">Your money.<br>Your history.<br>Your server.</h1>
-    <p data-tour-lead>Spendout is a compact, self-hosted Rails application with passwordless sign-in, precision-safe money, keyboard shortcuts, and no subscription.</p>
+    <h2>Self-hosted, no subscription</h2>
+    <p>Spendout is a compact Rails application with passwordless sign-in, precision-safe money, keyboard shortcuts, and no lock-in.</p>
     <div data-landing-actions>
       <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path, role: "button", data: { appearance: "keycap", intent: "primary" } %>
       <%= link_to "Back to landing", landing_path, role: "button", data: { appearance: "keycap" } %>

@@ -29,7 +29,7 @@ class SourcesController < ApplicationController
     @source = @budget.sources.new(source_params)
 
     if @source.save
-      redirect_to budget_sources_path(@budget), notice: "Source was created."
+      redirect_to budget_sources_path(@budget), notice: t("sources.create.success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -37,9 +37,9 @@ class SourcesController < ApplicationController
 
   def destroy
     if @source.update(deleted_at: Time.current)
-      redirect_to budget_sources_path(@budget), notice: "Source was deleted."
+      redirect_to budget_sources_path(@budget), notice: t("sources.destroy.success")
     else
-      redirect_to budget_sources_path(@budget), alert: "Source was not deleted."
+      redirect_to budget_sources_path(@budget), alert: t("sources.destroy.failure")
     end
   end
 
@@ -54,6 +54,6 @@ class SourcesController < ApplicationController
     end
 
     def source_params
-      params.require(:source).permit(:name, :amount, :currency_code, :rate, :icon, :colour)
+      params.require(:source).permit(:name, :amount, :currency_code, :rate, :design)
     end
 end

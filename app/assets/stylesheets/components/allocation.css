@@ -1,4 +1,88 @@
 @layer components {
+    [data-allocation-envelope] {
+        overflow: visible;
+        fill: color-mix(in oklch, var(--color-1) 70%, var(--color-palette-yellow) 30%);
+        stroke: color-mix(in oklch, var(--color-invert-4) 35%, var(--color-4));
+        stroke-width: 0.75px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+
+        & [data-envelope-line] {
+            fill: none;
+        }
+    }
+
+    [data-allocation-hero] {
+        display: grid;
+        place-items: center;
+        justify-self: center;
+
+        & > * {
+            grid-area: 1 / 1;
+        }
+
+        & [data-allocation-envelope] {
+            width: var(--space-h-10);
+            height: var(--space-h-10);
+        }
+
+        & > .icon-wrap {
+            z-index: 1;
+            width: var(--space-h-4);
+            height: var(--space-h-4);
+        }
+    }
+
+    [data-allocation-envelope-thumbnail] {
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        width: 2.5rem;
+        height: 2.5rem;
+
+        & > * {
+            grid-area: 1 / 1;
+        }
+
+        & [data-allocation-envelope] {
+            width: 2.5rem;
+            height: 2.5rem;
+            transition: scale 160ms ease;
+        }
+
+        & > .icon-wrap {
+            z-index: 1;
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+    }
+
+    [data-allocation-card]:hover [data-allocation-envelope-thumbnail] [data-allocation-envelope] {
+        scale: 1.06;
+    }
+
+    [data-allocation-title] {
+        display: grid;
+        justify-items: center;
+        gap: var(--space-v-half);
+        text-align: center;
+    }
+
+    [data-allocation-summary] > p {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5ch var(--space-h-half);
+        text-align: center;
+    }
+
+    [data-allocation-actions] {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-h);
+    }
+
     [data-finished-allocation] {
         position: relative;
 

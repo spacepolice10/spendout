@@ -1,0 +1,196 @@
+<% content_for :title, "Install Spendout with ONCE" %>
+<% content_for :description, "Put Spendout on a machine you control. ONCE handles HTTPS, updates, persistent storage, and backups." %>
+<% content_for :hide_tabbar, true %>
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,700;8..60,800&amp;display=swap">
+<% end %>
+
+<a href="#main-content" data-skip-link>Skip to content</a>
+
+<%= render "shared/header" %>
+
+<main id="main-content" data-page="once" data-size="xl">
+  <section data-once-hero aria-labelledby="once-title">
+    <header data-once-intro>
+      <h1 id="once-title">
+        Spendout
+        <span data-once-version>ONCE-ready</span>
+      </h1>
+      <h2>Put it on your own server, without a subscription.</h2>
+      <p>
+        ONCE is a one-command installer for Docker apps. It issues HTTPS,
+        keeps storage, applies updates, and backs up the volume. You keep the
+        machine and the data. Source is
+        <a href="https://osaasy.dev/">O'Saasy</a>.
+      </p>
+      <p>
+        These steps match the ONCE-packaged image. That image is currently
+        built from the
+        <a href="https://github.com/spacepolice10/spendout/tree/codex/once-adaptation">ONCE-ready branch</a>.
+      </p>
+    </header>
+  </section>
+
+  <div data-once-content>
+    <section data-landing-chapter aria-labelledby="once-need-title">
+      <header>
+        <h2 id="once-need-title">What you need</h2>
+        <p>
+          A laptop, a server in the closet, or a VPS all work. ONCE runs on
+          Linux and macOS. All you need to know is how to connect to the
+          machine and paste a command.
+        </p>
+      </header>
+
+      <ul data-once-needs>
+        <li>
+          <strong>A host.</strong> The machine that will run Spendout. Ports
+          80 and 443 must be free.
+        </li>
+        <li>
+          <strong>A hostname.</strong> A DNS A record pointing that name at
+          the machine, such as spendout.example.com.
+        </li>
+        <li>
+          <strong>SMTP, if you use codes.</strong> Emailed sign-in codes need
+          an outbound mail server. Set it in ONCE after deploy.
+        </li>
+        <li>
+          <strong>No extra services.</strong> Spendout is SQLite, one
+          container, no add-ons. ONCE mounts persistent storage for you.
+        </li>
+      </ul>
+    </section>
+
+    <section data-landing-chapter aria-labelledby="once-install-title">
+      <header>
+        <h2 id="once-install-title">Installation</h2>
+        <p>Point DNS, paste a command, then open the hostname.</p>
+      </header>
+
+      <div data-once-steps>
+        <h3>Install ONCE</h3>
+        <p>Paste this command into your terminal:</p>
+        <pre data-once-command><code>curl https://get.once.com | sh</code></pre>
+        <p>
+          ONCE downloads its binary, installs Docker if needed, and registers a
+          background service. The dashboard opens when install finishes. Prefer
+          not to launch it yet? Run the same command with
+          <code>ONCE_INTERACTIVE=false</code>.
+        </p>
+
+        <h3>Point DNS first</h3>
+        <p>
+          Choose a hostname and create an A record to the machine's IP. A
+          subdomain is enough, and a wildcard record works if you will host more
+          than one ONCE app.
+        </p>
+        <p>
+          If Cloudflare's proxy is on, set SSL to
+          <strong>Strict (full)</strong> so HTTPS stays end-to-end.
+        </p>
+
+        <h3>Deploy Spendout</h3>
+        <p>
+          From the ONCE dashboard, enter the image path and hostname. From the
+          command line:
+        </p>
+        <pre data-once-command><code>once deploy ghcr.io/spacepolice10/spendout:latest --host spendout.example.com</code></pre>
+        <p>
+          ONCE pulls the image, boots it, and gets a certificate. Open the
+          hostname when it reports the app is running.
+        </p>
+      </div>
+    </section>
+
+    <section data-landing-chapter aria-labelledby="once-after-title">
+      <header>
+        <h2 id="once-after-title">After it boots</h2>
+        <p>Create the administrator, set mail, and keep the volume backed up.</p>
+      </header>
+
+      <div data-once-steps>
+        <h3>Create the first administrator</h3>
+        <p>
+          The first visit is a setup wizard. Enter an email address and a
+          password of at least 12 characters. After that, public registration is
+          closed. Only the administrator can add people.
+        </p>
+        <p>
+          This demo still signs in with emailed codes only. The ONCE image adds
+          that first-run administrator, then lets them add users who sign in
+          with a password or a code.
+        </p>
+
+        <h3>Configure email</h3>
+        <p>
+          In the ONCE dashboard, select Spendout, press <kbd>s</kbd> for
+          settings, and fill in Email Settings before you add anyone who signs
+          in with a code.
+        </p>
+        <p>
+          ONCE passes <code>SMTP_ADDRESS</code>, <code>SMTP_PORT</code>,
+          <code>SMTP_USERNAME</code>, <code>SMTP_PASSWORD</code>, and
+          <code>MAILER_FROM_ADDRESS</code> into the container. Spendout reads
+          those directly.
+        </p>
+
+        <h3>Storage and backups</h3>
+        <p>
+          All persistent state lives under <code>/rails/storage</code> on ONCE's
+          volume: SQLite, cache, jobs, and uploads. Backups copy that volume.
+        </p>
+        <p>
+          The image includes <code>pre-backup</code> and
+          <code>post-restore</code> hooks. They snapshot every production
+          database with SQLite's online backup so a restore is consistent
+          without pausing the app.
+        </p>
+      </div>
+    </section>
+
+    <section data-landing-chapter aria-labelledby="once-also-title">
+      <header>
+        <h2 id="once-also-title">Also useful</h2>
+        <p>Operate from the dashboard, or deploy the current branch with Kamal.</p>
+      </header>
+
+      <div data-once-steps>
+        <h3>Operate from the dashboard</h3>
+        <p>
+          With Spendout selected, press <kbd>s</kbd> for settings or
+          <kbd>a</kbd> to start, stop, or remove the app. Automatic updates can
+          be turned off if you prefer to ship them yourself.
+        </p>
+
+        <h3>Deploy with Kamal instead</h3>
+        <p>
+          The current branch is a manual Kamal deploy: copy the example
+          configuration, set SMTP and the host, then run
+          <code>bin/kamal setup</code>. The steps live in the
+          <a href="https://github.com/spacepolice10/spendout#manual-deployment-with-kamal">README</a>.
+        </p>
+
+        <h3>Read ONCE itself</h3>
+        <p>
+          System requirements, Cloudflare notes, and hook details are in the
+          <a href="https://github.com/basecamp/once">ONCE README</a>
+          and on
+          <a href="https://once.com/">once.com</a>.
+          Spendout's packaging work is on the
+          <a href="https://github.com/spacepolice10/spendout/tree/codex/once-adaptation">ONCE-ready branch</a>.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <footer data-landing-footer>
+    <p>
+      <strong>Demo data is temporary.</strong> It is not preserved and may be
+      removed within a week.
+    </p>
+
+    <%= link_to authenticated? ? "Open my budget" : "Try the demo", authenticated? ? root_path : new_session_path,
+          role: "button", data: { appearance: "keycap", intent: "primary" } %>
+  </footer>
+</main>

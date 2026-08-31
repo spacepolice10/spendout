@@ -99,13 +99,15 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     get budget_sources_path(@budget)
 
     assert_response :success
-    assert_select "a[href='#{new_source_exchange_path(@sender)}']", text: /Exchange/
+    assert_select "a[data-source-link][href='#{source_path(@sender)}']"
+    assert_select "a[href='#{new_source_exchange_path(@sender)}']", count: 0
     displayed_balance = ApplicationController.helpers.formatted_amount(original_balance - 100, @sender.currency_code)
     assert_select "[data-testid='source-card']", text: /#{Regexp.escape(displayed_balance)}/
     assert_select "[data-testid='exchange-list']", count: 1
     assert_select "[data-testid='exchange-day']", count: 1
     assert_select "[data-testid='exchange-day'] time[datetime='#{exchange.created_at.to_date.iso8601}']"
     assert_select "[data-testid='exchange-history-item']", count: 1
+    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] img[data-source-design-thumbnail]", count: 2
     assert_select "[data-testid='exchange-history-item']", text: /Main source.*Euro cash/m
     assert_select "[data-testid='exchange-history-item']", text: /100.*USD.*80.*EUR/m
     assert_select "[data-testid='exchange-history-item'] a, [data-testid='exchange-history-item'] button", count: 0

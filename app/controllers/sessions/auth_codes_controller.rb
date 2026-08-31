@@ -30,7 +30,7 @@ class Sessions::AuthCodesController < ApplicationController
 
     def require_pending_email_address
       unless pending_email_address.present?
-        redirect_to new_session_path, alert: t("sessions.auth_codes.create.missing_email")
+        redirect_to new_session_path, alert: t("sessions.auth_codes.create.missing_address")
       end
     end
 

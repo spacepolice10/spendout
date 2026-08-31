@@ -25,6 +25,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_select "body > main > article > footer", count: 0
     assert_select "[data-testid='allocation-card']", count: 1, text: /Housing/
+    assert_select "[data-allocation-envelope-thumbnail] [data-allocation-envelope='closed']"
+    assert_select "[data-allocation-envelope-thumbnail] .icon-wrap[style*='color: var(--color-palette-yellow)'] .icon[style*='--icon-home']"
     assert_select "progress[data-testid='allocation-progress'][value='125.0'][max='300.0']"
     assert_select "progress[aria-label='$125 spent of $300 planned']"
     assert_select "[data-testid='allocation-card'] small", text: /\$125 spent of \$300 planned/
@@ -215,19 +217,25 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     get allocation_path(@allocation)
 
     assert_response :success
-    assert_select "main[data-size='lg'] > article[data-elevation='1']:not([style])"
-    assert_select "h1", text: @allocation.name
-    assert_select "article > header > nav > .icon-wrap[style*='color: var(--color-palette-yellow)']"
-    assert_select "section[data-layout='grid'][aria-label='Allocation summary']"
-    assert_select "[data-testid='allocation-planned-amount']", text: /Planned.*300 USD/m
-    assert_select "[data-testid='allocation-spent-amount']", text: /Spent.*125 USD/m
-    assert_select "[data-testid='allocation-remaining-amount']", text: /Remaining.*175 USD/m
-    assert_select "[data-testid='allocation-budget'] a[href='#{budget_expenses_path(@budget)}']", text: @budget.date_period
-    assert_select "a[aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']"
+    assert_select "main[data-size='lg'] > article:not([data-elevation]):not([style])"
+    assert_select "main[data-size='lg'] > article > header", count: 0
+    assert_select "article > main > [data-allocation-hero] [data-allocation-envelope='open']"
+    assert_select "[data-allocation-hero] .icon-wrap[style*='color: var(--color-palette-yellow)'] .icon[style*='--icon-home']"
+    assert_select "[data-allocation-hero] + hgroup[data-allocation-title] h1", text: @allocation.name
+    assert_select "section[data-allocation-summary][aria-label='Allocation summary']", text: /Planned:.*300 USD.*Spent:.*125 USD.*Remaining:.*175 USD/m
+    assert_select "section[data-allocation-summary] article, section[data-allocation-summary] small", count: 0
+    assert_select "[data-testid='allocation-budget']", count: 0
+    assert_select "[data-allocation-navigation]", count: 0
+    assert_select "[data-allocation-actions] a[role='button'][aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']", text: "Back"
     assert_select "[data-testid='expense-card']", count: 1
+    assert_select "[data-allocation-actions] + article[data-testid='expense-list']"
+    assert_select "article[data-testid='expense-list'] > header", count: 0
+    assert_select "article[data-testid='expense-list'] > h2", text: "Expenses"
     assert_select "[data-testid='expense-day-total']", text: /125 USD/
     assert_select "form[action='#{finish_allocation_path(@allocation)}'] button", text: "Finish allocation"
-    assert_select "form[action='#{allocation_path(@allocation)}'] button[aria-label='Remove allocation']"
+    assert_select "form[action='#{allocation_path(@allocation)}'] button[aria-label='Remove allocation']" do
+      assert_select ".icon"
+    end
   end
 
   test "show paginates expenses connected to the allocation" do
@@ -264,8 +272,8 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     get allocation_path(@allocation)
 
     assert_response :success
-    assert_select "[data-testid='allocation-planned-amount']", text: /Category.*Unplanned.*without reserving money/m
-    assert_select "[data-testid='allocation-remaining-amount']", count: 0
+    assert_select "section[data-allocation-summary]", text: /Unplanned.*Spent:.*125 USD/m
+    assert_select "section[data-allocation-summary]", text: /Planned:|Remaining:/, count: 0
     assert_select "form[action='#{finish_allocation_path(@allocation)}']", count: 0
     assert_select "form[action='#{allocation_path(@allocation)}'] button[aria-label='Remove allocation']"
   end
@@ -278,6 +286,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "small", text: "Deleted"
+    assert_select "[data-allocation-actions] a[role='button'][aria-label='Back to allocations'][href='#{budget_allocations_path(@budget)}']", text: "Back"
     assert_select "button[aria-label='Remove allocation']", count: 0
     assert_select "form[action='#{finish_allocation_path(@allocation)}']", count: 0
   end

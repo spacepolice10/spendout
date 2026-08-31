@@ -88,27 +88,27 @@ class Expense < ApplicationRecord
       return if occurred_on.blank? || budget.nil?
       return if occurred_on.between?(budget.period_from, budget.period_to)
 
-      errors.add(:occurred_on, "must be within the budget period")
+      errors.add(:occurred_on, :outside_budget_period)
     end
 
     def source_belongs_to_budget
       return if source.nil? || budget.nil? || source.budget_id == budget.id
 
-      errors.add(:source, "must belong to this budget")
+      errors.add(:source, :wrong_budget)
     end
 
     def allocation_belongs_to_budget
       return if allocation.nil? || budget.nil? || allocation.budget_id == budget.id
 
-      errors.add(:allocation, "must belong to this budget")
+      errors.add(:allocation, :wrong_budget)
     end
 
     def source_is_active
-      errors.add(:source, "must be active") if source&.deleted?
+      errors.add(:source, :inactive) if source&.deleted?
     end
 
     def allocation_is_active
-      errors.add(:allocation, "must be active") if allocation && !allocation.active?
+      errors.add(:allocation, :inactive) if allocation && !allocation.active?
     end
 
     def amount_fits_source
@@ -119,8 +119,7 @@ class Expense < ApplicationRecord
       available = source.spendable_amount(excluding: self)
       if source_amount > available
         attribute = currency_code == source.currency_code ? :amount : :source_amount
-        errors.add(attribute, "must be less than or equal to #{available.to_s("F")}")
+        errors.add(attribute, :less_than_or_equal_to, count: available.to_s("F"))
       end
     end
-
 end

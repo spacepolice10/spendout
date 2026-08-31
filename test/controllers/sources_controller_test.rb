@@ -24,11 +24,17 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
       assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
     end
     assert_select "body > main > article > footer", count: 0
+    assert_select "section[data-source-grid][aria-label='Money sources']"
     assert_select "[data-testid='source-card']", count: 1
+    assert_select "[data-testid='source-card'] > header", count: 0
     assert_select "[data-testid='source-card']", text: /Main source/
-    assert_select "[data-source-card][style*='--source-colour: var(--color-palette-green)']"
+    assert_select "[data-source-card][style*='--source-colour: var(--color-palette-green)'] > img[data-source-design-thumbnail][src*='americat_express'][width='72'][height='46']"
     assert_select "header", text: /Actual remainder:.*\$1,200\.25/m
-    assert_select "a[href='#{source_path(@source)}']", text: /Details/
+    assert_select "a[data-source-link][href='#{source_path(@source)}'][aria-label='View #{@source.name}']" do
+      assert_select "[data-testid='source-card']", text: /#{@source.name}/
+    end
+    assert_select "[data-source-card] footer", count: 0
+    assert_select "a[href='#{new_source_exchange_path(@source)}']", count: 0
     assert_select "[data-source-card] button[aria-label='Remove source']", count: 0
   end
 
@@ -48,6 +54,9 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     get budget_sources_path(@budget)
 
     assert_select "[data-testid='exchange-history-item']", count: 15
+    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs]", count: 15
+    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] img[data-source-design-thumbnail]", count: 30
+    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] span", text: "→", count: 15
     assert_select "nav[aria-label='Pagination for exchanges']", text: /Page 1 of 2/
     assert_select "nav[aria-label='Pagination for exchanges'] a", text: "Next" do |links|
       get links.first["href"]
@@ -72,18 +81,17 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-deleted]", count: 0
   end
 
-  test "new offers supported icons colours and available budget currencies" do
+  test "new offers source designs and available budget currencies" do
     sign_in_as(@user)
 
     get new_budget_source_path(@budget)
 
     assert_response :success
-    assert_select "input[name='source[icon]'][type='radio']", count: Source.icon_options.size
-    assert_select "input[name='source[icon]'][value='wallet'][checked]"
-    assert_select "input[name='source[icon]'][value='wallet'][aria-label='Wallet']"
-    assert_select "label[title='Wallet']", text: ""
-    assert_select "input[name='source[colour]'][type='radio']", count: Source.colour_options.size
-    assert_select "input[name='source[colour]'][value='green'][checked]"
+    assert_select "input[name='source[design]'][type='radio']", count: Source.designs.size
+    assert_select "input[name='source[design]'][value='americat_express'][checked][aria-label='Americat Express']"
+    assert_select "label[title='Americat Express'] img[src*='americat_express']"
+    assert_select "input[name='source[icon]']", count: 0
+    assert_select "input[name='source[colour]']", count: 0
     assert_select "input[name='source[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
     assert_select "input[name='source[amount]'][value='0']"
     assert_select "input[name='source[amount]'][data-amount-fields-start-value='0']"
@@ -148,8 +156,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
           amount: "125.5000",
           currency_code: "USD",
           rate: "1.25",
-          icon: "building-bank",
-          colour: "blue"
+          design: "unipaw"
         }
       }
     end
@@ -159,8 +166,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Emergency fund", source.name
     assert_equal BigDecimal("125.5000"), source.amount
     assert_equal BigDecimal("1"), source.rate
-    assert_equal "building-bank", source.icon
-    assert_equal "blue", source.colour
+    assert source.unipaw?
   end
 
   test "invalid source creates no record and rerenders options" do
@@ -172,16 +178,14 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
           name: "",
           amount: "-1",
           currency_code: "USD",
-          icon: "unknown",
-          colour: "unknown"
+          design: "unknown"
         }
       }
     end
 
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: /Name can't be blank/
-    assert_select "input[name='source[icon]'][type='radio']", count: Source.icon_options.size
-    assert_select "input[name='source[colour]'][type='radio']", count: Source.colour_options.size
+    assert_select "input[name='source[design]'][type='radio']", count: Source.designs.size
   end
 
   test "show displays source details" do
@@ -190,15 +194,19 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     get source_path(@source)
 
     assert_response :success
-    assert_select "main[data-size='lg'] > article[data-elevation='1']:not([style])"
-    assert_select "h1", text: @source.name
-    assert_select "article > header > nav > .icon-wrap[style*='color: var(--color-palette-green)']"
-    assert_select "section[data-layout='grid'][aria-label='Source summary']"
-    assert_select "[data-testid='source-initial-amount']", text: /Initial amount.*1,500.25 USD.*Added when this source was created/m
-    assert_select "[data-testid='source-available-amount']", text: /Available now.*1,375.25 USD.*After expenses and exchanges/m
-    assert_select "[data-testid='source-budget'] a[href='#{budget_expenses_path(@budget)}']", text: @budget.date_period
-    assert_select "a[aria-label='Back to sources'][href='#{budget_sources_path(@budget)}']"
+    assert_select "main[data-size='lg'] > article:not([data-elevation])[style*='--source-colour: var(--color-palette-green)']"
+    assert_select "main[data-size='lg'] > article > header", count: 0
+    assert_select "article > main > img[data-source-design-hero][src*='americat_express'][width='720'][height='464']"
+    assert_select "img[data-source-design-hero] + hgroup[data-source-title] h1", text: @source.name
+    assert_select "section[data-source-summary][aria-label='Source summary']", text: /Initial amount:.*1,500.25 USD.*Rest:.*1,375.25 USD/m
+    assert_select "section[data-source-summary] article, section[data-source-summary] small", count: 0
+    assert_select "[data-testid='source-budget']", count: 0
+    assert_select "[data-source-navigation]", count: 0
+    assert_select "[data-source-actions] a[role='button'][aria-label='Back to sources'][href='#{budget_sources_path(@budget)}']", text: "Back"
     assert_select "[data-testid='expense-card']", count: 1
+    assert_select "[data-source-actions] + article[data-testid='expense-list']"
+    assert_select "article[data-testid='expense-list'] > header", count: 0
+    assert_select "article[data-testid='expense-list'] > h2", text: "Expenses"
     assert_select "[data-testid='expense-day-total']", text: /125 USD/
     assert_select "a[href='#{new_source_exchange_path(@source)}']", text: /Make exchange/
     assert_select "form[action='#{source_path(@source)}'] button[aria-label='Remove source']" do
@@ -242,6 +250,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "small", text: "Deleted"
+    assert_select "[data-source-actions] a[role='button'][aria-label='Back to sources'][href='#{budget_sources_path(@budget)}']", text: "Back"
     assert_select "a[href='#{new_source_exchange_path(deleted_source)}']", count: 0
     assert_select "button[aria-label='Remove source']", count: 0
   end

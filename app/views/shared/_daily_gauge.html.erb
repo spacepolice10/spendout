@@ -5,11 +5,11 @@
 <div data-daily-gauge data-controller="daily-gauge">
   <div
     role="progressbar"
-    aria-label="Safe spending available today"
+    aria-label="<%= t(".name") %>"
     aria-valuemin="0"
     aria-valuemax="100"
     aria-valuenow="<%= remainder_percentage %>"
-    aria-valuetext="<%= remainder_percentage %>% of today's safe spending remains"
+    aria-valuetext="<%= t(".remaining", percentage: remainder_percentage) %>"
     data-remainder-gauge
   >
       <svg viewBox="0 0 240 150" aria-hidden="true" focusable="false">
@@ -73,6 +73,6 @@
         <text data-remainder-gauge-full x="220" y="145">F</text>
       </svg>
 
-    <small>Safe to spend today: <%= formatted_amount(amount, currency_code) %> <%= currency_code %></small>
+    <small><%= t(".amount", amount: formatted_amount(amount, currency_code), currency: currency_code) %></small>
   </div>
 </div>

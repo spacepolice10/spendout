@@ -1,0 +1,26 @@
+<details name="form-details" data-form-target="section">
+  <summary data-form-target="summary">
+    <span><%= t(".name") %>:</span>
+    <small data-form-target="summaryContent"><%= source.design_name %></small>
+  </summary>
+
+  <fieldset data-source-designs data-layout="grid">
+    <legend class="utilities--sr-only"><%= t(".name") %></legend>
+    <div>
+      <%= form.collection_radio_buttons :design, Source.design_options, :second, :first do |radio| %>
+        <%= radio.label title: radio.text do %>
+          <%= radio.radio_button required: true, aria: { label: radio.text },
+                data: { form_target: "toBeFocused" } %>
+          <%= image_tag Source::DESIGNS.fetch(radio.value).fetch(:image),
+                alt: "", width: 720, height: 464 %>
+          <strong><%= radio.text %></strong>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% unless mobile_variant? %>
+      <small><%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %></small>
+      <small><%= t(".continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %></small>
+    <% end %>
+  </fieldset>
+</details>

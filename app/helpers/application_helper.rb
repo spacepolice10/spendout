@@ -29,19 +29,19 @@ module ApplicationHelper
   end
 
   def cybercat_spending_answer(percentage, no_expenses: false)
-    return "Nothing spent yet—nice." if no_expenses
+    return t("expenses.index.answers.no_expenses") if no_expenses
 
     case percentage.to_d
     when ..0
-      "That’s enough spending for today."
+      t("expenses.index.answers.0")
     when ...25
-      "You can, but tomorrow will be tighter."
+      t("expenses.index.answers.25")
     when ...50
-      "Better save some for tomorrow."
+      t("expenses.index.answers.50")
     when ...80
-      "Yep, still good to go."
+      t("expenses.index.answers.80")
     else
-      "You’re ahead today—nice."
+      t("expenses.index.answers.100")
     end
   end
 

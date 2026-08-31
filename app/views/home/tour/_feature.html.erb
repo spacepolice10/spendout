@@ -2,14 +2,12 @@
   <%= render "home/tour/pager", label: "#{@tour_feature[:label]} page navigation", count: @tour_count %>
 
   <article data-tour-copy>
-    <p data-tour-count><%= @tour_feature[:label] %></p>
     <h1 id="feature-title"><%= @tour_feature[:title] %></h1>
 
     <figure data-tour-screen>
       <%= image_tag @tour_feature[:image], alt: @tour_feature[:alt], width: 1120, height: 800 %>
     </figure>
 
-    <p data-tour-lead><%= @tour_feature[:lead] %></p>
     <h2><%= @tour_feature[:detail_title] %></h2>
     <p><%= @tour_feature[:detail] %></p>
   </article>

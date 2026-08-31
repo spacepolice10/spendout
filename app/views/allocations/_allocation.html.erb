@@ -5,15 +5,19 @@
 <%= tag.article data: {
       elevation: "1",
       testid: "allocation-card",
+      allocation_card: true,
       finished_allocation: allocation.finished? || nil
     } do %>
   <% if allocation.finished? %>
-    <mark data-finished-stamp>FINISHED</mark>
+    <mark data-finished-stamp><%= t(".finished") %></mark>
   <% end %>
 
   <header>
     <nav>
-      <%= icon(allocation.icon, style: colour_styles(allocation.colour)) %>
+      <span data-allocation-envelope-thumbnail>
+        <%= render "allocations/envelope", variant: "closed" %>
+        <%= icon(allocation.icon, style: icon_colour_styles(allocation.colour)) %>
+      </span>
       <h2><%= allocation.name %></h2>
     </nav>
 
@@ -24,23 +28,20 @@
     <progress
       value="<%= progress_amount %>"
       max="<%= progress_maximum %>"
-      aria-label="<%= formatted_amount(used_amount, allocation.currency_code) %> spent of <%= formatted_amount(allocation.amount, allocation.currency_code) %> planned"
+      aria-label="<%= t(".spending", used: formatted_amount(used_amount, allocation.currency_code), planned: formatted_amount(allocation.amount, allocation.currency_code)) %>"
       style="--progress-colour: var(--color-palette-<%= allocation.colour %>);"
       data-testid="allocation-progress"
     ></progress>
 
     <small>
-      <%= formatted_amount(used_amount, allocation.currency_code) %> spent of
-      <%= formatted_amount(allocation.amount, allocation.currency_code) %> planned
+      <%= t(".spending", used: formatted_amount(used_amount, allocation.currency_code), planned: formatted_amount(allocation.amount, allocation.currency_code)) %>
       <% if used_amount > allocation.amount %>
-        — <%= formatted_amount(used_amount - allocation.amount, allocation.currency_code) %> over plan
+        <%= t(".over_plan", amount: formatted_amount(used_amount - allocation.amount, allocation.currency_code)) %>
       <% end %>
     </small>
 
     <% if allocation.rate != 1 %>
-      It was planned at a rate of <%= allocation.rate %>
-      <%= budget.base_currency_code %> per
-      <%= allocation.currency_code %>.
+      <%= t(".rate", rate: allocation.rate, base_currency: budget.base_currency_code, currency: allocation.currency_code) %>
     <% end %>
   </main>
 
@@ -48,18 +49,18 @@
 
     <%= link_to allocation_path(allocation), role: "button", data: { intent: "secondary" } do %>
       <%= icon("history") %>
-      <span>Details</span>
+      <span><%= t(".details") %></span>
     <% end %>
 
     <% if allocation.finished? %>
       <% unless budget.archived? %>
-        <%= button_to "Reopen", reopen_allocation_path(allocation), method: :patch,
-              data: { turbo_confirm: "Reopen #{allocation.name} and reserve its remaining amount again?" } %>
+        <%= button_to t(".reopen"), reopen_allocation_path(allocation), method: :patch,
+              data: { turbo_confirm: t(".reopen_confirmation", name: allocation.name) } %>
       <% end %>
     <% else %>
-      <%= button_to "Finish", finish_allocation_path(allocation), method: :patch, data: {
+      <%= button_to t(".finish"), finish_allocation_path(allocation), method: :patch, data: {
             intent: "primary",
-            turbo_confirm: "Finish #{allocation.name} and release #{formatted_amount(allocation.remaining_amount, allocation.currency_code)}?"
+            turbo_confirm: t(".finish_confirmation", name: allocation.name, amount: formatted_amount(allocation.remaining_amount, allocation.currency_code))
           } %>
     <% end %>
   </footer>

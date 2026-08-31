@@ -1,4 +1,4 @@
-<% content_for :title, "Expenses" %>
+<% content_for :title, t(".name") %>
 
 <main data-size="lg" data-anchor="footer">
   <article
@@ -11,8 +11,8 @@
       <% if (todays_remainder = @budget.todays_remainder) %>
         <article data-elevation="2" data-gauge-plate>
           <aside data-cybercat-answer>
-            <%= link_to user_path, aria: { label: "User" } do %>
-              <%= image_tag "cybercat.png", alt: "Cybercat", width: 40, height: 40 %>
+            <%= link_to user_path, aria: { label: t(".user") } do %>
+              <%= image_tag "cybercat.png", alt: t(".cybercat_description"), width: 40, height: 40 %>
             <% end %>
             <p><%= cybercat_spending_answer(
               @budget.todays_remainder_percentage,
@@ -33,13 +33,6 @@
                     currency_code: @budget.base_currency_code,
                     percentage: @budget.todays_remainder_percentage %>
           </main>
-
-          <footer data-gauge-actions>
-            <%= link_to budget_report_path(@budget), role: "button", data: { gauge_report: true } do %>
-              <%= icon("chart-bar") %>
-              <span>Report</span>
-            <% end %>
-          </footer>
         </article>
       <% end %>
 
@@ -50,7 +43,7 @@
           data-testid="expense-list"
         >
           <header>
-            <h2>Expenses</h2>
+            <h2><%= t(".expenses") %></h2>
           </header>
 
           <main>
@@ -58,7 +51,7 @@
               <section data-expense-day data-testid="expense-day">
                 <header>
                   <h3>
-                    <time datetime="<%= date.iso8601 %>"><%= date.to_fs(:long) %></time>
+                    <time datetime="<%= date.iso8601 %>"><%= l(date, format: :long) %></time>
                   </h3>
 
                   <p>
@@ -76,7 +69,7 @@
             <% end %>
           </main>
 
-          <%= render "shared/pagination", page: @page, records_name: "expenses" %>
+          <%= render "shared/pagination", page: @page, records_name: t(".expense_records") %>
         </article>
       <% end %>
     </main>
@@ -92,7 +85,7 @@
           action: "keydown.shift+e@document->pressable#click"
         } do %>
       <%= icon("plus") %>
-      <span>Add expense</span>
+      <span><%= t(".create_expense") %></span>
       <kbd aria-hidden="true">E</kbd>
     <% end %>
   </footer>

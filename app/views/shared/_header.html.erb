@@ -1,0 +1,26 @@
+<header data-landing-header>
+  <div>
+    <%= link_to landing_path, data: { landing_brand: true } do %>
+      <img src="/icon-32.png" alt="" width="32" height="32">
+      <span>Spendout</span>
+    <% end %>
+
+    <nav aria-label="Product">
+      <%= link_to "Features", landing_path(anchor: "details") %>
+      <%= link_to "Tour", tour_path(feature: Tour::FEATURES.keys.first) %>
+      <a href="<%= once_path %>" data-once-mark>
+        <%= icon("brand-once") %>
+        <span>ONCE</span>
+      </a>
+    </nav>
+
+    <div data-landing-header-actions>
+      <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path %>
+
+      <%= link_to "https://github.com/spacepolice10/spendout" do %>
+        <%= icon("brand-github") %>
+        <span>GitHub</span>
+      <% end %>
+    </div>
+  </div>
+</header>

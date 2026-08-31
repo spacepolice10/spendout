@@ -6,8 +6,7 @@
   <% if budget.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
-        <%= pluralize(budget.errors.count, "error") %> prevented this budget
-        from being saved:
+        <%= t(".errors", count: budget.errors.count) %>
       </h2>
 
       <ul>
@@ -19,8 +18,8 @@
   <% end %>
 
   <label for="base_currency_code">
-    <legend>What's your main currency?</legend>
-    <small>Other currencies will use this one as a reference to calculate against to.</small>
+    <legend><%= t(".base_currency.name") %></legend>
+    <small><%= t(".base_currency.description") %></small>
 
     <div>
       <%= render "shared/currency_picker", form: form, attribute: :base_currency_code,
@@ -29,8 +28,8 @@
   </label>
 
   <fieldset data-layout="flex">
-    <legend>When does your budget start and end?</legend>
-    <small>Mostly people select a period in 1 month between the paydays</small>
+    <legend><%= t(".period.name") %></legend>
+    <small><%= t(".period.description") %></small>
 
     <div>
       <%= form.date_field :starts_date, value: Date.today.beginning_of_month, required: true %>
@@ -41,6 +40,6 @@
   <br>
 
   <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
-    Next step <%= icon("chevron-right") %>
+    <%= t(".submit") %> <%= icon("chevron-right") %>
   <% end %>
 <% end %>

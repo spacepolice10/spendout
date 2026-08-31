@@ -6,29 +6,29 @@
    ]) %>
 <div class="currency-picker" data-controller="currency-picker"
   data-currency-picker-autofocus-value="<%= filter_autofocus && !mobile_variant? %>">
-  <%= form.select attribute, Currency.options, { include_blank: "Choose a currency" }, required: true,
-    class: "utilities--sr-only", aria: { label: "Currency" },
+  <%= form.select attribute, Currency.options, { include_blank: t(".choose") }, required: true,
+    class: "utilities--sr-only", aria: { label: t(".currency") },
     data: { currency_picker_target: "select", currency_fields_target: "currency",
       expense_fields_target: "currency" } %>
 
   <button type="button" aria-haspopup="dialog" aria-controls="currency-picker-dialog"
     data-currency-picker-target="currencyTrigger" data-action="currency-picker#openCurrency">
-    <span data-currency-picker-target="selection"><%= Currency.options.to_h.invert[selected_code] || "Choose a currency" %></span>
+    <span data-currency-picker-target="selection"><%= Currency.options.to_h.invert[selected_code] || t(".choose") %></span>
     <%= icon("chevron-right", aria: { hidden: true }) %>
   </button>
 
-  <dialog id="currency-picker-dialog" aria-label="Choose a currency"
+  <dialog id="currency-picker-dialog" aria-label="<%= t(".choose") %>"
     data-currency-picker-target="currencyDialog"
     data-action="close->currency-picker#currencyHidden">
     <header>
-      <h2>Choose a currency</h2>
-      <button type="button" aria-label="Close currency picker" data-action="currency-picker#hideCurrency">&times;</button>
+      <h2><%= t(".choose") %></h2>
+      <button type="button" aria-label="<%= t(".close") %>" data-action="currency-picker#hideCurrency">&times;</button>
     </header>
     <div data-currency-combobox>
       <%= icon("search", data: { currency_search_icon: true }) %>
-      <input type="search" placeholder="Search by name or code" autocomplete="off" role="combobox"
+      <input type="search" placeholder="<%= t(".search_placeholder") %>" autocomplete="off" role="combobox"
         <%= "autofocus" if filter_autofocus && !mobile_variant? %>
-        aria-label="Search currencies" aria-autocomplete="list" aria-expanded="true"
+        aria-label="<%= t(".search_name") %>" aria-autocomplete="list" aria-expanded="true"
         aria-controls="currency-picker-listbox" data-currency-picker-target="filter"
         data-action="input->currency-picker#search keydown->currency-picker#keydown"
         <% filter_data.each do |name, value| %> data-<%= name.to_s.dasherize %>="<%= value %>"<% end %>>
@@ -50,6 +50,6 @@
         </div>
       <% end %>
     </div>
-    <small data-currency-picker-target="emptyState" hidden>No currencies found</small>
+    <small data-currency-picker-target="emptyState" hidden><%= t(".no_data") %></small>
   </dialog>
 </div>

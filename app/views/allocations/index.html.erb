@@ -3,22 +3,18 @@
     <header>
       <nav>
         <div>
-          <h1>Categories</h1>
+          <h1><%= t(".name") %></h1>
         </div>
       </nav>
       <p data-testid="budget-remainder">
-        Remaining:
-        <%= formatted_amount(@budget.amount_summary, @budget.base_currency_code) %>
-        <%= @budget.base_currency_code %>
+        <%= t(".remainder", amount: formatted_amount(@budget.amount_summary, @budget.base_currency_code), currency: @budget.base_currency_code) %>
       </p>
     </header>
 
     <main>
       <% if @budget.overallocated? %>
         <p role="status" data-testid="overallocation-warning">
-          Planned allocations exceed available sources by
-          <%= formatted_amount(@budget.overallocated_by, @budget.base_currency_code) %>
-          <%= @budget.base_currency_code %>.
+          <%= t(".overallocation", amount: formatted_amount(@budget.overallocated_by, @budget.base_currency_code), currency: @budget.base_currency_code) %>
         </p>
       <% end %>
 
@@ -27,20 +23,19 @@
       <% else %>
         <article data-elevation="1" style="border-color: var(--color-accent); color: var(--color-accent);">
           <header>
-            <h2>Plan important spending first</h2>
+            <h2><%= t(".no_data.name") %></h2>
           </header>
 
           <main>
             <p>
-              Set money aside for essentials such as:
+              <%= t(".no_data.description") %>
               <ul>
-                <li>— Rent</li>
-                <li>— Utilities</li>
-                <li>— Bills</li>
-                <li>— Emergencies fund</li>
+                <li><%= t(".no_data.rent") %></li>
+                <li><%= t(".no_data.utilities") %></li>
+                <li><%= t(".no_data.bill") %></li>
+                <li><%= t(".no_data.emergency_fund") %></li>
               </ul>
-              The rest of the money will be used to calculate daily overall.
-              This will help to spend freely without putting your plans at risk.
+              <%= t(".no_data.spending_explanation") %>
             </p>
           </main>
         </article>
@@ -58,7 +53,7 @@
           action: "keydown.shift+c@document->pressable#click"
         } do %>
       <%= icon("plus") %>
-      <span>New category</span>
+      <span><%= t(".create_allocation") %></span>
       <kbd aria-hidden="true">C</kbd>
     <% end %>
   </footer>

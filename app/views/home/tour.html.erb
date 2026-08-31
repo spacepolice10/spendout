@@ -1,13 +1,9 @@
 <% content_for :title, "Tour Spendout — See how it works" %>
-<% content_for :description, "Take a page-by-page tour of Spendout's daily gauge, sources, plans, expenses, and currency exchanges." %>
+<% content_for :description, "Take a page-by-page tour of Spendout: sources, allocations, expenses, currency, exchanges, reports, and self-hosting." %>
 <% content_for :hide_tabbar, true %>
 
-<main data-page="tour" data-size="xl">
-  <header data-tour-bar>
-    <%= link_to "Spendout", landing_path, data: { tour_brand: true } %>
-    <span>Product tour</span>
-    <%= link_to authenticated? ? "Open my budget" : "Try Spendout", authenticated? ? root_path : new_session_path %>
-  </header>
+<%= render "shared/header" %>
 
+<main data-page="tour" data-size="xl">
   <%= render "home/tour/#{@tour_feature ? "feature" : @tour_page}" %>
 </main>

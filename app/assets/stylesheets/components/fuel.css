@@ -88,12 +88,6 @@
         }
     }
 
-    [data-gauge-actions] {
-        display: flex;
-        justify-content: center;
-        padding: 0;
-    }
-
     article.budget [data-daily-gauge] {
         justify-items: center;
         text-align: center;

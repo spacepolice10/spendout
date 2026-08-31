@@ -1,28 +1,14 @@
-<article
-  data-elevation="1"
-  data-source-card
-  data-testid="source-card"
-  style="--source-colour: var(--color-palette-<%= source.colour %>);"
->
-  <header>
-    <nav>
-      <%= icon(source.icon) %>
-      <h2><%= source.name %></h2>
-    </nav>
-
+<%= link_to source_path(source), data: { source_link: true },
+      aria: { label: t(".view", name: source.name) } do %>
+  <article
+    data-elevation="1"
+    data-source-card
+    data-testid="source-card"
+    style="--source-colour: var(--color-palette-<%= source.colour %>);"
+  >
+    <%= image_tag source.design_image, alt: "", width: 72, height: 46,
+          loading: "lazy", data: { source_design_thumbnail: true } %>
+    <h2><%= source.name %></h2>
     <strong><%= formatted_amount(source.spendable_amount, source.currency_code) %></strong>
-  </header>
-
-  <footer>
-    <%= link_to source_path(source), role: "button", data: { intent: "secondary" } do %>
-      <%= icon("history") %>
-      <span>Details</span>
-    <% end %>
-
-    <%= link_to new_source_exchange_path(source), role: "button", data: { intent: "secondary" } do %>
-      <%= icon("coin") %>
-      <span>Exchange</span>
-    <% end %>
-
-  </footer>
-</article>
+  </article>
+<% end %>

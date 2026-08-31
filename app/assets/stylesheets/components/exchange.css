@@ -41,17 +41,26 @@
 
         & [data-exchange-line] {
             display: grid;
-            grid-template-columns: auto minmax(0, 1fr);
-            align-items: start;
+            grid-template-columns: minmax(0, 1fr);
             gap: var(--space-v-half) var(--space-h-half);
             min-width: 0;
+        }
 
-            & > .icon-wrap {
-                grid-row: 1 / span 2;
+        & [data-exchange-designs] {
+            display: flex;
+            align-items: center;
+            gap: var(--space-h-half);
+
+            & [data-source-design-thumbnail] {
+                width: 3rem;
             }
         }
 
         & [data-exchange-name] {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.5ch;
             min-width: 0;
             overflow-wrap: anywhere;
             text-transform: uppercase;

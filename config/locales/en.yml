@@ -30,30 +30,29 @@
 en:
   sessions:
     new:
-      logo_alt: "Cybercat"
-      product_name: "Spendout"
-      tagline: "Spendout is a simple and secure way to manage your money."
-      title: "Sign in"
+      logo_description: "Cybercat"
+      tagline: "Spendout is a simple and secure way to manage your money. Just tell what you have and what you want. Spendout will answer how to spend finances right."
+      name: "Enter your e-mail"
       instructions: "We’ll email you a %{count}-character sign-in code."
-      email_placeholder: "you@example.com"
+      address_placeholder: "you@example.com"
       submit: "Email me a code"
     create:
       code_sent: "Check your email for your sign-in code."
-      invalid_email: "Enter a valid email address."
+      invalid_address: "Enter a valid email address."
       rate_limited: "Try again later."
     auth_codes:
       show:
-        title: "Enter your sign-in code"
-        instructions: "We sent a %{count}-character code to %{email_address}."
+        cybercat_description: "Cybercat"
+        name: "Enter your sign-in code"
+        instructions: "Check your email for the %{count}-character code we sent to %{address}, then enter it below."
         code_placeholder: "123456"
         submit: "Sign in"
-        use_another_email: "Use another email address"
+        type_another_address: "Use another email address"
       create:
         invalid_code: "Try another code."
         rate_limited:
-          one: "Try again in 1 minute."
           other: "Try again in %{count} minutes."
-        missing_email: "Enter your email address to sign in."
+        missing_address: "Enter your email address to sign in."
 
   authentication_mailer:
     sign_in_instructions:
@@ -63,3 +62,304 @@ en:
         one: "This code expires in 1 minute and can only be used once."
         other: "This code expires in %{count} minutes and can only be used once."
       unrequested: "If you didn't request this code, you can ignore this email."
+
+  budgets:
+    new:
+      name: "New budget"
+    form:
+      errors: "%{count} errors prevented this budget from being saved:"
+      base_currency:
+        name: "What's your main currency?"
+        description: "Other currencies will use this one as a reference to calculate against to."
+      period:
+        name: "When does your budget start and end?"
+        description: "Mostly people select a period in 1 month between the paydays"
+      submit: "Next step"
+    create:
+      success: "Budget was created. Add your first source."
+    destroy:
+      success: "Budget was reset."
+
+  sources:
+    index:
+      name: "Sources"
+      actual_remainder: "Actual remainder:"
+      list_name: "Money sources"
+      no_data:
+        name: "Add your wallets or cards"
+        description: "Add a source to track money available to this budget. It might be:"
+        salary: "— Your salary"
+        gift: "— A gift"
+        loan: "— A loan"
+        credit_card: "— A credit card"
+        debit_card: "— A debit card"
+        bank_account: "— A bank account"
+        spending_explanation: "Those will be used on spending with every expense."
+      exchanges: "Exchanges"
+      exchange_records: "exchanges"
+      create_source: "Add source"
+    new:
+      name: "New wallet"
+    show:
+      back: "Back to sources"
+      back_name: "Back"
+      deleted: "Deleted"
+      design_description: "%{design} card design"
+      summary_name: "Source summary"
+      initial_amount: "Initial amount:"
+      remainder: "Rest:"
+      expenses: "Expenses"
+      expense_records: "source expenses"
+      exchange: "Make exchange"
+      remove: "Remove source"
+      remove_confirmation: "Are you sure you want to remove this source?"
+    form:
+      errors: "%{count} errors prevented this source from being saved:"
+      name_placeholder: "Credit card, cash, loan, etc."
+      cancel: "Cancel"
+      submit: "Confirm"
+    source:
+      view: "View %{name}"
+    exchange:
+      deleted: "%{name} (Deleted)"
+    design_fields:
+      name: "Design"
+      arrows_navigation_html: "Use %{arrows} to switch."
+      continue_html: "Press %{enter} to continue or %{shift} + %{enter} to go back."
+    designs:
+      americat_express: "Americat Express"
+      mastercat: "Mastercat"
+      meowisa: "Meowisa"
+      unipaw: "Unipaw"
+      cash: "Cash"
+      bank: "Bank"
+      savings: "Savings"
+      digital_wallet: "Digital wallet"
+    create:
+      success: "Source was created."
+    destroy:
+      success: "Source was deleted."
+      failure: "Source was not deleted."
+
+  allocations:
+    index:
+      name: "Categories"
+      remainder: "Remaining: %{amount} %{currency}"
+      overallocation: "Planned allocations exceed available sources by %{amount} %{currency}."
+      no_data:
+        name: "Plan important spending first"
+        description: "Set money aside for essentials such as:"
+        rent: "— Rent"
+        utilities: "— Utilities"
+        bill: "— Bills"
+        emergency_fund: "— Emergencies fund"
+        spending_explanation: "The rest of the money will be used to calculate daily overall. This will help to spend freely without putting your plans at risk."
+      create_allocation: "New category"
+    new:
+      name: "New allocation"
+    form:
+      errors: "%{count} errors prevented this allocation from being saved:"
+      name_placeholder: "Rent, groceries, emergency fund, etc."
+      cancel: "Cancel"
+      submit: "Confirm"
+    allocation:
+      finished: "FINISHED"
+      spending: "%{used} spent of %{planned} planned"
+      over_plan: "— %{amount} over plan"
+      rate: "It was planned at a rate of %{rate} %{base_currency} per %{currency}."
+      details: "Details"
+      reopen: "Reopen"
+      reopen_confirmation: "Reopen %{name} and reserve its remaining amount again?"
+      finish: "Finish"
+      finish_confirmation: "Finish %{name} and release %{amount}?"
+    show:
+      back: "Back to allocations"
+      back_name: "Back"
+      deleted: "Deleted"
+      finished: "Finished"
+      summary_name: "Allocation summary"
+      planned: "Planned:"
+      used: "Spent:"
+      remaining: "Remaining:"
+      unplanned: "Unplanned"
+      expenses: "Expenses"
+      expense_records: "allocation expenses"
+      finish: "Finish allocation"
+      finish_confirmation: "Finish %{name} and release %{amount}?"
+      reopen: "Reopen allocation"
+      reopen_confirmation: "Reopen %{name} and reserve its remaining amount again?"
+      remove: "Remove allocation"
+      remove_confirmation: "Are you sure you want to remove this allocation?"
+    create:
+      success: "Allocation was created."
+      overallocated: "Allocation was created. Planned allocations now exceed available sources."
+    finish:
+      success: "Allocation was finished."
+      failure: "Allocation could not be finished."
+    reopen:
+      success: "Allocation was reopened."
+      failure: "Allocation could not be reopened."
+    destroy:
+      success: "Allocation was removed."
+      failure: "Allocation was not removed."
+
+  expenses:
+    index:
+      name: "Expenses"
+      user: "User"
+      cybercat_description: "Cybercat"
+      expenses: "Expenses"
+      expense_records: "expenses"
+      create_expense: "Add expense"
+      answers:
+        no_expenses: "Nothing spent yet—nice."
+        "0": "That’s enough spending for today."
+        "25": "You can, but tomorrow will be tighter."
+        "50": "Better save some for tomorrow."
+        "80": "Yep, still good to go."
+        "100": "You’re ahead today—nice."
+    new:
+      name: "New expense"
+      no_sources:
+        name: "Add a source first"
+        description: "An expense needs an active source."
+        create_source: "New source"
+    form:
+      errors: "%{count} errors prevented this expense from being saved:"
+      source:
+        name: "From:"
+        availability: "%{amount} available (%{currency})"
+      category:
+        name: "Category:"
+        no_allocation: "No allocation"
+        search: "Find or add category"
+        creation_html: "Category named %{name} will be created"
+      date: "Date:"
+      note: "Note:"
+      note_added: "Added"
+      note_placeholder: "Optional"
+      arrows_navigation_html: "Use %{arrows} to switch."
+      cancel: "Cancel"
+      submit: "Confirm"
+    expense:
+      view: "View expense"
+      with_note: "Has note"
+      unallocated: "Unallocated"
+    show:
+      name: "Expense"
+      receipt: "Receipt"
+      category: "Category"
+      deleted: "(Deleted)"
+      finished: "(Finished)"
+      unallocated: "Unallocated"
+      paid_from: "Paid from"
+      conversion_quote: "Conversion quote"
+      budget_name: "Budget value"
+      note: "Note"
+      delete: "Delete expense"
+      delete_confirmation: "Delete this expense permanently?"
+    create:
+      success: "Expense was created."
+    destroy:
+      success: "Expense was deleted."
+
+  users:
+    show:
+      name: "User"
+      account: "Account"
+      language: "Language"
+      language_description: "Choose the language Spendout uses."
+      budget: "Budget"
+      budget_description: "Removing your budget permanently deletes its sources, allocations, expenses, and exchanges."
+      actions: "User actions"
+      sign_out: "Sign out"
+      remove_budget: "Remove budget"
+      remove_budget_confirmation: "Remove this budget and all of its data permanently? This cannot be undone."
+
+  shared:
+    locale_switcher:
+      name: "Language"
+      english: "English"
+      russian: "Russian"
+    currency_picker:
+      choose: "Choose a currency"
+      currency: "Currency"
+      close: "Close currency picker"
+      search_placeholder: "Search by name or code"
+      search_name: "Search currencies"
+      no_data: "No currencies found"
+    name_fields:
+      name: "Name"
+      question: "What is the name of this %{model}?"
+    amount_fields:
+      name: "Amount"
+      question: "How much money is in this %{model}?"
+    currency_fields:
+      name: "Currency"
+      question: "What currency is used?"
+      arrows_navigation_html: "Use %{arrows} to switch."
+    currency_rate_picker:
+      change_rate: "Enter rate"
+      name: "Confirm conversion rate"
+      cancel: "Cancel rate changes"
+      prompt: "Enter how many units of %{currency} are in 1 %{base_currency}"
+      accept: "Apply"
+    form_navigation:
+      continue_html: "Press %{enter} to continue or %{shift} + %{enter} to go back."
+      back_html: "Press %{shift} + %{enter} to go back."
+    icon_fields:
+      name: "Icon"
+      arrows_navigation_html: "Use %{arrows} to switch."
+    colour_fields:
+      name: "Colour"
+      arrows_navigation_html: "Use %{arrows} to switch."
+    pagination:
+      name: "Pagination for %{records}"
+      previous: "Previous"
+      position: "Page %{page} of %{pages}"
+      next: "Next"
+    daily_gauge:
+      name: "Safe spending available today"
+      remaining: "%{percentage}% of today's safe spending remains"
+      amount: "Safe to spend today: %{amount} %{currency}"
+
+  activerecord:
+    errors:
+      models:
+        budget:
+          attributes:
+            period_to:
+              before_period_from: "must be on or after the start date"
+            base:
+              current_exists: "An active budget already exists"
+            base_currency_code:
+              changed: "cannot be changed"
+        source:
+          attributes:
+            base:
+              direct_destruction: "source cannot be destroyed directly"
+            currency_code:
+              unavailable: "is not supported"
+              changed: "cannot be changed"
+            rate:
+              changed: "cannot be changed"
+        allocation:
+          attributes:
+            currency_code:
+              unavailable: "is not supported"
+        expense:
+          attributes:
+            occurred_on:
+              outside_budget_period: "must be within the budget period"
+            source:
+              wrong_budget: "must belong to this budget"
+              inactive: "must be active"
+            allocation:
+              wrong_budget: "must belong to this budget"
+              inactive: "must be active"
+
+  date:
+    formats:
+      budget_without_year: "%b %-d"
+      budget_with_year: "%b %-d, %Y"
+      budget_date_with_year: "%-d, %Y"

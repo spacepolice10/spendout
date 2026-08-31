@@ -22,7 +22,7 @@ class Budget < ApplicationRecord
     elsif period_from.month != period_to.month
       "#{format_date(period_from)} – #{format_date(period_to, include_year: true)}"
     else
-      "#{format_date(period_from)} – #{period_to.strftime("%-d, %Y")}"
+      "#{format_date(period_from)} – #{I18n.l(period_to, format: :budget_date_with_year)}"
     end
   end
 
@@ -183,18 +183,18 @@ class Budget < ApplicationRecord
     def period_starts_before_ends
       return unless period_from && period_to
 
-      errors.add(:period_to, "must be on or after the start date") if period_to < period_from
+      errors.add(:period_to, :before_period_from) if period_to < period_from
     end
 
     def single_current_budget_possible
-      errors.add(:base, "An active budget already exists") if user&.current_budget
+      errors.add(:base, :current_exists) if user&.current_budget
     end
 
     def base_currency_cannot_change
-      errors.add(:base_currency_code, "cannot be changed") if will_save_change_to_base_currency_code?
+      errors.add(:base_currency_code, :changed) if will_save_change_to_base_currency_code?
     end
 
     def format_date(date, include_year: false)
-      date.strftime(include_year ? "%b %-d, %Y" : "%b %-d")
+      I18n.l(date, format: include_year ? :budget_with_year : :budget_without_year)
     end
 end

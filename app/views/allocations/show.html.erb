@@ -1,89 +1,93 @@
 <% content_for :title, @allocation.name %>
 
 <main data-size="lg" data-anchor="footer">
-  <article data-elevation="1">
-    <header>
-      <nav>
-        <%= link_to icon("chevron-left"), budget_allocations_path(@budget), aria: { label: "Back to allocations" } %>
-        <%= icon(@allocation.icon, style: icon_colour_styles(@allocation.colour)) %>
-        <h1><%= @allocation.name %></h1>
-      </nav>
-      <small><%= @allocation.deleted? ? "Deleted" : ("Finished" if @allocation.finished?) %></small>
-    </header>
-
+  <article>
     <main>
-      <section data-layout="grid" aria-label="Allocation summary">
-        <article data-elevation="2" data-testid="allocation-planned-amount">
-          <header>
-            <nav>
-              <%= icon("cash-banknote") %>
-              <h2><%= @allocation.planned? ? "Planned" : "Category" %></h2>
-            </nav>
-          </header>
-          <main>
-            <% if @allocation.planned? %>
-              <p><strong><%= formatted_amount(@allocation.amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong></p>
-              <small>Set aside for this category</small>
-            <% else %>
-              <p><strong>Unplanned</strong></p>
-              <small>Classifies spending without reserving money</small>
-            <% end %>
-          </main>
-        </article>
+      <div data-allocation-hero>
+        <%= render "allocations/envelope", variant: "open" %>
+        <%= icon(@allocation.icon, style: icon_colour_styles(@allocation.colour)) %>
+      </div>
 
-        <article data-elevation="2" data-testid="allocation-spent-amount">
-          <header>
-            <nav>
-              <%= icon("receipt-dollar") %>
-              <h2>Spent</h2>
-            </nav>
-          </header>
-          <main>
-            <p><strong><%= formatted_amount(@allocation.used_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong></p>
-            <small>Across all connected expenses</small>
-          </main>
-        </article>
+      <hgroup data-allocation-title>
+        <h1><%= @allocation.name %></h1>
+        <small><%= @allocation.deleted? ? t(".deleted") : (t(".finished") if @allocation.finished?) %></small>
+      </hgroup>
 
-        <% if @allocation.planned? %>
-          <article data-elevation="2" data-testid="allocation-remaining-amount">
-            <header>
-              <nav>
-                <%= icon("wallet") %>
-                <h2>Remaining</h2>
-              </nav>
-            </header>
-            <main>
-              <p><strong><%= formatted_amount(@allocation.remaining_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong></p>
-              <small>Still available in the plan</small>
-            </main>
-          </article>
-        <% end %>
-
-        <article data-elevation="2" data-testid="allocation-budget">
-          <header>
-            <nav>
-              <%= icon("history") %>
-              <h2>Budget</h2>
-            </nav>
-          </header>
-          <main>
-            <p><strong><%= link_to @budget.date_period, budget_expenses_path(@budget) %></strong></p>
-            <small>Budget period for this allocation</small>
-          </main>
-        </article>
+      <section aria-label="<%= t(".summary_name") %>" data-allocation-summary>
+        <p>
+          <% if @allocation.planned? %>
+            <span>
+              <%= t(".planned") %>
+              <strong><%= formatted_amount(@allocation.amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
+            </span>
+            <span aria-hidden="true">·</span>
+            <span>
+              <%= t(".used") %>
+              <strong><%= formatted_amount(@allocation.used_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
+            </span>
+            <span aria-hidden="true">·</span>
+            <span>
+              <%= t(".remaining") %>
+              <strong><%= formatted_amount(@allocation.remaining_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
+            </span>
+          <% else %>
+            <span><%= t(".unplanned") %></span>
+            <span aria-hidden="true">·</span>
+            <span>
+              <%= t(".used") %>
+              <strong><%= formatted_amount(@allocation.used_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
+            </span>
+          <% end %>
+        </p>
       </section>
 
+      <div data-allocation-actions>
+        <%= link_to budget_allocations_path(@budget), role: "button", aria: { label: t(".back") }, data: { intent: "secondary" } do %>
+          <%= icon("chevron-left") %>
+          <span><%= t(".back_name") %></span>
+        <% end %>
+
+        <% unless @allocation.deleted? %>
+          <% if @allocation.finished? %>
+            <% unless @budget.archived? %>
+              <%= button_to reopen_allocation_path(@allocation), method: :patch,
+                    data: { turbo_confirm: t(".reopen_confirmation", name: @allocation.name) } do %>
+                <span><%= t(".reopen") %></span>
+              <% end %>
+            <% end %>
+          <% else %>
+            <% if @allocation.planned? %>
+              <%= button_to finish_allocation_path(@allocation), method: :patch, data: {
+                    intent: "primary",
+                    turbo_confirm: t(".finish_confirmation", name: @allocation.name, amount: formatted_amount(@allocation.remaining_amount, @allocation.currency_code))
+                  } do %>
+                <span><%= t(".finish") %></span>
+              <% end %>
+            <% end %>
+
+            <%= button_to allocation_path(@allocation), method: :delete, aria: { label: t(".remove") }, data: { intent: "secondary", turbo_confirm: t(".remove_confirmation") } do %>
+              <%= icon("trash-simple") %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+
       <% if @expenses.any? %>
-        <article data-elevation="1" class="expense-list" data-testid="expense-list">
-          <header>
-            <h2>Expenses</h2>
-          </header>
+        <article
+          data-elevation="1"
+          class="expense-list"
+          data-testid="expense-list"
+        >
+          <h2><%= t(".expenses") %></h2>
 
           <main>
             <% @expenses_by_date.each do |date, expenses| %>
               <section data-expense-day data-testid="expense-day">
                 <header>
-                  <h3><time datetime="<%= date.iso8601 %>"><%= date.to_fs(:long) %></time></h3>
+                  <h3>
+                    <time datetime="<%= date.iso8601 %>"><%= l(date, format: :long) %></time>
+                  </h3>
+
                   <p>
                     <strong data-testid="expense-day-total">
                       <%= formatted_amount(@expense_totals_by_date.fetch(date), @allocation.currency_code) %>
@@ -99,31 +103,9 @@
             <% end %>
           </main>
 
-          <%= render "shared/pagination", page: @page, records_name: "allocation expenses" %>
+          <%= render "shared/pagination", page: @page, records_name: t(".expense_records") %>
         </article>
       <% end %>
     </main>
-
-    <% unless @allocation.deleted? %>
-      <footer>
-        <% if @allocation.finished? %>
-          <% unless @budget.archived? %>
-            <%= button_to "Reopen allocation", reopen_allocation_path(@allocation), method: :patch,
-                  data: { turbo_confirm: "Reopen #{@allocation.name} and reserve its remaining amount again?" } %>
-          <% end %>
-        <% else %>
-          <% if @allocation.planned? %>
-            <%= button_to "Finish allocation", finish_allocation_path(@allocation), method: :patch, data: {
-                  intent: "primary",
-                  turbo_confirm: "Finish #{@allocation.name} and release #{formatted_amount(@allocation.remaining_amount, @allocation.currency_code)}?"
-                } %>
-          <% end %>
-
-          <%= button_to allocation_path(@allocation), method: :delete, aria: { label: "Remove allocation" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this allocation?" } do %>
-            <%= icon("trash-simple") %>
-          <% end %>
-        <% end %>
-      </footer>
-    <% end %>
   </article>
 </main>

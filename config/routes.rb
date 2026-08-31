@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
   root "budgets#current"
   get "landing" => "home#show", as: :landing
+  get "once" => "home#once", as: :once
   get "tour(/:feature)" => "home#tour", as: :tour,
-    constraints: { feature: /keyboard-friendly|currency-suggested|easy-to-correct|honest-history|categorize-spending|styled-categories|confirm-rates|source-exchanges|expense-notes|finish/ }
+    constraints: { feature: /#{Regexp.union([ *Tour::FEATURES.keys, "finish" ])}/ }
   resource :currency_reference, only: :show
+  resource :locale, only: :update
   resource :user, only: :show
 
   resources :budgets, only: %i[ new create destroy ] do

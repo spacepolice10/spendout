@@ -2,14 +2,14 @@
 <% amount = form.object.public_send(amount_attribute) %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
-    <span> Amount: </span>
+    <span><%= t(".name") %></span>
     <small data-form-target="summaryContent"><%= number_with_delimiter(amount || 0, delimiter: ".", separator: ",") %></small>
   </summary>
 
   <div>
-    <small> How much money is in this <%= form.object.class.name.downcase %>? </small>
+    <small><%= t(".question", model: form.object.model_name.human.downcase) %></small>
 
-    <%= form.label amount_attribute, "Amount", class: "utilities--sr-only" %>
+    <%= form.label amount_attribute, t(".name"), class: "utilities--sr-only" %>
     <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0",
       autofocus: open && !mobile_variant?, required: true,
       value: default_amount ? amount || 0 : amount,
@@ -24,7 +24,7 @@
       } %>
     <% unless mobile_variant? %>
       <small>
-        Press <kbd>Enter</kbd> to continue or <kbd>Shift</kbd> + <kbd>Enter</kbd> to go back.
+        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
       </small>
     <% end %>
   </div>

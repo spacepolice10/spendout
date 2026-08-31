@@ -39,6 +39,6 @@ class Allocation < ApplicationRecord
     def currency_is_available_in_budget
       return if currency_code.blank? || Currency::CATALOG.key?(currency_code)
 
-      errors.add(:currency_code, "is not supported")
+      errors.add(:currency_code, :unavailable)
     end
 end

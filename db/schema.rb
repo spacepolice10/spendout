@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_27_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_31_000000) do
   create_table "allocations", force: :cascade do |t|
     t.decimal "amount", precision: 19, scale: 4, null: false
     t.integer "budget_id", null: false
@@ -110,6 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_000002) do
     t.datetime "created_at", null: false
     t.string "currency_code", limit: 3, null: false
     t.datetime "deleted_at"
+    t.integer "design", default: 0, null: false
     t.string "icon", default: "wallet", null: false
     t.string "name", null: false
     t.decimal "rate", precision: 24, scale: 12, default: "1.0", null: false

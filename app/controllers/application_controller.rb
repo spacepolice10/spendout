@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include CurrentLocale
   include CurrentTimezone
 
   before_action :set_request_variant

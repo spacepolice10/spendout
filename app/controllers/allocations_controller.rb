@@ -26,9 +26,9 @@ class AllocationsController < ApplicationController
 
     if @allocation.save
       notice = if @budget.overallocated?
-        "Allocation was created. Planned allocations now exceed available sources."
+        t("allocations.create.overallocated")
       else
-        "Allocation was created."
+        t("allocations.create.success")
       end
       redirect_to budget_allocations_path(@budget), notice: notice
     else
@@ -38,26 +38,26 @@ class AllocationsController < ApplicationController
 
   def finish
     if @allocation.planned? && @allocation.active? && @allocation.update(finished_at: Time.current)
-      redirect_to budget_allocations_path(@budget), notice: "Allocation was finished."
+      redirect_to budget_allocations_path(@budget), notice: t("allocations.finish.success")
     else
-      redirect_to budget_allocations_path(@budget), alert: "Allocation could not be finished."
+      redirect_to budget_allocations_path(@budget), alert: t("allocations.finish.failure")
     end
   end
 
   def reopen
     if @allocation.planned? && @allocation.finished? && !@allocation.deleted? && !@budget.archived? &&
         @allocation.update(finished_at: nil)
-      redirect_to budget_allocations_path(@budget), notice: "Allocation was reopened."
+      redirect_to budget_allocations_path(@budget), notice: t("allocations.reopen.success")
     else
-      redirect_to allocation_path(@allocation), alert: "Allocation could not be reopened."
+      redirect_to allocation_path(@allocation), alert: t("allocations.reopen.failure")
     end
   end
 
   def destroy
     if @allocation.update(deleted_at: Time.current)
-      redirect_to budget_allocations_path(@budget), notice: "Allocation was removed."
+      redirect_to budget_allocations_path(@budget), notice: t("allocations.destroy.success")
     else
-      redirect_to budget_allocations_path(@budget), alert: "Allocation was not removed."
+      redirect_to budget_allocations_path(@budget), alert: t("allocations.destroy.failure")
     end
   end
 

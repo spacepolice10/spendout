@@ -78,10 +78,14 @@
      --icon-edit: url(/icon-edit.svg);
      --icon-history: url(/icon-history.svg);
      --icon-category: url(/icon-category.svg);
-     --icon-chart-bar: url(/icon-chart-bar.svg);
      --icon-receipt-dollar: url(/icon-receipt-dollar.svg);
      --icon-arrows-exchange: url(/icon-arrows-exchange.svg);
      --icon-note: url(/icon-note.svg);
+     --icon-gauge: url(/icon-gauge.svg);
+     --icon-chart-bar: url(/icon-chart-bar.svg);
+     --icon-language: url(/icon-language.svg);
+     --icon-logout: url(/icon-logout.svg);
      --icon-brand-github: url(/icon-brand-github.svg);
+     --icon-brand-once: url(/icon-brand-once.svg);
     }
   }

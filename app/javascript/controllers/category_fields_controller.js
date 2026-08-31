@@ -5,6 +5,7 @@ export default class extends Controller {
     "filter", "option", "allocation", "pendingNameTextform", "creationTip",
     "creationTipName", "summary"
   ]
+  static values = { noAllocation: String }
 
   connect() {
     const pendingName = this.pendingNameTextformTarget.value.trim()
@@ -26,7 +27,7 @@ export default class extends Controller {
     this.creationTipNameTarget.textContent = value
 
     if (value) this.allocationTargets.forEach(input => input.checked = false)
-    this.summaryTarget.textContent = value || "No allocation"
+    this.summaryTarget.textContent = value || this.noAllocationValue
   }
 
   selectAllocation(event) {

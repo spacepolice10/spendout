@@ -34,7 +34,7 @@ class ExpensesController < ApplicationController
     @expense = @budget.expenses.new(expense_params)
 
     if @expense.save_with_source_capacity
-      redirect_to budget_expenses_path(@budget), notice: "Expense was created."
+      redirect_to budget_expenses_path(@budget), notice: t("expenses.create.success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -47,7 +47,7 @@ class ExpensesController < ApplicationController
   def destroy
     budget = @expense.budget
     @expense.destroy_with_source_lock!
-    redirect_to budget_expenses_path(budget), notice: "Expense was deleted."
+    redirect_to budget_expenses_path(budget), notice: t("expenses.destroy.success")
   end
 
   private

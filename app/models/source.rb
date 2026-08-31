@@ -2,6 +2,23 @@ class Source < ApplicationRecord
   include Colourable, Iconable
   include Currencyable
 
+  DESIGNS = {
+    "americat_express" => { image: "americat_express.png" },
+    "mastercat" => { image: "mastercat.png" },
+    "meowisa" => { image: "meowisa.png" },
+    "unipaw" => { image: "unipaw.png" },
+    "cash" => { image: "cash.png" },
+    "bank" => { image: "bank.png" },
+    "savings" => { image: "savings.png" },
+    "digital_wallet" => { image: "digital_wallet.png" }
+  }.freeze
+
+  enum :design, {
+    americat_express: 0, mastercat: 1, meowisa: 2, unipaw: 3,
+    cash: 4, bank: 5, savings: 6, digital_wallet: 7
+  },
+    default: :americat_express, validate: true
+
   belongs_to :budget, inverse_of: :sources
   has_many :expenses, inverse_of: :source
   has_many :outgoing_exchanges, class_name: "Exchange", foreign_key: :sender_source_id, inverse_of: :sender_source
@@ -27,25 +44,37 @@ class Source < ApplicationRecord
     deleted_at.present?
   end
 
+  def design_name
+    I18n.t("sources.designs.#{design}", default: design.to_s.humanize)
+  end
+
+  def design_image
+    DESIGNS.fetch(design, DESIGNS.fetch("americat_express")).fetch(:image)
+  end
+
+  def self.design_options
+    DESIGNS.keys.map { |value| [ I18n.t("sources.designs.#{value}"), value ] }
+  end
+
   private
     def prevent_direct_destruction
       return if destroyed_by_association
 
-      errors.add(:base, "source cannot be destroyed directly")
+      errors.add(:base, :direct_destruction)
       throw(:abort)
     end
 
     def currency_is_available_in_budget
       return if currency_code.blank? || Currency::CATALOG.key?(currency_code)
 
-      errors.add(:currency_code, "is not supported")
+      errors.add(:currency_code, :unavailable)
     end
 
     def currency_cannot_change
-      errors.add(:currency_code, "cannot be changed") if will_save_change_to_currency_code?
+      errors.add(:currency_code, :changed) if will_save_change_to_currency_code?
     end
 
     def rate_cannot_change
-      errors.add(:rate, "cannot be changed") if will_save_change_to_rate?
+      errors.add(:rate, :changed) if will_save_change_to_rate?
     end
 end

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" data-allocation-envelope="<%= variant %>">
+  <% if variant == "open" %>
+    <path d="M5 21h14a2 2 0 0 0 2-2V9H3v10a2 2 0 0 0 2 2z" vector-effect="non-scaling-stroke"/>
+    <path d="M3 9l9-6 9 6z" vector-effect="non-scaling-stroke"/>
+    <path d="M3 9l9 6 9-6" data-envelope-line="true" vector-effect="non-scaling-stroke"/>
+    <path d="M3 19l6.5-6.5" data-envelope-line="true" vector-effect="non-scaling-stroke"/>
+    <path d="M21 19l-6.5-6.5" data-envelope-line="true" vector-effect="non-scaling-stroke"/>
+  <% else %>
+    <rect x="3" y="5" width="18" height="14" rx="2" vector-effect="non-scaling-stroke"/>
+    <path d="M3 7l9 6 9-6" data-envelope-line="true" vector-effect="non-scaling-stroke"/>
+  <% end %>
+</svg>

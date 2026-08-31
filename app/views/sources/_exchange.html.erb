@@ -1,12 +1,20 @@
 <article data-exchange data-testid="exchange-history-item">
   <main>
     <div data-exchange-line>
-      <%= icon(exchange.sender_source.icon, style: icon_colour_styles(exchange.sender_source.colour)) %>
+      <div data-exchange-designs aria-hidden="true">
+        <%= image_tag exchange.sender_source.design_image, alt: "", width: 72, height: 46,
+              data: { source_design_thumbnail: true },
+              style: "--source-colour: var(--color-palette-#{exchange.sender_source.colour});" %>
+        <span>→</span>
+        <%= image_tag exchange.receiver_source.design_image, alt: "", width: 72, height: 46,
+              data: { source_design_thumbnail: true },
+              style: "--source-colour: var(--color-palette-#{exchange.receiver_source.colour});" %>
+      </div>
 
       <strong data-exchange-name>
-        <%= exchange.sender_source.name %><%= " (Deleted)" if exchange.sender_source.deleted? %>
+        <span><%= exchange.sender_source.deleted? ? t(".deleted", name: exchange.sender_source.name) : exchange.sender_source.name %></span>
         <span aria-hidden="true">→</span>
-        <%= exchange.receiver_source.name %><%= " (Deleted)" if exchange.receiver_source.deleted? %>
+        <span><%= exchange.receiver_source.deleted? ? t(".deleted", name: exchange.receiver_source.name) : exchange.receiver_source.name %></span>
       </strong>
 
       <span data-exchange-amounts>

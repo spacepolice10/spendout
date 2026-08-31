@@ -1,0 +1,8 @@
+<nav data-feature-chips aria-label="Feature tour">
+  <% Tour::FEATURES.each do |slug, feature| %>
+    <%= link_to tour_path(feature: slug) do %>
+      <%= icon(feature[:icon]) %>
+      <span><%= feature[:chip] %></span>
+    <% end %>
+  <% end %>
+</nav>

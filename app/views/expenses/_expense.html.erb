@@ -1,4 +1,4 @@
-<%= link_to expense_path(expense), data: { expense_link: true }, aria: { label: "View expense" } do %>
+<%= link_to expense_path(expense), data: { expense_link: true }, aria: { label: t(".view") } do %>
   <article class="expense" data-testid="expense-card">
     <main>
       <div data-expense-line>
@@ -9,7 +9,7 @@
         <% end %>
 
         <% if expense.note.present? %>
-          <span data-expense-note data-testid="expense-note" aria-label="Has note" title="Has note">
+          <span data-expense-note data-testid="expense-note" aria-label="<%= t(".with_note") %>" title="<%= t(".with_note") %>">
             <%= icon("note") %>
           </span>
         <% end %>
@@ -19,7 +19,7 @@
             <% if expense.allocation %>
               <%= expense.allocation.name %>
             <% else %>
-              Unallocated
+              <%= t(".unallocated") %>
             <% end %>
           </strong>
         </div>

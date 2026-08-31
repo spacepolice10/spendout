@@ -14,7 +14,7 @@
     --color-palette-coral: light-dark(oklch(0.720 0.180 20.0), oklch(0.72 0.11 20.0));
     --color-palette-black: light-dark(oklch(0.000 0.000 0.000), oklch(0.000 0.000 0.000));
     
-    --color-accent: light-dark(oklch(60.244% 0.20809 256.313), oklch(0.88 0.10 143.8));
+    --color-accent: light-dark(oklch(60.244% 0.20809 256.313), oklch(0.87 0.21 132));
     --color-accent-negative: light-dark(
       var(--color-palette-red),
       color-mix(in oklch, var(--color-palette-red) 45%, var(--color-invert-1))

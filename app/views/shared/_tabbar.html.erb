@@ -2,6 +2,8 @@
   <% expenses_active = controller_name == "expenses" %>
   <% sources_active = controller_name == "sources" %>
   <% allocations_active = controller_name == "allocations" %>
+  <% reports_active = controller_name == "reports" %>
+  <% user_active = controller_name == "users" %>
 
   <nav aria-label="Budget sections" data-navigation-layout="rail">
     <div>
@@ -41,6 +43,26 @@
         <kbd aria-hidden="true">3</kbd>
       <% end %>
 
+      <%= link_to budget_report_path(budget),
+            role: "button",
+            aria: (reports_active ? { current: "page" } : {}),
+            data: {
+              controller: "pressable",
+              action: "keydown.4@document->pressable#click"
+            },
+            style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if reports_active}" do %>
+        <span>Reports</span>
+        <kbd aria-hidden="true">4</kbd>
+      <% end %>
+
     </div>
+
+    <%= link_to user_path,
+          role: "button",
+          aria: (user_active ? { current: "page" } : {}),
+          style: "#{'box-shadow: inset 0 0 0 1px var(--color-accent);color:var(--color-accent);background:var(--color-2);' if user_active}" do %>
+      <%= icon("circle-dot") %>
+      <span>User</span>
+    <% end %>
   </nav>
 <% end %>

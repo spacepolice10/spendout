@@ -2,9 +2,9 @@
   <article data-elevation="1" data-expense-receipt>
     <header>
       <nav>
-        <h1>Expense</h1>
+        <h1><%= t(".name") %></h1>
       </nav>
-      <small>Receipt</small>
+      <small><%= t(".receipt") %></small>
     </header>
 
     <main>
@@ -13,15 +13,15 @@
           <% if @expense.allocation %>
             <%= icon(@expense.allocation.icon, style: icon_colour_styles(@expense.allocation.colour)) %>
             <p>
-              <small>Category</small>
+              <small><%= t(".category") %></small>
               <strong>
                 <%= link_to @expense.allocation.name, allocation_path(@expense.allocation) %>
-                <%= @expense.allocation.deleted? ? "(Deleted)" : ("(Finished)" if @expense.allocation.finished?) %>
+                <%= @expense.allocation.deleted? ? t(".deleted") : (t(".finished") if @expense.allocation.finished?) %>
               </strong>
             </p>
           <% else %>
             <%= icon("circle-dot") %>
-            <p><small>Category</small><strong>Unallocated</strong></p>
+            <p><small><%= t(".category") %></small><strong><%= t(".unallocated") %></strong></p>
           <% end %>
         </div>
 
@@ -30,16 +30,16 @@
           <small><%= @expense.currency_code %></small>
         </p>
 
-        <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= @expense.occurred_on.to_fs(:long) %></time>
+        <time datetime="<%= @expense.occurred_on.iso8601 %>"><%= l(@expense.occurred_on, format: :long) %></time>
       </section>
 
       <section data-expense-source style="<%= colour_styles(@expense.source.colour) %>">
         <%= icon(@expense.source.icon) %>
         <p>
-          <small>Paid from</small>
+          <small><%= t(".paid_from") %></small>
           <strong>
             <%= link_to @expense.source.name, source_path(@expense.source) %>
-            <%= "(Deleted)" if @expense.source.deleted? %>
+            <%= t(".deleted") if @expense.source.deleted? %>
           </strong>
         </p>
         <p data-expense-source-debit>
@@ -51,13 +51,13 @@
       <dl data-expense-breakdown>
         <% if @expense.currency_code != @expense.source.currency_code %>
           <div>
-            <dt>Conversion quote</dt>
+            <dt><%= t(".conversion_quote") %></dt>
             <span aria-hidden="true"></span>
             <dd><%= @expense.conversion_rate.to_s("F") %> <%= @expense.currency_code %> / <%= @expense.source.currency_code %></dd>
           </div>
         <% end %>
         <div>
-          <dt>Budget value</dt>
+          <dt><%= t(".budget_name") %></dt>
           <span aria-hidden="true"></span>
           <dd><%= formatted_amount(@expense.amount_in_base_currency, @budget.base_currency_code) %> <%= @budget.base_currency_code %></dd>
         </div>
@@ -66,14 +66,14 @@
       <% if @expense.note.present? %>
         <aside data-expense-receipt-note>
           <%= icon("note") %>
-          <p><small>Note</small><strong><%= @expense.note %></strong></p>
+          <p><small><%= t(".note") %></small><strong><%= @expense.note %></strong></p>
         </aside>
       <% end %>
     </main>
 
     <footer>
-      <%= button_to "Delete expense", expense_path(@expense), method: :delete,
-            data: { intent: "negative", appearance: "keycap", turbo_confirm: "Delete this expense permanently?" } %>
+      <%= button_to t(".delete"), expense_path(@expense), method: :delete,
+            data: { intent: "negative", appearance: "keycap", turbo_confirm: t(".delete_confirmation") } %>
     </footer>
   </article>
 </main>

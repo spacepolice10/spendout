@@ -53,8 +53,6 @@
             }
 
             & label:has(> input[type="radio"]) {
-                --form-checked-background: var(--source-colour, var(--color-2));
-
                 gap: var(--space-h-half);
 
                 &>span {

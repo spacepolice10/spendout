@@ -8,8 +8,7 @@
   <% if source.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
-        <%= pluralize(source.errors.count, "error") %> prevented this source
-        from being saved:
+        <%= t(".errors", count: source.errors.count) %>
       </h2>
 
       <ul>
@@ -20,15 +19,14 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, placeholder: "Credit card, cash, loan, etc." %>
+  <%= render "shared/name_fields", form: form, placeholder: t(".name_placeholder") %>
   <%= render "shared/amount_fields", form: form, amount_attribute: :amount, default_amount: true %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,
         base_currency_code: budget.base_currency_code %>
 
-  <%= render "shared/icon_fields", form: form %>
-  <%= render "shared/colour_fields", form: form %>
+  <%= render "design_fields", form: form, source: source %>
 
   <div data-layout="flex">
     <%= link_to budget_sources_path(budget), role: "button", data: {
@@ -36,7 +34,7 @@
           controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
         } do %>
       <%= icon("chevron-left") %>
-      <span>Cancel</span>
+      <span><%= t(".cancel") %></span>
       <% unless mobile_variant? %>
         <kbd aria-hidden="true">Shift + Escape</kbd>
       <% end %>
@@ -45,7 +43,7 @@
           appearance: "keycap", intent: "primary", size: "lg",
           controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
         } do %>
-      <span>Confirm</span>
+      <span><%= t(".submit") %></span>
       <%= icon("chevron-right") %>
       <% unless mobile_variant? %>
         <kbd aria-hidden="true">Cmd + Enter</kbd>

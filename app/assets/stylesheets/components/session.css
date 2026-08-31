@@ -6,17 +6,37 @@
         padding-block: var(--space-v-2);
         text-align: center;
 
-        & h1 {
+        & [data-cybercat-answer] {
+            width: 100%;
 
+            & img {
+                flex: 0 0 auto;
+            }
 
-            color: var(--color-accent);
-            /* font-family: "Bradley Hand", "Comic Sans MS", cursive; */
-            font-size: var(--font-size-2xl);
-            /* font-style: italic; */
-            letter-spacing: 0.04em;
-            /* rotate: -2deg; */
-            text-transform: uppercase;
-            font-family: var(--font-family-sans);
+            & p {
+                max-width: 42ch;
+                text-align: start;
+
+                &::before {
+                    inset: calc(50% + 0.35rem) auto auto -7px;
+                    width: 12px;
+                    height: 12px;
+                    border: 0;
+                    border-block-end: 2px solid var(--color-invert-1);
+                    border-inline-start: 2px solid var(--color-invert-1);
+                    transform: translateY(-50%) rotate(45deg);
+                }
+            }
         }
+    }
+
+    main.session-page article form > button {
+        align-self: center;
+    }
+
+    main.session-page > nav {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-h);
     }
 }

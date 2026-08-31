@@ -10,8 +10,7 @@
   <% if allocation.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
-        <%= pluralize(allocation.errors.count, "error") %> prevented this
-        allocation from being saved:
+        <%= t(".errors", count: allocation.errors.count) %>
       </h2>
 
       <ul>
@@ -22,7 +21,7 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, placeholder: "Rent, groceries, emergency fund, etc.",
+  <%= render "shared/name_fields", form: form, placeholder: t(".name_placeholder"),
         input_data: {
           category_icon_target: "name",
           action: "input->category-icon#suggest"
@@ -48,7 +47,7 @@
           controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
         } do %>
       <%= icon("chevron-left") %>
-      <span>Cancel</span>
+      <span><%= t(".cancel") %></span>
       <% unless mobile_variant? %>
         <kbd aria-hidden="true">Shift + Escape</kbd>
       <% end %>
@@ -57,7 +56,7 @@
           appearance: "keycap", intent: "primary", size: "lg",
           controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
         } do %>
-      <span>Confirm</span>
+      <span><%= t(".submit") %></span>
       <%= icon("chevron-right") %>
       <% unless mobile_variant? %>
         <kbd aria-hidden="true">Cmd + Enter</kbd>

@@ -1,57 +1,47 @@
 <% content_for :title, @source.name %>
 
 <main data-size="lg" data-anchor="footer">
-  <article data-elevation="1">
-    <header>
-      <nav>
-        <%= link_to icon("chevron-left"), budget_sources_path(@budget), aria: { label: "Back to sources" } %>
-        <%= icon(@source.icon, style: icon_colour_styles(@source.colour)) %>
-        <h1><%= @source.name %></h1>
-      </nav>
-      <small><%= "Deleted" if @source.deleted? %></small>
-    </header>
-
+  <article style="--source-colour: var(--color-palette-<%= @source.colour %>);">
     <main>
-      <section data-layout="grid" aria-label="Source summary">
-        <article data-elevation="2" data-testid="source-initial-amount">
-          <header>
-            <nav>
-              <%= icon("cash-banknote") %>
-              <h2>Initial amount</h2>
-            </nav>
-          </header>
-          <main>
-            <p><strong><%= formatted_amount(@source.amount, @source.currency_code) %> <%= @source.currency_code %></strong></p>
-            <small>Added when this source was created</small>
-          </main>
-        </article>
+      <%= image_tag @source.design_image, alt: t(".design_description", design: @source.design_name),
+            width: 720, height: 464, data: { source_design_hero: true } %>
 
-        <article data-elevation="2" data-testid="source-available-amount">
-          <header>
-            <nav>
-              <%= icon("wallet") %>
-              <h2>Available now</h2>
-            </nav>
-          </header>
-          <main>
-            <p><strong><%= formatted_amount(@source.spendable_amount, @source.currency_code) %> <%= @source.currency_code %></strong></p>
-            <small>After expenses and exchanges</small>
-          </main>
-        </article>
+      <hgroup data-source-title>
+        <h1><%= @source.name %></h1>
+        <small><%= t(".deleted") if @source.deleted? %></small>
+      </hgroup>
 
-        <article data-elevation="2" data-testid="source-budget">
-          <header>
-            <nav>
-              <%= icon("history") %>
-              <h2>Budget</h2>
-            </nav>
-          </header>
-          <main>
-            <p><strong><%= link_to @budget.date_period, budget_expenses_path(@budget) %></strong></p>
-            <small>Budget period for this source</small>
-          </main>
-        </article>
+      <section aria-label="<%= t(".summary_name") %>" data-source-summary>
+        <p>
+          <span>
+            <%= t(".initial_amount") %>
+            <strong><%= formatted_amount(@source.amount, @source.currency_code) %> <%= @source.currency_code %></strong>
+          </span>
+          <span aria-hidden="true">·</span>
+          <span>
+            <%= t(".remainder") %>
+            <strong><%= formatted_amount(@source.spendable_amount, @source.currency_code) %> <%= @source.currency_code %></strong>
+          </span>
+        </p>
       </section>
+
+      <div data-source-actions>
+        <%= link_to budget_sources_path(@budget), role: "button", aria: { label: t(".back") }, data: { intent: "secondary" } do %>
+          <%= icon("chevron-left") %>
+          <span><%= t(".back_name") %></span>
+        <% end %>
+
+        <% unless @source.deleted? %>
+          <%= link_to new_source_exchange_path(@source), role: "button", data: { intent: "secondary" } do %>
+            <%= icon("coin") %>
+            <span><%= t(".exchange") %></span>
+          <% end %>
+
+          <%= button_to source_path(@source), method: :delete, aria: { label: t(".remove") }, data: { intent: "secondary", turbo_confirm: t(".remove_confirmation") } do %>
+            <%= icon("trash-simple") %>
+          <% end %>
+        <% end %>
+      </div>
 
       <% if @expenses.any? %>
         <article
@@ -59,16 +49,14 @@
           class="expense-list"
           data-testid="expense-list"
         >
-          <header>
-            <h2>Expenses</h2>
-          </header>
+          <h2><%= t(".expenses") %></h2>
 
           <main>
             <% @expenses_by_date.each do |date, expenses| %>
               <section data-expense-day data-testid="expense-day">
                 <header>
                   <h3>
-                    <time datetime="<%= date.iso8601 %>"><%= date.to_fs(:long) %></time>
+                    <time datetime="<%= date.iso8601 %>"><%= l(date, format: :long) %></time>
                   </h3>
 
                   <p>
@@ -86,22 +74,9 @@
             <% end %>
           </main>
 
-          <%= render "shared/pagination", page: @page, records_name: "source expenses" %>
+          <%= render "shared/pagination", page: @page, records_name: t(".expense_records") %>
         </article>
       <% end %>
     </main>
-
-    <% unless @source.deleted? %>
-      <footer>
-        <%= link_to new_source_exchange_path(@source), role: "button", data: { intent: "secondary" } do %>
-          <%= icon("coin") %>
-          <span>Make exchange</span>
-        <% end %>
-
-        <%= button_to source_path(@source), method: :delete, aria: { label: "Remove source" }, data: { intent: "secondary", turbo_confirm: "Are you sure you want to remove this source?" } do %>
-          <%= icon("trash-simple") %>
-        <% end %>
-      </footer>
-    <% end %>
   </article>
 </main>

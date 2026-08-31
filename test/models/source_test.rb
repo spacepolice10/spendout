@@ -1,6 +1,47 @@
 require "test_helper"
 
 class SourceTest < ActiveSupport::TestCase
+  test "uses a numbered design enum" do
+    assert_equal({
+      "americat_express" => 0,
+      "mastercat" => 1,
+      "meowisa" => 2,
+      "unipaw" => 3,
+      "cash" => 4,
+      "bank" => 5,
+      "savings" => 6,
+      "digital_wallet" => 7
+    }, Source.designs)
+  end
+
+  test "uses Americat Express as the default design" do
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD")
+
+    assert source.americat_express?
+    assert_equal "Americat Express", source.design_name
+    assert_equal "americat_express.png", source.design_image
+  end
+
+  test "offers every source design as a labelled form option" do
+    assert_equal [
+      [ "Americat Express", "americat_express" ],
+      [ "Mastercat", "mastercat" ],
+      [ "Meowisa", "meowisa" ],
+      [ "Unipaw", "unipaw" ],
+      [ "Cash", "cash" ],
+      [ "Bank", "bank" ],
+      [ "Savings", "savings" ],
+      [ "Digital wallet", "digital_wallet" ]
+    ], Source.design_options
+  end
+
+  test "rejects an unsupported design" do
+    source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD", design: :unknown)
+
+    assert_not source.valid?
+    assert source.errors.added?(:design, :inclusion, value: :unknown)
+  end
+
   test "icon and colour catalogs are frozen" do
     assert Source.icon_catalog.frozen?
     assert Source.icon_catalog.keys.all?(&:frozen?)

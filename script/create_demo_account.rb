@@ -29,16 +29,14 @@ User.transaction do
     amount: 3_200,
     currency_code: "USD",
     rate: 1,
-    icon: "building-bank",
-    colour: "green"
+    design: :mastercat
   )
   street_cash = budget.sources.create!(
     name: "Street cash",
     amount: 280,
     currency_code: "USD",
     rate: 1,
-    icon: "cash-banknote",
-    colour: "yellow"
+    design: :unipaw
   )
 
   exchange = civic_bank.outgoing_exchanges.new(
@@ -51,7 +49,7 @@ User.transaction do
   exchange.save_with_receiver_source || raise(exchange.errors.full_messages.to_sentence)
   exchange.update_column(:created_at, created_at_for.call(6))
   europe_wallet = exchange.receiver_source
-  europe_wallet.update!(icon: "wallet", colour: "blue")
+  europe_wallet.update!(design: :meowisa)
 
   allocations = {
     rent: budget.allocations.create!(name: "Rent", amount: 1_200, currency_code: "USD", rate: 1, icon: "home", colour: "violet"),
@@ -104,8 +102,7 @@ User.transaction do
     amount: 100,
     currency_code: "USD",
     rate: 1,
-    icon: "cash-banknote",
-    colour: "violet"
+    design: :americat_express
   )
   questionable_food = budget.allocations.create!(
     name: "Questionable street food",

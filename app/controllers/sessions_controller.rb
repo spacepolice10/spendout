@@ -14,7 +14,7 @@ class SessionsController < ApplicationController
       AuthCode.produce(email_address)
       redirect_to session_auth_code_path, notice: t("sessions.create.code_sent")
     else
-      redirect_to new_session_path, alert: t("sessions.create.invalid_email")
+      redirect_to new_session_path, alert: t("sessions.create.invalid_address")
     end
   end
 

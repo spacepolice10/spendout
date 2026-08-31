@@ -1,0 +1,6 @@
+<nav aria-label="<%= t(".name") %>">
+  <%= button_to t(".english"), locale_path, method: :patch, params: { locale: "en" },
+        disabled: current_locale == :en, data: { intent: "secondary" } %>
+  <%= button_to t(".russian"), locale_path, method: :patch, params: { locale: "ru" },
+        disabled: current_locale == :ru, data: { intent: "secondary" } %>
+</nav>

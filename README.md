@@ -87,3 +87,7 @@ Run the test and style checks with:
 ```sh
 bin/ci
 ```
+
+## License
+
+Spendout is available under the [O'Saasy License](LICENSE.md): MIT with the commercial right to run it as a competing hosted SaaS reserved for the copyright holder. See [osaasy.dev](https://osaasy.dev/).
