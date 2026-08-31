@@ -20,6 +20,7 @@
      color-scheme: light dark;                  /* opt in to OS-level dark mode */
      hanging-punctuation: first allow-end last; /* typographic punctuation hanging */
      interpolate-size: allow-keywords;          /* enables transitions to/from intrinsic sizes (e.g. height: auto) */
+     overscroll-behavior: none;                 /* keep app scrolling contained to the viewport */
      scrollbar-gutter: stable;                  /* prevent layout shift when scrollbar appears */
      text-size-adjust: none;                    /* disable browser auto font scaling */
      -webkit-text-size-adjust: none;            /* same for Safari/WebKit */
@@ -36,6 +37,7 @@
    /* Body */
    body {
      min-block-size: 100svb; /* fill at least the small viewport block axis (avoids mobile chrome gap) */
+     overscroll-behavior: none;
    }
  
    /* Typography and body defaults live in focused stylesheets within @layer base. */

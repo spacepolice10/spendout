@@ -1,7 +1,12 @@
 @layer base {
 
     body {
-        --budget-tabbar-height: calc(var(--space-v-4) + var(--space-v) + env(safe-area-inset-bottom));
+        --budget-tabbar-bottom-inset: env(safe-area-inset-bottom);
+        --budget-tabbar-height: calc(var(--space-v-4) + var(--space-v) + var(--budget-tabbar-bottom-inset));
+
+        @media (display-mode: standalone) and (-webkit-touch-callout: none) {
+            --budget-tabbar-bottom-inset: calc(env(safe-area-inset-bottom) + var(--space-v));
+        }
 
         display: flex;
         flex-direction: column;
@@ -101,7 +106,7 @@
             bottom: 0;
             flex: 0 0 auto;
             min-block-size: var(--budget-tabbar-height);
-            padding-block-end: env(safe-area-inset-bottom);
+            padding-block-end: var(--budget-tabbar-bottom-inset);
             border-top: var(--border-subtle);
             background: var(--color-2);
 

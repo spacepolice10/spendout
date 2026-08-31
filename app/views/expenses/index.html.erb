@@ -11,7 +11,9 @@
       <% if (todays_remainder = @budget.todays_remainder) %>
         <article data-elevation="2" data-gauge-plate>
           <aside data-cybercat-answer>
-            <%= image_tag "cybercat.png", alt: "Cybercat", width: 40, height: 40 %>
+            <%= link_to user_path, aria: { label: "User" } do %>
+              <%= image_tag "cybercat.png", alt: "Cybercat", width: 40, height: 40 %>
+            <% end %>
             <p><%= cybercat_spending_answer(
               @budget.todays_remainder_percentage,
               no_expenses: @budget.expenses.none?
@@ -31,6 +33,13 @@
                     currency_code: @budget.base_currency_code,
                     percentage: @budget.todays_remainder_percentage %>
           </main>
+
+          <footer data-gauge-actions>
+            <%= link_to budget_report_path(@budget), role: "button", data: { gauge_report: true } do %>
+              <%= icon("chart-bar") %>
+              <span>Report</span>
+            <% end %>
+          </footer>
         </article>
       <% end %>
 

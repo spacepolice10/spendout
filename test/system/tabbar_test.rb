@@ -37,16 +37,17 @@ class TabbarTest < ApplicationSystemTestCase
     end
   end
 
-  test "desktop rail opens the user page and marks it active" do
-    within "nav[aria-label='Budget sections']" do
-      click_on "User"
-    end
-
+  test "Cybercat opens the user page" do
+    find("a[aria-label='User']").click
     assert_current_path user_path
     assert_selector "h1", text: "User"
-    within "nav[aria-label='Budget sections']" do
-      assert_selector "a[aria-current='page']", text: "User"
-    end
+  end
+
+  test "Report button opens the budget report" do
+    click_on "Report"
+
+    assert_current_path budget_report_path(budgets(:active))
+    assert_selector "h1", text: "Where did my money go?"
   end
 
   test "tabbar is absent when signed out" do

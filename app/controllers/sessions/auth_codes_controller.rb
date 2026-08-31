@@ -1,8 +1,13 @@
 class Sessions::AuthCodesController < ApplicationController
+  RATE_LIMIT_WINDOW = 15.minutes
+
   allow_unauthenticated_access
   before_action :require_pending_email_address
-  rate_limit to: 10, within: 15.minutes, only: :create,
-    with: -> { redirect_to session_auth_code_path, alert: "Try again in 15 minutes." }
+  rate_limit to: 10, within: RATE_LIMIT_WINDOW, only: :create,
+    with: -> {
+      redirect_to session_auth_code_path,
+        alert: I18n.t("sessions.auth_codes.create.rate_limited", count: RATE_LIMIT_WINDOW.in_minutes.to_i)
+    }
 
   def show
   end
@@ -14,7 +19,7 @@ class Sessions::AuthCodesController < ApplicationController
       start_new_session_for(user)
       redirect_to after_authentication_url
     else
-      redirect_to session_auth_code_path, alert: "Try another code."
+      redirect_to session_auth_code_path, alert: t("sessions.auth_codes.create.invalid_code")
     end
   end
 
@@ -25,7 +30,7 @@ class Sessions::AuthCodesController < ApplicationController
 
     def require_pending_email_address
       unless pending_email_address.present?
-        redirect_to new_session_path, alert: "Enter your email address to sign in."
+        redirect_to new_session_path, alert: t("sessions.auth_codes.create.missing_email")
       end
     end
 

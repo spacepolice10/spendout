@@ -30,15 +30,19 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='expense-card']", count: 1
     assert_select "article[data-elevation='2'][data-gauge-plate] > h2", count: 0
     assert_select "[data-cybercat-answer]" do
-      assert_select "img[alt='Cybercat'][width='40'][height='40']", count: 1
+      assert_select "a[href='#{user_path}'][aria-label='User'] img[alt='Cybercat'][width='40'][height='40']", count: 1
       expected_answer = ApplicationController.helpers.cybercat_spending_answer(@budget.todays_remainder_percentage)
       assert_select "p", text: expected_answer, count: 1
+    end
+    assert_select "[data-gauge-plate] > main + footer[data-gauge-actions] a[href='#{budget_report_path(@budget)}'][role='button'][data-gauge-report]", text: "Report", count: 1 do
+      assert_select ".icon-wrap .icon[style*='--icon-chart-bar']", count: 1
     end
     assert_select "article[data-elevation='2'] > header", count: 0
     assert_select "article[data-elevation='2'] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[role='progressbar'][aria-label='Safe spending available today']", count: 1
     assert_select "[data-daily-gauge][data-controller='daily-gauge'] [data-remainder-gauge] svg [data-remainder-gauge-needle]", count: 1
     assert_select "a", text: "Currencies", count: 0
+    assert_select "nav[aria-label='Budget sections'] a", text: /Reports|User/, count: 0
   end
 
   test "index paginates expense history" do

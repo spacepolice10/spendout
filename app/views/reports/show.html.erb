@@ -7,9 +7,9 @@
         <%= icon("history") %>
         <h1>Where did my money go?</h1>
       </nav>
-      <small><%= @budget.date_period %></small>
     </header>
-
+      <br>
+      <small><%= @budget.date_period %></small>
     <main>
       <% category = @report.most_expensive_category %>
       <section data-layout="grid" data-report-summary aria-label="Spending summary">

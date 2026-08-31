@@ -1,7 +1,7 @@
-<p>Your Spendout sign-in code is:</p>
+<p><%= t(".introduction") %></p>
 
 <p><strong><%= @code %></strong></p>
 
-<p>This code expires in 15 minutes and can only be used once.</p>
+<p><%= t(".expiration", count: @expiration_minutes) %></p>
 
-<p>If you didn't request this code, you can ignore this email.</p>
+<p><%= t(".unrequested") %></p>

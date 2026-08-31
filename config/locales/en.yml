@@ -28,4 +28,38 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  sessions:
+    new:
+      logo_alt: "Cybercat"
+      product_name: "Spendout"
+      tagline: "Spendout is a simple and secure way to manage your money."
+      title: "Sign in"
+      instructions: "We’ll email you a %{count}-character sign-in code."
+      email_placeholder: "you@example.com"
+      submit: "Email me a code"
+    create:
+      code_sent: "Check your email for your sign-in code."
+      invalid_email: "Enter a valid email address."
+      rate_limited: "Try again later."
+    auth_codes:
+      show:
+        title: "Enter your sign-in code"
+        instructions: "We sent a %{count}-character code to %{email_address}."
+        code_placeholder: "123456"
+        submit: "Sign in"
+        use_another_email: "Use another email address"
+      create:
+        invalid_code: "Try another code."
+        rate_limited:
+          one: "Try again in 1 minute."
+          other: "Try again in %{count} minutes."
+        missing_email: "Enter your email address to sign in."
+
+  authentication_mailer:
+    sign_in_instructions:
+      subject: "Your Spendout code is %{code}"
+      introduction: "Your Spendout sign-in code is:"
+      expiration:
+        one: "This code expires in 1 minute and can only be used once."
+        other: "This code expires in %{count} minutes and can only be used once."
+      unrequested: "If you didn't request this code, you can ignore this email."
