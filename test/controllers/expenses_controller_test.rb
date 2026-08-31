@@ -80,6 +80,16 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-cybercat-answer] p", text: "Nothing spent yet—nice.", count: 1
   end
 
+  test "index renders long dates in Russian" do
+    sign_in_as(@user)
+    cookies[:locale] = "ru"
+
+    get budget_expenses_path(@budget)
+
+    assert_response :success
+    assert_select "time[datetime='#{@expense.occurred_on.iso8601}']", text: @expense.occurred_on.strftime("%d.%m.%Y")
+  end
+
   test "index redirects an archived budget to creation when no budget is active" do
     sign_in_as(@user)
     @budget.update_columns(period_to: Date.yesterday)

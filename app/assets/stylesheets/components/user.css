@@ -1,0 +1,7 @@
+@layer components {
+    [data-language-settings] > nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-h);
+    }
+}

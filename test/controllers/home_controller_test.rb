@@ -15,6 +15,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-landing-header]", count: 1
     assert_select "[data-landing-header] [data-landing-brand]", text: "Spendout"
     assert_select "[data-landing-header] [data-landing-brand] img[src='/icon-32.png']", count: 1
+    assert_select "[data-landing-header-mobile]", count: 0
     assert_select "[data-landing-header] nav a[href='#{landing_path(anchor: "details")}']", text: "Features"
     assert_select "[data-landing-header] nav a[href='#{tour_path(feature: "sources")}']", text: "Tour"
     assert_select "[data-landing-header] nav a[href='#{once_path}']", text: "ONCE"
@@ -32,6 +33,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-landing-steps]", count: 0
     assert_select "[data-floating-ui], [data-float]", count: 0
     assert_select "[data-landing-fuel] [data-daily-gauge][data-controller='daily-gauge']", count: 1
+    assert_select "[data-control-layout] > [data-landing-demo-frame] > [data-landing-fuel]", count: 1
     assert_select "[data-landing-fuel] [data-gauge-bolts][aria-hidden='true'] span", count: 4
     assert_select "[data-landing-fuel] [role='progressbar'][aria-valuenow='68.0']", count: 1
     assert_select "[data-landing-fuel] [data-daily-gauge] > header h2", count: 0
@@ -46,11 +48,23 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[role='button'][href='#{new_session_path}']", text: "Try Spendout", minimum: 1
     assert_select "[data-landing-hero] a[href='https://github.com/spacepolice10/spendout']", count: 0
     assert_select "[data-landing-hero] [data-feature-chips]", count: 0
-    assert_select "#details [data-feature-chips] a", count: Tour::FEATURES.size
+    assert_select "#details [data-feature-chips] > [data-feature-chip-cloud] a", count: Tour::FEATURES.size
     assert_select "#details [data-feature-chips] a[href='#{tour_path(feature: "sources")}']", text: "Create a source"
     assert_select "#details [data-feature-chips] a[href='#{tour_path(feature: "language")}']", text: "Change the language"
     assert_select "#details [data-landing-actions] a[role='button'][href='#{tour_path(feature: "sources")}']", text: "Take the tour", count: 1
     assert_select "nav[aria-label='Budget sections']", count: 0
+  end
+
+  test "landing uses a disclosure header on mobile" do
+    get landing_path, headers: { "User-Agent" => "Mozilla/5.0 (iPhone) Mobile" }
+
+    assert_response :success
+    assert_select "[data-landing-header] > div", count: 0
+    assert_select "[data-landing-header-mobile]", count: 1
+    assert_select "[data-landing-header-mobile] > summary", text: /Spendout/
+    assert_select "[data-landing-header-mobile] > summary .icon[style*='--icon-chevron-right']"
+    assert_select "[data-landing-header-mobile] nav a[href='#{landing_path(anchor: "details")}']", text: "Features"
+    assert_select "[data-landing-header-mobile] nav a[href='#{new_session_path}']", text: "Try Spendout"
   end
 
 
@@ -99,10 +113,11 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get landing_path
 
     assert_select "[data-currency-story] [data-rate-board]", count: 1
+    assert_select "[data-currency-story] > [data-landing-demo-frame] > [data-rate-board]", count: 1
     assert_select "[data-rate-board][data-controller]", count: 0
     assert_select "[data-rate-board] table", count: 1
-    assert_select "[data-rate-board] caption", text: /dated reference rates.*confirm the direct quote/m
-    assert_select "[data-rate-board-status]", text: "Sample rates"
+    assert_select "[data-rate-board] caption", count: 0
+    assert_select "[data-rate-board-status]", count: 0
     assert_select "[data-rate-board] tbody tr", count: 4
     assert_select "[data-rate-board]", text: /Pound sterling/, count: 0
     assert_select "[data-rate-display]", text: "26,300"

@@ -39,16 +39,18 @@
     </header>
 
     <div data-control-layout>
-      <article class="budget" data-landing-fuel data-gauge-plate>
-        <div data-gauge-bolts aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      <div data-landing-demo-frame>
+        <article class="budget" data-landing-fuel data-gauge-plate>
+          <div data-gauge-bolts aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
 
-        <%= render "shared/daily_gauge", amount: 74, currency_code: "USD", percentage: 68 %>
-      </article>
+          <%= render "shared/daily_gauge", amount: 74, currency_code: "USD", percentage: 68 %>
+        </article>
+      </div>
 
       <div data-control-notes data-rate-copy>
         <article>
@@ -83,41 +85,38 @@
     ] %>
 
     <div data-currency-story>
-      <section
-        data-rate-board
-        aria-labelledby="rate-board-title"
-      >
-        <header>
-          <p data-rate-board-status>Sample rates</p>
-          <h3 id="rate-board-title">Exchange rates</h3>
-        </header>
+      <div data-landing-demo-frame>
+        <section
+          data-rate-board
+          aria-labelledby="rate-board-title"
+        >
+          <header>
+            <h3 id="rate-board-title">Exchange rates</h3>
+          </header>
 
-        <table>
-          <caption>
-            Spendout suggests dated reference rates for review. You confirm the
-            direct quote before anything is saved.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Currency</th>
-              <th scope="col">Rate</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% sample_rates.each do |row| %>
+          <table>
+            <thead>
               <tr>
-                <th scope="row">
-                  <strong data-rate-code><%= row[:code] %></strong>
-                  <span data-rate-name><%= row[:name] %></span>
-                </th>
-                <td>
-                  <output data-rate-display><%= row[:rate] %></output>
-                </td>
+                <th scope="col">Currency</th>
+                <th scope="col">Rate</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </section>
+            </thead>
+            <tbody>
+              <% sample_rates.each do |row| %>
+                <tr>
+                  <th scope="row">
+                    <strong data-rate-code><%= row[:code] %></strong>
+                    <span data-rate-name><%= row[:name] %></span>
+                  </th>
+                  <td>
+                    <output data-rate-display><%= row[:rate] %></output>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </section>
+      </div>
 
       <div data-rate-copy>
         <article>

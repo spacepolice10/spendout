@@ -86,6 +86,8 @@ ru:
       remove_confirmation: "Удалить этот источник?"
     form:
       errors: "Количество ошибок: %{count}. Не удалось сохранить источник:"
+      name_question: "Как назвать источник?"
+      amount_question: "Сколько денег в этом источнике?"
       name_placeholder: "Кредитная карта, наличные, заём и т. п."
       cancel: "Отмена"
       submit: "Подтвердить"
@@ -130,6 +132,8 @@ ru:
       name: "Новый план"
     form:
       errors: "Количество ошибок: %{count}. Не удалось сохранить план:"
+      name_question: "Как назвать категорию?"
+      amount_question: "Сколько денег отложить на эту категорию?"
       name_placeholder: "Аренда, продукты, резервный фонд и т. п."
       cancel: "Отмена"
       submit: "Подтвердить"
@@ -197,6 +201,7 @@ ru:
         create_source: "Новый источник"
     form:
       errors: "Количество ошибок: %{count}. Не удалось сохранить расход:"
+      amount_question: "Сколько потрачено?"
       source:
         name: "Из источника:"
         availability: "Доступно %{amount} (%{currency})"
@@ -247,6 +252,10 @@ ru:
       remove_budget: "Удалить бюджет"
       remove_budget_confirmation: "Удалить этот бюджет и все его данные без возможности восстановления? Это действие нельзя отменить."
 
+  exchanges:
+    form:
+      name_question: "Как назвать новый источник?"
+
   shared:
     locale_switcher:
       name: "Язык"
@@ -261,10 +270,8 @@ ru:
       no_data: "Валюты не найдены"
     name_fields:
       name: "Название"
-      question: "Как называется этот объект (%{model})?"
     amount_fields:
       name: "Сумма"
-      question: "Сколько денег находится в объекте «%{model}»?"
     currency_fields:
       name: "Валюта"
       question: "Какая валюта используется?"
@@ -331,6 +338,7 @@ ru:
 
   date:
     formats:
+      long: "%d.%m.%Y"
       budget_without_year: "%d.%m"
       budget_with_year: "%d.%m.%Y"
       budget_date_with_year: "%d.%m.%Y"

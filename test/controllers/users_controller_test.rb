@@ -11,7 +11,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: users(:one).email_address
     assert_select "h2", text: "Language"
     assert_select "p", text: "Choose the language Spendout uses."
-    assert_select "form[action='#{locale_path}']", count: 2
+    assert_select "[data-language-settings] > nav form[action='#{locale_path}']", count: 2
     assert_select "form[action='#{session_path}'] button[data-appearance='keycap'][data-intent='primary']", text: "Sign out"
     assert_select "form[action='#{budget_path(budgets(:active))}'] button[data-appearance='keycap'][data-intent='negative']", text: "Remove budget"
   end

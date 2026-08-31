@@ -21,12 +21,12 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, placeholder: t(".name_placeholder"),
+  <%= render "shared/name_fields", form: form, question: t(".name_question"), placeholder: t(".name_placeholder"),
         input_data: {
           category_icon_target: "name",
           action: "input->category-icon#suggest"
         } %>
-  <%= render "shared/amount_fields", form: form, amount_attribute: :amount %>
+  <%= render "shared/amount_fields", form: form, question: t(".amount_question"), amount_attribute: :amount %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,

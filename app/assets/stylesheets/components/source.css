@@ -33,8 +33,6 @@
     [data-source-design-thumbnail],
     [data-source-design-hero],
     fieldset[data-source-designs] img {
-        border: 2px solid color-mix(in oklch, var(--source-colour, var(--color-invert-3)) 82%, var(--color-invert-2));
-        border-radius: 3.9% / 6.9%;
         object-fit: cover;
         filter:
             drop-shadow(0 1px 0 color-mix(in oklch, var(--source-colour, var(--color-invert-4)) 22%, transparent))

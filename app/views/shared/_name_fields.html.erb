@@ -1,4 +1,4 @@
-<%# locals: (form:, name_attribute: :name, placeholder: nil, open: true, input_data: {}) %>
+<%# locals: (form:, question:, name_attribute: :name, placeholder: nil, open: true, input_data: {}) %>
 <%= tag.details name: "form-details", data: { form_target: "section" }, open: open do %>
   <%= tag.summary data: { form_target: "summary" } do %>
     <%= tag.span t(".name") %>
@@ -10,7 +10,7 @@
 
   <%= tag.div do %>
     <%= tag.small do %>
-      <%= t(".question", model: form.object.model_name.human.downcase) %>
+      <%= question %>
     <% end %>
 
     <%= form.label name_attribute, t(".name"), class: "utilities--sr-only" %>

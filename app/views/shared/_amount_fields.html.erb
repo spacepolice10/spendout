@@ -1,4 +1,4 @@
-<%# locals: (form:, amount_attribute: :amount, open: false, default_amount: false, minimum: "0", minimum_exclusive: false) %>
+<%# locals: (form:, question:, amount_attribute: :amount, open: false, default_amount: false, minimum: "0", minimum_exclusive: false) %>
 <% amount = form.object.public_send(amount_attribute) %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
   <summary data-form-target="summary">
@@ -7,7 +7,7 @@
   </summary>
 
   <div>
-    <small><%= t(".question", model: form.object.model_name.human.downcase) %></small>
+    <small><%= question %></small>
 
     <%= form.label amount_attribute, t(".name"), class: "utilities--sr-only" %>
     <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0",

@@ -19,8 +19,8 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, placeholder: t(".name_placeholder") %>
-  <%= render "shared/amount_fields", form: form, amount_attribute: :amount, default_amount: true %>
+  <%= render "shared/name_fields", form: form, question: t(".name_question"), placeholder: t(".name_placeholder") %>
+  <%= render "shared/amount_fields", form: form, question: t(".amount_question"), amount_attribute: :amount, default_amount: true %>
 
   <%= render "shared/currency_fields", form: form,
         currency_attribute: :currency_code, rate_attribute: :rate,

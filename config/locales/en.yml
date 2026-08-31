@@ -115,6 +115,8 @@ en:
       remove_confirmation: "Are you sure you want to remove this source?"
     form:
       errors: "%{count} errors prevented this source from being saved:"
+      name_question: "What should this source be called?"
+      amount_question: "How much money is in this source?"
       name_placeholder: "Credit card, cash, loan, etc."
       cancel: "Cancel"
       submit: "Confirm"
@@ -159,6 +161,8 @@ en:
       name: "New allocation"
     form:
       errors: "%{count} errors prevented this allocation from being saved:"
+      name_question: "What should this category be called?"
+      amount_question: "How much money should be set aside for this category?"
       name_placeholder: "Rent, groceries, emergency fund, etc."
       cancel: "Cancel"
       submit: "Confirm"
@@ -226,6 +230,7 @@ en:
         create_source: "New source"
     form:
       errors: "%{count} errors prevented this expense from being saved:"
+      amount_question: "How much was spent?"
       source:
         name: "From:"
         availability: "%{amount} available (%{currency})"
@@ -276,6 +281,10 @@ en:
       remove_budget: "Remove budget"
       remove_budget_confirmation: "Remove this budget and all of its data permanently? This cannot be undone."
 
+  exchanges:
+    form:
+      name_question: "What should the new source be called?"
+
   shared:
     locale_switcher:
       name: "Language"
@@ -290,10 +299,8 @@ en:
       no_data: "No currencies found"
     name_fields:
       name: "Name"
-      question: "What is the name of this %{model}?"
     amount_fields:
       name: "Amount"
-      question: "How much money is in this %{model}?"
     currency_fields:
       name: "Currency"
       question: "What currency is used?"
@@ -360,6 +367,7 @@ en:
 
   date:
     formats:
+      long: "%B %d, %Y"
       budget_without_year: "%b %-d"
       budget_with_year: "%b %-d, %Y"
       budget_date_with_year: "%-d, %Y"
