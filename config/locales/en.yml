@@ -299,14 +299,12 @@ en:
       no_data: "No currencies found"
     name_fields:
       name: "Name"
-    amount_fields:
+    amount_currency_fields:
       name: "Amount"
-    currency_fields:
-      name: "Currency"
-      question: "What currency is used?"
       arrows_navigation_html: "Use %{arrows} to switch."
     currency_rate_picker:
       change_rate: "Enter rate"
+      rate: "Rate (%{currency} per %{base_currency})"
       name: "Confirm conversion rate"
       cancel: "Cancel rate changes"
       prompt: "Enter how many units of %{currency} are in 1 %{base_currency}"

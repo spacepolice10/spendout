@@ -11,7 +11,7 @@
   }
 
   body > :is(main[data-page="landing"], main[data-page="once"]) {
-    display: block; max-width: 1280px; padding: 0 var(--space-h-2);
+    display: block; padding: 0 var(--space-h-2);
     & > section { scroll-margin-top: var(--space-v-5); }
   }
 
@@ -71,6 +71,7 @@
     color: var(--color-invert-1); font-family: var(--font-family-mono); font-size: var(--font-size-base-type);
     letter-spacing: 0.01em; line-height: 1.2; text-decoration: none; white-space: nowrap;
   }
+  [data-landing-header] a { min-height: calc(3em + 2px); }
   :is([data-feature-chips], [data-landing-header]) a .icon-wrap { color: var(--color-accent); }
   [data-feature-chips] a .icon-wrap { width: 1.6em; height: 1.6em; }
   [data-landing-header] a .icon-wrap { width: 1em; height: 1em; aspect-ratio: 1; }

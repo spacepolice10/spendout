@@ -76,11 +76,11 @@ class AmountFieldsTest < ApplicationSystemTestCase
 
   test "requires conversion rates to be greater than zero" do
     visit new_budget_source_path(budgets(:active))
-    find("details", text: /currency:/i).find("summary").click
+    find("details[data-amount-currency-section]").find("summary").click
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
-    find("button[data-currency-rate-picker-target='trigger']").click
+    find("input[data-currency-rate-picker-target~='trigger']").click
     rate = find("input[name='source[rate]']")
 
     input_value(rate, "0")
@@ -112,7 +112,7 @@ class AmountFieldsTest < ApplicationSystemTestCase
     assert_equal "1.375,2501", find("input[name='expense[amount]']").value
   end
 
-  test "keeps long values at the base type size" do
+  test "shrinks long values to fit and restores the base type size" do
     amount = find("input[name='expense[amount]']")
     sizes = page.evaluate_script(<<~JAVASCRIPT, amount)
       (() => {
@@ -121,26 +121,33 @@ class AmountFieldsTest < ApplicationSystemTestCase
         input.style.width = "12rem"
         input.value = "999999999999999"
         input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText" }))
-        const current = parseFloat(getComputedStyle(input).fontSize)
-        return { normal, current }
+        const fitted = parseFloat(getComputedStyle(input).fontSize)
+        const fits = input.scrollWidth <= input.clientWidth && input.scrollLeft === 0
+
+        input.value = "9"
+        input.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText" }))
+        const restored = parseFloat(getComputedStyle(input).fontSize)
+
+        return { normal, fitted, fits, restored }
       })()
     JAVASCRIPT
 
-    assert_in_delta sizes["normal"], sizes["current"], 0.25
-    assert_operator sizes["current"], :>=, 16
+    assert_operator sizes["fitted"], :<, sizes["normal"]
+    assert sizes["fits"]
+    assert_in_delta sizes["normal"], sizes["restored"], 0.25
   end
 
   test "formats a rate without showing a real-time conversion" do
     visit new_budget_source_path(budgets(:active))
 
-    find("details", text: /currency:/i).find("summary").click
+    find("details[data-amount-currency-section]").find("summary").click
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
 
     input_value(find("input[name='source[amount]']", visible: :all), "52000")
 
-    find("button[data-currency-rate-picker-target='trigger']").click
+    find("input[data-currency-rate-picker-target~='trigger']").click
     rate = find("input[name='source[rate]']")
     input_value(rate, "26000")
 

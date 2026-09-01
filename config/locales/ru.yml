@@ -203,7 +203,7 @@ ru:
       errors: "Количество ошибок: %{count}. Не удалось сохранить расход:"
       amount_question: "Сколько потрачено?"
       source:
-        name: "Из источника:"
+        name: "Из:"
         availability: "Доступно %{amount} (%{currency})"
       category:
         name: "Категория:"
@@ -270,14 +270,12 @@ ru:
       no_data: "Валюты не найдены"
     name_fields:
       name: "Название"
-    amount_fields:
+    amount_currency_fields:
       name: "Сумма"
-    currency_fields:
-      name: "Валюта"
-      question: "Какая валюта используется?"
       arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
     currency_rate_picker:
       change_rate: "Указать курс"
+      rate: "Курс (%{currency} за %{base_currency})"
       name: "Подтвердите курс конвертации"
       cancel: "Отменить изменение курса"
       prompt: "Укажите, сколько единиц %{currency} приходится на 1 %{base_currency}"

@@ -1,0 +1,38 @@
+/* Inline code and code block styles */
+
+@layer base {
+
+    code,
+    pre {
+        font-family: var(--font-family-mono);
+    }
+
+    code {
+        padding: 0.1em 0.35em;
+        border: var(--border-subtle);
+        border-radius: var(--radius-2);
+        background: var(--color-2);
+        font-size: 0.9em;
+    }
+
+    pre {
+        overflow-x: auto;
+        margin-block-start: 0.5em;
+        padding: var(--space-v) var(--space-h);
+        border: 1px solid oklch(0.46 0.018 285);
+        border-radius: var(--radius-1);
+        background: oklch(0.22 0.012 285);
+        color: oklch(0.86 0.18 120);
+        font-size: var(--font-size-xs);
+        line-height: 1.5;
+    }
+
+    pre code {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        font: inherit;
+    }
+
+}

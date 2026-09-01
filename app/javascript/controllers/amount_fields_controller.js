@@ -17,12 +17,16 @@ export default class extends Controller {
     this.element.addEventListener("change", event => this.handleInputting(event), options)
     this.element.addEventListener("paste", event => this.handlePasting(event), options)
     this.element.form?.addEventListener("formdata", event => this.handleFormData(event), options)
+    this.resizeObserver = new ResizeObserver(this.fitText)
+    this.resizeObserver.observe(this.element)
 
     this.render(this.parseValue(this.hasStartValue ? this.startValue : this.element.value, "."))
   }
 
   disconnect() {
-    this.events.abort() 
+    this.events.abort()
+    this.resizeObserver.disconnect()
+    this.element.style.removeProperty("font-size")
   }
 
   handleInputting(event) {
@@ -106,6 +110,29 @@ export default class extends Controller {
     this.element.value = this.localized(parts)
     this.canonicalValue = this.canonical(parts)
     this.validate()
+    this.fitText()
+  }
+
+  fitText = () => {
+    this.element.style.removeProperty("font-size")
+
+    const styles = getComputedStyle(this.element)
+    const naturalFontSize = Number.parseFloat(styles.fontSize)
+    const padding = Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight)
+    const availableWidth = this.element.clientWidth - padding
+
+    if (!Number.isFinite(naturalFontSize) || availableWidth <= 0) return
+
+    let contentWidth = this.element.scrollWidth - padding
+    let fittedFontSize = naturalFontSize
+
+    for (let attempt = 0; contentWidth > availableWidth && attempt < 4; attempt++) {
+      fittedFontSize = Math.max(1, fittedFontSize * availableWidth / contentWidth)
+      this.element.style.fontSize = `${fittedFontSize}px`
+      contentWidth = this.element.scrollWidth - padding
+    }
+
+    this.element.scrollLeft = 0
   }
 
   validate() {

@@ -11,6 +11,7 @@ export default class extends Controller {
     this.element.addEventListener("invalid", this.openInvalidSection, { capture: true, signal })
     this.element.addEventListener("keydown", this.navigate, { signal })
     this.element.addEventListener("toggle", this.focusingOpenedSection, { capture: true, signal })
+    this.element.addEventListener("input", this.updateMappedSummary, { signal })
     this.element.addEventListener("change", this.updateSummary, { signal })
   }
 
@@ -66,9 +67,16 @@ export default class extends Controller {
   }
 
   updateSummary = (event) => {
-    const summary = event.target
-      .closest('[data-form-target~="section"]')
-      ?.querySelector('[data-form-target~="summaryContent"]')
+    const section = event.target.closest('[data-form-target~="section"]')
+    const name = event.target.dataset.formSummary
+    const summary = name ?
+      section?.querySelector(`[data-form-summary-content~="${CSS.escape(name)}"]`) :
+      section?.querySelector("[data-form-summary-content]") ? null :
+        section?.querySelector('[data-form-target~="summaryContent"]')
     if (summary) summary.textContent = event.target.value
+  }
+
+  updateMappedSummary = (event) => {
+    if (event.target.dataset.formSummary) this.updateSummary(event)
   }
 }

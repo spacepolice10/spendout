@@ -90,6 +90,11 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "select[name='allocation[currency_code]'] option[value='USD'][selected]"
+    assert_select "details[data-amount-currency-section]", count: 1 do
+      assert_select "[data-amount-currency-row] > input[name='allocation[amount]']"
+      assert_select "[data-amount-currency-row] > .currency-picker"
+      assert_select "summary [data-form-summary-content='currency']", text: "USD"
+    end
     assert_select "select[name='allocation[currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[type='radio'][value='USD'][checked]"
@@ -101,7 +106,7 @@ class AllocationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
     assert_select "dialog#currency-rate-picker-dialog[data-currency-rate-picker-target='dialog'][aria-label='Confirm conversion rate']"
-    assert_select "button[data-currency-rate-picker-target='trigger'][aria-haspopup='dialog']"
+    assert_select "input[type='text'][readonly][data-currency-rate-picker-target~='trigger'][aria-haspopup='dialog']"
     assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
     assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "[data-currency-fields-target='rateStatus']", count: 0

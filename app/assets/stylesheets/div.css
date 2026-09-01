@@ -9,6 +9,7 @@
         &[data-layout="grid"] {
             display: grid;
             gap: var(--space-v);
+            grid-template-columns: minmax(0, 1fr);
         }
     }
 

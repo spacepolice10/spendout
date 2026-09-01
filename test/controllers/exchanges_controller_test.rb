@@ -25,6 +25,10 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "input[name='exchange[receiver_source_name]'][required][value='#{@sender.name} exchange']"
     assert_select "input[name='exchange[sender_amount]'][data-currency-fields-target='amount']"
+    assert_select "details[data-amount-currency-section]", count: 1 do
+      assert_select "[data-amount-currency-row] > input[name='exchange[sender_amount]']"
+      assert_select "[data-amount-currency-row] > .currency-picker"
+    end
     assert_select "select[name='exchange[receiver_currency_code]'][data-currency-fields-target='currency']"
     assert_select "input[name='exchange[rate]'][data-currency-fields-target='rate']"
     assert_select "output[data-currency-fields-target='converted']", count: 0

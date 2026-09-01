@@ -1,6 +1,12 @@
-<%# locals: (form:, attribute:, filter_data: {}, filter_autofocus: false, preferred_currencies: []) %>
+<%# locals: (form:, attribute:, filter_data: {}, filter_autofocus: false, preferred_currencies: [], compact: false, select_data: {}) %>
 <% selected_code = form.object.public_send(attribute) %>
 <% suggested_code = Current.suggested_currency_code %>
+<% selected_currency = Currency.find(selected_code) %>
+<% selection = if compact && selected_currency
+     "#{selected_currency[:flag]} #{selected_code}"
+   else
+     Currency.options.to_h.invert[selected_code] || t(".choose")
+   end %>
 <% ordered_options = Currency.options_prioritizing([
      selected_code, suggested_code, *preferred_currencies, *Currency::POPULAR_CURRENCIES
    ]) %>
@@ -9,11 +15,11 @@
   <%= form.select attribute, Currency.options, { include_blank: t(".choose") }, required: true,
     class: "utilities--sr-only", aria: { label: t(".currency") },
     data: { currency_picker_target: "select", currency_fields_target: "currency",
-      expense_fields_target: "currency" } %>
+      expense_fields_target: "currency" }.merge(select_data) %>
 
   <button type="button" aria-haspopup="dialog" aria-controls="currency-picker-dialog"
     data-currency-picker-target="currencyTrigger" data-action="currency-picker#openCurrency">
-    <span data-currency-picker-target="selection"><%= Currency.options.to_h.invert[selected_code] || t(".choose") %></span>
+    <span data-currency-picker-target="selection"><%= selection %></span>
     <%= icon("chevron-right", aria: { hidden: true }) %>
   </button>
 
@@ -39,6 +45,7 @@
           <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option"
             aria-selected="<%= code == selected_code %>" data-currency-picker-target="option"
             data-filter-value="<%= label %>"
+            data-selection-value="<%= compact ? "#{Currency.find!(code)[:flag]} #{code}" : label %>"
             data-popular="<%= Currency::POPULAR_CURRENCIES.include?(code) ? true : false %>"
             data-default="<%= code == selected_code ? true : false %>"
             data-suggested="<%= code == suggested_code ? true : false %>">

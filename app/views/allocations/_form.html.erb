@@ -26,9 +26,8 @@
           category_icon_target: "name",
           action: "input->category-icon#suggest"
         } %>
-  <%= render "shared/amount_fields", form: form, question: t(".amount_question"), amount_attribute: :amount %>
-
-  <%= render "shared/currency_fields", form: form,
+  <%= render "shared/amount_currency_fields", form: form, question: t(".amount_question"),
+        amount_attribute: :amount,
         currency_attribute: :currency_code, rate_attribute: :rate,
         base_currency_code: budget.base_currency_code %>
 

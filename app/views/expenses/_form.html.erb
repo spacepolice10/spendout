@@ -19,8 +19,11 @@
     </section>
   <% end %>
 
-  <%= render "shared/amount_fields", form: form, question: t(".amount_question"), amount_attribute: :amount, open: true,
-        minimum_exclusive: true %>
+  <%= render "shared/amount_currency_fields", form: form, question: t(".amount_question"),
+        amount_attribute: :amount, currency_attribute: :currency_code, rate_attribute: :conversion_rate,
+        base_currency_code: expense.source&.currency_code, open: true, minimum_exclusive: true,
+        preferred_currencies: [ budget.last_expense_currency_code,
+          budget.base_currency_code, expense.source&.currency_code ] %>
 
   <div data-expense-options>
     <div>
@@ -173,13 +176,6 @@
       <% end %>
     </div>
   </div>
-
-  <%= render "shared/currency_fields", form: form,
-        currency_attribute: :currency_code, rate_attribute: :conversion_rate,
-        base_currency_code: expense.source&.currency_code,
-        open: expense.errors[:currency_code].any? || expense.errors[:conversion_rate].any?,
-        preferred_currencies: [ budget.last_expense_currency_code,
-          budget.base_currency_code, expense.source&.currency_code ] %>
 
   <footer>
     <div data-layout="flex">

@@ -10,6 +10,7 @@
 
     <div>
       <nav aria-label="Product">
+        <%= link_to "Home", landing_path %>
         <%= link_to "Features", landing_path(anchor: "details") %>
         <%= link_to "Tour", tour_path(feature: Tour::FEATURES.keys.first) %>
         <a href="<%= once_path %>" data-once-mark>

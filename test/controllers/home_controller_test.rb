@@ -63,6 +63,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-landing-header-mobile]", count: 1
     assert_select "[data-landing-header-mobile] > summary", text: /Spendout/
     assert_select "[data-landing-header-mobile] > summary .icon[style*='--icon-chevron-right']"
+    assert_select "[data-landing-header-mobile] nav a[href='#{landing_path}']", text: "Home"
     assert_select "[data-landing-header-mobile] nav a[href='#{landing_path(anchor: "details")}']", text: "Features"
     assert_select "[data-landing-header-mobile] nav a[href='#{new_session_path}']", text: "Try Spendout"
   end
@@ -174,17 +175,18 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-once-intro] h2", text: /Put it on your own server/
     assert_select "[data-once-intro] a[href='https://github.com/spacepolice10/spendout/tree/codex/once-adaptation']", text: "ONCE-ready branch"
     assert_select "[data-once-intro] a[href='https://osaasy.dev/']", text: "O'Saasy"
-    assert_select "[data-once-content] [data-landing-chapter]", count: 4
-    assert_select "[data-once-needs] li", count: 4
-    assert_select "[data-once-command]", text: "curl https://get.once.com | sh"
-    assert_select "[data-once-command]", text: "once deploy ghcr.io/spacepolice10/spendout:latest --host spendout.example.com"
-    assert_select "[data-once-content]", text: /password of at least 12 characters/
-    assert_select "[data-once-content]", text: /SMTP_ADDRESS/
-    assert_select "[data-once-content]", text: /MAILER_FROM_ADDRESS/
-    assert_select "[data-once-content]", text: /pre-backup/
-    assert_select "[data-once-content] strong", text: "Strict (full)"
-    assert_select "[data-once-content] a[href='https://github.com/basecamp/once']", text: "ONCE README"
-    assert_select "[data-once-content] a[href='https://once.com/']", text: "once.com"
+    assert_select "main[data-page='once'][data-size='lg'] > div[data-layout='grid'] > article[data-elevation='1']", count: 4
+    assert_select "main[data-page='once'] article > header > hgroup", count: 4
+    assert_select "main[data-page='once'] article > section", count: 13
+    assert_select "main[data-page='once'] pre > code", text: "curl https://get.once.com | sh"
+    assert_select "main[data-page='once'] pre > code", text: "once deploy ghcr.io/spacepolice10/spendout:latest --host spendout.example.com"
+    assert_select "main[data-page='once']", text: /password of at least 12 characters/
+    assert_select "main[data-page='once']", text: /SMTP_ADDRESS/
+    assert_select "main[data-page='once']", text: /MAILER_FROM_ADDRESS/
+    assert_select "main[data-page='once']", text: /pre-backup/
+    assert_select "main[data-page='once'] strong", text: "Strict (full)"
+    assert_select "main[data-page='once'] a[href='https://github.com/basecamp/once']", text: "ONCE README"
+    assert_select "main[data-page='once'] a[href='https://once.com/']", text: "once.com"
     assert_select "[data-landing-footer] a[role='button'][href='#{new_session_path}']", text: "Try the demo"
     assert_select "nav[aria-label='Budget sections']", count: 0
   end

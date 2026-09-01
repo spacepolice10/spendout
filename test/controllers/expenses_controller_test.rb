@@ -304,7 +304,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: /Amount must be less than or equal to 1375.25/
-    assert_select "summary [data-form-target='summaryContent']", text: "1.375,2501"
+    assert_select "summary [data-form-summary-content='amount']", text: "1.375,2501"
 
     assert_no_difference("Expense.count") do
       post budget_expenses_path(@budget), params: {

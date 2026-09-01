@@ -1,17 +1,30 @@
 <%# locals: (form:, attribute:, currency_code:, base_currency_code:) %>
 <% rate = form.object.public_send(attribute) %>
 <% available = currency_code.present? && currency_code != base_currency_code %>
+<% formatted_rate = number_with_delimiter(rate, delimiter: ".", separator: ",") if rate.present? %>
 
-<div data-controller="currency-rate-picker"
-  data-currency-rate-picker-base-currency-value="<%= base_currency_code %>"
-  data-currency-rate-picker-currency-value="<%= currency_code %>"
-  data-currency-fields-target="rateFields" data-expense-fields-target="fields"
-  <%= "hidden" unless available %>>
-  <button type="button" aria-haspopup="dialog" aria-controls="currency-rate-picker-dialog"
-    data-currency-rate-picker-target="trigger" data-action="currency-rate-picker#open">
-    <span data-currency-rate-picker-target="summary"><%= rate.present? ? rate.to_s("F") : t(".change_rate") %></span>
-    <%= icon("chevron-right", aria: { hidden: true }) %>
-  </button>
+<%= tag.div data: {
+      controller: "currency-rate-picker",
+      currency_rate_picker_base_currency_value: base_currency_code,
+      currency_rate_picker_currency_value: currency_code,
+      currency_rate_picker_rate_label_template_value: t(".rate", currency: "__currency__", base_currency: "__base_currency__"),
+      currency_rate_picker_prompt_template_value: t(".prompt", currency: "__currency__", base_currency: "__base_currency__"),
+      currency_rate_picker_empty_rate_value: t(".change_rate"),
+      currency_fields_target: "rateFields",
+      expense_fields_target: "fields"
+    }, hidden: !available do %>
+  <div data-currency-rate-preview>
+    <label for="<%= form.field_id(attribute, :preview) %>" data-currency-rate-picker-target="previewLabel">
+      <%= t(".rate", currency: currency_code, base_currency: base_currency_code) %>
+    </label>
+    <%= tag.input id: form.field_id(attribute, :preview), type: "text", readonly: true,
+          value: formatted_rate || "", placeholder: t(".change_rate"),
+          aria: { haspopup: "dialog", controls: "currency-rate-picker-dialog" },
+          data: {
+            currency_rate_picker_target: "trigger summary",
+            action: "click->currency-rate-picker#open keydown.enter->currency-rate-picker#open keydown.space->currency-rate-picker#open"
+          } %>
+  </div>
   <dialog id="currency-rate-picker-dialog" aria-label="<%= t(".name") %>"
     data-currency-rate-picker-target="dialog"
     data-action="cancel->currency-rate-picker#hide close->currency-rate-picker#hidden">
@@ -35,4 +48,4 @@
         data-action="currency-rate-picker#apply"><%= t(".accept") %></button>
     </footer>
   </dialog>
-</div>
+<% end %>

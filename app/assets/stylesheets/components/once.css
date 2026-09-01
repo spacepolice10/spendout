@@ -1,12 +1,7 @@
 @layer components {
   [data-once-hero] {
-    --once-black: 0, 0, 0;
     --once-blue: 0, 100, 230;
-    --once-blue-dark: 0, 55, 115;
     --once-blue-light: 194, 246, 255;
-    --once-blue-lighter: 242, 247, 254;
-    --once-green: 0, 177, 50;
-    --once-green-dark: 0, 159, 18;
     --once-white: 255, 255, 255;
     --once-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
     --once-sans: Inter, ui-sans-serif, system-ui, sans-serif;
@@ -45,84 +40,11 @@
     font-weight: 500; letter-spacing: 0.04em; line-height: 1;
   }
 
-  [data-once-buy] { width: min(100%, 18em); margin-inline: auto; }
-  [data-once-buy-tab] {
-    display: flex; flex-direction: column; overflow: hidden;
-    border-radius: 0.4em; background: rgb(var(--once-blue-lighter));
-    box-shadow:
-      0 0 0 1px rgba(var(--once-black), 0.1),
-      0 0.4em 2em -1.2em rgba(var(--once-black), 0.3);
-    color: rgb(var(--once-black)); font-family: var(--once-sans); line-height: 1.5;
-  }
-  [data-once-buy-tab] > header {
-    display: flex; align-items: center; justify-content: space-between;
-    height: 2.4em; margin-block-end: 1.1em; padding-inline: 0.9em;
-    background: rgb(var(--once-white)); box-shadow: 0 1px 0 0 rgba(var(--once-blue), 0.1);
-    font-size: 70%; font-weight: 700;
-  }
-  [data-once-buy-tab] > header span { color: rgb(var(--once-blue)); }
-  [data-once-buy-tab] > div { margin-inline: 1.1em; }
-  [data-once-buy-tab] h4 { margin: 0; font-size: 55%; font-weight: 700; }
-  [data-once-buy-tab] ul { display: flex; flex-direction: column; gap: 0.3em; margin: 0.4em 0 0; padding: 0; font-size: 50%; }
-  [data-once-buy-button] { display: flex; margin: 1.1em 0.3em 0.3em; }
-  [data-once-buy-button] a {
-    display: flex; justify-content: center; width: 100%;
-    border-radius: 0.25em;
-    background: linear-gradient(0deg, rgb(var(--once-green-dark)), rgb(var(--once-green)));
-    box-shadow: inset 0 0 0 1px rgba(var(--once-black), 0.05), inset 0 2px 0 0 rgba(var(--once-white), 0.15);
-    text-decoration: none;
-  }
-  [data-once-buy-button] span {
-    padding: 1.175em; color: rgb(var(--once-white));
-    font-size: 65%; font-weight: 700; line-height: 1; text-shadow: 0 1px 0 rgba(var(--once-black), 0.05);
-  }
-  [data-once-buy-notes] { margin-block-start: 0.8em; font-family: var(--once-sans); font-size: 50%; text-align: center; }
-  [data-once-buy-notes] a { color: rgb(var(--once-white)); font-weight: 700; }
-
-  [data-once-needs],
-  [data-once-steps] {
-    max-width: 42rem; margin-inline: auto; width: 100%;
-  }
-  [data-once-needs] {
-    display: grid; gap: var(--space-v);
-    padding: 0; color: var(--color-invert-3);
-  }
-  [data-once-needs] strong { color: var(--color-invert-1); }
-
-  [data-once-steps] { display: grid; gap: var(--space-v-2); }
-  [data-once-steps] h3 {
-    margin-block-start: var(--space-v-2);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-base-type);
-    letter-spacing: -0.02em;
-  }
-  [data-once-steps] h3:first-child { margin-block-start: 0; }
-  [data-once-steps] p { color: var(--color-invert-3); line-height: 1.7; }
-  [data-once-steps] a {
-    color: var(--color-invert-1); font-weight: var(--font-weight-bold);
-    text-decoration: underline;
-  }
-  [data-once-steps] code {
-    padding: 0.1em 0.35em; border: var(--border-subtle); border-radius: var(--radius-2);
-    background: var(--color-2); font-family: var(--font-family-mono); font-size: 0.9em;
-  }
-
-  [data-once-command] {
-    overflow-x: auto; margin-block: var(--space-v) 0; padding: var(--space-v) var(--space-h-2);
-    border: 1px solid oklch(0.46 0.018 285); border-radius: var(--radius-1);
-    background: oklch(0.22 0.012 285); color: oklch(0.86 0.18 120);
-    font-family: var(--font-family-mono); font-size: var(--font-size-xs);
-    line-height: 1.5; scrollbar-width: none;
-  }
-  [data-once-command]::-webkit-scrollbar { display: none; }
-  [data-once-command] code { padding: 0; border: 0; background: none; font: inherit; color: inherit; }
-
   @media (min-width: 64em) {
     [data-once-hero] {
       flex-direction: row; justify-content: space-between; align-items: start; gap: 2.5em;
       padding: 2.4em 2.5em 2.6em;
     }
     [data-once-intro] { flex: 1; min-width: 0; }
-    [data-once-buy] { flex: 0 0 12em; width: 12em; margin: 0; }
   }
 }

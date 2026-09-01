@@ -113,7 +113,7 @@ export default class extends Controller {
       option.setAttribute("aria-selected", String(selected))
       if (selected) selectedOption = option
     })
-    this.selectionTarget.textContent = selectedOption?.dataset.filterValue || "Choose a currency"
+    this.selectionTarget.textContent = selectedOption?.dataset.selectionValue || "Choose a currency"
   }
 
   get visibleOptions() { return this.optionTargets.filter((option) => !option.hidden) }

@@ -19,24 +19,10 @@
   <%= render "shared/name_fields", form: form, question: t(".name_question"), name_attribute: :receiver_source_name,
         placeholder: "Travel cash, foreign account, etc." %>
 
-  <details name="form-details" data-form-target="section">
-    <summary data-form-target="summary">
-      <span>Amount from <%= sender_source.currency_code %>:</span>
-      <small data-form-target="summaryContent"><%= exchange.sender_amount || 0 %></small>
-    </summary>
-    <div>
-      <small>How much should be taken from <%= sender_source.name %>?</small>
-      <%= form.label :sender_amount, "Amount from #{sender_source.currency_code}", class: "utilities--sr-only" %>
-      <%= form.text_field :sender_amount, inputmode: "decimal", placeholder: "0", required: true,
-            data: { controller: "amount-fields", form_target: "toBeFocused",
-              amount_fields_start_value: exchange.sender_amount&.to_s("F"),
-              amount_fields_minimum_value: "0", amount_fields_minimum_exclusive_value: true,
-              currency_fields_target: "amount",
-              action: "input->currency-fields#calculate" } %>
-    </div>
-  </details>
-
-  <%= render "shared/currency_fields", form: form,
+  <%= render "shared/amount_currency_fields", form: form,
+        question: "How much should be taken from #{sender_source.name}?",
+        amount_attribute: :sender_amount, amount_label: "Amount from #{sender_source.currency_code}",
+        minimum_exclusive: true,
         currency_attribute: :receiver_currency_code, rate_attribute: :rate,
         base_currency_code: sender_source.currency_code %>
 

@@ -26,6 +26,15 @@
         text-wrap: balance;
     }
 
+    hgroup {
+        display: grid;
+        gap: var(--space-v-half);
+
+        &>p {
+            color: var(--color-invert-3);
+        }
+    }
+
     p,
     li {
         text-wrap: pretty;
@@ -43,6 +52,10 @@
     a {
         text-decoration-skip-ink: auto;
         color: var(--color-invert-1);
+    }
+
+    :is(p, li) a {
+        text-decoration: underline;
     }
 
     li {

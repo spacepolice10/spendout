@@ -19,7 +19,6 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
   test "switches the purchase currency to the source currency when the source changes" do
     input_value(find("input[name='expense[amount]']", visible: :all), "1601200")
 
-    find("details", text: /currency:/i).find("summary").click
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
     find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
@@ -31,7 +30,7 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
 
     assert_equal "RUB", find("select[name='expense[currency_code]']", visible: :all).value
     assert_selector "input[value='RUB']:checked", visible: :all
-    assert_selector "details > summary", text: /Currency:\s+RUB/i
+    assert_selector "details[data-amount-currency-section] > summary", text: /Amount\s+1\.601\.200 RUB/i
     assert_field "expense_conversion_rate", with: "1", disabled: true, visible: :all
     assert_selector "[data-controller~='currency-rate-picker'][hidden]", visible: :all
     assert_no_selector "[data-expense-fields-target='sourceDebit'], [data-expense-fields-target='budgetValue']",

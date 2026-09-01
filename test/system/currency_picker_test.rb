@@ -5,7 +5,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     Rails.cache.delete(CurrencyReference::CACHE_KEY)
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
-    find("details", text: /currency:/i).find("summary").click
+    find("details[data-amount-currency-section]").find("summary").click
   end
 
   teardown do
@@ -27,13 +27,36 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_text "No currencies found"
   end
 
+  test "keeps the compact currency trigger narrower than the amount field" do
+    layout = page.evaluate_script(<<~JAVASCRIPT)
+      (() => {
+        const amount = document.querySelector("[data-amount-currency-row] > input")
+        const trigger = document.querySelector("[data-amount-currency-row] [data-currency-picker-target='currencyTrigger']")
+        const selection = trigger.querySelector("[data-currency-picker-target='selection']")
+        const chevron = trigger.querySelector(".icon-wrap")
+
+        return {
+          display: getComputedStyle(trigger).display,
+          amountWidth: amount.getBoundingClientRect().width,
+          triggerWidth: trigger.getBoundingClientRect().width,
+          selectionBottom: selection.getBoundingClientRect().bottom,
+          chevronTop: chevron.getBoundingClientRect().top
+        }
+      })()
+    JAVASCRIPT
+
+    assert_equal "grid", layout["display"]
+    assert_operator layout["triggerWidth"], :<, layout["amountWidth"]
+    assert_operator layout["chevronTop"], :>=, layout["selectionBottom"]
+  end
+
   test "selects a currency, closes the dialog, and restores trigger focus" do
     choose_currency("dong", "VND Dong, 🇻🇳")
 
     assert_equal "VND", hidden_currency.value
     assert_no_selector currency_dialog("[open]")
     assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
-    assert_selector "button[data-currency-picker-target='currencyTrigger']", text: "VND Dong, 🇻🇳"
+    assert_selector "button[data-currency-picker-target='currencyTrigger']", text: "🇻🇳 VND"
     assert_selector "[data-controller~='currency-rate-picker']:not([hidden])"
   end
 
@@ -88,17 +111,17 @@ class CurrencyPickerTest < ApplicationSystemTestCase
       "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" }
     })
     visit new_budget_source_path(budgets(:active))
-    find("details", text: /currency:/i).find("summary").click
+    find("details[data-amount-currency-section]").find("summary").click
     choose_currency("dong", "VND Dong, 🇻🇳")
 
-    assert_selector rate_trigger, text: "1 USD = 25.000 VND"
+    assert_equal "25.000", find(rate_trigger).value
     find(rate_trigger).click
     assert_selector rate_dialog("[open]")
     send_input(rate, "24950")
     click_button "Apply"
 
     assert_no_selector rate_dialog("[open]")
-    assert_selector rate_trigger, text: "1 USD = 24.950 VND"
+    assert_equal "24.950", find(rate_trigger).value
     assert_equal "24.950", rate.value
   end
 
@@ -113,13 +136,14 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     find("button[aria-label='Cancel rate changes']").click
 
     assert_equal "25.000", rate.value
-    assert_selector rate_trigger, text: "1 USD = 25.000 VND"
+    assert_equal "25.000", find(rate_trigger).value
   end
 
   test "offers manual entry when no reference quote exists" do
     choose_currency("dong", "VND Dong, 🇻🇳")
 
-    assert_selector rate_trigger, text: "Enter rate"
+    assert_equal "", find(rate_trigger).value
+    assert_equal "Enter rate", find(rate_trigger)["placeholder"]
     find(rate_trigger).click
     assert_selector "input[name='source[rate]']:focus"
     within rate_dialog("[open]") do
@@ -173,7 +197,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     end
 
     def rate_trigger
-      "button[data-currency-rate-picker-target='trigger']"
+      "input[data-currency-rate-picker-target~='trigger']"
     end
 
     def currency_dialog(suffix = "")

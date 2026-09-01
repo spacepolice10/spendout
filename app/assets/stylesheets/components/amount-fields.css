@@ -4,5 +4,46 @@
         font-size: var(--font-size-2xl);
         font-weight: var(--font-weight-bold);
         text-align: center;
+        overflow-x: hidden;
+    }
+
+    [data-amount-currency-fields] {
+        display: grid;
+        gap: var(--space-v-half);
+
+        & [data-amount-currency-row] {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 6rem;
+            align-items: stretch;
+            gap: var(--space-h-half);
+        }
+
+        & [data-amount-currency-row] > .currency-picker > button {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            justify-content: center;
+            justify-items: center;
+            height: 5rem;
+            gap: 0;
+            padding: var(--space-v-half) var(--space-h-half);
+        }
+
+        & [data-amount-currency-row] > .currency-picker > button > .icon-wrap {
+            width: 1.5ch;
+            height: 1.5ch;
+            transform: rotate(90deg);
+        }
+
+        & [data-currency-picker-target="selection"] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    @media (max-width: 30rem) {
+        [data-amount-currency-fields] [data-amount-currency-row] {
+            grid-template-columns: minmax(0, 1fr) 5.5rem;
+        }
     }
 }

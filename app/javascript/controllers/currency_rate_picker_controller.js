@@ -1,8 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "trigger", "summary", "dialog", "rate", "prompt" ]
-  static values = { baseCurrency: String, currency: String }
+  static targets = [ "trigger", "summary", "dialog", "rate", "prompt", "previewLabel" ]
+  static values = {
+    baseCurrency: String,
+    currency: String,
+    rateLabelTemplate: String,
+    promptTemplate: String,
+    emptyRate: String
+  }
 
   connect() {
     this.events = new AbortController()
@@ -20,7 +26,8 @@ export default class extends Controller {
     this.open()
   }
 
-  open() {
+  open(event) {
+    event?.preventDefault()
     this.rateBeforeEdit = this.rateTarget.value
     this.rateStartBeforeEdit = this.rateTarget.dataset.amountFieldsStartValue
     if (!this.dialogTarget.open) this.dialogTarget.showModal()
@@ -64,9 +71,15 @@ export default class extends Controller {
 
   render() {
     const rate = this.rateTarget.value.trim()
-    this.promptTarget.textContent =
-      `Enter how many units of ${this.currencyValue} are in 1 ${this.baseCurrencyValue}`
-    this.summaryTarget.textContent = rate === "" ? "Enter rate" :
-      `1 ${this.baseCurrencyValue} = ${rate} ${this.currencyValue}`
+    this.promptTarget.textContent = this.interpolate(this.promptTemplateValue)
+    this.previewLabelTarget.textContent = this.interpolate(this.rateLabelTemplateValue)
+    this.summaryTarget.value = rate
+    this.summaryTarget.placeholder = this.emptyRateValue
+  }
+
+  interpolate(template) {
+    return template
+      .replaceAll("__currency__", this.currencyValue)
+      .replaceAll("__base_currency__", this.baseCurrencyValue)
   }
 }

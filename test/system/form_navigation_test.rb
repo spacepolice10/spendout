@@ -25,7 +25,7 @@ class FormNavigationTest < ApplicationSystemTestCase
   end
 
   test "submission opens the section containing the first invalid field" do
-    find("details", text: /currency:/i).find("summary").click
+    find("details[data-amount-currency-section]").find("summary").click
 
     click_button "Confirm"
 

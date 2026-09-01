@@ -95,6 +95,12 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
     assert_select "input[name='source[amount]'][value='0']"
     assert_select "input[name='source[amount]'][data-amount-fields-start-value='0']"
+    assert_select "details[data-amount-currency-section]", count: 1 do
+      assert_select "[data-amount-currency-row] > input[name='source[amount]']"
+      assert_select "[data-amount-currency-row] > .currency-picker"
+      assert_select "summary [data-form-summary-content='amount']", text: "0"
+      assert_select "summary [data-form-summary-content='currency']", text: "USD"
+    end
     assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='source[currency_code]'] option[value='EUR']"
     assert_select "select[name='source[currency_code]'][data-currency-picker-target='select']"
@@ -103,6 +109,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-currency-search-icon] .icon[style*='--icon-search']"
     assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency']"
     assert_select "button[data-currency-picker-target='currencyTrigger'][aria-haspopup='dialog']"
+    assert_select "button[data-currency-picker-target='currencyTrigger']", text: "🇺🇸 USD"
     assert_select "input[type='radio'][value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
     assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
@@ -113,7 +120,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
     assert_select "dialog#currency-rate-picker-dialog[data-currency-rate-picker-target='dialog'][aria-label='Confirm conversion rate']"
-    assert_select "button[data-currency-rate-picker-target='trigger'][aria-haspopup='dialog']"
+    assert_select "input[type='text'][readonly][data-currency-rate-picker-target~='trigger'][aria-haspopup='dialog']"
     assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
     assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
