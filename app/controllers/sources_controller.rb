@@ -54,6 +54,6 @@ class SourcesController < ApplicationController
     end
 
     def source_params
-      params.require(:source).permit(:name, :amount, :currency_code, :rate, :design)
+      params.require(:source).permit(:name, :amount, :currency_code, :rate, :design, :colour)
     end
 end

@@ -2,13 +2,11 @@
   <main>
     <div data-exchange-line>
       <div data-exchange-designs aria-hidden="true">
-        <%= image_tag exchange.sender_source.design_image, alt: "", width: 72, height: 46,
-              data: { source_design_thumbnail: true },
-              style: "--source-colour: var(--color-palette-#{exchange.sender_source.colour});" %>
+        <%= render "sources/design", design: Source::DESIGNS.fetch(exchange.sender_source.design),
+              colour: exchange.sender_source.colour %>
         <span>→</span>
-        <%= image_tag exchange.receiver_source.design_image, alt: "", width: 72, height: 46,
-              data: { source_design_thumbnail: true },
-              style: "--source-colour: var(--color-palette-#{exchange.receiver_source.colour});" %>
+        <%= render "sources/design", design: Source::DESIGNS.fetch(exchange.receiver_source.design),
+              colour: exchange.receiver_source.colour %>
       </div>
 
       <strong data-exchange-name>

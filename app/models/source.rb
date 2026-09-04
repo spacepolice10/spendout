@@ -3,14 +3,14 @@ class Source < ApplicationRecord
   include Currencyable
 
   DESIGNS = {
-    "americat_express" => { image: "americat_express.png" },
-    "mastercat" => { image: "mastercat.png" },
-    "meowisa" => { image: "meowisa.png" },
-    "unipaw" => { image: "unipaw.png" },
-    "cash" => { image: "cash.png" },
-    "bank" => { image: "bank.png" },
-    "savings" => { image: "savings.png" },
-    "digital_wallet" => { image: "digital_wallet.png" }
+    "americat_express" => { face: nil, selectable: true },
+    "mastercat" => { face: "cat-face-friendly-v2.png", selectable: true },
+    "meowisa" => { face: "cat-face-sleepy-v2.png", selectable: true },
+    "unipaw" => { face: "cat-face-curious-v2.png", selectable: true },
+    "cash" => { face: "cat-face-grumpy-v2.png", selectable: true },
+    "bank" => { face: "cat-face-friendly-v2.png", selectable: false },
+    "savings" => { face: "cat-face-sleepy-v2.png", selectable: false },
+    "digital_wallet" => { face: "cat-face-curious-v2.png", selectable: false }
   }.freeze
 
   enum :design, {
@@ -48,12 +48,14 @@ class Source < ApplicationRecord
     I18n.t("sources.designs.#{design}", default: design.to_s.humanize)
   end
 
-  def design_image
-    DESIGNS.fetch(design, DESIGNS.fetch("americat_express")).fetch(:image)
+  def design_face
+    DESIGNS.fetch(design, DESIGNS.fetch("americat_express")).fetch(:face)
   end
 
   def self.design_options
-    DESIGNS.keys.map { |value| [ I18n.t("sources.designs.#{value}"), value ] }
+    DESIGNS.filter_map do |value, design|
+      [ I18n.t("sources.designs.#{value}"), value ] if design.fetch(:selectable)
+    end
   end
 
   private

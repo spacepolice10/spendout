@@ -4,8 +4,7 @@
         gap: var(--space-v-half);
         min-width: 0;
 
-        & > button,
-        & > [data-controller~="currency-rate-picker"] > button {
+        & > button {
             justify-content: space-between;
             width: 100%;
             min-height: var(--form-control-height);
@@ -90,12 +89,6 @@
             gap: var(--space-v);
         }
 
-        & dialog[data-currency-rate-picker-target="dialog"][open] {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-v);
-        }
-
         & [data-currency-combobox] {
             position: relative;
         }
@@ -144,24 +137,5 @@
 
         }
 
-        & [data-currency-rate-preview] {
-            display: grid;
-            gap: var(--space-v-half);
-
-            & > input[readonly] {
-                cursor: pointer;
-            }
-        }
-
-        & [data-currency-rate-picker-textform] {
-            display: grid;
-            gap: var(--space-h-half);
-
-            & > input {
-                padding: var(--space-v-half) var(--space-h-half);
-                block-size: var(--form-control-height);
-                font-size: var(--font-size-base-type);
-            }
-        }
     }
 }

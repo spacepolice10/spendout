@@ -105,7 +105,7 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
   end
 
-  test "autofills a reference quote and applies an edited rate" do
+  test "autofills a reference quote and allows inline editing" do
     Rails.cache.write(CurrencyReference::CACHE_KEY, {
       "reference_date" => Date.current.iso8601,
       "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" }
@@ -114,44 +114,19 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     find("details[data-amount-currency-section]").find("summary").click
     choose_currency("dong", "VND Dong, 🇻🇳")
 
-    assert_equal "25.000", find(rate_trigger).value
-    find(rate_trigger).click
-    assert_selector rate_dialog("[open]")
-    send_input(rate, "24950")
-    click_button "Apply"
-
-    assert_no_selector rate_dialog("[open]")
-    assert_equal "24.950", find(rate_trigger).value
-    assert_equal "24.950", rate.value
-  end
-
-  test "the dialog close button restores the confirmed rate" do
-    choose_currency("dong", "VND Dong, 🇻🇳")
-    find(rate_trigger).click
-    send_input(rate, "25000")
-    click_button "Apply"
-
-    find(rate_trigger).click
-    send_input(rate, "26000")
-    find("button[aria-label='Cancel rate changes']").click
-
     assert_equal "25.000", rate.value
-    assert_equal "25.000", find(rate_trigger).value
+    send_input(rate, "24950")
+
+    assert_equal "24.950", rate.value
   end
 
   test "offers manual entry when no reference quote exists" do
     choose_currency("dong", "VND Dong, 🇻🇳")
 
-    assert_equal "", find(rate_trigger).value
-    assert_equal "Enter rate", find(rate_trigger)["placeholder"]
-    find(rate_trigger).click
-    assert_selector "input[name='source[rate]']:focus"
-    within rate_dialog("[open]") do
-      assert_selector "label", text: "Enter how many units of VND are in 1 USD"
-      assert_selector "input[name='source[rate]']"
-      assert_selector "button[data-appearance='keycap']", text: "Apply"
-      assert_no_selector "small, output"
-    end
+    assert_equal "", rate.value
+    assert_equal "Enter rate", rate["placeholder"]
+    assert_selector "label", text: "Enter how many units of VND are in 1 USD"
+    assert_selector "input[name='source[rate]']"
   end
 
   test "same-currency selection hides the rate trigger and normalizes rate" do
@@ -196,16 +171,8 @@ class CurrencyPickerTest < ApplicationSystemTestCase
       find("input[name='source[rate]']", visible: :all)
     end
 
-    def rate_trigger
-      "input[data-currency-rate-picker-target~='trigger']"
-    end
-
     def currency_dialog(suffix = "")
       "dialog[data-currency-picker-target='currencyDialog']#{suffix}"
-    end
-
-    def rate_dialog(suffix = "")
-      "dialog[data-currency-rate-picker-target='dialog']#{suffix}"
     end
 
     def visible_option

@@ -25,6 +25,7 @@
         currency_attribute: :currency_code, rate_attribute: :rate,
         base_currency_code: budget.base_currency_code %>
 
+  <%= render "shared/colour_fields", form: form %>
   <%= render "design_fields", form: form, source: source %>
 
   <div data-layout="flex">

@@ -6,8 +6,8 @@
     data-testid="source-card"
     style="--source-colour: var(--color-palette-<%= source.colour %>);"
   >
-    <%= image_tag source.design_image, alt: "", width: 72, height: 46,
-          loading: "lazy", data: { source_design_thumbnail: true } %>
+    <%= render "sources/design", design: Source::DESIGNS.fetch(source.design),
+          colour: source.colour, loading: "lazy" %>
     <h2><%= source.name %></h2>
     <strong><%= formatted_amount(source.spendable_amount, source.currency_code) %></strong>
   </article>

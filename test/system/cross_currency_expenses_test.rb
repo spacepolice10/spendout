@@ -25,12 +25,13 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
 
     assert_field "expense_conversion_rate", with: "25.600", visible: :all
 
-    find("details", text: /from:/i).find("summary").click
-    find("label", text: /Rubles/).click
+    find("[data-source-picker] > button").click
+    find("label[data-source-picker-target='option']", text: /Rubles/).click
 
     assert_equal "RUB", find("select[name='expense[currency_code]']", visible: :all).value
     assert_selector "input[value='RUB']:checked", visible: :all
-    assert_selector "details[data-amount-currency-section] > summary", text: /Amount\s+1\.601\.200 RUB/i
+    assert_equal "RUB", find("select[name='expense[currency_code]']", visible: :all).value
+    assert_field "expense_amount", with: "1.601.200"
     assert_field "expense_conversion_rate", with: "1", disabled: true, visible: :all
     assert_selector "[data-controller~='currency-rate-picker'][hidden]", visible: :all
     assert_no_selector "[data-expense-fields-target='sourceDebit'], [data-expense-fields-target='budgetValue']",

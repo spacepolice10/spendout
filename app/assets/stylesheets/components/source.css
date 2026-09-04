@@ -30,31 +30,45 @@
         background: var(--color-2);
     }
 
-    [data-source-design-thumbnail],
-    [data-source-design-hero],
-    fieldset[data-source-designs] img {
-        object-fit: cover;
-        filter:
-            drop-shadow(0 1px 0 color-mix(in oklch, var(--source-colour, var(--color-invert-4)) 22%, transparent))
-            drop-shadow(0 2px 5px color-mix(in oklch, var(--color-invert-1) 8%, transparent));
-    }
-
-    [data-source-design-thumbnail] {
+    [data-source-design] {
         display: block;
-        flex: 0 0 auto;
-        width: 3.5rem;
-        height: auto;
+        position: relative;
+        overflow: hidden;
         aspect-ratio: 720 / 464;
-        object-view-box: inset(14%);
+        border: 1px solid color-mix(in oklch, var(--source-colour) 68%, var(--color-invert-1));
+        border-radius: 0.45rem;
+        background: var(--source-colour);
+        box-shadow:
+            0 1px 0 color-mix(in oklch, var(--source-colour) 22%, transparent),
+            0 2px 5px color-mix(in oklch, var(--color-invert-1) 8%, transparent);
         transition: none;
     }
 
-    [data-source-design-hero] {
-        display: block;
+    [data-source-design-accent] {
+        position: absolute;
+        inset: 0 0 0 58%;
+        background: color-mix(in oklch, var(--source-colour) 42%, var(--color-1));
+    }
+
+    [data-source-design-face] {
+        position: absolute;
+        z-index: 1;
+        inset: 19% 7% 19% auto;
+        width: auto;
+        height: 62%;
+        image-rendering: pixelated;
+        object-fit: contain;
+    }
+
+    [data-source-design="thumbnail"] {
+        flex: 0 0 auto;
+        width: 3.5rem;
+    }
+
+    [data-source-design="hero"] {
         justify-self: center;
         width: min(100%, 36rem);
-        height: auto;
-        aspect-ratio: 720 / 464;
+        border-radius: clamp(0.65rem, 2vw, 1.5rem);
     }
 
     [data-source-title] {
@@ -91,11 +105,8 @@
             padding: var(--space-v-half);
         }
 
-        & img {
-            display: block;
+        & [data-source-design] {
             width: 100%;
-            height: auto;
-            aspect-ratio: 720 / 464;
         }
 
         & strong {
@@ -103,4 +114,17 @@
             text-align: center;
         }
     }
+
+    [data-source-form]:has(input[name="source[colour]"][value="green"]:checked) [data-source-design] { --source-colour: var(--color-palette-green) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="red"]:checked) [data-source-design] { --source-colour: var(--color-palette-red) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="blue"]:checked) [data-source-design] { --source-colour: var(--color-palette-blue) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="yellow"]:checked) [data-source-design] { --source-colour: var(--color-palette-yellow) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="violet"]:checked) [data-source-design] { --source-colour: var(--color-palette-violet) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="pink"]:checked) [data-source-design] { --source-colour: var(--color-palette-pink) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="orange"]:checked) [data-source-design] { --source-colour: var(--color-palette-orange) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="lime"]:checked) [data-source-design] { --source-colour: var(--color-palette-lime) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="teal"]:checked) [data-source-design] { --source-colour: var(--color-palette-teal) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="cyan"]:checked) [data-source-design] { --source-colour: var(--color-palette-cyan) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="indigo"]:checked) [data-source-design] { --source-colour: var(--color-palette-indigo) !important; }
+    [data-source-form]:has(input[name="source[colour]"][value="coral"]:checked) [data-source-design] { --source-colour: var(--color-palette-coral) !important; }
 }

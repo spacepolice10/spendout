@@ -39,10 +39,6 @@ class FormNavigationTest < ApplicationSystemTestCase
     amount.fill_in with: "10"
     amount.send_keys(:enter)
 
-    assert_selector "details[open] input[name='expense[source_id]']:focus"
-
-    find("input[name='expense[source_id]']:focus").send_keys(:enter)
-
-    assert_selector "details[open] #expense_category_filter:focus"
+    assert_selector "details[open] textarea[name='expense[note]']:focus"
   end
 end

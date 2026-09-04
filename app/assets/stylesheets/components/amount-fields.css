@@ -41,6 +41,22 @@
         }
     }
 
+    [data-amount-currency-section] {
+        display: grid;
+        gap: var(--space-v-half);
+        width: 100%;
+        padding: var(--space-v);
+        border: var(--border-subtle);
+        border-radius: var(--radius-2);
+        background: var(--color-2);
+
+        & > header {
+            min-height: 2rem;
+            font-size: var(--font-size-base-read);
+            text-transform: uppercase;
+        }
+    }
+
     @media (max-width: 30rem) {
         [data-amount-currency-fields] [data-amount-currency-row] {
             grid-template-columns: minmax(0, 1fr) 5.5rem;

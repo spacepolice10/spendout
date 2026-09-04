@@ -70,7 +70,7 @@ class Tour
       detail_title: "Easy to spot while you spend",
       detail: "The chosen design appears on the source list, expense source picker, and exchanges, so the right wallet or card stays obvious without reading the name twice.",
       image: "tour-source-design.png",
-      alt: "Spendout source form with card design options such as Mastercat and cash"
+      alt: "Spendout source form with simple two-colour card and pixel-art cat options"
     },
     "finish-allocations" => {
       colour: "orange", icon: "pig-money", label: "Finish a plan", chip: "Finish a plan",

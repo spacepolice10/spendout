@@ -3,8 +3,8 @@
 <main data-size="lg" data-anchor="footer">
   <article style="--source-colour: var(--color-palette-<%= @source.colour %>);">
     <main>
-      <%= image_tag @source.design_image, alt: t(".design_description", design: @source.design_name),
-            width: 720, height: 464, data: { source_design_hero: true } %>
+      <%= render "sources/design", design: Source::DESIGNS.fetch(@source.design),
+            colour: @source.colour, alt: t(".design_description", design: @source.design_name), variant: "hero" %>
 
       <hgroup data-source-title>
         <h1><%= @source.name %></h1>

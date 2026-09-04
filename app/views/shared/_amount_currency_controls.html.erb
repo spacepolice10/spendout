@@ -1,0 +1,33 @@
+<%# locals: (form:, question:, currency_attribute:, rate_attribute:, base_currency_code:, amount_attribute:, amount_label:, open:, default_amount:, minimum:, minimum_exclusive:, preferred_currencies:, amount:, currency_code:) %>
+<div data-amount-currency-fields>
+  <small><%= question %></small>
+
+  <div data-amount-currency-row>
+    <%= form.label amount_attribute, amount_label, class: "utilities--sr-only" %>
+    <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0",
+      autofocus: open && !mobile_variant?, required: true,
+      value: default_amount ? amount || 0 : amount,
+      data: {
+        controller: "amount-fields",
+        form_target: "toBeFocused",
+        form_summary: "amount",
+        amount_fields_start_value: amount ? amount.to_s("F") : (default_amount ? "0" : nil),
+        amount_fields_minimum_value: minimum,
+        amount_fields_minimum_exclusive_value: minimum_exclusive,
+        currency_fields_target: "amount",
+        action: "input->currency-fields#calculate"
+      } %>
+
+    <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
+          compact: true, select_data: { form_summary: "currency" },
+          preferred_currencies: preferred_currencies %>
+  </div>
+
+  <%= render "shared/currency_rate_picker", form: form, attribute: rate_attribute,
+        currency_code: currency_code, base_currency_code: base_currency_code %>
+
+  <% unless mobile_variant? %>
+    <small><%= t("shared.amount_currency_fields.arrows_navigation_html", arrows: tag.kbd("arrow keys")) %></small>
+    <small><%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %></small>
+  <% end %>
+</div>

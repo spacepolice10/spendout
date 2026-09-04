@@ -14,24 +14,22 @@ class SourceTest < ActiveSupport::TestCase
     }, Source.designs)
   end
 
-  test "uses Americat Express as the default design" do
+  test "uses the cat-free card as the default design" do
     source = budgets(:active).sources.build(name: "Test source", amount: 1, currency_code: "USD")
 
     assert source.americat_express?
-    assert_equal "Americat Express", source.design_name
-    assert_equal "americat_express.png", source.design_image
+    assert_equal "No cat", source.design_name
+    assert_nil source.design_face
+    assert_equal "cat-face-friendly-v2.png", Source::DESIGNS.fetch("mastercat").fetch(:face)
   end
 
   test "offers every source design as a labelled form option" do
     assert_equal [
-      [ "Americat Express", "americat_express" ],
-      [ "Mastercat", "mastercat" ],
-      [ "Meowisa", "meowisa" ],
-      [ "Unipaw", "unipaw" ],
-      [ "Cash", "cash" ],
-      [ "Bank", "bank" ],
-      [ "Savings", "savings" ],
-      [ "Digital wallet", "digital_wallet" ]
+      [ "No cat", "americat_express" ],
+      [ "Friendly", "mastercat" ],
+      [ "Sleepy", "meowisa" ],
+      [ "Curious", "unipaw" ],
+      [ "Grumpy", "cash" ]
     ], Source.design_options
   end
 

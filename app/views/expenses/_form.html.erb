@@ -21,141 +21,115 @@
 
   <%= render "shared/amount_currency_fields", form: form, question: t(".amount_question"),
         amount_attribute: :amount, currency_attribute: :currency_code, rate_attribute: :conversion_rate,
-        base_currency_code: expense.source&.currency_code, open: true, minimum_exclusive: true,
+        base_currency_code: expense.source&.currency_code, open: true, disclosure: false, minimum_exclusive: true,
         preferred_currencies: [ budget.last_expense_currency_code,
           budget.base_currency_code, expense.source&.currency_code ] %>
 
   <div data-expense-options>
     <div>
-      <%= tag.details name: "form-details", data: {
-            optional_item: true,
-            form_target: "section"
-          } do %>
-        <summary data-form-target="summary">
+      <div data-source-picker data-controller="source-picker">
+        <button type="button" aria-haspopup="dialog" aria-controls="source-picker-dialog"
+          data-expense-picker-trigger data-source-picker-target="trigger" data-action="source-picker#open">
           <span><%= t(".source.name") %></span>
-          <small><%= expense.source&.name %></small>
-        </summary>
+          <small data-source-picker-target="summary"><%= expense.source&.name %></small>
+        </button>
 
-        <div data-optional-item-control>
-          <fieldset data-expense-sources>
-            <div>
-              <% active_sources.each do |source| %>
-                <%= form.label :source_id, value: source.id, style: "--source-colour: var(--color-palette-#{source.colour});" do %>
+        <dialog id="source-picker-dialog" aria-label="<%= t(".source.choose") %>" tabindex="-1"
+          data-source-picker-target="dialog" data-action="close->source-picker#closed keydown->source-picker#keydown">
+          <header>
+            <h2><%= t(".source.choose") %></h2>
+            <button type="button" aria-label="<%= t(".source.close") %>" data-action="source-picker#close">&times;</button>
+          </header>
+
+          <div role="listbox" data-source-picker-target="options">
+            <% active_sources.each do |source| %>
+              <div data-source-picker-option>
+                <%= form.label :source_id, value: source.id, id: "expense-source-option-#{source.id}",
+                      role: "option", tabindex: -1, aria: { selected: source == expense.source },
+                      style: "--source-colour: var(--color-palette-#{source.colour});",
+                      data: { source_picker_target: "option", selection_value: source.name,
+                        action: "click->source-picker#select" } do %>
                   <%= form.radio_button :source_id, source.id, required: true,
-                        data: {
-                          form_target: "toBeFocused",
-                          expense_fields_target: "source",
-                          action: "change->expense-fields#sourceChanged"
-                        } %>
+                        data: { expense_fields_target: "source", action: "change->expense-fields#sourceChanged" } %>
 
-                  <%= image_tag source.design_image, alt: "", width: 72, height: 46,
-                        data: { source_design_thumbnail: true } %>
-
+                  <%= render "sources/design", design: Source::DESIGNS.fetch(source.design), colour: source.colour %>
                   <span>
                     <strong><%= source.name %></strong>
-
-                    <small>
-                      <%= t(".source.availability", amount: formatted_amount(source.spendable_amount, source.currency_code), currency: source.currency_code) %>
-                    </small>
+                    <small><%= t(".source.availability", amount: formatted_amount(source.spendable_amount, source.currency_code), currency: source.currency_code) %></small>
                   </span>
                 <% end %>
-              <% end %>
-            </div>
-
-            <% unless mobile_variant? %>
-              <small>
-                <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
-              </small>
+              </div>
             <% end %>
-          </fieldset>
-        </div>
-      <% end %>
+          </div>
+        </dialog>
+      </div>
 
-      <%= tag.details name: "form-details", data: {
-          optional_item: true,
-          controller: "category-fields", form_target: "section",
-          category_fields_no_allocation_value: t(".category.no_allocation")
-        }, open: expense.category_name_to_create.present? do %>
-        <summary data-form-target="summary">
+      <div data-category-picker data-controller="category-fields"
+        data-category-fields-no-allocation-value="<%= t(".category.no_allocation") %>"
+        data-category-fields-submit-value="<%= t(".submit") %>"
+        data-category-fields-create-submit-value="<%= t(".category.submit_and_create") %>">
+        <%= form.hidden_field :category_name_to_create, data: { category_fields_target: "pendingNameTextform" } %>
+
+        <button type="button" aria-haspopup="dialog" aria-controls="category-picker-dialog"
+          data-expense-picker-trigger data-category-fields-target="trigger" data-action="category-fields#open">
           <span><%= t(".category.name") %></span>
+          <small data-category-fields-target="summary"><%= expense.category_name_to_create.presence || expense.allocation&.name || t(".category.no_allocation") %></small>
+        </button>
 
-          <small data-category-fields-target="summary">
-            <%= expense.category_name_to_create.presence || expense.allocation&.name || t(".category.no_allocation") %>
-          </small>
-        </summary>
+        <dialog id="category-picker-dialog" aria-label="<%= t(".category.choose") %>"
+          data-category-fields-target="dialog" data-action="close->category-fields#closed">
+          <header>
+            <h2><%= t(".category.choose") %></h2>
+            <button type="button" aria-label="<%= t(".category.close") %>" data-action="category-fields#close">&times;</button>
+          </header>
 
-        <div data-optional-item-control>
-          <fieldset data-expense-allocations>
-            <div data-create-category>
-              <%= tag.input type: "text",
-                    id: "expense_category_filter",
-                    value: expense.category_name_to_create,
-                    placeholder: t(".category.search"),
-                    autocomplete: "off",
-                    aria: { label: t(".category.search") },
-                    data: {
-                      category_fields_target: "filter",
-                      form_target: "toBeFocused",
-                      action: "input->category-fields#filter"
-                    } %>
+          <div data-category-combobox>
+            <%= icon("search", data: { category_search_icon: true }) %>
+            <input type="search" id="expense_category_filter" value="<%= expense.category_name_to_create %>"
+              placeholder="<%= t(".category.search") %>" autocomplete="off" role="combobox"
+              aria-label="<%= t(".category.search") %>" aria-autocomplete="list" aria-expanded="true"
+              aria-controls="category-picker-listbox" data-category-fields-target="filter"
+              data-action="input->category-fields#filter keydown->category-fields#keydown">
+          </div>
 
-              <%= form.hidden_field :category_name_to_create,
-                    data: {
-                      category_fields_target: "pendingNameTextform"
-                    } %>
-            </div>
+          <small data-category-fields-target="creationTip" hidden><%= t(".category.creation_html", name: tag.strong("", data: { category_fields_target: "creationTipName" })) %></small>
 
-            <small data-category-fields-target="creationTip" hidden><%= t(".category.creation_html", name: tag.strong("", data: { category_fields_target: "creationTipName" })) %></small>
-
-            <div data-category-fields-target="options">
-              <% active_allocations.each do |allocation| %>
-                <%= form.label :allocation_id, value: allocation.id,
+          <div id="category-picker-listbox" role="listbox" data-category-fields-target="options">
+            <% active_allocations.each do |allocation| %>
+              <div data-category-picker-option>
+                <%= form.label :allocation_id, value: allocation.id, id: "expense-allocation-option-#{allocation.id}",
+                      role: "option", aria: { selected: allocation == expense.allocation },
                       style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
-                      data: {
-                        category_fields_target: "option",
-                        filter_value: allocation.name
-                      } do %>
-                  <%= form.radio_button :allocation_id, allocation.id,
-                        data: {
-                          category_fields_target: "allocation",
-                          action: "change->category-fields#selectAllocation"
-                        } %>
-
-                  <%= icon(allocation.icon) %>
-
-                  <span><%= allocation.name %></span>
+                      data: { category_fields_target: "option", filter_value: allocation.name,
+                        selection_value: allocation.name, action: "click->category-fields#selectAllocation" } do %>
+                  <%= form.radio_button :allocation_id, allocation.id, data: { category_fields_target: "allocation" } %>
+                  <%= icon(allocation.icon, style: icon_colour_styles(allocation.colour)) %>
+                  <span>
+                    <strong><%= allocation.name %></strong>
+                    <% if allocation.planned? %>
+                      <small><%= t(".category.remaining", amount: formatted_amount(allocation.remaining_amount, allocation.currency_code), currency: allocation.currency_code) %></small>
+                    <% else %>
+                      <small><%= t(".category.unplanned") %></small>
+                    <% end %>
+                  </span>
                 <% end %>
-              <% end %>
-            </div>
-
-            <% if active_allocations.any? && !mobile_variant? %>
-              <small>
-                <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
-              </small>
+              </div>
             <% end %>
+          </div>
 
-          </fieldset>
-        </div>
-      <% end %>
+          <footer>
+            <button type="button" data-intent="primary" data-category-fields-target="confirm"
+              data-action="category-fields#confirm" disabled><%= t(".category.confirm") %></button>
+          </footer>
+        </dialog>
+      </div>
 
-      <%= tag.details name: "form-details", data: {
-            optional_item: true,
-            form_target: "section"
-          }, open: expense.errors[:occurred_on].any? do %>
-        <summary data-form-target="summary">
-          <span><%= t(".date") %></span>
-          <small><%= l(expense.occurred_on, format: :long) if expense.occurred_on %></small>
-        </summary>
-
-        <div data-optional-item-control>
-          <%= form.label :occurred_on do %>
-            <%= form.date_field :occurred_on,
-                min: budget.period_from,
-                max: budget.period_to,
-                required: true,
-                data: { form_target: "toBeFocused" } %>
-          <% end %>
-        </div>
+      <%= form.label :occurred_on, data: { expense_date: true } do %>
+        <span><%= t(".date") %></span>
+        <%= form.date_field :occurred_on,
+            min: budget.period_from,
+            max: budget.period_to,
+            required: true %>
       <% end %>
 
       <%= tag.details name: "form-details", data: {
@@ -194,7 +168,7 @@
           appearance: "keycap", intent: "primary", size: "lg",
           controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
         } do %>
-        <span><%= t(".submit") %></span>
+        <span data-category-fields-target="submitLabel"><%= expense.category_name_to_create.present? ? t(".category.submit_and_create") : t(".submit") %></span>
         <%= icon("chevron-right") %>
         <% unless mobile_variant? %>
           <kbd aria-hidden="true">Cmd + Enter</kbd>

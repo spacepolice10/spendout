@@ -11,8 +11,8 @@
         <%= radio.label title: radio.text do %>
           <%= radio.radio_button required: true, aria: { label: radio.text },
                 data: { form_target: "toBeFocused" } %>
-          <%= image_tag Source::DESIGNS.fetch(radio.value).fetch(:image),
-                alt: "", width: 720, height: 464 %>
+          <%= render "sources/design", design: Source::DESIGNS.fetch(radio.value),
+                colour: source.colour %>
           <strong><%= radio.text %></strong>
         <% end %>
       <% end %>

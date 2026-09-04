@@ -33,7 +33,7 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='exchange[rate]'][data-currency-fields-target='rate']"
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
-    assert_select "dialog[data-currency-rate-picker-target='dialog'] button[data-appearance='keycap']", text: "Apply"
+    assert_select "[data-controller~='currency-rate-picker'] > label[data-currency-rate-picker-target='prompt']"
   end
 
   test "creates an exchange and its generated source" do
@@ -111,7 +111,7 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='exchange-day']", count: 1
     assert_select "[data-testid='exchange-day'] time[datetime='#{exchange.created_at.to_date.iso8601}']"
     assert_select "[data-testid='exchange-history-item']", count: 1
-    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] img[data-source-design-thumbnail]", count: 2
+    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] [data-source-design='thumbnail']", count: 2
     assert_select "[data-testid='exchange-history-item']", text: /Main source.*Euro cash/m
     assert_select "[data-testid='exchange-history-item']", text: /100.*USD.*80.*EUR/m
     assert_select "[data-testid='exchange-history-item'] a, [data-testid='exchange-history-item'] button", count: 0

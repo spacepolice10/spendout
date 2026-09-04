@@ -1,51 +1,22 @@
 <%# locals: (form:, attribute:, currency_code:, base_currency_code:) %>
 <% rate = form.object.public_send(attribute) %>
 <% available = currency_code.present? && currency_code != base_currency_code %>
-<% formatted_rate = number_with_delimiter(rate, delimiter: ".", separator: ",") if rate.present? %>
-
 <%= tag.div data: {
       controller: "currency-rate-picker",
       currency_rate_picker_base_currency_value: base_currency_code,
       currency_rate_picker_currency_value: currency_code,
-      currency_rate_picker_rate_label_template_value: t(".rate", currency: "__currency__", base_currency: "__base_currency__"),
       currency_rate_picker_prompt_template_value: t(".prompt", currency: "__currency__", base_currency: "__base_currency__"),
-      currency_rate_picker_empty_rate_value: t(".change_rate"),
       currency_fields_target: "rateFields",
       expense_fields_target: "fields"
     }, hidden: !available do %>
-  <div data-currency-rate-preview>
-    <label for="<%= form.field_id(attribute, :preview) %>" data-currency-rate-picker-target="previewLabel">
-      <%= t(".rate", currency: currency_code, base_currency: base_currency_code) %>
-    </label>
-    <%= tag.input id: form.field_id(attribute, :preview), type: "text", readonly: true,
-          value: formatted_rate || "", placeholder: t(".change_rate"),
-          aria: { haspopup: "dialog", controls: "currency-rate-picker-dialog" },
-          data: {
-            currency_rate_picker_target: "trigger summary",
-            action: "click->currency-rate-picker#open keydown.enter->currency-rate-picker#open keydown.space->currency-rate-picker#open"
-          } %>
-  </div>
-  <dialog id="currency-rate-picker-dialog" aria-label="<%= t(".name") %>"
-    data-currency-rate-picker-target="dialog"
-    data-action="cancel->currency-rate-picker#hide close->currency-rate-picker#hidden">
-    <header>
-      <h2><%= t(".name") %></h2>
-      <button type="button" aria-label="<%= t(".cancel") %>" data-action="currency-rate-picker#hide">&times;</button>
-    </header>
-    <label for="<%= form.field_id(attribute) %>" data-currency-rate-picker-target="prompt">
-      <%= t(".prompt", currency: currency_code, base_currency: base_currency_code) %>
-    </label>
-    <div data-currency-rate-picker-textform>
-      <%= form.text_field attribute, inputmode: "decimal", required: true,
-        data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
-          amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
-          amount_fields_minimum_exclusive_value: true,
-          expense_fields_target: "rate", currency_fields_target: "rate",
-          form_target: "toBeFocused", currency_rate_picker_target: "rate" } %>
-    </div>
-    <footer data-layout="flex">
-      <button type="button" data-appearance="keycap" data-intent="primary"
-        data-action="currency-rate-picker#apply"><%= t(".accept") %></button>
-    </footer>
-  </dialog>
+  <label for="<%= form.field_id(attribute) %>" data-currency-rate-picker-target="prompt">
+    <%= t(".prompt", currency: currency_code, base_currency: base_currency_code) %>
+  </label>
+  <%= form.text_field attribute, inputmode: "decimal", required: true,
+    placeholder: t(".change_rate"),
+    data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
+      amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
+      amount_fields_minimum_exclusive_value: true,
+      expense_fields_target: "rate", currency_fields_target: "rate",
+      form_target: "toBeFocused" } %>
 <% end %>

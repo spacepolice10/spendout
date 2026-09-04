@@ -28,7 +28,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='source-card']", count: 1
     assert_select "[data-testid='source-card'] > header", count: 0
     assert_select "[data-testid='source-card']", text: /Main source/
-    assert_select "[data-source-card][style*='--source-colour: var(--color-palette-green)'] > img[data-source-design-thumbnail][src*='americat_express'][width='72'][height='46']"
+    assert_select "[data-source-card][style*='--source-colour: var(--color-palette-green)'] > [data-source-design='thumbnail'][style*='--source-colour: var(--color-palette-green)']"
     assert_select "header", text: /Actual remainder:.*\$1,200\.25/m
     assert_select "a[data-source-link][href='#{source_path(@source)}'][aria-label='View #{@source.name}']" do
       assert_select "[data-testid='source-card']", text: /#{@source.name}/
@@ -55,7 +55,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "[data-testid='exchange-history-item']", count: 15
     assert_select "[data-testid='exchange-history-item'] [data-exchange-designs]", count: 15
-    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] img[data-source-design-thumbnail]", count: 30
+    assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] [data-source-design='thumbnail']", count: 30
     assert_select "[data-testid='exchange-history-item'] [data-exchange-designs] span", text: "→", count: 15
     assert_select "nav[aria-label='Pagination for exchanges']", text: /Page 1 of 2/
     assert_select "nav[aria-label='Pagination for exchanges'] a", text: "Next" do |links|
@@ -87,11 +87,12 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     get new_budget_source_path(@budget)
 
     assert_response :success
-    assert_select "input[name='source[design]'][type='radio']", count: Source.designs.size
-    assert_select "input[name='source[design]'][value='americat_express'][checked][aria-label='Americat Express']"
-    assert_select "label[title='Americat Express'] img[src*='americat_express']"
+    assert_select "input[name='source[design]'][type='radio']", count: Source.design_options.size
+    assert_select "input[name='source[design]'][value='americat_express'][checked][aria-label='No cat']"
+    assert_select "label[title='No cat'] [data-source-design='thumbnail']"
     assert_select "input[name='source[icon]']", count: 0
-    assert_select "input[name='source[colour]']", count: 0
+    assert_select "input[name='source[colour]'][type='radio']", count: Source.colour_options.size
+    assert_select "input[name='source[colour]'][value='green'][checked]"
     assert_select "input[name='source[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
     assert_select "input[name='source[amount]'][value='0']"
     assert_select "input[name='source[amount]'][data-amount-fields-start-value='0']"
@@ -119,12 +120,10 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[rate]'][data-amount-fields-fraction-digits-value='12']"
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
-    assert_select "dialog#currency-rate-picker-dialog[data-currency-rate-picker-target='dialog'][aria-label='Confirm conversion rate']"
-    assert_select "input[type='text'][readonly][data-currency-rate-picker-target~='trigger'][aria-haspopup='dialog']"
+    assert_select "[data-controller~='currency-rate-picker'] > label[data-currency-rate-picker-target='prompt']"
     assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
     assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
-    assert_select "dialog[data-currency-rate-picker-target='dialog'] button[data-appearance='keycap']", text: "Apply"
     assert_select "input[name='source[amount]'][data-currency-fields-target='amount']"
   end
 
@@ -163,7 +162,8 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
           amount: "125.5000",
           currency_code: "USD",
           rate: "1.25",
-          design: "unipaw"
+          design: "unipaw",
+          colour: "pink"
         }
       }
     end
@@ -174,6 +174,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_equal BigDecimal("125.5000"), source.amount
     assert_equal BigDecimal("1"), source.rate
     assert source.unipaw?
+    assert_equal "pink", source.colour
   end
 
   test "invalid source creates no record and rerenders options" do
@@ -192,7 +193,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: /Name can't be blank/
-    assert_select "input[name='source[design]'][type='radio']", count: Source.designs.size
+    assert_select "input[name='source[design]'][type='radio']", count: Source.design_options.size
   end
 
   test "show displays source details" do
@@ -203,8 +204,8 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "main[data-size='lg'] > article:not([data-elevation])[style*='--source-colour: var(--color-palette-green)']"
     assert_select "main[data-size='lg'] > article > header", count: 0
-    assert_select "article > main > img[data-source-design-hero][src*='americat_express'][width='720'][height='464']"
-    assert_select "img[data-source-design-hero] + hgroup[data-source-title] h1", text: @source.name
+    assert_select "article > main > [data-source-design='hero'][role='img'][style*='--source-colour: var(--color-palette-green)']"
+    assert_select "[data-source-design='hero'] + hgroup[data-source-title] h1", text: @source.name
     assert_select "section[data-source-summary][aria-label='Source summary']", text: /Initial amount:.*1,500.25 USD.*Rest:.*1,375.25 USD/m
     assert_select "section[data-source-summary] article, section[data-source-summary] small", count: 0
     assert_select "[data-testid='source-budget']", count: 0

@@ -1,51 +1,25 @@
-<%# locals: (form:, question:, currency_attribute:, rate_attribute:, base_currency_code:, amount_attribute: :amount, amount_label: nil, open: false, default_amount: false, minimum: "0", minimum_exclusive: false, preferred_currencies: []) %>
+<%# locals: (form:, question:, currency_attribute:, rate_attribute:, base_currency_code:, amount_attribute: :amount, amount_label: nil, open: false, disclosure: true, default_amount: false, minimum: "0", minimum_exclusive: false, preferred_currencies: []) %>
 <% amount = form.object.public_send(amount_attribute) %>
 <% currency_code = form.object.public_send(currency_attribute).presence || base_currency_code %>
 <% amount_label ||= t("shared.amount_currency_fields.name") %>
-<%= tag.details name: "form-details", open: open,
-      data: { form_target: "section", amount_currency_section: true } do %>
-  <summary data-form-target="summary">
-    <span><%= amount_label %></span>
-    <small data-form-target="summaryContent">
-      <span data-form-summary-content="amount"><%= number_with_delimiter(amount || 0, delimiter: ".", separator: ",") %></span>
-      <span data-form-summary-content="currency"><%= currency_code %></span>
-    </small>
-  </summary>
-
-  <div data-amount-currency-fields>
-    <small><%= question %></small>
-
-    <div data-amount-currency-row>
-      <%= form.label amount_attribute, amount_label, class: "utilities--sr-only" %>
-      <%= form.text_field amount_attribute, inputmode: "decimal", placeholder: "0",
-        autofocus: open && !mobile_variant?, required: true,
-        value: default_amount ? amount || 0 : amount,
-        data: {
-          controller: "amount-fields",
-          form_target: "toBeFocused",
-          form_summary: "amount",
-          amount_fields_start_value: amount ? amount.to_s("F") : (default_amount ? "0" : nil),
-          amount_fields_minimum_value: minimum,
-          amount_fields_minimum_exclusive_value: minimum_exclusive,
-          currency_fields_target: "amount",
-          action: "input->currency-fields#calculate"
-        } %>
-
-      <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
-            compact: true, select_data: { form_summary: "currency" },
-            preferred_currencies: preferred_currencies %>
-    </div>
-
-    <%= render "shared/currency_rate_picker", form: form, attribute: rate_attribute,
-          currency_code: currency_code, base_currency_code: base_currency_code %>
-
-    <% unless mobile_variant? %>
-      <small>
-        <%= t("shared.amount_currency_fields.arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
+<% controls_locals = { form:, question:, currency_attribute:, rate_attribute:, base_currency_code:,
+     amount_attribute:, amount_label:, open:, default_amount:, minimum:, minimum_exclusive:,
+     preferred_currencies:, amount:, currency_code: } %>
+<% if disclosure %>
+  <%= tag.details name: "form-details", open: open,
+        data: { form_target: "section", amount_currency_section: true } do %>
+    <summary data-form-target="summary">
+      <span><%= amount_label %></span>
+      <small data-form-target="summaryContent">
+        <span data-form-summary-content="amount"><%= number_with_delimiter(amount || 0, delimiter: ".", separator: ",") %></span>
+        <span data-form-summary-content="currency"><%= currency_code %></span>
       </small>
-      <small>
-        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
-      </small>
-    <% end %>
-  </div>
+    </summary>
+    <%= render "shared/amount_currency_controls", **controls_locals %>
+  <% end %>
+<% else %>
+  <section data-amount-currency-section data-form-target="section">
+    <header><%= amount_label %></header>
+    <%= render "shared/amount_currency_controls", **controls_locals %>
+  </section>
 <% end %>

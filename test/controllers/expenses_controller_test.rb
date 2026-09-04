@@ -107,44 +107,50 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_select "fieldset[data-expense-sources] > div > label", count: 1
+    assert_select "[data-source-picker-option] label[data-source-picker-target='option']", count: 1
     assert_select "input[type='radio'][name='expense[source_id]'][value='#{@source.id}'][checked][required]"
-    assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) > label",
+    assert_select "button[aria-haspopup='dialog'][aria-controls='source-picker-dialog']", text: /From: #{@source.name}/
+    assert_select "dialog#source-picker-dialog[aria-label='Choose a source']"
+    assert_select "[data-source-picker-option] [data-source-design]", count: 1
+    assert_select "[data-category-picker-option] label[data-category-fields-target='option']",
       count: @budget.allocations.where(deleted_at: nil).count
-    assert_select "fieldset[data-expense-allocations] > div:not([data-create-category]) label .icon-wrap",
+    assert_select "[data-category-picker-option] label .icon-wrap",
       count: @budget.allocations.where(deleted_at: nil).count
+    assert_select "[data-category-picker-option] label .icon-wrap[style*='--color-palette-#{@allocation.colour}'] .icon[style*='--icon-#{@allocation.icon}']"
     assert_select "input[name='expense[allocation_id]'][value='#{@allocation.id}'][checked]"
-    assert_select "fieldset[data-expense-allocations] > div input[name='expense[allocation_id]'][value='']", count: 0
+    assert_select "[data-category-picker-option] input[name='expense[allocation_id]'][value='']", count: 0
     assert_select "[data-expense-form-target='allocation']", count: 0
     assert_select "[data-expense-options]"
-    assert_select "details[data-optional-item]", count: 4
+    assert_select "details[data-optional-item]", count: 1
     assert_select "select[name='expense[currency_code]'][data-expense-fields-target='currency'] option[value='USD'][selected]"
     assert_select "input[name='expense[conversion_rate]'][data-expense-fields-target='rate']"
     assert_select "details[data-controller='details']", count: 0
     assert_select "details[data-action]", count: 0
-    assert_select "details[data-optional-item] > summary > span", count: 4
+    assert_select "details[data-optional-item] > summary > span", count: 1
     assert_select "[data-optional-item] > input[type='checkbox']", count: 0
     assert_select "details[data-optional-item] > summary" do |summaries|
-      assert_equal [ "From: #{@source.name}", "Category: #{@allocation.name}", "Date: August 20, 2026", "Note: Added" ],
+      assert_equal [ "Note: Added" ],
         summaries.map { |summary| summary.text.squish }
     end
-    assert_select "details[data-optional-item]:not([open]) > summary > span", text: "Date:"
-    assert_select "details[data-optional-item]:not([open]) > summary > small", text: /August 20, 2026/
     assert_select "details[data-optional-item] > summary > small", text: "Added"
-    assert_select "[data-optional-item-control] label[for='expense_occurred_on']"
+    assert_select "label[for='expense_occurred_on'][data-expense-date] > span", text: "Date:"
     assert_select "[data-optional-item-control] label[for='expense_note']"
     assert_select "input[name='expense[occurred_on]'][value='2026-08-20'][min='2026-08-18'][max='2026-09-16']"
     assert_select "textarea[name='expense[note]'][maxlength='200']"
     assert_select "textarea[name='expense[note]'][rows]", count: 0
-    assert_select "input[type='text'][name]#expense_category_filter", count: 0
-    assert_select "details[data-controller~='category-fields'] fieldset[data-expense-allocations]"
-    assert_select "input[type='text']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-fields-target='filter'][data-action='input->category-fields#filter']"
+    assert_select "[data-category-picker][data-controller='category-fields']"
+    assert_select "button[aria-haspopup='dialog'][aria-controls='category-picker-dialog']", text: /Category: Housing/
+    assert_select "dialog#category-picker-dialog[aria-label='Choose a category']"
+    assert_select "input[type='search']#expense_category_filter[placeholder='Find or add category'][aria-label='Find or add category'][data-category-fields-target='filter']"
     assert_select "input[type='hidden'][name='expense[category_name_to_create]'][data-category-fields-target='pendingNameTextform']"
-    assert_select "fieldset[data-expense-allocations] label[data-category-fields-target='option'][data-filter-value='#{@allocation.name}']"
+    assert_select "[data-category-picker-option] label[data-category-fields-target='option'][data-filter-value='#{@allocation.name}']", text: /175.*USD remaining/
     assert_select "small[hidden][data-category-fields-target='creationTip']", text: /Category named.*will be created/
     assert_select "[data-category-fields-target='creationTipName']"
-    assert_select "fieldset[data-expense-allocations] button", count: 0
+    assert_select "dialog footer button[data-category-fields-target='confirm'][disabled]", text: "Confirm"
+    assert_select "[data-category-fields-target='submitLabel']", text: "Confirm"
     assert_select "input[name='expense[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
+    assert_select "section[data-amount-currency-section]", count: 1
+    assert_select "details[data-amount-currency-section]", count: 0
     assert_select "input[name='expense[amount]'][value]", count: 0
     assert_select "input[type='radio'][name='expense-currency-picker'][value='USD'][checked]"
   end
@@ -179,10 +185,10 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     get new_budget_expense_path(@budget)
 
-    assert_select "fieldset[data-expense-allocations] label[data-category-fields-target='option']", count: 0
+    assert_select "[data-category-picker-option] label[data-filter-value]:not([data-filter-value=''])", count: 0
     assert_select "input#expense_category_filter"
     assert_select "[data-category-fields-target='creationTip'][hidden]"
-    assert_select "fieldset[data-expense-allocations] button", count: 0
+    assert_select "[data-category-picker-option]", count: 0
   end
 
   test "new expense excludes finished allocations" do
@@ -283,9 +289,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "details[data-optional-item][open]" do
-      assert_select "summary", text: /Category: Coffee/
-    end
+    assert_select "[data-category-picker] > button", text: /Category: Coffee/
+    assert_select "[data-category-fields-target='submitLabel']", text: "Confirm & create category"
     assert_select "input[name='expense[category_name_to_create]'][value='Coffee']"
   end
 
@@ -304,7 +309,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "[role='alert']", text: /Amount must be less than or equal to 1375.25/
-    assert_select "summary [data-form-summary-content='amount']", text: "1.375,2501"
+    assert_select "[data-amount-currency-row] input[name='expense[amount]'][value='1375.2501']"
 
     assert_no_difference("Expense.count") do
       post budget_expenses_path(@budget), params: {
