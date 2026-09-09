@@ -1,0 +1,16 @@
+<article class="lens-content" data-empty="<%= snapshot.records.empty? %>" data-plan-overview data-testid="plan-overview-lens">
+  <main>
+    <% if snapshot.records.any? %>
+      <%= render partial: "allocations/compact", collection: snapshot.records, as: :allocation %>
+    <% else %>
+      <article data-elevation="1" data-lens-empty-tip data-testid="plan-overview-tip" style="border-color: var(--color-accent); color: var(--color-accent);">
+        <header>
+          <h2><%= t(".tip_name") %></h2>
+        </header>
+        <main>
+          <p><%= t(".tip_description") %></p>
+        </main>
+      </article>
+    <% end %>
+  </main>
+</article>

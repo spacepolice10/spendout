@@ -8,7 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Spendout">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#d92d20">
+    <meta name="theme-color" content="#fcf7ea" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#2b2824" media="(prefers-color-scheme: dark)">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -32,7 +33,7 @@
 
   <body data-controller="timezone hotkey-hint">
     <% if flash.any? %>
-      <aside aria-label="Notifications" data-toasts>
+      <aside aria-label="Notifications" data-toasts data-turbo-temporary>
         <% flash.each do |type, message| %>
           <p role="<%= type.to_sym == :alert ? "alert" : "status" %>" data-type="<%= type %>"><%= message %></p>
         <% end %>
@@ -42,6 +43,6 @@
     <%= yield %>
 
     <%= yield :budget_action_footer %>
-    <%= render "shared/tabbar" unless content_for?(:hide_tabbar) %>
+    <%= yield :add_menu %>
   </body>
 </html>

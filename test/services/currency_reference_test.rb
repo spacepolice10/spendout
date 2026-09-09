@@ -34,6 +34,20 @@ class CurrencyReferenceTest < ActiveSupport::TestCase
     }, CurrencyReference.rates_against("USD", today: Date.new(2026, 8, 24)))
   end
 
+  test "filters stale individual rates from a mixed-date table" do
+    CurrencyReference.preserve(
+      "reference_date" => "2026-08-24",
+      "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" },
+      "reference_dates" => { "EUR" => "2026-08-24", "USD" => "2026-08-24", "VND" => "2026-08-16" }
+    )
+
+    assert_equal({ "USD" => "1", "EUR" => "0.833333333333" },
+      CurrencyReference.rates_against("USD", today: Date.new(2026, 8, 24)))
+    assert_nil CurrencyReference.request_rate("USD", "VND", today: Date.new(2026, 8, 24))
+    assert_equal({ "EUR" => Date.new(2026, 8, 24), "USD" => Date.new(2026, 8, 24) },
+      CurrencyReference.reference_dates(today: Date.new(2026, 8, 24)))
+  end
+
   test "returns nil for missing currencies or stale future and malformed metadata" do
     CurrencyReference.preserve(payload("EUR" => "1", "USD" => "1.2"))
     assert_nil CurrencyReference.request_rate("VND", "USD", today: Date.new(2026, 8, 24))

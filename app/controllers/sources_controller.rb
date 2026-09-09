@@ -12,7 +12,7 @@ class SourcesController < ApplicationController
 
   def show
     @expenses = set_page_and_extract_portion_from(
-      @source.expenses.includes(:source, :allocation)
+      @source.expenses.includes(:source, :category)
         .order(occurred_on: :desc, created_at: :desc, id: :desc)
     )
     @expenses_by_date = @expenses.group_by(&:occurred_on)
@@ -29,7 +29,7 @@ class SourcesController < ApplicationController
     @source = @budget.sources.new(source_params)
 
     if @source.save
-      redirect_to budget_sources_path(@budget), notice: t("sources.create.success")
+      redirect_to budget_lenses_path(@budget), notice: t("sources.create.success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -37,9 +37,9 @@ class SourcesController < ApplicationController
 
   def destroy
     if @source.update(deleted_at: Time.current)
-      redirect_to budget_sources_path(@budget), notice: t("sources.destroy.success")
+      redirect_to budget_lenses_path(@budget), notice: t("sources.destroy.success")
     else
-      redirect_to budget_sources_path(@budget), alert: t("sources.destroy.failure")
+      redirect_to budget_lenses_path(@budget), alert: t("sources.destroy.failure")
     end
   end
 

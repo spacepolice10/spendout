@@ -10,13 +10,13 @@
     <main>
       <section data-expense-hero>
         <div data-expense-category>
-          <% if @expense.allocation %>
-            <%= icon(@expense.allocation.icon, style: icon_colour_styles(@expense.allocation.colour)) %>
+          <% if @expense.category %>
+            <%= icon(@expense.category.icon, style: icon_colour_styles(@expense.category.colour)) %>
             <p>
               <small><%= t(".category") %></small>
               <strong>
-                <%= link_to @expense.allocation.name, allocation_path(@expense.allocation) %>
-                <%= @expense.allocation.deleted? ? t(".deleted") : (t(".finished") if @expense.allocation.finished?) %>
+                <%= link_to @expense.category.name, budget_category_path(@budget, @expense.category) %>
+                <%= t(".deleted") if @expense.category.deleted? %>
               </strong>
             </p>
           <% else %>

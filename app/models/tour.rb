@@ -12,16 +12,16 @@ class Tour
     "allocations" => {
       colour: "yellow", icon: "category", label: "Allocations", chip: "Plan the spending",
       title: "Plan what matters. Classify everything else.",
-      lead: "Open Plan and add a category. Give planned allocations an amount to reserve, or leave an unplanned category at zero to only classify spending.",
+      lead: "Create categories for spending, then open Plan and attach an amount to any category you want to reserve money for.",
       detail_title: "A plan never blocks an expense",
-      detail: "Planned allocations reserve from the general remainder and can warn when they exceed available funds. Unplanned categories organize spending from that remainder. Either way, a real expense still goes through.",
+      detail: "Allocations reserve from the general remainder and can warn when they exceed available funds. Categories without an allocation simply classify spending from that remainder. Either way, a real expense still goes through.",
       image: "tour-allocations.png",
       alt: "Spendout Plan screen showing planned allocations with spent-versus-planned progress"
     },
     "expenses" => {
       colour: "green", icon: "receipt-dollar", label: "Expenses", chip: "Track an expense",
       title: "Record a purchase in a few focused steps.",
-      lead: "Open Expenses, add an expense, enter the amount, choose the source it came from, and optionally a category and date.",
+      lead: "Open Expenses, add an expense, enter the amount, choose the source it came from, and choose or create its required category.",
       detail_title: "The snapshot stays as you saved it",
       detail: "Spendout stores the purchase amount and currency, the source debit, the conversion quote, and the occurrence date together. To correct a record, delete it and create it again so history is never silently rewritten.",
       image: "tour-expense-form.png",
@@ -41,7 +41,7 @@ class Tour
       title: "Move money from one source to another.",
       lead: "On a source, choose Exchange. Enter how much to send, name the receiving source, and confirm its currency.",
       detail_title: "Both sides are saved together",
-      detail: "The debit, the new receiver, both amounts, and the sender-relative quote are stored as one event — even when both sources use the same currency. Open My money later to read the exchange in source history.",
+      detail: "An exchange stores the debit, a new receiver, both amounts, and the sender-relative quote as one event. Both sources may use the same currency.",
       image: "tour-exchange-amount-open.png",
       alt: "Spendout exchange form with the sender amount field expanded"
     },
@@ -65,12 +65,12 @@ class Tour
     },
     "source-design" => {
       colour: "green", icon: "credit-card", label: "Card design", chip: "Pick a card design",
-      title: "Give every source a face you can recognize.",
-      lead: "While creating or editing a source, open Design and pick a card face — bank, cash, wallet, or one of the cat-network cards.",
+      title: "Give every source a pattern you can recognize.",
+      lead: "While creating or editing a source, open Design and pick a coloured gradient — wash, split, fade, band, or stripe.",
       detail_title: "Easy to spot while you spend",
       detail: "The chosen design appears on the source list, expense source picker, and exchanges, so the right wallet or card stays obvious without reading the name twice.",
       image: "tour-source-design.png",
-      alt: "Spendout source form with simple two-colour card and pixel-art cat options"
+      alt: "Spendout source form with coloured gradient card patterns"
     },
     "finish-allocations" => {
       colour: "orange", icon: "pig-money", label: "Finish a plan", chip: "Finish a plan",
@@ -93,7 +93,7 @@ class Tour
     "account" => {
       colour: "blue", icon: "logout", label: "Account", chip: "Control account",
       title: "Sign out, or remove the whole budget.",
-      lead: "Open User. Sign out to end this session, or remove the budget to delete its sources, allocations, expenses, and exchanges.",
+      lead: "Open User. Sign out to end this session, or remove the budget and every financial record, recurring flow, and lens inside it.",
       detail_title: "Removal is permanent",
       detail: "Removing a budget cannot be undone. Archived budgets otherwise remain as history, but this action clears the active budget so you can start again. Sign-in stays passwordless either way.",
       image: "tour-account.png",

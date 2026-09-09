@@ -24,8 +24,8 @@ module Currencyable
     currency_metadata[:symbol]
   end
 
-  def currency_flag
-    currency_metadata[:flag]
+  def currency_country_code
+    currency_metadata[:country_code]
   end
 
   private

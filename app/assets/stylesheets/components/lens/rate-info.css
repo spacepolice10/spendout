@@ -1,0 +1,143 @@
+@layer components {
+    .rate-info {
+        --rate-font-label: "Handjet", var(--font-family-mono);
+        --rate-font-sign: "Silkscreen", var(--font-family-mono);
+        --rate-black: oklch(0.11 0.006 40);
+        --rate-panel: oklch(0.16 0.008 55);
+        --rate-metal: oklch(0.48 0.018 75);
+        --rate-ink: oklch(0.82 0.025 78);
+        --rate-red: oklch(0.68 0.25 25);
+
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        padding: clamp(1rem, 3vw, 2rem);
+        overflow: hidden;
+        border: 8px solid var(--rate-black);
+        border-radius: 2px;
+        outline: 2px solid var(--rate-metal);
+        outline-offset: -5px;
+        background:
+            repeating-linear-gradient(0deg, transparent 0 3px, rgb(255 255 255 / 1.5%) 3px 4px),
+            radial-gradient(circle at 30% 10%, rgb(255 255 255 / 6%), transparent 35%),
+            var(--rate-panel);
+        box-shadow:
+            inset 0 0 0 3px oklch(0.25 0.012 60),
+            inset 0 0 2rem rgb(0 0 0 / 75%);
+        color: var(--rate-ink);
+        color-scheme: dark;
+        font-family: var(--rate-font-label);
+        font-size: clamp(1rem, 1.8vw, 1.35rem);
+    }
+
+    .rate-info::before,
+    .rate-info::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .rate-info::before {
+        inset: 0.65rem;
+        border: 2px solid oklch(0.30 0.012 65);
+        box-shadow: inset 0 0 0 3px rgb(0 0 0 / 55%);
+    }
+
+    .rate-info::after {
+        inset: 0;
+        opacity: 0.16;
+        background-image: radial-gradient(circle, var(--rate-ink) 0 0.5px, transparent 0.75px);
+        background-size: 5px 5px;
+        mix-blend-mode: soft-light;
+    }
+
+    .rate-info > header {
+        display: grid;
+        flex: 0 0 auto;
+        justify-items: center;
+        gap: var(--space-v-half);
+        padding-block-end: var(--space-v-2);
+        text-align: center;
+    }
+
+    .rate-info > header h3 {
+        width: min(100%, 22rem);
+        padding: 0.45em 0.75em;
+        border: 4px solid var(--rate-black);
+        outline: 2px solid var(--rate-metal);
+        outline-offset: -1px;
+        background: oklch(0.68 0.018 75);
+        box-shadow: 4px 4px 0 rgb(0 0 0 / 55%);
+        color: var(--rate-black);
+        font-family: var(--rate-font-sign);
+        font-size: clamp(1rem, 3vw, 1.55rem);
+        line-height: 1.2;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .rate-info-list {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: clip;
+        padding-block-end: var(--space-v-2);
+    }
+
+    .rate-info table { width: 100%; border-spacing: 0 4px; table-layout: fixed; }
+    .rate-info thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        padding: 0.25em 0.5em;
+        background: var(--rate-panel);
+        color: oklch(0.65 0.02 75);
+        font-size: 0.7em;
+        letter-spacing: 0.12em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+    .rate-info thead th:last-child { width: 48%; text-align: right; }
+    .rate-info tbody tr { background: rgb(0 0 0 / 28%); box-shadow: inset 0 0 0 1px oklch(0.25 0.01 60); }
+    .rate-info tbody th { padding: 0.45em 0.55em; overflow: hidden; text-align: left; white-space: nowrap; }
+    .rate-info-code {
+        color: oklch(0.9 0.02 75);
+        font-family: var(--rate-font-label);
+        font-size: 0.95em;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+    .rate-info tbody td { padding: 0.3em 0.45em; text-align: right; }
+
+    .rate-info-value {
+        display: block;
+        min-height: 1.55em;
+        overflow: hidden;
+        color: var(--rate-red);
+        font-family: var(--font-family-mono);
+        font-size: clamp(0.88rem, 2.6vw, 1.55rem);
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+        white-space: nowrap;
+        text-shadow: 1px 0 0 oklch(0.78 0.2 25), 0 0 6px rgb(255 20 30 / 38%);
+    }
+
+    .rate-info > footer {
+        flex: 0 0 auto;
+        padding-block-start: var(--space-v);
+        color: oklch(0.62 0.02 75);
+        font-size: 0.67em;
+        letter-spacing: 0.08em;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    @media (max-width: 520px) {
+        .rate-info { padding-inline: 0.85rem; }
+        .rate-info-code { font-size: 0.86em; }
+    }
+}

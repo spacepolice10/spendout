@@ -1,0 +1,37 @@
+<% snapshot.records_by_date.each do |date, records| %>
+  <% insight = snapshot.insights_by_date.fetch(date) %>
+  <section
+    data-record-day
+    data-date="<%= date.iso8601 %>"
+    data-unusual-spending-day="<%= insight.unusual_multiple.present? %>"
+    data-testid="record-day"
+  >
+    <header>
+      <h3>
+        <time datetime="<%= date.iso8601 %>"><%= l(date, format: :long) %></time>
+      </h3>
+
+      <strong data-testid="record-day-total"><%= formatted_amount(snapshot.totals_by_date.fetch(date), @budget.base_currency_code) %></strong>
+    </header>
+
+    <% if insight.unusual_multiple %>
+      <p data-timeline-insight data-unusual-spending>
+        <%= icon("gauge") %>
+        <%= t("records.timeline.unusual_day", multiple: insight.unusual_multiple.round(1)) %>
+      </p>
+    <% end %>
+
+    <% insight.plan_breaks.each do |plan_break| %>
+      <p data-timeline-insight data-plan-break>
+        <%= icon(plan_break.category.icon, style: icon_colour_styles(plan_break.category.colour)) %>
+        <%= t("records.timeline.repeated_category_over_plan",
+          category: plan_break.category.name,
+          count: plan_break.occurrences,
+          spent: formatted_amount(plan_break.spent, snapshot.currency_code),
+          planned: formatted_amount(plan_break.planned, snapshot.currency_code)) %>
+      </p>
+    <% end %>
+
+    <main><%= render records %></main>
+  </section>
+<% end %>

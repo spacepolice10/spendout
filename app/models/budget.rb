@@ -1,9 +1,15 @@
 class Budget < ApplicationRecord
   belongs_to :user
+  has_many :recurrences, dependent: :destroy, inverse_of: :budget
   has_many :expenses, dependent: :destroy, inverse_of: :budget
+  has_many :incomes, dependent: :destroy, inverse_of: :budget
+  has_many :records, dependent: :destroy, inverse_of: :budget
   has_many :allocations, dependent: :destroy, inverse_of: :budget
+  has_many :categories, dependent: :destroy, inverse_of: :budget
   has_many :exchanges, dependent: :destroy, inverse_of: :budget
   has_many :sources, dependent: :destroy, inverse_of: :budget
+  has_many :lenses, class_name: "Lens", dependent: :destroy, inverse_of: :budget
+  has_many :features, dependent: :destroy, inverse_of: :budget
 
   alias_attribute :starts_date, :period_from
   alias_attribute :ends_date, :period_to
@@ -13,6 +19,9 @@ class Budget < ApplicationRecord
   validate :period_starts_before_ends
   validate :single_current_budget_possible, on: :create
   validate :base_currency_cannot_change, on: :update
+
+  after_create :ensure_builtin_lenses!
+  after_create :ensure_features!
 
   def date_period
     return unless period_from && period_to
@@ -24,10 +33,6 @@ class Budget < ApplicationRecord
     else
       "#{format_date(period_from)} – #{I18n.l(period_to, format: :budget_date_with_year)}"
     end
-  end
-
-  def report(from: starts_date, to: ends_date)
-    BudgetReport.new(self, from:, to:)
   end
 
   def archived?
@@ -42,11 +47,11 @@ class Budget < ApplicationRecord
       .pluck(:sender_amount, "sources.rate")
       .sum(BigDecimal("0")) { |amount, rate| amount / rate }
 
-    amount_in_base_of(active_sources) - exchanged_amount_in_base
+    amount_in_base_of(active_sources) + incomes.sum(BigDecimal("0"), &:amount_in_base_currency) - exchanged_amount_in_base
   end
 
   def allocations_amount_in_base
-    allocations.planned.where(deleted_at: nil).includes(:expenses).sum(BigDecimal("0")) do |allocation|
+    allocations.where(deleted_at: nil).includes(:expenses).sum(BigDecimal("0")) do |allocation|
       reserved_amount = allocation.finished? ? [ allocation.used_amount, allocation.amount ].min : allocation.amount
       reserved_amount / allocation.rate
     end
@@ -60,9 +65,8 @@ class Budget < ApplicationRecord
     expenses_amount_in_base_of(
       expenses
         .joins(:source)
-        .left_outer_joins(:allocation)
         .where(sources: { deleted_at: nil })
-        .where("expenses.allocation_id IS NULL OR allocations.planned = ?", false)
+        .where.not(category_id: allocations.select(:category_id))
     )
   end
 
@@ -88,7 +92,7 @@ class Budget < ApplicationRecord
       source.spendable_amount / source.rate
     end
 
-    remaining_planned = allocations.planned.active.includes(expenses: :source)
+    remaining_planned = allocations.active.includes(expenses: :source)
       .sum(BigDecimal("0")) do |allocation|
         used_from_active_sources = allocation.expenses.sum(BigDecimal("0")) do |expense|
           expense.source.deleted? ? BigDecimal("0") : expense.source_amount / expense.source.rate
@@ -101,6 +105,15 @@ class Budget < ApplicationRecord
 
   def last_expense_currency_code
     expenses.order(created_at: :desc, id: :desc).pick(:currency_code)
+  end
+
+  def ensure_builtin_lenses!
+    lenses.find_or_create_by!(lensable_type: "SourceHolder") { |lens| lens.lensable = SourceHolder.new }
+    lenses.find_or_create_by!(lensable_type: "PlanOverview") { |lens| lens.lensable = PlanOverview.new }
+  end
+
+  def ensure_features!
+    Feature::TYPES.each { |feature_type| features.find_or_create_by!(feature_type:) }
   end
 
   def todays_remainder
@@ -174,9 +187,8 @@ class Budget < ApplicationRecord
       expenses_amount_in_base_of(
         expenses
           .joins(:source)
-          .left_outer_joins(:allocation)
           .where(occurred_on: Date.current, sources: { deleted_at: nil })
-          .where("expenses.allocation_id IS NULL OR allocations.planned = ?", false)
+          .where.not(category_id: allocations.select(:category_id))
       )
     end
 

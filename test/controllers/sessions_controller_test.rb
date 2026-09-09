@@ -15,6 +15,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "article h2", text: "Enter your e-mail"
     assert_select "article main > p", text: "We’ll email you a 6-character sign-in code."
     assert_select "form[action='#{locale_path}']", count: 2
+    assert_select "main.session-page > nav[data-pill-group] button[aria-pressed='true'][disabled]", text: "English"
   end
 
   test "new autofocuses the email field only on desktop devices" do
@@ -38,8 +39,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"
     }
 
-    assert_select "main.session-page > header [data-cybercat-answer]", text: /Check your email for the 6-character code/
-    assert_select "[data-cybercat-answer]", text: /#{Regexp.escape(@user.email_address)}/
+    assert_select "main.session-page > header .cybercat .cybercat-text", text: /Check your email for the 6-character code/
+    assert_select ".cybercat .cybercat-text", text: /#{Regexp.escape(@user.email_address)}/
     assert_select "input[name='code'][autofocus]"
 
     get session_auth_code_path, headers: {

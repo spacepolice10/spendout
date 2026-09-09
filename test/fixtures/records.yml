@@ -1,0 +1,14 @@
+active:
+  budget: active
+  recordable: active (Expense)
+  occurred_on: 2026-08-19
+
+archived:
+  budget: archived
+  recordable: archived (Expense)
+  occurred_on: 2026-06-03
+
+other:
+  budget: other
+  recordable: other (Expense)
+  occurred_on: 2026-08-10

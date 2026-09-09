@@ -7,7 +7,7 @@
     style="--source-colour: var(--color-palette-<%= source.colour %>);"
   >
     <%= render "sources/design", design: Source::DESIGNS.fetch(source.design),
-          colour: source.colour, loading: "lazy" %>
+          colour: source.colour %>
     <h2><%= source.name %></h2>
     <strong><%= formatted_amount(source.spendable_amount, source.currency_code) %></strong>
   </article>

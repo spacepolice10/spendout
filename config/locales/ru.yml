@@ -1,4 +1,17 @@
 ru:
+  features:
+    add: "Добавить"
+    dialog_label: "Добавить в бюджет"
+    favorite: "Добавить «%{feature}» в избранное"
+    unfavorite: "Убрать «%{feature}» из избранного"
+    income: "Доход"
+    expense: "Расход"
+    types:
+      new_expense: "Новый расход"
+      new_income: "Новый доход"
+      new_source: "Новый источник"
+      new_allocation: "Новое распределение"
+      lens_laboratory: "Лаборатория линз"
   sessions:
     new:
       logo_description: "Киберкот"
@@ -69,6 +82,8 @@ ru:
       exchanges: "Обмены"
       exchange_records: "обменов"
       create_source: "Добавить источник"
+      create_income: "Добавить пополнение"
+      income_history: "История пополнений"
     new:
       name: "Новый кошелёк"
     show:
@@ -86,8 +101,6 @@ ru:
       remove_confirmation: "Удалить этот источник?"
     form:
       errors: "Количество ошибок: %{count}. Не удалось сохранить источник:"
-      name_question: "Как назвать источник?"
-      amount_question: "Сколько денег в этом источнике?"
       name_placeholder: "Кредитная карта, наличные, заём и т. п."
       cancel: "Отмена"
       submit: "Подтвердить"
@@ -98,13 +111,12 @@ ru:
     design_fields:
       name: "Дизайн"
       arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
-      continue_html: "Нажмите %{enter}, чтобы продолжить, или %{shift} + %{enter}, чтобы вернуться."
     designs:
-      americat_express: "Без кота"
-      mastercat: "Довольный"
-      meowisa: "Сонный"
-      unipaw: "Любопытный"
-      cash: "Ворчун"
+      americat_express: "Заливка"
+      mastercat: "Раздел"
+      meowisa: "Переход"
+      unipaw: "Лента"
+      cash: "Штрих"
       bank: "Банк"
       savings: "Сбережения"
       digital_wallet: "Электронный кошелёк"
@@ -116,7 +128,7 @@ ru:
 
   allocations:
     index:
-      name: "Категории"
+      name: "План"
       remainder: "Остаток: %{amount} %{currency}"
       overallocation: "Запланированные суммы превышают доступные средства на %{amount} %{currency}."
       no_data:
@@ -127,9 +139,9 @@ ru:
         bill: "— Счета"
         emergency_fund: "— Резервный фонд"
         spending_explanation: "Остальные деньги будут учтены при расчёте доступной суммы на день. Так вы сможете тратить свободнее, не рискуя своими планами."
-      create_allocation: "Новая категория"
+      create_allocation: "Новый пункт плана"
     new:
-      name: "Новый план"
+      name: "Новый пункт плана"
     form:
       errors: "Количество ошибок: %{count}. Не удалось сохранить план:"
       name_question: "Как назвать категорию?"
@@ -181,18 +193,9 @@ ru:
   expenses:
     index:
       name: "Расходы"
-      user: "Пользователь"
-      cybercat_description: "Киберкот"
       expenses: "Расходы"
       expense_records: "расходов"
       create_expense: "Добавить расход"
-      answers:
-        no_expenses: "Пока ничего не потрачено — отлично."
-        "0": "На сегодня трат достаточно."
-        "25": "Можно, но завтра придётся экономить."
-        "50": "Лучше оставить немного на завтра."
-        "80": "Да, всё ещё можно."
-        "100": "Сегодня вы впереди плана — отлично."
     new:
       name: "Новый расход"
       no_sources:
@@ -217,7 +220,6 @@ ru:
         creation_html: "Будет создана категория %{name}"
         remaining: "Осталось %{amount} %{currency}"
         unplanned: "Незапланированная категория"
-        submit_and_create: "Подтвердить и создать категорию"
       date: "Дата:"
       note: "Заметка:"
       note_added: "Добавлена"
@@ -250,6 +252,7 @@ ru:
   users:
     show:
       name: "Пользователь"
+      back: "Назад к дашборду"
       account: "Учётная запись"
       language: "Язык"
       language_description: "Выберите язык интерфейса Spendout."
@@ -262,7 +265,12 @@ ru:
 
   exchanges:
     form:
+      from: "Из кошелька"
+      name: "Название"
+      name_placeholder: "Наличные в поездке, иностранный счёт и т. п."
       name_question: "Как назвать новый источник?"
+      cancel: "Отмена"
+      submit: "Подтвердить"
 
   shared:
     locale_switcher:
@@ -278,15 +286,13 @@ ru:
       no_data: "Валюты не найдены"
     name_fields:
       name: "Название"
-    amount_currency_fields:
+    amount_fields:
       name: "Сумма"
       arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
     currency_rate_picker:
+      name: "Обменный курс"
       change_rate: "Указать курс"
       prompt: "Укажите, сколько единиц %{currency} приходится на 1 %{base_currency}"
-    form_navigation:
-      continue_html: "Нажмите %{enter}, чтобы продолжить, или %{shift} + %{enter}, чтобы вернуться."
-      back_html: "Нажмите %{shift} + %{enter}, чтобы вернуться."
     icon_fields:
       name: "Значок"
       arrows_navigation_html: "Переключайте варианты клавишами %{arrows}."
@@ -302,6 +308,328 @@ ru:
       name: "Доступная сумма на сегодня"
       remaining: "Осталось %{percentage}% доступной на сегодня суммы"
       amount: "Сегодня можно потратить: %{amount} %{currency}"
+
+  categories:
+    index:
+      name: "Категории"
+      spent: "Потрачено: %{amount} %{currency}"
+      planned: "Запланировано: %{amount} %{currency}"
+      empty: "Создайте категорию перед записью расхода."
+      create: "Новая категория"
+    new:
+      name: "Новая категория"
+    form:
+      errors: "Категорию не удалось сохранить, ошибок: %{count}"
+      name_question: "На что тратятся деньги?"
+      name_placeholder: "Кофе, аренда, продукты…"
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    show:
+      remove: "Убрать категорию"
+      remove_confirmation: "Убрать категорию из будущих форм?"
+    create:
+      success: "Категория создана."
+    update:
+      success: "Категория обновлена."
+    destroy:
+      success: "Категория убрана."
+
+  incomes:
+    index:
+      name: "Пополнения"
+      empty: "Пополнений пока нет."
+      create: "Добавить пополнение"
+    new:
+      name: "Новое пополнение"
+      no_sources: "Сначала добавьте кошелёк."
+      create_source: "Новый кошелёк"
+    form:
+      errors: "Пополнение не удалось сохранить, ошибок: %{count}"
+      amount_question: "Сколько поступило?"
+      direction: "Направление"
+      from: "От кого"
+      from_placeholder: "Зарплата, клиент, возврат…"
+      to: "В кошелёк"
+      date: "Дата"
+      note: "Заметка"
+      note_placeholder: "Добавьте заметку, если нужно…"
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    income:
+      view: "Открыть пополнение"
+      with_note: "Есть заметка"
+      to: "В %{source}"
+    show:
+      delete: "Удалить пополнение"
+      delete_confirmation: "Удалить эту запись?"
+    create:
+      success: "Пополнение записано."
+    destroy:
+      success: "Пополнение удалено."
+      failure: "Нельзя удалить пополнение, пока кошелёк использует эти деньги."
+
+  records:
+    timeline:
+      empty: "Записей пока нет."
+      load_more: "Загрузить ещё записи"
+      unusual_day: "В %{multiple} раза больше обычного дня расходов"
+      repeated_category_over_plan: "%{category}: %{count} повторений — потрачено %{spent} при плане %{planned}"
+
+  recurrences:
+    index:
+      name: "Повторения"
+      empty: "Повторений пока нет."
+      create: "Новое повторение"
+    new:
+      name: "Новое повторение"
+      no_categories: "Сначала создайте категорию."
+      create_category: "Новая категория"
+    edit:
+      name: "Изменить повторение"
+    form:
+      errors: "Запись не удалось сохранить, ошибок: %{count}"
+      name_question: "Что повторяется?"
+      name_placeholder: "Аренда, Netflix, страховка…"
+      details: "Параметры траты"
+      category:
+        name: "Категория:"
+        search: "Найти или добавить категорию"
+        choose: "Выберите категорию"
+        close: "Закрыть выбор категории"
+        confirm: "Подтвердить"
+        creation_html: "Будет создана категория %{name}"
+      amount: "Сумма"
+      currency: "Валюта"
+      occurs_on: "Следующая:"
+      period: "Дней:"
+      note: "Заметка:"
+      note_added: "Заметка добавлена"
+      note_placeholder: "Необязательно"
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    recurrence:
+      schedule: "%{date}, каждые %{days} дн."
+      record: "Записать расход"
+    show:
+      record: "Записать расход"
+      edit: "Изменить"
+      finish: "Остановить"
+      finish_confirmation: "Остановить повторение?"
+    create:
+      success: "Повторение создано."
+    update:
+      success: "Повторение обновлено."
+    finish:
+      success: "Повторение остановлено."
+
+  lenses:
+    types:
+      source_holder: "Картхолдер"
+      plan_overview: "План"
+      rollover: "Дневной остаток"
+      most_expensive_categories: "Главные категории"
+      upcoming_recurrences: "Ближайшие подписки"
+      money_weather: "Денежная погода"
+      tiny_leaks: "Мелкие утечки"
+      spree_detector: "Детектор кутежа"
+      payday_gravity: "Гравитация дохода"
+      repeat_offenders: "Знакомые нарушители"
+      parallel_you: "Параллельный ты"
+      weekday_fingerprint: "Почерк недели"
+      rate_info: "Информация о курсах"
+    index:
+      name: "Дашборд бюджета"
+      navigation_label: "Разделы бюджета"
+      money: "Деньги"
+      categories: "Категории"
+      plan: "План"
+      expenses: "Траты"
+      income: "Пополнения"
+      recurring: "Повторы"
+      report: "Отчёт"
+      account: "Аккаунт"
+      inactive: "Линза сейчас вне выбранных дат."
+      create_expense: "Добавить трату"
+      create_income: "Добавить пополнение"
+      widgets: "Виджеты"
+      lenses: "Линзы"
+      configure: "Настроить линзы"
+      recent_records: "Недавние записи"
+      arrange: "Упорядочить линзы"
+    edit:
+      name: "Порядок линз"
+      description: "Выберите порядок линз на дашборде."
+      back: "Назад к дашборду"
+      list_label: "Активные линзы"
+      controls: "Переместить: %{name}"
+      move_up: "Переместить вверх"
+      move_down: "Переместить вниз"
+      remove: "Убрать: %{name}"
+      remove_confirmation: "Убрать линзу «%{name}» с дашборда?"
+    move:
+      success: "Порядок линз обновлён."
+    new:
+      name: "Лаборатория линз"
+      description: "Выберите, как взаимодействовать с этим бюджетом."
+      eyebrow: "Инструменты бюджета"
+      back: "Назад к дашборду"
+      question: "На какой вопрос должна отвечать линза?"
+      add: "Добавить: %{name}"
+      preview: "Предпросмотр"
+      configure: "Настроить"
+      add_now: "Добавить"
+      all_active: "Все линзы уже активны."
+      rollover_question: "Сколько безопасно потратить сегодня?"
+      most_expensive_categories_question: "Куда уходят деньги?"
+      upcoming_recurrences_question: "Какой платёж следующий?"
+      money_weather_question: "Надвигается ли финансовый шторм?"
+      tiny_leaks_question: "Какая мелочь постоянно возвращается?"
+      spree_detector_question: "Какие дни особенно кусаются?"
+      payday_gravity_question: "Как быстро исчезает доход?"
+      repeat_offenders_question: "Что похоже на регулярную трату?"
+      parallel_you_question: "Что было бы, трать я немного меньше?"
+      weekday_fingerprint_question: "Какой день недели обходится дороже?"
+      rate_info_question: "Сколько сегодня стоят мои валюты?"
+      rollover: "Распределяет свободные траты по дням бюджета."
+      most_expensive_categories: "Показывает самые затратные категории."
+      upcoming_recurrences: "Показывает платежи по подпискам на месяц вперёд."
+      money_weather_answer: "Следующая неделя выглядит спокойно — пока что."
+      money_weather: "Прогнозирует ближайшие траты по текущему темпу и запланированным повторам."
+      tiny_leaks_answer: "Несколько мелочей складываются в заметную сумму."
+      tiny_leaks: "Находит повторяющиеся траты меньше обычной покупки."
+      spree_detector_answer: "Один затратный день заметно выбивается из ритма."
+      spree_detector: "Сравнивает расходы за день с обычным затратным днём."
+      payday_gravity_answer: "Быстрее всего доход теряет высоту в первую неделю."
+      payday_gravity: "Показывает расходы за семь дней после каждого пополнения."
+      repeat_offenders_answer: "Некоторые траты уже ведут себя как подписки."
+      repeat_offenders: "Ищет похожие по названию и сумме расходы с повторяющимся интервалом."
+      parallel_you_answer: "Чуть более бережливый ты сохраняет разницу."
+      parallel_you: "Моделирует снижение незапланированных расходов на 20%."
+      weekday_fingerprint_answer: "Каждый день недели оставляет свой денежный след."
+      weekday_fingerprint: "Сравнивает средние расходы по дням недели."
+      rate_info_answer: "Валюты кошельков движутся, даже когда записи не меняются."
+      rate_info: "Показывает справочные курсы на дату, не переписывая историю."
+      cybercat_answer: "Доброе утро. Бюджет пока уверенно стоит на лапах."
+      sample_home: "Дом"
+      sample_food: "Еда"
+      sample_coffee: "Кофе"
+      sample_today: "Сегодня"
+      sample_tomorrow: "Завтра"
+      sample_gym: "Спортзал"
+      sample_later: "Через пять дней"
+    source_holder:
+      controls: "Управление источниками"
+      stack: "Кошельки"
+      total: "Всего доступно"
+      create: "Добавить кошелёк"
+      create_label: "Кошелёк"
+      exchange: "Добавить обмен"
+      exchange_label: "Обмен"
+      tip_name: "Добавьте кошельки или карты"
+      tip_description: "Добавьте источник, чтобы отслеживать доступные в этом бюджете деньги и место их хранения."
+      tip_examples: "Например: наличные, банковский счёт, дебетовая или кредитная карта."
+    plan_overview:
+      controls: "Управление планом"
+      create: "Добавить план"
+      create_label: "План"
+      tip_name: "Снача запланируйте важные расходы"
+      tip_description: "Отложите деньги на уже известные важные расходы, чтобы остальные деньги можно было тратить свободнее."
+    most_expensive_categories:
+      empty: "Категоризированных расходов пока нет."
+    upcoming_recurrences:
+      controls: "Управление повторами"
+      empty: "Ближайших подписок нет."
+      record: "Записать"
+      create: "Добавить подписку"
+      create_label: "Подписка"
+      view_sub: "Открыть %{name}, %{amount}"
+    money_weather:
+      conditions: { clear: "Ясно", cloudy: "Собираются облака", storm: "Штормовое предупреждение" }
+      projection: "Прогноз на %{days} дн.: %{amount} %{currency}"
+      scheduled: "Уже запланировано: %{amount} %{currency}"
+    tiny_leaks:
+      empty: "Повторяющихся мелких утечек пока не найдено."
+      total: "Эти паттерны унесли %{amount} %{currency}"
+    spree_detector:
+      empty: "Необычно затратных дней не найдено."
+      multiple: "В %{multiple}× дороже обычного затратного дня"
+    payday_gravity:
+      empty: "Запишите доход, чтобы измерить его гравитацию."
+      spent: "%{percentage}% потрачено за %{days} дн."
+    repeat_offenders:
+      empty: "Надёжных повторяющихся паттернов пока нет."
+      pattern: "%{count} раз, примерно каждые %{days} дн."
+      next: "Возможная следующая дата: %{date}"
+    parallel_you:
+      assumption: "Если бы незапланированные траты были на %{percentage}% меньше"
+      saved: "осталось бы у параллельного тебя"
+      alternative: "Альтернативный итог: %{amount} %{currency}"
+    weekday_fingerprint:
+      empty: "Для почерка нужно больше дней с расходами."
+      highest: "Сейчас самый высокий средний расход — в %{day}."
+    rate_info:
+      board_title: "Курсы валют"
+      currency: "Валюта"
+      rate: "Курс"
+      reference: "Последний курс от %{date}"
+      unavailable: "Справочные курсы временно недоступны."
+      controls: "Управление курсами"
+      edit: "Выбрать валюты"
+    cybercat:
+      description: "Киберкот"
+      messages:
+        morning: "Доброе утро. Посмотрим, как проснулся бюджет."
+        afternoon: "Дневная проверка. Вот как дела у бюджета."
+        evening: "Вечерняя сводка. Завершим день мягко."
+        add_first_source: "Добавьте деньги, которые хотите тратить или держать под контролем в этом бюджете."
+        add_first_allocation: "Прежде чем начать тратить, добавьте в план уже известные вам расходы."
+        remaining_today: "Сегодня ещё безопасно потратить %{amount}."
+        over_pace: "Сегодня траты выше комфортного темпа на %{amount}."
+        available: "В этом бюджете доступно %{amount}."
+        spent_today:
+          one: "Сегодня %{count} трата на сумму %{amount}."
+          few: "Сегодня %{count} траты на сумму %{amount}."
+          many: "Сегодня %{count} трат на сумму %{amount}."
+          other: "Сегодня %{count} траты на сумму %{amount}."
+        quiet_today: "Сегодня трат не записано. Тихие лапы."
+    destroy:
+      success: "Линза убрана."
+
+  rollovers:
+    create:
+      success: "Линза дневного остатка добавлена."
+      failure: "Не удалось добавить линзу дневного остатка."
+
+  most_expensive_categories:
+    new:
+      name: "Главные категории"
+    form:
+      starts_on: "Считать траты с"
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    create:
+      success: "Линза категорий добавлена."
+
+  upcoming_recurrences:
+    create:
+      success: "Линза ближайших подписок добавлена."
+      failure: "Такая линза уже есть."
+
+  rate_infos:
+    new:
+      name: "Курсы валют"
+    edit:
+      name: "Курсы валют"
+    form:
+      currencies: "Валюты для наблюдения"
+      hint: "Выберите до четырёх валют. Курсы показываются к %{currency} этого бюджета."
+      blank: "Не выбрана"
+      cancel: "Отмена"
+      submit: "Подтвердить"
+    create:
+      success: "Линза курсов добавлена."
+    update:
+      success: "Список валют обновлён."
 
   activerecord:
     errors:
@@ -327,6 +655,9 @@ ru:
           attributes:
             currency_code:
               unavailable: "не поддерживается"
+            category:
+              wrong_budget: "должна относиться к этому бюджету"
+              inactive: "должна быть активной"
         expense:
           attributes:
             occurred_on:
@@ -337,6 +668,31 @@ ru:
             allocation:
               wrong_budget: "должен относиться к этому бюджету"
               inactive: "должен быть активным"
+            category:
+              wrong_budget: "должна относиться к этому бюджету"
+              inactive: "должна быть активной"
+        income:
+          attributes:
+            occurred_on:
+              outside_budget_period: "должна входить в период бюджета"
+            source:
+              wrong_budget: "должен относиться к этому бюджету"
+              inactive: "должен быть активным"
+            base:
+              immutable: "пополнение нельзя изменить"
+              would_overdraw: "нельзя удалить, пока кошелёк использует эти деньги"
+        recurrence:
+          attributes:
+            category:
+              wrong_budget: "должна относиться к этому бюджету"
+              inactive: "должна быть активной"
+        rate_info:
+          attributes:
+            currency_codes:
+              blank: "выберите хотя бы одну валюту"
+              inclusion: "содержит неподдерживаемую валюту"
+              exclusion: "не может включать базовую валюту бюджета"
+              too_many: "выберите не больше %{count} валют"
 
   date:
     formats:

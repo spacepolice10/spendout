@@ -3,12 +3,12 @@ class AllocationsController < ApplicationController
   before_action :set_allocation, only: %i[ show finish reopen destroy ]
 
   def index
-    @allocations = @budget.allocations.includes(:expenses).planned.where(deleted_at: nil).order(:created_at, :id)
+    @allocations = @budget.allocations.includes(:category, expenses: :source).where(deleted_at: nil).order(:created_at, :id)
   end
 
   def show
     @expenses = set_page_and_extract_portion_from(
-      @allocation.expenses.includes(:source, :allocation)
+      @allocation.expenses.includes(:source, :category)
         .order(occurred_on: :desc, created_at: :desc, id: :desc)
     )
     @expenses_by_date = @expenses.group_by(&:occurred_on)
@@ -30,14 +30,14 @@ class AllocationsController < ApplicationController
       else
         t("allocations.create.success")
       end
-      redirect_to budget_allocations_path(@budget), notice: notice
+      redirect_to budget_lenses_path(@budget), notice: notice
     else
       render :new, status: :unprocessable_entity
     end
   end
 
   def finish
-    if @allocation.planned? && @allocation.active? && @allocation.update(finished_at: Time.current)
+    if @allocation.active? && @allocation.update(finished_at: Time.current)
       redirect_to budget_allocations_path(@budget), notice: t("allocations.finish.success")
     else
       redirect_to budget_allocations_path(@budget), alert: t("allocations.finish.failure")
@@ -45,7 +45,7 @@ class AllocationsController < ApplicationController
   end
 
   def reopen
-    if @allocation.planned? && @allocation.finished? && !@allocation.deleted? && !@budget.archived? &&
+    if @allocation.finished? && !@allocation.deleted? && !@budget.archived? &&
         @allocation.update(finished_at: nil)
       redirect_to budget_allocations_path(@budget), notice: t("allocations.reopen.success")
     else
@@ -55,9 +55,9 @@ class AllocationsController < ApplicationController
 
   def destroy
     if @allocation.update(deleted_at: Time.current)
-      redirect_to budget_allocations_path(@budget), notice: t("allocations.destroy.success")
+      redirect_to budget_lenses_path(@budget), notice: t("allocations.destroy.success")
     else
-      redirect_to budget_allocations_path(@budget), alert: t("allocations.destroy.failure")
+      redirect_to budget_lenses_path(@budget), alert: t("allocations.destroy.failure")
     end
   end
 
@@ -72,6 +72,7 @@ class AllocationsController < ApplicationController
     end
 
     def allocation_params
-      params.require(:allocation).permit(:name, :amount, :currency_code, :rate, :icon, :colour)
+      params.require(:allocation).permit(:category_id, :category_name_to_create, :category_icon, :category_colour,
+        :amount, :currency_code, :rate)
     end
 end

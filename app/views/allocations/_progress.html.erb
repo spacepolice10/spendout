@@ -1,0 +1,18 @@
+<% progress_maximum = allocation.amount.positive? ? allocation.amount : 1 %>
+<% progress_amount = allocation.amount.positive? ? [ used_amount, allocation.amount ].min : (used_amount.positive? ? 1 : 0) %>
+<% filled_blocks = (progress_amount * 20 / progress_maximum).floor %>
+
+<div
+  role="progressbar"
+  aria-label="<%= label %>"
+  aria-valuenow="<%= progress_amount %>"
+  aria-valuemin="0"
+  aria-valuemax="<%= progress_maximum %>"
+  style="--progress-colour: var(--color-palette-<%= allocation.colour %>);"
+  data-allocation-progress
+  data-testid="<%= testid %>"
+>
+  <% 20.times do |index| %>
+    <span aria-hidden="true" data-filled="<%= index < filled_blocks %>"></span>
+  <% end %>
+</div>

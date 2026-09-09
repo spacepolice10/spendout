@@ -33,8 +33,8 @@ module Frankfurter
         rate_list = JSON.parse(body, decimal_class: BigDecimal)
         raise Error, "expected a non-empty array" unless rate_list.is_a?(Array) && rate_list.any?
 
-        date_list = []
-        rate_catalog = { "EUR" => "1" }
+        reference_dates = {}
+        rate_catalog = {}
 
         rate_list.each do |rate|
           raise Error, "expected an object for every rate" unless rate.is_a?(Hash)
@@ -46,20 +46,21 @@ module Frankfurter
 
           raise Error, "unexpected base currency" unless base == "EUR"
           raise Error, "rate must be positive" unless rate.positive?
-          next if quoted_currency == "EUR"
           next unless Currency::CATALOG.key?(quoted_currency)
+          raise Error, "invalid EUR identity rate" if quoted_currency == "EUR" && rate != 1
 
           raise Error, "duplicate quoted currency" if rate_catalog.key?(quoted_currency)
 
-          date_list << date
-          rate_catalog[quoted_currency] = rate.to_s("F")
+          reference_dates[quoted_currency] = date.iso8601
+          rate_catalog[quoted_currency] = quoted_currency == "EUR" ? "1" : rate.to_s("F")
         end
 
-        raise Error, "rates have inconsistent reference dates" unless date_list.uniq.one?
+        raise Error, "missing EUR identity rate" unless rate_catalog["EUR"] == "1"
 
         {
-          "reference_date" => date_list.first.iso8601,
-          "rates" => rate_catalog
+          "reference_date" => reference_dates.values.max,
+          "rates" => rate_catalog,
+          "reference_dates" => reference_dates
         }
       end
 

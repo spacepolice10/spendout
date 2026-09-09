@@ -1,30 +1,9 @@
-<%# locals: (form:, question:, name_attribute: :name, placeholder: nil, open: true, input_data: {}) %>
-<%= tag.details name: "form-details", data: { form_target: "section" }, open: open do %>
-  <%= tag.summary data: { form_target: "summary" } do %>
-    <%= tag.span t(".name") %>
+<%# locals: (form:, name_attribute: :name, placeholder: nil, open: true, required: true, input_data: {}) %>
+<section>
+    <%= form.label name_attribute, data: { name_field: true } do %>
+      <span><%= t(".name") %></span>
 
-    <%= tag.small data: { form_target: "summaryContent" } do %>
-      <%= form.object.public_send(name_attribute) %>
+      <%= form.text_field name_attribute, required: required, placeholder: placeholder,
+        autofocus: open && !mobile_variant?, data: input_data %>
     <% end %>
-  <% end %>
-
-  <%= tag.div do %>
-    <%= tag.small do %>
-      <%= question %>
-    <% end %>
-
-    <%= form.label name_attribute, t(".name"), class: "utilities--sr-only" %>
-
-    <%= form.text_field name_attribute, required: true, placeholder: placeholder,
-      autofocus: open && !mobile_variant?,
-      data: input_data.merge({
-        form_target: "toBeFocused"
-      }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
-
-    <% unless mobile_variant? %>
-      <%= tag.small do %>
-        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
-      <% end %>
-    <% end %>
-  <% end %>
-<% end %>
+</section>

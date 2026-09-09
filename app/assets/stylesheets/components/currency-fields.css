@@ -110,7 +110,6 @@
             min-height: 0;
             border: var(--border-subtle);
             overflow-y: auto;
-            overscroll-behavior: contain;
         }
 
         & [data-currency-picker-option] {
@@ -119,6 +118,29 @@
             &:has(input[type="radio"]:checked) {
                 background: var(--color-2);
             }
+        }
+
+        & .currency-flag {
+            width: 2rem;
+            height: 1.5rem;
+            flex: 0 0 auto;
+            image-rendering: pixelated;
+        }
+
+        & [data-currency-picker-target="selection"] {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-h-half);
+
+            &[data-empty="true"] > .currency-flag {
+                display: none;
+            }
+        }
+
+        & [data-currency-picker-target="option"] {
+            display: flex;
+            align-items: center;
+            gap: var(--space-h-half);
         }
 
         & [data-currency-picker-active]::before,

@@ -28,11 +28,6 @@ export default class extends Controller {
   }
 
   keydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault()
-      this.dialogTarget.close("cancel")
-      return
-    }
     if (![ "ArrowDown", "ArrowUp", "Enter" ].includes(event.key)) return
 
     event.preventDefault()

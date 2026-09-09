@@ -11,7 +11,7 @@ export default class extends Controller {
   connect() {
     this.events = new AbortController()
     this.currencyTarget.addEventListener("change", this.currencyChanged, { signal: this.events.signal })
-    this.validateCurrency()
+    this.element.addEventListener("currency-fields:base-currency-changed", this.baseCurrencyChanged, { signal: this.events.signal })
     this.updateRateFields()
     this.calculate()
   }
@@ -20,7 +20,6 @@ export default class extends Controller {
 
   currencyChanged = async () => {
     const selectedCurrency = this.currencyTarget.value
-    this.validateCurrency()
     this.updateRateFields()
 
     if (selectedCurrency === this.baseCurrencyValue) {
@@ -38,13 +37,9 @@ export default class extends Controller {
     this.calculate()
   }
 
-  validateCurrency() {
-    const sameCurrencyExchange = this.operationValue === "multiply" &&
-      this.currencyTarget.value === this.baseCurrencyValue
-
-    this.currencyTarget.setCustomValidity(
-      sameCurrencyExchange ? "Choose a currency different from the source currency." : ""
-    )
+  baseCurrencyChanged = (event) => {
+    this.baseCurrencyValue = event.detail.currency
+    this.currencyChanged()
   }
 
   calculate() {
@@ -79,7 +74,7 @@ export default class extends Controller {
   }
 
   setRate(value) {
-    this.rateTarget.value = value
+    this.rateTarget.value = value.replace(".", ",")
     this.rateTarget.dataset.amountFieldsStartValue = value
     this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
     this.calculate()
@@ -96,27 +91,27 @@ export default class extends Controller {
   }
 
   async rateBetween(from, to) {
-    const rate_catalog = await this.referenceRates()
-    const fromRate = Number(rate_catalog[from])
-    const toRate = Number(rate_catalog[to])
-    if (!Number.isFinite(fromRate) || !Number.isFinite(toRate) || fromRate <= 0 || toRate <= 0) return null
+    const rateCatalog = await this.referenceRates(from)
+    const rate = rateCatalog[to]
+    if (!Number.isFinite(Number(rate)) || Number(rate) <= 0) return null
 
-    return this.canonicalize(toRate / fromRate)
+    return rate
   }
 
-  async referenceRates() {
-    if (this.referenceRatesPromise) return this.referenceRatesPromise
+  async referenceRates(base) {
+    this.referenceRatesPromises ||= {}
+    if (this.referenceRatesPromises[base]) return this.referenceRatesPromises[base]
 
     const request = new URL(this.referenceLinkValue, window.location.origin)
-    request.searchParams.set("base", "USD")
+    request.searchParams.set("base", base)
 
-    this.referenceRatesPromise = (async () => {
+    this.referenceRatesPromises[base] = (async () => {
       const response = await fetch(request, { headers: { Accept: "application/json" } })
       if (!response.ok) return {}
 
       return (await response.json()).rate_catalog || {}
     })().catch(() => ({}))
 
-    return this.referenceRatesPromise
+    return this.referenceRatesPromises[base]
   }
 }

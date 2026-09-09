@@ -1,29 +1,44 @@
-<%# locals: (form:, attribute:, filter_data: {}, filter_autofocus: false, preferred_currencies: [], compact: false, select_data: {}) %>
-<% selected_code = form.object.public_send(attribute) %>
+<%# locals: (form:, attribute:, filter_data: {}, filter_autofocus: false, preferred_currencies: [], compact: false, select_data: {}, selected: :from_object, options: nil, required: true, select_name: nil, picker_id: nil) %>
+<% selected_code = selected == :from_object ? form.object.public_send(attribute) : selected %>
 <% suggested_code = Current.suggested_currency_code %>
 <% selected_currency = Currency.find(selected_code) %>
+<% selected_country_code = selected_currency&.fetch(:country_code) %>
+<% catalog = options || Currency.options %>
+<% catalog_by_code = catalog.index_by(&:last) %>
+<% ordered_options = [ selected_code, suggested_code, *preferred_currencies, *Currency::POPULAR_CURRENCIES ]
+     .compact.uniq.filter_map { |code| catalog_by_code.delete(code) } + catalog_by_code.values %>
 <% selection = if compact && selected_currency
-     "#{selected_currency[:flag]} #{selected_code}"
+     selected_code
    else
-     Currency.options.to_h.invert[selected_code] || t(".choose")
+     catalog.to_h.invert[selected_code] || t(".choose")
    end %>
-<% ordered_options = Currency.options_prioritizing([
-     selected_code, suggested_code, *preferred_currencies, *Currency::POPULAR_CURRENCIES
-   ]) %>
+<% dialog_id = picker_id ? "#{picker_id}-dialog" : "currency-picker-dialog" %>
+<% listbox_id = picker_id ? "#{picker_id}-listbox" : "currency-picker-listbox" %>
+<% select_html = {
+     required: required,
+     class: "utilities--sr-only",
+     aria: { label: t(".currency") },
+     data: { currency_picker_target: "select", currency_fields_target: "currency",
+       expense_fields_target: "currency" }.merge(select_data)
+   } %>
+<% select_html[:name] = select_name if select_name %>
+<% select_html[:id] = "#{picker_id}-select" if picker_id %>
+<% select_choices = { include_blank: t(".choose") } %>
+<% select_choices[:selected] = selected_code unless selected == :from_object %>
 <div class="currency-picker" data-controller="currency-picker"
   data-currency-picker-autofocus-value="<%= filter_autofocus && !mobile_variant? %>">
-  <%= form.select attribute, Currency.options, { include_blank: t(".choose") }, required: true,
-    class: "utilities--sr-only", aria: { label: t(".currency") },
-    data: { currency_picker_target: "select", currency_fields_target: "currency",
-      expense_fields_target: "currency" }.merge(select_data) %>
+  <%= form.select attribute, catalog, select_choices, select_html %>
 
-  <button type="button" aria-haspopup="dialog" aria-controls="currency-picker-dialog"
+  <button type="button" aria-haspopup="dialog" aria-controls="<%= dialog_id %>"
     data-currency-picker-target="currencyTrigger" data-action="currency-picker#openCurrency">
-    <span data-currency-picker-target="selection"><%= selection %></span>
+    <span data-currency-picker-target="selection" data-empty="<%= selected_currency.nil? %>">
+      <%= currency_flag(selected_currency ? selected_code : "EUR", data: { currency_picker_target: "selectionFlag" }) %>
+      <span data-currency-picker-target="selectionText"><%= selection %></span>
+    </span>
     <%= icon("chevron-right", aria: { hidden: true }) %>
   </button>
 
-  <dialog id="currency-picker-dialog" aria-label="<%= t(".choose") %>"
+  <dialog id="<%= dialog_id %>" aria-label="<%= t(".choose") %>" closedby="any"
     data-currency-picker-target="currencyDialog"
     data-action="close->currency-picker#currencyHidden">
     <header>
@@ -35,23 +50,26 @@
       <input type="search" placeholder="<%= t(".search_placeholder") %>" autocomplete="off" role="combobox"
         <%= "autofocus" if filter_autofocus && !mobile_variant? %>
         aria-label="<%= t(".search_name") %>" aria-autocomplete="list" aria-expanded="true"
-        aria-controls="currency-picker-listbox" data-currency-picker-target="filter"
+        aria-controls="<%= listbox_id %>" data-currency-picker-target="filter"
         data-action="input->currency-picker#search keydown->currency-picker#keydown"
         <% filter_data.each do |name, value| %> data-<%= name.to_s.dasherize %>="<%= value %>"<% end %>>
     </div>
-    <div id="currency-picker-listbox" role="listbox" data-currency-picker-target="options">
+    <div id="<%= listbox_id %>" role="listbox" data-currency-picker-target="options">
       <% ordered_options.each do |label, code| %>
         <div data-currency-picker-option>
-          <label id="<%= form.field_id(attribute, "option_#{code.downcase}") %>" role="option"
+          <label id="<%= picker_id ? "#{picker_id}-option-#{code.downcase}" : form.field_id(attribute, "option_#{code.downcase}") %>" role="option"
             aria-selected="<%= code == selected_code %>" data-currency-picker-target="option"
             data-filter-value="<%= label %>"
-            data-selection-value="<%= compact ? "#{Currency.find!(code)[:flag]} #{code}" : label %>"
+            data-selection-value="<%= compact ? code : label %>"
+            data-flag-src="<%= image_path("currency-flags/#{Currency.find!(code)[:country_code].downcase}.png") %>"
+            data-country-code="<%= Currency.find!(code)[:country_code] %>"
             data-popular="<%= Currency::POPULAR_CURRENCIES.include?(code) ? true : false %>"
             data-default="<%= code == selected_code ? true : false %>"
             data-suggested="<%= code == suggested_code ? true : false %>">
-            <input type="radio" name="<%= form.object_name %>-currency-picker" value="<%= code %>"
+            <input type="radio" name="<%= picker_id ? "#{picker_id}-choice" : "#{form.object_name}-currency-picker" %>" value="<%= code %>"
               <%= "checked" if code == selected_code %>
               data-action="change->currency-picker#choose">
+            <%= currency_flag(code) %>
             <span><%= label %></span>
           </label>
         </div>

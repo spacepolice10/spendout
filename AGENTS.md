@@ -1,17 +1,20 @@
 - A user has at most one active budget; archived budgets remain as history. The root shows the active budget or the new-budget form when none is active.
-- A budget has sources, allocations, and expenses.
-- A source is a currency-specific money container with a name, amount, card design, immutable currency, and immutable base-relative quote; its balance may grow through incomes.
-- An allocation is either a budget-level, non-binding spending plan or an unplanned expense category. Planned allocations reserve from the general remainder, can exceed available funds with a warning, and never block an expense; explicitly finishing one releases its unspent reservation while preserving history. Fully spent allocations remain active so they can be overspent. Unplanned categories only classify expenses paid from that remainder.
-- An expense immutably preserves its purchase amount and currency, directly quoted source-currency debit, conversion quote, optional 200-character note, and occurrence date; it can only be deleted and recreated. Allocations remain currency-independent classifications.
+- A budget snapshots its immutable base currency and date range and owns all of its financial data: sources, categories, allocations, expenses, incomes, exchanges, recurrences, and lenses.
+- A source is a currency-specific money container with a name, opening amount, card design, immutable currency, and immutable base-relative quote. Incomes add to it.
+- A category is a required, currency-independent classification for every expense. It may exist without a plan and can be created from the expense form.
+- An allocation is an optional, non-binding plan for one category. It reserves from the general remainder, may exceed funds with a warning, never blocks expenses, and keeps history when finished or removed.
+- An expense immutably preserves its category, purchase amount and currency, directly quoted source-currency debit, conversion quote, optional 200-character note, and occurrence date; it can only be deleted and recreated.
+- A recurrence belongs to a category and stores its next occurrence date and positive recurrence period in days. Recording it creates a normal expense and advances that date.
+- Every budget has permanent SourceHolder and PlanOverview lenses. Other lenses are budget-owned visual configurations; removing one removes its configuration, not financial records. Rate info watches up to four currencies against the budget base.
+- The dashboard always shows a recent-records timeline of expenses and incomes; it is not a lens.
 - An exchange immutably debits a sender source and atomically creates a receiver source, snapshotting both amounts and the sender-relative quote; both sources may use the same currency.
-- Deleted sources and allocations remain attached to historical expenses and are shown as deleted.
-- A budget snapshots its immutable base currency at creation. Sources are created in the next step; the first source defaults to that currency and cannot be deleted independently.
+- Deleted sources and categories remain attached to historical expenses and are shown as deleted.
 - Currency metadata comes from the static ISO catalog. Currency-bearing records snapshot a user-confirmed quote expressed as selected-currency units per one base-currency unit. Dated external reference rates may be offered as editable suggestions; never silently update historical records or create budget-owned currencies.
 - Authentication is passwordless and uses an `AuthCode` modeled on Fizzy: an emailed six-character Base32 code with a 15-minute expiry, single-use consumption, pending-email verification, safe unknown-email handling, and rate limiting.
 - Replace the generated password authentication; do not extend it.
 - Store money with precision-safe types.
 - Follow Basecamp conventions and reference projects such as Fizzy and Writebook when writing Ruby or Hotwire code.
-- Reuse the variables and semantic rules in `base.css`. Agents must not create CSS classes; use existing classes only for business semantics, never for layouts or generic components.
+- Reuse the variables and semantic rules in `base.css`. Keep shared lens structure in the base styles; when a lens needs specific styling, give it semantic classes and place those rules in its own file under `components/lens/`. Shared cybercat portrait and speech styles live in `components/cybercat.css`, not under `lens/`.
 - In templates, prefer native HTML over Ruby-generated markup whenever HTML can express the structure clearly; reserve Ruby for dynamic values, conditions, iteration, and Rails helpers that provide meaningful behavior.
 - Do not conditionally declare attributes in templates. Always write a needed attribute explicitly and make only its value dynamic.
 - Keep `/landing` aligned with the shipped product: fine-tune its copy and demonstrations when features are added, changed, or removed, and label future work explicitly. `/once` is the ONCE setup guide.

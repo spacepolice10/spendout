@@ -1,5 +1,5 @@
 @layer components {
-    form[data-expense-form] {
+    :is(form[data-expense-form], form[data-income-form], form[data-recurrence-form], form[data-exchange-form]) {
         inline-size: 100%;
         min-inline-size: 0;
 
@@ -87,6 +87,7 @@
                 display: inline-flex;
                 position: relative;
                 align-items: center;
+                justify-content: start;
                 gap: var(--space-h-half);
                 width: 100%;
                 min-height: 2rem;
@@ -193,7 +194,6 @@
                 min-height: 0;
                 border: var(--border-subtle);
                 overflow-y: auto;
-                overscroll-behavior: contain;
             }
 
             & [data-category-picker-option] {
@@ -232,7 +232,6 @@
                 min-height: 0;
                 border: var(--border-subtle);
                 overflow-y: auto;
-                overscroll-behavior: contain;
             }
 
             & [data-source-picker-option]:has(input:checked) { background: var(--color-2); }
@@ -255,7 +254,7 @@
             & [data-source-picker-active] { outline: var(--border-strong); outline-offset: -2px; }
         }
 
-        & [data-expense-options]>div {
+        & :is([data-expense-options], [data-income-options], [data-recurrence-options], [data-exchange-options])>div {
             display: grid;
             grid-template-columns: minmax(0, 1fr);
             justify-items: start;
@@ -278,15 +277,19 @@
 
     }
 
-    article.expense-list {
+    article:is(.expense-list, .record-list) {
 
         & > main {
             gap: var(--space-v-2);
         }
 
-        & [data-expense-day] {
+        & :is([data-expense-day], [data-record-day]) {
             display: grid;
             gap: var(--space-v);
+
+            &[data-unusual-spending-day="true"] > header {
+                border-bottom-color: var(--color-negative);
+            }
 
             & > header {
                 display: flex;
@@ -314,10 +317,27 @@
                 display: grid;
                 gap: var(--space-v);
             }
+
+            & [data-timeline-insight] {
+                display: flex;
+                align-items: center;
+                gap: var(--space-h-half);
+                margin: 0;
+                padding: var(--space-v-half) var(--space-h);
+                border: var(--border-subtle);
+                border-radius: var(--radius-2);
+                background: var(--color-2);
+                font-size: var(--font-size-xs);
+
+                & svg { flex: 0 0 auto; }
+            }
+
+            & [data-unusual-spending] { color: var(--color-invert-negative); }
         }
     }
 
-    [data-expense-link] {
+    [data-expense-link],
+    [data-income-link] {
         display: block;
         color: inherit;
         text-decoration: none;
@@ -371,6 +391,10 @@
             gap: 0.5ch;
             flex: 0 0 auto;
             text-decoration: none;
+        }
+
+        & [data-income-amount] {
+            color: var(--color-invert-positive);
         }
 
         & [data-expense-note] {
@@ -544,6 +568,12 @@
                 letter-spacing: 0.08em;
                 text-transform: uppercase;
             }
+        }
+    }
+
+    form[data-exchange-form] {
+        & [data-currency-rate-picker-target="prompt"] {
+            display: none;
         }
     }
 

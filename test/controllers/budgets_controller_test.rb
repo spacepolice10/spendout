@@ -6,7 +6,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
   test "root redirects to the current budget" do
     get root_path
 
-    assert_redirected_to budget_expenses_path(budgets(:active))
+    assert_redirected_to budget_lenses_path(budgets(:active))
   end
 
   test "root redirects to budget creation when all budgets are archived" do
@@ -20,7 +20,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
   test "new redirects to the current budget when one exists" do
     get new_budget_path
 
-    assert_redirected_to budget_expenses_path(budgets(:active))
+    assert_redirected_to budget_lenses_path(budgets(:active))
   end
 
   test "reset permanently deletes the budget and its contents" do
@@ -62,8 +62,8 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='budget[base_currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[data-currency-picker-target='filter'][autofocus]"
-    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
-    assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency']"
+    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar']:not([hidden])"
+    assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency'][closedby='any']"
     assert_select "button[data-currency-picker-target='currencyTrigger'][aria-haspopup='dialog']"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
@@ -82,7 +82,7 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "select[name='budget[base_currency_code]'] option[selected]", count: 0
-    assert_select "label[data-currency-picker-target='option'][data-suggested='true'][data-filter-value='VND Dong, 🇻🇳']:not([hidden])" do
+    assert_select "label[data-currency-picker-target='option'][data-suggested='true'][data-filter-value='VND Dong']:not([hidden])" do
       assert_select "input[value='VND']:not([checked])"
     end
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
@@ -107,24 +107,26 @@ class BudgetsControllerTest < ActionDispatch::IntegrationTest
     get new_budget_path
 
     assert_response :success
-    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']", count: 1
+    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar']", count: 1
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
   end
 
-  test "creating a budget without a source redirects to source creation" do
+  test "creating a budget redirects to lenses" do
     budgets(:active).update_columns(period_to: Date.yesterday)
 
     assert_difference("Budget.count", 1) do
-      assert_no_difference("Source.count") do
-        post budgets_path, params: { budget: {
-          starts_date: Date.current,
-          ends_date: Date.current + 29.days,
-          base_currency_code: "USD"
-        } }
+      assert_difference("Lens.count", 2) do
+        assert_no_difference("Source.count") do
+          post budgets_path, params: { budget: {
+            starts_date: Date.current,
+            ends_date: Date.current + 29.days,
+            base_currency_code: "USD"
+          } }
+        end
       end
     end
 
-    assert_redirected_to budget_sources_path(Budget.order(:id).last)
+    assert_redirected_to budget_lenses_path(Budget.order(:id).last)
   end
 
   test "cannot create another active budget" do

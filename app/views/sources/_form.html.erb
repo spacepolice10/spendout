@@ -1,9 +1,5 @@
 <%= form_with model: [ budget, source ], data: {
-      source_form: true,
-      controller: "form currency-fields",
-      form_focused_on_toggle_value: !mobile_variant?,
-      currency_fields_base_currency_value: budget.base_currency_code,
-      currency_fields_reference_link_value: currency_reference_path
+      controller: "form"
     } do |form| %>
   <% if source.errors.any? %>
     <section role="alert" data-form-errors>
@@ -19,35 +15,12 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, question: t(".name_question"), placeholder: t(".name_placeholder") %>
-  <%= render "shared/amount_currency_fields", form: form, question: t(".amount_question"),
-        amount_attribute: :amount, default_amount: true,
-        currency_attribute: :currency_code, rate_attribute: :rate,
-        base_currency_code: budget.base_currency_code %>
+  <%= render "shared/amount_with_currency_fields", form: form %>
+  <%= render "shared/name_fields", form: form, placeholder: t(".name_placeholder") %>
 
   <%= render "shared/colour_fields", form: form %>
   <%= render "design_fields", form: form, source: source %>
 
-  <div data-layout="flex">
-    <%= link_to budget_sources_path(budget), role: "button", data: {
-          appearance: "keycap", intent: "secondary", size: "lg",
-          controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
-        } do %>
-      <%= icon("chevron-left") %>
-      <span><%= t(".cancel") %></span>
-      <% unless mobile_variant? %>
-        <kbd aria-hidden="true">Shift + Escape</kbd>
-      <% end %>
-    <% end %>
-    <%= form.button type: "submit", data: {
-          appearance: "keycap", intent: "primary", size: "lg",
-          controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
-        } do %>
-      <span><%= t(".submit") %></span>
-      <%= icon("chevron-right") %>
-      <% unless mobile_variant? %>
-        <kbd aria-hidden="true">Cmd + Enter</kbd>
-      <% end %>
-    <% end %>
-  </div>
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
 <% end %>

@@ -4,6 +4,10 @@
   <article data-elevation="1">
     <header>
       <nav>
+        <%= render "shared/back",
+              path: @budget ? budget_lenses_path(@budget) : root_path,
+              label: t(".back") %>
+
         <h1><%= t(".name") %></h1>
       </nav>
     </header>
@@ -14,35 +18,24 @@
         <p><%= Current.user.email_address %></p>
       </section>
 
-      <section data-language-settings>
-        <h2><%= t(".language") %></h2>
-        <p><%= t(".language_description") %></p>
-        <%= render "shared/locale_switcher" %>
-      </section>
-
       <% if @budget %>
-        <section>
-          <h2><%= t(".budget") %></h2>
-          <p><%= t(".budget_description") %></p>
-        </section>
+      <section>
+        <h2><%= t(".budget") %></h2>
+        <p><%= t(".budget_description") %></p>
+      </section>
       <% end %>
 
-    </main>
+      <%= button_to t(".sign_out"), session_path, method: :delete,
+              data: { intent: "primary" } %>
 
-    <footer>
-      <nav aria-label="<%= t(".actions") %>" style="display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-v) var(--space-h);">
-        <%= button_to t(".sign_out"), session_path, method: :delete,
-              data: { appearance: "keycap", intent: "primary" } %>
-
-        <% if @budget %>
-          <%= button_to t(".remove_budget"), budget_path(@budget), method: :delete,
+<% if @budget %>
+<%= button_to t(".remove_budget"), budget_path(@budget), method: :delete,
                 data: {
-                  appearance: "keycap",
                   intent: "negative",
                   turbo_confirm: t(".remove_budget_confirmation")
                 } %>
-        <% end %>
-      </nav>
-    </footer>
+      <% end %>
+    </main>
   </article>
+  <%= render "shared/locale_switcher" %>
 </main>

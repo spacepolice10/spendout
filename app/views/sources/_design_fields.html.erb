@@ -1,5 +1,5 @@
 <details name="form-details" data-form-target="section">
-  <summary data-form-target="summary">
+  <summary>
     <span><%= t(".name") %>:</span>
     <small data-form-target="summaryContent"><%= source.design_name %></small>
   </summary>
@@ -9,8 +9,7 @@
     <div>
       <%= form.collection_radio_buttons :design, Source.design_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text do %>
-          <%= radio.radio_button required: true, aria: { label: radio.text },
-                data: { form_target: "toBeFocused" } %>
+          <%= radio.radio_button required: true, aria: { label: radio.text } %>
           <%= render "sources/design", design: Source::DESIGNS.fetch(radio.value),
                 colour: source.colour %>
           <strong><%= radio.text %></strong>
@@ -20,7 +19,6 @@
 
     <% unless mobile_variant? %>
       <small><%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %></small>
-      <small><%= t(".continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %></small>
     <% end %>
   </fieldset>
 </details>

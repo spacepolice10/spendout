@@ -76,10 +76,9 @@ class AmountFieldsTest < ApplicationSystemTestCase
 
   test "requires conversion rates to be greater than zero" do
     visit new_budget_source_path(budgets(:active))
-    find("details[data-amount-currency-section]").find("summary").click
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
-    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
+    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong").click
     rate = find("input[name='source[rate]']")
 
     input_value(rate, "0")
@@ -95,7 +94,7 @@ class AmountFieldsTest < ApplicationSystemTestCase
 
     assert_difference -> { budgets(:active).expenses.count }, 1 do
       click_button "Confirm"
-      assert_text "Expenses"
+      assert_text "Expense was created."
     end
 
     assert_equal BigDecimal("1234.5600"), budgets(:active).expenses.order(:created_at, :id).last.amount
@@ -109,6 +108,31 @@ class AmountFieldsTest < ApplicationSystemTestCase
 
     assert_text "Amount must be less than or equal to"
     assert_equal "1.375,2501", find("input[name='expense[amount]']").value
+  end
+
+  test "placeholder text does not change the amount field size" do
+    amount = find("input[name='expense[amount]']")
+    sizes = page.evaluate_script(<<~JAVASCRIPT, amount)
+      (() => {
+        const input = arguments[0]
+        const empty = input.getBoundingClientRect()
+        const emptyFont = getComputedStyle(input).fontSize
+        const original = input.placeholder
+        input.placeholder = "a very long placeholder that would stretch a content-sized field"
+        const stretched = input.getBoundingClientRect()
+        const stretchedFont = getComputedStyle(input).fontSize
+        input.placeholder = original
+        return {
+          emptyWidth: empty.width,
+          stretchedWidth: stretched.width,
+          emptyFont,
+          stretchedFont
+        }
+      })()
+    JAVASCRIPT
+
+    assert_in_delta sizes["emptyWidth"], sizes["stretchedWidth"], 0.5
+    assert_equal sizes["emptyFont"], sizes["stretchedFont"]
   end
 
   test "shrinks long values to fit and restores the base type size" do
@@ -139,10 +163,9 @@ class AmountFieldsTest < ApplicationSystemTestCase
   test "formats a rate without showing a real-time conversion" do
     visit new_budget_source_path(budgets(:active))
 
-    find("details[data-amount-currency-section]").find("summary").click
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
-    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
+    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong").click
 
     input_value(find("input[name='source[amount]']", visible: :all), "52000")
 

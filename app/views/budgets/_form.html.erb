@@ -1,7 +1,6 @@
 <%= form_with model: budget, data: {
       budget_form: true,
       controller: "form",
-      form_focused_on_toggle_value: !mobile_variant?
     } do |form| %>
   <% if budget.errors.any? %>
     <section role="alert" data-form-errors>
@@ -39,7 +38,7 @@
 
   <br>
 
-  <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
+  <%= form.button type: "submit", data: { intent: "primary", radius: "full" } do %>
     <%= t(".submit") %> <%= icon("chevron-right") %>
   <% end %>
 <% end %>

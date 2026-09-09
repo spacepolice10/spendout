@@ -1,0 +1,25 @@
+<%# locals: (form:, cancel_path:, cancel_label:, submit_label:) %>
+<footer data-form-actions>
+  <div data-layout="flex">
+    <%= link_to cancel_path, role: "button", data: {
+          intent: "ghost", radius: "full",
+          controller: "pressable history",
+          action: "click->history#back keydown.shift+esc@document->pressable#click"
+        } do %>
+      <span><%= cancel_label %></span>
+      <% unless mobile_variant? %>
+        <kbd aria-hidden="true">Shift + Escape</kbd>
+      <% end %>
+    <% end %>
+
+    <%= form.button type: "submit", data: {
+          intent: "primary", radius: "full",
+          controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
+        } do %>
+      <span><%= submit_label %></span>
+      <% unless mobile_variant? %>
+        <kbd aria-hidden="true">Cmd + Enter</kbd>
+      <% end %>
+    <% end %>
+  </div>
+</footer>

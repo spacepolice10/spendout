@@ -41,6 +41,8 @@
      --icon-home: url(/icon-home.svg);
      --icon-pig-money: url(/icon-pig-money.svg);
      --icon-plane: url(/icon-plane.svg);
+     --icon-arrow-down: url(/icon-arrow-down.svg);
+     --icon-arrow-up: url(/icon-arrow-up.svg);
      --icon-plus: url(/icon-plus.svg);
      --icon-shopping-cart: url(/icon-shopping-cart.svg);
      --icon-burger: url(/icon-burger.svg);
@@ -70,6 +72,7 @@
      --icon-headphones: url(/icon-headphones.svg);
      --icon-guitar-pick: url(/icon-guitar-pick.svg);
      --icon-search: url(/icon-search.svg);
+     --icon-settings: url(/icon-settings.svg);
      --icon-wallet: url(/icon-wallet.svg);
      --icon-circle-dot: url(/icon-circle-dot.svg);
      --icon-trash-simple: url(/icon-trash-simple.svg);

@@ -1,0 +1,8 @@
+<%# locals: (path:, label:) %>
+<%= link_to path, role: "button", aria: { label: label }, data: {
+      intent: "ghost",
+      controller: "history",
+      action: "click->history#back"
+    } do %>
+  <%= icon("chevron-left") %>
+<% end %>

@@ -19,6 +19,58 @@
         gap: var(--form-space-v);
         min-width: 0;
 
+        & > :is(button, [role="button"], input[type="submit"]) {
+            justify-self: center;
+        }
+
+        & > div[data-layout="flex"],
+        & > footer > div[data-layout="flex"],
+        & [data-form-actions] > div[data-layout="flex"] {
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: 0;
+        }
+
+        & > div[data-layout="flex"]:has(> [data-intent="ghost"]),
+        & > footer > div[data-layout="flex"]:has(> [data-intent="ghost"]),
+        & [data-form-actions] > div[data-layout="flex"]:has(> [data-intent="ghost"]) {
+            gap: var(--space-h);
+        }
+
+        & > div[data-layout="flex"]:not(:has(> [data-intent="ghost"])) > :is(button, [role="button"]):first-child:not(:only-child),
+        & > footer > div[data-layout="flex"]:not(:has(> [data-intent="ghost"])) > :is(button, [role="button"]):first-child:not(:only-child),
+        & [data-form-actions] > div[data-layout="flex"]:not(:has(> [data-intent="ghost"])) > :is(button, [role="button"]):first-child:not(:only-child) {
+            border-start-end-radius: 0;
+            border-end-end-radius: 0;
+        }
+
+        & > div[data-layout="flex"]:not(:has(> [data-intent="ghost"])) > :is(button, [role="button"]):last-child:not(:only-child),
+        & > footer > div[data-layout="flex"]:not(:has(> [data-intent="ghost"])) > :is(button, [role="button"]):last-child:not(:only-child),
+        & [data-form-actions] > div[data-layout="flex"]:not(:has(> [data-intent="ghost"])) > :is(button, [role="button"]):last-child:not(:only-child) {
+            margin-inline-start: -0.5px;
+            border-inline-start: 1px solid color-mix(in oklch, var(--color-1) 42%, transparent);
+            border-start-start-radius: 0;
+            border-end-start-radius: 0;
+        }
+
+        & [data-form-actions] {
+            padding-block-start: var(--space-v);
+        }
+
+        & :is(button, [role="button"])[data-radius="full"] {
+            padding: calc(var(--space-v-half) + 0.2rem) var(--space-h-2);
+            font-size: var(--font-size-base-type);
+            letter-spacing: 0.04em;
+        }
+
+        & :is(button, [role="button"])[data-radius="full"]:not([data-intent="ghost"]) {
+            --button-background: var(--color-invert-1);
+            --button-background-hovered: color-mix(in oklch, var(--color-invert-1) 78%, var(--color-1));
+            --button-background-active: color-mix(in oklch, var(--color-invert-1) 66%, var(--color-1));
+            --button-color: var(--color-1);
+            border: var(--border-subtle);
+        }
+
         & fieldset {
             &>div {
                 margin-top: var(--space-v-half);
@@ -35,11 +87,27 @@
                 &>div {
                     display: grid;
                     gap: var(--form-space-v);
+
+                    &>div {
+                        display: grid;
+                        gap: var(--space-v-half);
+                    }
                 }
             }
         }
 
+        & [data-form-panel] {
+            padding: var(--space-v) var(--space-h);
+            border: var(--border-subtle);
+            border-radius: var(--radius-2);
+            background: var(--color-2);
+        }
+
         label {
+            display: inline-flex;
+            min-height: 2rem;
+            font-size: var(--font-size-base-read);
+            text-transform: uppercase;
            &>div {
             margin-top: var(--space-v-half);
            }
@@ -57,7 +125,6 @@
         & :is(input, textarea, select) {
             background: transparent;
             font-size: var(--font-size-base-type);
-            field-sizing: content;
             color: var(--color-accent);
         }
 
@@ -67,6 +134,7 @@
         }
 
         & :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]), textarea, select) {
+            field-sizing: fixed;
             width: 100%;
             min-width: 0;
             max-width: 100%;
@@ -108,6 +176,64 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        /* Inline single-line fields: a chevron-led caption beside a borderless input */
+        & :is([data-name-field], [data-expense-note], [data-income-from], [data-recurrence-period]) {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            width: 100%;
+            min-height: 2rem;
+            gap: var(--space-h-half);
+            font-size: var(--font-size-base-read);
+            text-transform: uppercase;
+
+            & > span {
+                display: inline-flex;
+                align-items: center;
+                gap: var(--space-h-half);
+                min-height: 2rem;
+            }
+
+            & > span::before {
+                content: "";
+                display: block;
+                width: 2ch;
+                height: 2ch;
+                flex-shrink: 0;
+                background: currentColor;
+                -webkit-mask: var(--icon-chevron-right) center / contain no-repeat;
+                mask: var(--icon-chevron-right) center / contain no-repeat;
+            }
+
+            & > :is(input[type="text"], input[type="number"]) {
+                min-height: 2rem;
+                height: auto;
+                padding: var(--space-v-half) var(--space-v-half);
+                border: 0;
+                border-radius: 0;
+                font-family: inherit;
+                font-size: var(--font-size-base-type);
+
+                &:focus,
+                &:focus-visible {
+                    outline: none;
+                    background-size:
+                        2px 100%, 0.75em 2px, 0.75em 2px,
+                        2px 100%, 0.75em 2px, 0.75em 2px;
+                }
+            }
+
+            & > input[type="number"] {
+                -webkit-appearance: textfield;
+                appearance: textfield;
+            }
+
+            & > input[type="number"]::-webkit-inner-spin-button,
+            & > input[type="number"]::-webkit-outer-spin-button {
+                display: none;
+            }
         }
 
         & label:has(>input[type="checkbox"], >input[type="radio"]) {
@@ -177,6 +303,10 @@
             position: relative;
         }
 
+        & :is(button[type="submit"], button:not([type])) {
+            position: relative;
+        }
+
         & :is(button[type="submit"], button:not([type]))::after {
             content: "";
             position: absolute;
@@ -187,6 +317,7 @@
             -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21v-3m6.36.36-2.12-2.12M21 12h-3m.36-6.36-2.12 2.12M12 3v3m-6.36-.36 2.12 2.12M3 12h2m1 4.95.71-.71'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21v-3m6.36.36-2.12-2.12M21 12h-3m.36-6.36-2.12 2.12M12 3v3m-6.36-.36 2.12 2.12M3 12h2m1 4.95.71-.71'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
             opacity: 0;
+            pointer-events: none;
             translate: -50% -50%;
             scale: 0.75;
             transition: opacity 150ms ease, scale 150ms ease;

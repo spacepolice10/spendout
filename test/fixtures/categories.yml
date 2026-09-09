@@ -1,0 +1,17 @@
+active:
+  budget: active
+  name: Housing
+  icon: home
+  colour: yellow
+
+archived:
+  budget: archived
+  name: Travel
+  icon: plane
+  colour: blue
+
+other:
+  budget: other
+  name: Shopping
+  icon: shopping-cart
+  colour: violet

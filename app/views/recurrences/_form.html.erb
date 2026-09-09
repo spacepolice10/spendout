@@ -1,0 +1,108 @@
+<%= form_with model: [ budget, recurrence ], data: {
+      recurrence_form: true,
+      controller: "form category-icon category-fields",
+      category_icon_keywords_value: CategoryIcon::KEYWORDS,
+      category_icon_colours_value: CategoryIcon::COLOURS
+    } do |form| %>
+  <% if recurrence.errors.any? %>
+    <section role="alert" data-form-errors>
+      <h2><%= t(".errors", count: recurrence.errors.count) %></h2>
+      <ul>
+        <% recurrence.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= render "shared/name_fields", form:, question: t(".name_question"), placeholder: t(".name_placeholder") %>
+  <%= render "shared/amount_with_currency_fields", form: form %>
+
+  <div data-recurrence-options>
+    <div>
+      <div data-category-picker>
+        <%= form.hidden_field :category_name_to_create, data: {
+              category_fields_target: "pendingNameTextform", category_icon_target: "name"
+            } %>
+
+        <button type="button" aria-haspopup="dialog" aria-controls="recurrence-category-picker-dialog"
+          data-expense-picker-trigger data-category-fields-target="trigger" data-action="category-fields#open">
+          <span><%= t(".category.name") %></span>
+          <small data-category-fields-target="summary"><%= recurrence.category_name_to_create.presence || recurrence.category&.name || t(".category.choose") %></small>
+        </button>
+
+        <dialog id="recurrence-category-picker-dialog" aria-label="<%= t(".category.choose") %>" closedby="any"
+          data-category-fields-target="dialog" data-action="close->category-fields#closed">
+          <header>
+            <h2><%= t(".category.choose") %></h2>
+            <button type="button" aria-label="<%= t(".category.close") %>" data-action="category-fields#close">&times;</button>
+          </header>
+
+          <div data-category-combobox>
+            <%= icon("search", data: { category_search_icon: true }) %>
+            <input type="search" id="recurrence_category_filter" value="<%= recurrence.category_name_to_create %>"
+              placeholder="<%= t(".category.search") %>" autocomplete="off" role="combobox"
+              aria-label="<%= t(".category.search") %>" aria-autocomplete="list" aria-expanded="true"
+              aria-controls="recurrence-category-picker-listbox" data-category-fields-target="filter"
+              data-action="input->category-fields#filter keydown->category-fields#keydown">
+          </div>
+
+          <label data-category-fields-target="creationTip" hidden>
+            <%= form.radio_button :category_id, "", required: true,
+                  data: { category_fields_target: "allocation creation" } %>
+            <small><%= t(".category.creation_html", name: tag.strong("", data: { category_fields_target: "creationTipName" })) %></small>
+          </label>
+
+          <div id="recurrence-category-picker-listbox" role="listbox" data-category-fields-target="options">
+            <% categories.each do |category| %>
+              <div data-category-picker-option>
+                <%= form.label :category_id, value: category.id, id: "recurrence-category-option-#{category.id}",
+                      role: "option", aria: { selected: category == recurrence.category },
+                      style: "--allocation-colour: var(--color-palette-#{category.colour});",
+                      data: { category_fields_target: "option", filter_value: category.name,
+                        selection_value: category.name, action: "click->category-fields#selectAllocation" } do %>
+                  <%= form.radio_button :category_id, category.id, required: true,
+                        data: { category_fields_target: "allocation" } %>
+                  <%= icon(category.icon, style: icon_colour_styles(category.colour)) %>
+                  <span><strong><%= category.name %></strong></span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <footer>
+            <button type="button" data-intent="primary" data-category-fields-target="confirm"
+              data-action="category-fields#confirm" disabled><%= t(".category.confirm") %></button>
+          </footer>
+        </dialog>
+      </div>
+
+      <%= form.label :occurs_on, data: { expense_date: true } do %>
+        <span><%= t(".occurs_on") %></span>
+        <%= form.date_field :occurs_on, required: true %>
+      <% end %>
+
+      <%= form.label :occurrence_period_in_days, data: { recurrence_period: true } do %>
+        <span><%= t(".period") %></span>
+        <%= form.number_field :occurrence_period_in_days, min: 1, step: 1, required: true %>
+      <% end %>
+
+      <%= form.label :note, data: { expense_note: true } do %>
+        <span><%= t(".note") %></span>
+        <%= form.text_field :note, maxlength: 200, placeholder: t(".note_placeholder") %>
+      <% end %>
+    </div>
+  </div>
+
+  <div data-category-fields-target="appearance" <%= "hidden" if recurrence.category_name_to_create.blank? %>>
+    <%= render "shared/icon_fields", form:, icon_attribute: :category_icon,
+          icon_options: Category.icon_options, icon_value: recurrence.category_icon || Iconable::DEFAULT_ICON,
+          input_data: { category_icon_target: "icon", action: "input->category-icon#chooseIcon" } %>
+    <%= render "shared/colour_fields", form:, colour_attribute: :category_colour,
+          colour_options: Category.colour_options, colour_value: recurrence.category_colour || Colourable::DEFAULT_COLOUR,
+          input_data: { category_icon_target: "colour", action: "input->category-icon#chooseColour" } %>
+  </div>
+
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
+<% end %>

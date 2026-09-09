@@ -1,9 +1,12 @@
 class Expense < ApplicationRecord
+  include Recordable
+
   belongs_to :budget, inverse_of: :expenses
   belongs_to :source, inverse_of: :expenses
-  belongs_to :allocation, optional: true, inverse_of: :expenses, autosave: true
+  belongs_to :category, inverse_of: :expenses, autosave: true
 
   attr_accessor :category_name_to_create
+  attr_accessor :recurrence_id
 
   before_validation :change_default_occurred_on
   before_validation :predefine_currency_and_source_amount
@@ -15,9 +18,9 @@ class Expense < ApplicationRecord
   validates :note, length: { maximum: 200 }, allow_blank: true
   validate :occurred_during_budget
   validate :source_belongs_to_budget
-  validate :allocation_belongs_to_budget
+  validate :category_belongs_to_budget
   validate :source_is_active
-  validate :allocation_is_active
+  validate :category_is_active
   validate :amount_fits_source
   def save_with_source_capacity
     predefine_currency_and_source_amount
@@ -46,18 +49,14 @@ class Expense < ApplicationRecord
 
   private
     def initialize_category_to_create
-      return if category_name_to_create.blank? || allocation&.new_record?
+      return if category_name_to_create.blank? || category&.new_record?
 
       category_icon = CategoryIcon.new(category_name_to_create)
 
-      self.allocation = budget.allocations.build(
+      self.category = budget.categories.build(
         name: category_name_to_create,
         icon: category_icon.matched_name,
-        colour: category_icon.matched_colour,
-        amount: 0,
-        planned: false,
-        currency_code: currency_code.presence || source&.currency_code,
-        rate: source&.rate && conversion_rate ? source.rate * conversion_rate : source&.rate
+        colour: category_icon.matched_colour
       )
     end
 
@@ -97,18 +96,18 @@ class Expense < ApplicationRecord
       errors.add(:source, :wrong_budget)
     end
 
-    def allocation_belongs_to_budget
-      return if allocation.nil? || budget.nil? || allocation.budget_id == budget.id
+    def category_belongs_to_budget
+      return if category.nil? || budget.nil? || category.budget_id == budget.id
 
-      errors.add(:allocation, :wrong_budget)
+      errors.add(:category, :wrong_budget)
     end
 
     def source_is_active
       errors.add(:source, :inactive) if source&.deleted?
     end
 
-    def allocation_is_active
-      errors.add(:allocation, :inactive) if allocation && !allocation.active?
+    def category_is_active
+      errors.add(:category, :inactive) if category && !category.active?
     end
 
     def amount_fits_source

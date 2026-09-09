@@ -1,0 +1,13 @@
+<%= form_with model: [ budget, category ], data: {
+      controller: "form category-icon",
+      category_icon_keywords_value: CategoryIcon::KEYWORDS,
+      category_icon_colours_value: CategoryIcon::COLOURS
+    } do |form| %>
+  <% if category.errors.any? %>
+    <section role="alert" data-form-errors><h2><%= t(".errors", count: category.errors.count) %></h2><ul><% category.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></section>
+  <% end %>
+  <%= render "shared/name_fields", form:, question: t(".name_question"), placeholder: t(".name_placeholder"), input_data: { category_icon_target: "name", action: "input->category-icon#suggest" } %>
+  <%= render "shared/icon_fields", form:, input_data: { category_icon_target: "icon", action: "input->category-icon#chooseIcon" } %>
+  <%= render "shared/colour_fields", form:, input_data: { category_icon_target: "colour", action: "input->category-icon#chooseColour" } %>
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget), cancel_label: t(".cancel"), submit_label: t(".submit") %>
+<% end %>

@@ -55,7 +55,7 @@ export default class extends Controller {
   }
 
   setRate(value) {
-    this.rateTarget.value = value
+    this.rateTarget.value = value.replace(".", ",")
     this.rateTarget.dataset.amountFieldsStartValue = value
     this.rateTarget.dispatchEvent(new Event("change", { bubbles: true }))
   }
@@ -69,31 +69,27 @@ export default class extends Controller {
   }
 
   async rateBetween(from, to) {
-    const rates = await this.referenceRates()
-    const fromRate = Number(rates[from])
-    const toRate = Number(rates[to])
-    if (!Number.isFinite(fromRate) || !Number.isFinite(toRate) || fromRate <= 0 || toRate <= 0) return null
+    const rates = await this.referenceRates(from)
+    const rate = rates[to]
+    if (!Number.isFinite(Number(rate)) || Number(rate) <= 0) return null
 
-    return this.canonicalize(toRate / fromRate)
+    return rate
   }
 
-  async referenceRates() {
-    if (this.referenceRatesPromise) return this.referenceRatesPromise
+  async referenceRates(base) {
+    this.referenceRatesPromises ||= {}
+    if (this.referenceRatesPromises[base]) return this.referenceRatesPromises[base]
 
     const request = new URL(this.referenceLinkValue, window.location.origin)
-    request.searchParams.set("base", "USD")
+    request.searchParams.set("base", base)
 
-    this.referenceRatesPromise = (async () => {
+    this.referenceRatesPromises[base] = (async () => {
       const response = await fetch(request, { headers: { Accept: "application/json" } })
       if (!response.ok) return {}
 
       return (await response.json()).rate_catalog || {}
     })().catch(() => ({}))
 
-    return this.referenceRatesPromise
-  }
-
-  canonicalize(value) {
-    return value.toFixed(12).replace(/\.?0+$/, "")
+    return this.referenceRatesPromises[base]
   }
 }

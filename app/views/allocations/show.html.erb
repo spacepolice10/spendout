@@ -15,8 +15,7 @@
 
       <section aria-label="<%= t(".summary_name") %>" data-allocation-summary>
         <p>
-          <% if @allocation.planned? %>
-            <span>
+          <span>
               <%= t(".planned") %>
               <strong><%= formatted_amount(@allocation.amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
             </span>
@@ -30,14 +29,6 @@
               <%= t(".remaining") %>
               <strong><%= formatted_amount(@allocation.remaining_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
             </span>
-          <% else %>
-            <span><%= t(".unplanned") %></span>
-            <span aria-hidden="true">·</span>
-            <span>
-              <%= t(".used") %>
-              <strong><%= formatted_amount(@allocation.used_amount, @allocation.currency_code) %> <%= @allocation.currency_code %></strong>
-            </span>
-          <% end %>
         </p>
       </section>
 
@@ -56,14 +47,12 @@
               <% end %>
             <% end %>
           <% else %>
-            <% if @allocation.planned? %>
-              <%= button_to finish_allocation_path(@allocation), method: :patch, data: {
+            <%= button_to finish_allocation_path(@allocation), method: :patch, data: {
                     intent: "primary",
                     turbo_confirm: t(".finish_confirmation", name: @allocation.name, amount: formatted_amount(@allocation.remaining_amount, @allocation.currency_code))
                   } do %>
                 <span><%= t(".finish") %></span>
               <% end %>
-            <% end %>
 
             <%= button_to allocation_path(@allocation), method: :delete, aria: { label: t(".remove") }, data: { intent: "secondary", turbo_confirm: t(".remove_confirmation") } do %>
               <%= icon("trash-simple") %>

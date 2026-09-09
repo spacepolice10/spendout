@@ -111,74 +111,12 @@
   }
 
   [data-landing-demo-frame] { display: grid; height: 30rem; }
-  [data-landing-demo-frame] > :is([data-landing-fuel], [data-rate-board]) { height: 100%; }
+  [data-landing-demo-frame] > :is([data-landing-fuel], .rate-info) { height: 100%; }
   [data-landing-fuel] > [data-daily-gauge] { display: grid; align-items: center; height: 100%; margin-block-start: 0; color: var(--color-invert-1); }
   :is([data-control-layout], [data-currency-story]) {
     display: grid; grid-template-columns: minmax(24rem, 0.95fr) minmax(20rem, 1.05fr);
     gap: var(--space-h-4); align-items: start;
   }
-  [data-rate-board] {
-    --rate-font-label: "Handjet", var(--font-family-mono);
-    --rate-font-sign: "Silkscreen", var(--font-family-mono);
-    --rate-black: oklch(0.11 0.006 40);
-    --rate-panel: oklch(0.16 0.008 55);
-    --rate-metal: oklch(0.48 0.018 75);
-    --rate-ink: oklch(0.82 0.025 78);
-    --rate-red: oklch(0.68 0.25 25);
-
-    position: relative; isolation: isolate; overflow: hidden;
-    padding: clamp(1rem, 3vw, 2rem); border: 8px solid var(--rate-black); border-radius: 2px;
-    outline: 2px solid var(--rate-metal); outline-offset: -5px;
-    background:
-      repeating-linear-gradient(0deg, transparent 0 3px, rgb(255 255 255 / 1.5%) 3px 4px),
-      radial-gradient(circle at 30% 10%, rgb(255 255 255 / 6%), transparent 35%),
-      var(--rate-panel);
-    color: var(--rate-ink); color-scheme: dark;
-    box-shadow:
-      inset 0 0 0 3px oklch(0.25 0.012 60),
-      inset 0 0 2rem rgb(0 0 0 / 75%);
-    font-family: var(--rate-font-label); font-size: clamp(1rem, 1.8vw, 1.35rem);
-  }
-  [data-rate-board]::before,
-  [data-rate-board]::after {
-    content: ""; position: absolute; z-index: -1; pointer-events: none;
-  }
-  [data-rate-board]::before {
-    inset: 0.65rem; border: 2px solid oklch(0.30 0.012 65);
-    box-shadow: inset 0 0 0 3px rgb(0 0 0 / 55%);
-  }
-  [data-rate-board]::after {
-    inset: 0; opacity: 0.16;
-    background-image: radial-gradient(circle, var(--rate-ink) 0 0.5px, transparent 0.75px);
-    background-size: 5px 5px;
-    mix-blend-mode: soft-light;
-  }
-  [data-rate-board] > header { display: grid; justify-items: center; gap: var(--space-v-half); padding-block-end: var(--space-v-2); text-align: center; }
-  [data-rate-board] > header h3 {
-    width: min(100%, 22rem); padding: 0.45em 0.75em; border: 4px solid var(--rate-black);
-    outline: 2px solid var(--rate-metal); outline-offset: -1px;
-    background: oklch(0.68 0.018 75); color: var(--rate-black);
-    box-shadow: 4px 4px 0 rgb(0 0 0 / 55%);
-    font-family: var(--rate-font-sign); font-size: clamp(1rem, 3vw, 1.55rem); line-height: 1.2;
-    letter-spacing: 0.05em; text-transform: uppercase;
-  }
-  [data-rate-board] table { width: 100%; border-spacing: 0 4px; table-layout: fixed; }
-  [data-rate-board] thead th { padding: 0.25em 0.5em; color: oklch(0.65 0.02 75); font-size: 0.7em; letter-spacing: 0.12em; text-align: left; text-transform: uppercase; }
-  [data-rate-board] thead th:last-child { width: 48%; text-align: right; }
-  [data-rate-board] tbody tr { background: rgb(0 0 0 / 28%); box-shadow: inset 0 0 0 1px oklch(0.25 0.01 60); }
-  [data-rate-board] tbody th { padding: 0.45em 0.55em; overflow: hidden; text-align: left; white-space: nowrap; }
-  :is([data-rate-code], [data-rate-name]) { font-family: var(--rate-font-label); font-size: 0.86em; letter-spacing: 0.04em; text-transform: uppercase; }
-  [data-rate-code] { display: inline-block; min-width: 3.1em; color: oklch(0.9 0.02 75); font-weight: 600; }
-  [data-rate-name] { color: oklch(0.75 0.02 75); font-weight: 400; }
-  [data-rate-board] tbody td { padding: 0.3em 0.45em; text-align: right; }
-  [data-rate-display] {
-    display: block; min-height: 1.55em; overflow: hidden; color: var(--rate-red);
-    font-family: var(--font-family-mono); font-size: clamp(0.88rem, 2.6vw, 1.55rem);
-    font-variant-numeric: tabular-nums; line-height: 1.2; white-space: nowrap;
-    text-shadow: 1px 0 0 oklch(0.78 0.2 25), 0 0 6px rgb(255 20 30 / 38%);
-  }
-  [data-rate-board] > footer { display: flex; justify-content: space-between; gap: var(--space-h); padding-block-start: var(--space-v); color: oklch(0.62 0.02 75); font-size: 0.67em; letter-spacing: 0.08em; text-transform: uppercase; }
-
   [data-rate-copy] { display: grid; gap: var(--space-v-2); }
   [data-rate-copy] article { min-height: 13rem; margin: 0; padding: var(--space-v-2) var(--space-h-2); border: var(--border-subtle); background: color-mix(in oklch, var(--color-1) 94%, transparent); backdrop-filter: blur(8px); }
   [data-rate-copy] article > * { padding: 0; }
@@ -245,8 +183,6 @@
   }
   @media (max-width: 520px) {
     [data-landing-hero] > div h1 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
-    [data-rate-board] { padding-inline: 0.85rem; }
-    :is([data-rate-code], [data-rate-name]) { font-size: 0.78em; }
     [data-landing-letter] article { padding: var(--space-v-4) var(--space-h-2); transform: none; }
     [data-landing-letter] article::before { position: static; display: block; width: fit-content; margin-block-end: var(--space-v-2); }
     [data-landing-letter] header { padding-inline-end: 0; }

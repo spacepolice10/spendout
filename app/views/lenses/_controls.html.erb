@@ -1,0 +1,41 @@
+<% case lens.lensable_name %>
+<% when "source_holder" %>
+  <footer class="lens-add-controls" data-lens-controls>
+    <nav aria-label="<%= t("lenses.source_holder.controls") %>">
+      <%= link_to new_budget_source_path(@budget), class: "lens-add-button lens-add-button--labeled", role: "button", aria: { label: t("lenses.source_holder.create") }, data: { intent: "secondary" } do %>
+        <%= icon("plus") %>
+        <span><%= t("lenses.source_holder.create_label") %></span>
+      <% end %>
+      <%= link_to new_budget_exchange_path(@budget), class: "lens-add-button lens-add-button--labeled", role: "button", aria: { label: t("lenses.source_holder.exchange") }, data: { intent: "secondary" } do %>
+        <%= icon("plus") %>
+        <span><%= t("lenses.source_holder.exchange_label") %></span>
+      <% end %>
+    </nav>
+  </footer>
+<% when "plan_overview" %>
+  <footer class="lens-add-controls" data-lens-controls>
+    <nav aria-label="<%= t("lenses.plan_overview.controls") %>">
+      <%= link_to new_budget_allocation_path(@budget), class: "lens-add-button lens-add-button--labeled", role: "button", aria: { label: t("lenses.plan_overview.create") }, data: { intent: "secondary" } do %>
+        <%= icon("plus") %>
+        <span><%= t("lenses.plan_overview.create_label") %></span>
+      <% end %>
+    </nav>
+  </footer>
+<% when "upcoming_recurrences" %>
+  <footer class="lens-add-controls" data-lens-controls>
+    <nav aria-label="<%= t("lenses.upcoming_recurrences.controls") %>">
+      <%= link_to new_budget_recurrence_path(@budget), class: "lens-add-button lens-add-button--labeled", role: "button", aria: { label: t("lenses.upcoming_recurrences.create") }, data: { intent: "secondary" } do %>
+        <%= icon("plus") %>
+        <span><%= t("lenses.upcoming_recurrences.create_label") %></span>
+      <% end %>
+    </nav>
+  </footer>
+<% when "rate_info" %>
+  <footer class="lens-add-controls" data-lens-controls>
+    <nav aria-label="<%= t("lenses.rate_info.controls") %>">
+      <%= link_to edit_budget_rate_info_path(@budget), class: "lens-add-button", role: "button", aria: { label: t("lenses.rate_info.edit") }, data: { intent: "secondary" } do %>
+        <%= icon("settings") %>
+      <% end %>
+    </nav>
+  </footer>
+<% end %>

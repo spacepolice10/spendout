@@ -1,0 +1,14 @@
+<article
+  data-elevation="2"
+  data-gauge-plate
+  data-rollover-lens
+  data-testid="rollover-lens"
+>
+  <div data-gauge-bolts aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <main>
+    <%= render "shared/daily_gauge", amount: snapshot.remaining_today, currency_code: snapshot.currency_code, percentage: snapshot.percentage_remaining %>
+  </main>
+</article>

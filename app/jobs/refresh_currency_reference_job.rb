@@ -2,9 +2,10 @@ class RefreshCurrencyReferenceJob < ApplicationJob
   queue_as :background
 
   def perform
-    CurrencyReference.preserve(client.handle_request)
+    CurrencyReference.refresh(client:)
   rescue StandardError => error
     Rails.logger.error("Currency reference refresh failed: #{error.class}: #{error.message}")
+    raise
   end
 
   private

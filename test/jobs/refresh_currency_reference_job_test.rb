@@ -29,7 +29,7 @@ class RefreshCurrencyReferenceJobTest < ActiveJob::TestCase
 
     job = RefreshCurrencyReferenceJob.new
     job.define_singleton_method(:client) { client }
-    job.perform_now
+    assert_raises(Frankfurter::Client::Error) { job.perform_now }
 
     assert_equal previous, Rails.cache.read(CurrencyReference::CACHE_KEY)
   end

@@ -1,0 +1,36 @@
+<section class="rate-info" data-rate-board data-testid="rate-info-lens" aria-label="<%= t("lenses.types.rate_info") %>">
+  <header>
+    <h3><%= t("lenses.rate_info.board_title") %></h3>
+  </header>
+
+  <% if snapshot.available && snapshot.rates.any? %>
+    <div class="rate-info-list">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col"><%= t("lenses.rate_info.currency") %></th>
+            <th scope="col"><%= t("lenses.rate_info.rate") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% snapshot.rates.each do |rate| %>
+            <tr>
+              <th scope="row">
+                <strong class="rate-info-code" data-rate-code><%= rate.currency_code %></strong>
+              </th>
+              <td>
+                <output class="rate-info-value" data-rate-display><%= formatted_rate(rate.rate) %></output>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <time datetime="<%= snapshot.reference_date.iso8601 %>"><%= t("lenses.rate_info.reference", date: l(snapshot.reference_date, format: :long)) %></time>
+    </footer>
+  <% else %>
+    <p><%= t("lenses.rate_info.unavailable") %></p>
+  <% end %>
+</section>

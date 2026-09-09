@@ -214,10 +214,7 @@ class Currency
   "ZMW" => { name: "Zambian Kwacha", numeric_code: "967", symbol: "ZMW" }.freeze,
   "ZWG" => { name: "Zimbabwe Gold", numeric_code: "924", symbol: "ZWG" }.freeze
   }.to_h do |code, data|
-    country_code = FLAG_COUNTRIES.fetch(code)
-    flag = country_code.codepoints.map { |point| (point + 127_397).chr(Encoding::UTF_8) }.join
-
-    [ code, data.merge(flag: flag).freeze ]
+    [ code, data.merge(country_code: FLAG_COUNTRIES.fetch(code)).freeze ]
   end.freeze
 
   COUNTRY_CURRENCIES = begin
@@ -273,7 +270,7 @@ class Currency
 
     def option_of(code)
       data = CATALOG.fetch(code)
-      [ "#{code} #{data[:name]}, #{data[:flag]}", code ]
+      [ "#{code} #{data[:name]}", code ]
     end
   end
 end

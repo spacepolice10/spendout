@@ -45,7 +45,7 @@
         &>footer {
             display: flex;
             flex-wrap: wrap;
-            justify-content: start;
+            justify-content: space-between;
             gap: var(--space-h);
         }
 

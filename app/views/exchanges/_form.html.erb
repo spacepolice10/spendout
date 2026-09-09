@@ -1,39 +1,28 @@
-<%= form_with model: exchange, url: source_exchanges_path(sender_source), data: {
-      controller: "form currency-fields",
-      form_focused_on_toggle_value: !mobile_variant?,
-      currency_fields_base_currency_value: sender_source.currency_code,
-      currency_fields_operation_value: "multiply",
-      currency_fields_reference_link_value: currency_reference_path
-    } do |form| %>
+<% source_context = sources.to_h { |source| [ source.id, { currency: source.currency_code } ] } %>
+
+<%= form_with model: [ budget, exchange ], data: { exchange_form: true, controller: "form exchange-fields", exchange_fields_sources_value: source_context.to_json } do |form| %>
   <% if exchange.errors.any? %>
     <section role="alert" data-form-errors>
-      <h2><%= pluralize(exchange.errors.count, "error") %> prevented this exchange from being saved:</h2>
-      <ul>
-        <% exchange.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+      <ul><% exchange.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, question: t(".name_question"), name_attribute: :receiver_source_name,
-        placeholder: "Travel cash, foreign account, etc." %>
+  <%= render "shared/amount_with_currency_fields", form: %>
 
-  <%= render "shared/amount_currency_fields", form: form,
-        question: "How much should be taken from #{sender_source.name}?",
-        amount_attribute: :sender_amount, amount_label: "Amount from #{sender_source.currency_code}",
-        minimum_exclusive: true,
-        currency_attribute: :receiver_currency_code, rate_attribute: :rate,
-        base_currency_code: sender_source.currency_code %>
+  <div data-exchange-options>
+    <div>
+      <%= render "shared/source_picker", form:, attribute: :sender_source_id, sources:, selected_source: exchange.sender_source,
+            label: t(".from"), picker_id: "exchange-source-picker",
+            input_data: { exchange_fields_target: "source", action: "change->exchange-fields#sourceChanged" } %>
 
-  <div data-layout="flex" style="flex-wrap: wrap;">
-    <%= link_to budget_sources_path(budget), role: "button", data: { appearance: "keycap", intent: "secondary", size: "lg" } do %>
-      <%= icon("chevron-left") %>
-      <span>Cancel</span>
-    <% end %>
-    <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary", size: "lg" } do %>
-      <span>Confirm exchange</span>
-      <%= icon("chevron-right") %>
-    <% end %>
+      <%= form.label :receiver_source_name, data: { expense_note: true } do %>
+        <span><%= t(".name") %></span>
+        <%= form.text_field :receiver_source_name, required: true, placeholder: t(".name_placeholder"),
+          autofocus: !mobile_variant? %>
+      <% end %>
+    </div>
   </div>
+
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
 <% end %>

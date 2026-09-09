@@ -6,9 +6,10 @@ class ExpenseCategoryFieldsTest < ApplicationSystemTestCase
     visit new_budget_expense_path(budgets(:active))
 
     find("[data-category-picker] > button").click
+    assert_selector "dialog#category-picker-dialog[open][closedby='any']"
   end
 
-  test "filters allocations and confirms typed text as a new category" do
+  test "filters categories and confirms typed text as a new category" do
     icon_metrics = page.evaluate_script(<<~JS)
       (() => {
         const icon = document.querySelector("[data-category-picker-option] .icon")
@@ -27,12 +28,12 @@ class ExpenseCategoryFieldsTest < ApplicationSystemTestCase
       assert_text "Category named Hous will be created"
     end
     assert_equal "", find("input[name='expense[category_name_to_create]']", visible: :all).value
-    assert_selector "input[name='expense[allocation_id]']:checked", visible: :all
+    assert_selector "input[name='expense[category_id]']:checked", visible: :all
 
     find("label[data-category-fields-target='option']", text: "Housing").click
     assert_equal "", find("input[name='expense[category_name_to_create]']", visible: :all).value
     assert_no_text "will be created"
-    assert_selector "input[name='expense[allocation_id]']:checked", visible: :all
+    assert_selector "input[name='expense[category_id]']:checked", visible: :all
 
     find("[data-category-picker] > button").click
     filter.set("Coffee")
@@ -46,12 +47,19 @@ class ExpenseCategoryFieldsTest < ApplicationSystemTestCase
 
     click_button "Confirm"
     assert_equal "Coffee", find("input[name='expense[category_name_to_create]']", visible: :all).value
+    assert_selector "input[name='expense[category_id]'][value='']:checked", visible: :all
     assert_no_selector "dialog#category-picker-dialog[open]"
-    assert_text "Confirm & create category"
+    assert_button "Confirm"
+
+    find("input[name='expense[amount]']").set("10")
+    assert_difference [ "Category.count", "Expense.count" ], 1 do
+      click_button "Confirm"
+      assert_current_path budget_lenses_path(budgets(:active))
+    end
   end
 
-  test "stages a category when the budget has no allocations" do
-    budgets(:active).allocations.update_all(deleted_at: Time.current)
+  test "stages a category when the budget has no active categories" do
+    budgets(:active).categories.update_all(deleted_at: Time.current)
 
     visit new_budget_expense_path(budgets(:active))
     find("[data-category-picker] > button").click

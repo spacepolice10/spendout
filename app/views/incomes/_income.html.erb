@@ -1,0 +1,28 @@
+<%= link_to income_path(income), data: { income_link: true }, aria: { label: t(".view") } do %>
+  <article class="expense" data-income data-testid="income-card">
+    <main>
+      <div data-expense-line>
+        <%= icon("plus") %>
+
+        <% if income.note.present? %>
+          <span data-expense-note data-testid="income-note" aria-label="<%= t(".with_note") %>" title="<%= t(".with_note") %>">
+            <%= icon("note") %>
+          </span>
+        <% end %>
+
+        <div data-expense-description>
+          <strong data-expense-name>
+            <%= income.source_name %>
+          </strong>
+        </div>
+
+        <span data-expense-leader aria-hidden="true"></span>
+
+        <span data-expense-amount data-income-amount>
+          <strong>+<%= formatted_amount(income.amount, income.currency_code) %></strong>
+          <small><%= income.currency_code %></small>
+        </span>
+      </div>
+    </main>
+  </article>
+<% end %>

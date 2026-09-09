@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require_relative "../config/environment"
+require "fileutils"
+require "open3"
+require "tmpdir"
+
+source_directory = ARGV.fetch(0) do
+  abort "Usage: script/generate_currency_flags PATH_TO_FLAG_ICONS_4X3_DIRECTORY"
+end
+
+destination = Rails.root.join("app/assets/images/currency-flags")
+FileUtils.mkdir_p(destination)
+
+Dir.mktmpdir("currency-flags") do |temporary_directory|
+  Currency::FLAG_COUNTRIES.values.uniq.sort.each do |country_code|
+    source = File.join(source_directory, "#{country_code.downcase}.svg")
+    abort "Missing source flag: #{source}" unless File.exist?(source)
+
+    raster = File.join(temporary_directory, "#{country_code.downcase}.png")
+    output = destination.join("#{country_code.downcase}.png")
+
+    _stdout, stderr, status = Open3.capture3(
+      "rsvg-convert", "--width", "128", "--height", "96", "--keep-aspect-ratio",
+      "--output", raster, source
+    )
+    abort stderr unless status.success?
+
+    command = [
+      "magick", raster,
+      "-background", "none",
+      "-alpha", "on",
+      "-resize", "32x24!",
+      "-colors", "32",
+      "-dither", "None",
+      "-strip",
+      "PNG32:#{output}"
+    ]
+
+    _stdout, stderr, status = Open3.capture3(*command)
+    abort stderr unless status.success?
+  end
+end
+
+puts "Generated #{Currency::FLAG_COUNTRIES.values.uniq.size} currency flags in #{destination}"

@@ -1,15 +1,29 @@
 @layer components {
-    & input[data-controller~="amount-fields"] {
+    input[data-controller~="amount-fields"] {
+        overflow-x: hidden;
+    }
+
+    [data-amount-currency-row] > input[data-controller~="amount-fields"] {
         height: 5rem;
         font-size: var(--font-size-2xl);
         font-weight: var(--font-weight-bold);
         text-align: center;
-        overflow-x: hidden;
     }
 
     [data-amount-currency-fields] {
         display: grid;
         gap: var(--space-v-half);
+
+        & [data-currency-rate-fields] {
+            display: grid;
+            gap: var(--space-v-half);
+        }
+
+        & [data-currency-rate-fields] > label {
+            min-height: 2rem;
+            font-size: var(--font-size-base-read);
+            text-transform: uppercase;
+        }
 
         & [data-amount-currency-row] {
             display: grid;
@@ -45,16 +59,7 @@
         display: grid;
         gap: var(--space-v-half);
         width: 100%;
-        padding: var(--space-v);
-        border: var(--border-subtle);
-        border-radius: var(--radius-2);
-        background: var(--color-2);
 
-        & > header {
-            min-height: 2rem;
-            font-size: var(--font-size-base-read);
-            text-transform: uppercase;
-        }
     }
 
     @media (max-width: 30rem) {

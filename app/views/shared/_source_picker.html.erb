@@ -1,0 +1,32 @@
+<%# locals: (form:, attribute:, sources:, selected_source:, label:, picker_id:, input_data: {}) %>
+<div data-source-picker data-controller="source-picker">
+  <button type="button" aria-haspopup="dialog" aria-controls="<%= picker_id %>-dialog"
+    data-expense-picker-trigger data-source-picker-target="trigger" data-action="source-picker#open">
+    <span><%= label %></span>
+    <small data-source-picker-target="summary"><%= selected_source&.name %></small>
+  </button>
+
+  <dialog id="<%= picker_id %>-dialog" aria-label="<%= label %>" tabindex="-1" closedby="any"
+    data-source-picker-target="dialog" data-action="close->source-picker#closed keydown->source-picker#keydown">
+    <header>
+      <h2><%= label %></h2>
+      <button type="button" aria-label="<%= t("shared.currency_picker.close") %>" data-action="source-picker#close">&times;</button>
+    </header>
+    <div role="listbox" data-source-picker-target="options">
+      <% sources.each do |source| %>
+        <div data-source-picker-option>
+          <%= form.label attribute, value: source.id, role: "option", tabindex: -1,
+                aria: { selected: source == selected_source }, style: "--source-colour: var(--color-palette-#{source.colour});",
+                data: { source_picker_target: "option", selection_value: source.name, action: "click->source-picker#select" } do %>
+            <%= form.radio_button attribute, source.id, { required: true, data: input_data } %>
+            <%= render "sources/design", design: Source::DESIGNS.fetch(source.design), colour: source.colour %>
+            <span>
+              <strong><%= source.name %></strong>
+              <small><%= formatted_amount(source.spendable_amount, source.currency_code) %> <%= source.currency_code %></small>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
+</div>

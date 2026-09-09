@@ -1,11 +1,11 @@
 @layer base {
 
     body {
-        --budget-tabbar-bottom-inset: env(safe-area-inset-bottom);
-        --budget-tabbar-height: calc(var(--space-v-4) + var(--space-v) + var(--budget-tabbar-bottom-inset));
+        --budget-add-bottom-inset: env(safe-area-inset-bottom);
+        --budget-add-height: calc(var(--space-v-4) + var(--space-v-2) + var(--budget-add-bottom-inset));
 
         @media (display-mode: standalone) and (-webkit-touch-callout: none) {
-            --budget-tabbar-bottom-inset: calc(env(safe-area-inset-bottom) + var(--space-v));
+            --budget-add-bottom-inset: calc(env(safe-area-inset-bottom) + var(--space-v));
         }
 
         display: flex;
@@ -67,127 +67,69 @@
             }
         }
 
-        &>main:has(> article > main > form):not([data-anchor="footer"]) {
+        &>main:has(> article > main > form) {
             flex: 1 1 0;
-            align-content: center;
+            align-content: end;
+
+            @media (min-width: 801px) {
+                align-content: center;
+                margin-block-start: 0;
+            }
         }
 
-        &:has(>footer[data-budget-action])>main {
+        &:has(:is(.floating-actions, .floating-action, nav[aria-label="Add"]))>main {
             padding-block-end: var(--space-v-8);
         }
 
-        &>footer:not([data-budget-action]) {
+        &>footer:not(.floating-actions) {
             margin-inline: auto;
             width: 100%;
         }
 
-        &>footer[data-budget-action] {
+        & :is(.floating-actions, .floating-action) {
             position: fixed;
             z-index: 1;
             inset-inline: 0;
-            bottom: var(--budget-tabbar-height);
+            bottom: calc(var(--space-v) + var(--budget-add-bottom-inset));
+            margin-inline: auto;
+
+            @media (max-width: 800px) {
+                view-transition-name: budget-action;
+            }
+        }
+
+        & .floating-actions {
             display: flex;
+            gap: var(--space-h-half);
             justify-content: center;
             padding: var(--space-v) var(--space-h);
             pointer-events: none;
 
-            &>a {
+            & :is(a, button, input[type="submit"]) {
                 pointer-events: auto;
-
-                @media (max-width: 800px) {
-                    view-transition-name: budget-action;
-                }
             }
         }
 
-        &>nav[aria-label="Budget sections"] {
-            position: sticky;
-            z-index: 2;
-            bottom: 0;
-            flex: 0 0 auto;
-            min-block-size: var(--budget-tabbar-height);
-            padding-block-end: var(--budget-tabbar-bottom-inset);
-            border-top: var(--border-subtle);
-            background: var(--color-2);
+        & .floating-action {
+            pointer-events: auto;
+        }
 
-            @media (max-width: 800px) {
-                view-transition-name: budget-tabbar;
-            }
+        &>nav[aria-label="Add"] {
+            position: fixed;
+            z-index: 2;
+            inset-inline: 0;
+            bottom: calc(var(--space-v) + var(--budget-add-bottom-inset));
+            width: fit-content;
+            margin-inline: auto;
+            pointer-events: none;
+            view-transition-name: budget-add;
 
             &>div {
                 display: flex;
                 align-items: stretch;
-                gap: var(--space-h);
-                max-width: 1280px;
-                margin-inline: auto;
-                padding: var(--space-v-half) var(--space-h);
-
-                &>a[role="button"] {
-                    flex: 1 1 0;
-                    width: auto;
-                    min-width: 0;
-                    padding: calc(var(--space-v-half) + 0.2rem) var(--space-h-half);
-                    font-size: var(--font-size-xs);
-                    white-space: nowrap;
-                }
+                justify-content: center;
+                pointer-events: auto;
             }
-        }
-
-        &:has(> nav[data-navigation-layout="rail"]) {
-            display: grid;
-            grid-template-columns: 14rem minmax(0, 1fr);
-            grid-template-rows: minmax(100svh, auto);
-            align-items: start;
-
-            & > main,
-            & > footer:not([data-budget-action]) {
-                grid-column: 2;
-            }
-
-            & > footer[data-budget-action] {
-                inset-inline-start: max(14rem, calc((100vw - 1280px) / 2 + 14rem));
-                inset-inline-end: max(0px, calc((100vw - 1280px) / 2));
-                bottom: 0;
-            }
-
-            & > nav[data-navigation-layout="rail"] {
-                position: sticky;
-                top: 0;
-                bottom: auto;
-                grid-column: 1;
-                grid-row: 1;
-                display: flex;
-                flex-direction: column;
-                gap: var(--space-v-2);
-                min-block-size: 100svh;
-                padding: var(--space-v-2) var(--space-h);
-                border-top: 0;
-                border-right: var(--border-subtle);
-                background: transparent;
-
-                & > div {
-                    display: grid;
-                    gap: var(--space-v-half);
-                    width: 100%;
-                    padding: 0;
-
-                    & > a[role="button"] {
-                        justify-content: space-between;
-                        width: 100%;
-                        padding: var(--space-v) var(--space-h);
-                        font-size: var(--font-size-xs);
-                    }
-                }
-
-                & > a[role="button"] {
-                    justify-content: flex-start;
-                    width: 100%;
-                    margin-block-start: auto;
-                    padding: var(--space-v) var(--space-h);
-                    font-size: var(--font-size-xs);
-                }
-            }
-
         }
     }
 

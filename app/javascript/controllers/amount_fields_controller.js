@@ -116,6 +116,8 @@ export default class extends Controller {
   fitText = () => {
     this.element.style.removeProperty("font-size")
 
+    if (this.element.value === "") return
+
     const styles = getComputedStyle(this.element)
     const naturalFontSize = Number.parseFloat(styles.fontSize)
     const padding = Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight)

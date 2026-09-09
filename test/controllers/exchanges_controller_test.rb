@@ -19,21 +19,35 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     get new_source_exchange_path(@sender)
 
     assert_response :success
-    assert_select "h1", text: /Exchange from #{@sender.name}/
+    assert_select "h1", text: "New exchange"
     assert_select "h1 a", count: 0
-    assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-operation-value='multiply'][action='#{source_exchanges_path(@sender)}']"
-    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
+    assert_select "form[data-exchange-form][data-controller='form exchange-fields'][action='#{budget_exchanges_path(@budget)}']"
+    assert_select "[data-form-panel]", count: 0
+    assert_select "input[name='exchange[sender_source_id]'][type='radio'][value='#{@sender.id}'][checked]"
+    assert_select "[data-amount-currency-fields][data-controller='currency-fields'][data-currency-fields-operation-value='multiply'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "input[name='exchange[receiver_source_name]'][required][value='#{@sender.name} exchange']"
+    assert_select "form[data-exchange-form]", text: /What should the new source be called/, count: 0
+    assert_select "form[data-exchange-form] [data-expense-note] > span", text: "Name"
+    assert_select "form[data-exchange-form] [data-source-picker] > button[data-expense-picker-trigger]" do
+      assert_select "span", text: "From wallet"
+      assert_select "[data-source-picker-target='summary']", text: @sender.name
+    end
     assert_select "input[name='exchange[sender_amount]'][data-currency-fields-target='amount']"
-    assert_select "details[data-amount-currency-section]", count: 1 do
+    assert_select "section[data-amount-currency-section]", count: 1 do
       assert_select "[data-amount-currency-row] > input[name='exchange[sender_amount]']"
       assert_select "[data-amount-currency-row] > .currency-picker"
     end
-    assert_select "select[name='exchange[receiver_currency_code]'][data-currency-fields-target='currency']"
+    assert_select "details input[name='exchange[receiver_source_name]'], details input[name='exchange[sender_amount]']", count: 0
+    assert_select "select[name='exchange[receiver_currency_code]'][data-currency-fields-target='currency']" do
+      assert_select "option[value='#{@sender.currency_code}'][selected]"
+    end
+    assert_select "[data-currency-picker-target='selectionText']", text: @sender.currency_code
+    assert_select "[data-currency-picker-target='currencyTrigger']", text: /Choose a currency/, count: 0
     assert_select "input[name='exchange[rate]'][data-currency-fields-target='rate']"
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
-    assert_select "[data-controller~='currency-rate-picker'] > label[data-currency-rate-picker-target='prompt']"
+    assert_select "[data-controller~='currency-rate-picker'] > small[data-currency-rate-picker-target='prompt']"
+    assert_select "a[href='#{budget_lenses_path(@budget)}'][data-action*='history#back']", text: /Cancel/
   end
 
   test "creates an exchange and its generated source" do
@@ -51,7 +65,7 @@ class ExchangesControllerTest < ActionDispatch::IntegrationTest
     end
 
     exchange = Exchange.order(:id).last
-    assert_redirected_to budget_sources_path(@budget)
+    assert_redirected_to budget_lenses_path(@budget)
     assert_equal BigDecimal("80"), exchange.receiver_amount
     assert_equal "Euro cash", exchange.receiver_source.name
     assert_equal original_balance - BigDecimal("100"), @sender.reload.spendable_amount

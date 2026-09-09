@@ -1,0 +1,46 @@
+<%# locals: (form:) %>
+<% record = form.object %>
+<% exchange = record.is_a?(Exchange) %>
+<% source_currency = exchange ? record.sender_source&.currency_code : record.try(:source)&.currency_code %>
+<% base_currency_code = source_currency || record.budget.base_currency_code %>
+<% currency_attribute = exchange ? :receiver_currency_code : :currency_code %>
+<% rate_attribute = if record.has_attribute?(:conversion_rate)
+     :conversion_rate
+   elsif record.has_attribute?(:rate)
+     :rate
+   end %>
+<% currency_code = record.public_send(currency_attribute).presence || base_currency_code %>
+<% preferred_currencies = if record.is_a?(Expense)
+     [ record.budget.last_expense_currency_code, record.budget.base_currency_code, source_currency ]
+   elsif record.is_a?(Income)
+     [ record.budget.base_currency_code, source_currency ]
+   elsif record.is_a?(Recurrence)
+     [ record.budget.base_currency_code ]
+   elsif exchange
+     [ Current.suggested_currency_code, record.budget.base_currency_code, source_currency ]
+   else
+     []
+   end %>
+<% uses_currency_reference = record.is_a?(Source) || record.is_a?(Allocation) || exchange %>
+
+<section data-amount-currency-section>
+  <header data-form-label><%= t("shared.amount_fields.name") %></header>
+
+  <div data-amount-currency-fields
+    data-controller="<%= uses_currency_reference ? "currency-fields" : nil %>"
+    data-currency-fields-base-currency-value="<%= uses_currency_reference ? base_currency_code : nil %>"
+    data-currency-fields-operation-value="<%= exchange ? "multiply" : "divide" %>"
+    data-currency-fields-reference-link-value="<%= uses_currency_reference ? currency_reference_path : nil %>">
+    <div data-amount-currency-row>
+      <%= render "shared/amount_fields", form: form %>
+      <%= render "shared/currency_picker", form: form, attribute: currency_attribute,
+            compact: true, select_data: { form_summary: "currency" },
+            preferred_currencies: preferred_currencies %>
+    </div>
+
+    <% if rate_attribute %>
+      <%= render "shared/currency_rate_picker", form: form, attribute: rate_attribute,
+            currency_code: currency_code, base_currency_code: base_currency_code %>
+    <% end %>
+  </div>
+</section>

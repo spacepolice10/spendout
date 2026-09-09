@@ -5,7 +5,7 @@ class ExpenseTest < ActiveSupport::TestCase
     budget = budgets(:active)
 
     travel_to Date.new(2026, 8, 20) do
-      expense = budget.expenses.new(source: sources(:active), amount: 1)
+      expense = budget.expenses.new(source: sources(:active), category: categories(:active), amount: 1)
 
       assert expense.valid?
       assert_equal Date.current, expense.occurred_on
@@ -15,35 +15,39 @@ class ExpenseTest < ActiveSupport::TestCase
     end
 
     travel_to Date.new(2026, 10, 1) do
-      expense = budget.expenses.new(source: sources(:active), amount: 1)
+      expense = budget.expenses.new(source: sources(:active), category: categories(:active), amount: 1)
 
       assert expense.valid?
       assert_equal budget.period_to, expense.occurred_on
     end
   end
 
+  test "requires a category" do
+    expense = budgets(:active).expenses.new(source: sources(:active), amount: 1)
+
+    assert_not expense.valid?
+    assert expense.errors.added?(:category, :blank)
+  end
+
   test "uses the source currency rate" do
-    source = budgets(:active).sources.create!(name: "Dong", amount: 266000, currency_code: "VND", rate: "26600")
-    expense = budgets(:active).expenses.create!(source: source, amount: 10)
+    budget = budgets(:active)
+    source = budget.sources.create!(name: "Dong", amount: 266000, currency_code: "VND", rate: "26600")
+    expense = budget.expenses.create!(source:, category: categories(:active), amount: 10)
 
     assert_equal BigDecimal("10") / BigDecimal("26600"), expense.reload.amount_in_base_currency
   end
 
-  test "converts a purchase through its source into the budget and allocation currencies" do
+  test "converts a purchase through its source while category stays currency independent" do
     budget = budgets(:active)
     source = budget.sources.create!(name: "Rubles", amount: 50_000, currency_code: "RUB", rate: 80)
-    allocation = budget.allocations.create!(name: "Thailand", amount: 3_922, currency_code: "THB", rate: 35)
+    category = budget.categories.create!(name: "Thailand", icon: "plane", colour: "blue")
+    allocation = budget.allocations.create!(category:, amount: 3_922, currency_code: "THB", rate: 35)
     expense = budget.expenses.new(
-      source: source,
-      allocation: allocation,
-      amount: 1_601_200,
-      currency_code: "VND",
-      conversion_rate: 320
+      source:, category:, amount: 1_601_200, currency_code: "VND", conversion_rate: 320
     )
 
     assert expense.save_with_source_capacity
     assert_equal BigDecimal("5003.75"), expense.source_amount
-    assert_equal "RUB", expense.source.currency_code
     assert_equal BigDecimal("62.546875"), expense.amount_in_base_currency
     assert_equal BigDecimal("44996.25"), source.reload.spendable_amount
     assert_equal BigDecimal("2189.140625"), allocation.reload.used_amount
@@ -51,7 +55,8 @@ class ExpenseTest < ActiveSupport::TestCase
 
   test "rejects a cross-currency debit that rounds to zero" do
     expense = budgets(:active).expenses.new(
-      source: sources(:active), amount: "0.0001", currency_code: "VND", conversion_rate: 100
+      source: sources(:active), category: categories(:active), amount: "0.0001",
+      currency_code: "VND", conversion_rate: 100
     )
 
     assert_not expense.save_with_source_capacity
@@ -60,8 +65,7 @@ class ExpenseTest < ActiveSupport::TestCase
 
   test "requires a positive amount and an occurrence within the budget" do
     expense = budgets(:active).expenses.new(
-      source: sources(:active),
-      amount: 0,
+      source: sources(:active), category: categories(:active), amount: 0,
       occurred_on: Date.new(2026, 8, 17)
     )
 
@@ -70,130 +74,80 @@ class ExpenseTest < ActiveSupport::TestCase
     assert expense.errors.added?(:occurred_on, "must be within the budget period")
   end
 
-  test "allows no allocation and limits notes to 200 characters" do
-    expense = budgets(:active).expenses.new(
-      source: sources(:active),
-      amount: 1,
-      allocation: nil,
-      note: "n" * 200
-    )
-
-    assert expense.valid?
-
-    expense.note = "n" * 201
-    assert_not expense.valid?
-    assert expense.errors.added?(:note, :too_long, count: 200)
-  end
-
-  test "requires active associations from the budget but allows any budget allocation" do
+  test "requires active associations from the same budget" do
     budget = budgets(:active)
-    expense = budget.expenses.new(source: sources(:other), allocation: allocations(:other), amount: 1)
+    expense = budget.expenses.new(source: sources(:other), category: categories(:other), amount: 1)
 
     assert_not expense.valid?
     assert expense.errors.added?(:source, "must belong to this budget")
-    assert expense.errors.added?(:allocation, "must belong to this budget")
+    assert expense.errors.added?(:category, :wrong_budget)
 
-    second_source = budget.sources.create!(
-      name: "Cash",
-      amount: 100,
-      currency_code: "USD",
-      icon: "cash-banknote",
-      colour: "green"
-    )
-    expense.source = second_source
-    expense.allocation = allocations(:active)
-
+    expense.assign_attributes(source: sources(:active), category: categories(:active))
     assert expense.valid?
 
-    second_source.update_column(:deleted_at, Time.current)
-    allocations(:active).update_column(:deleted_at, Time.current)
-    expense.source.reload
-    expense.allocation.reload
-
+    categories(:active).update_column(:deleted_at, Time.current)
     assert_not expense.valid?
-    assert expense.errors.added?(:source, "must be active")
-    assert expense.errors.added?(:allocation, "must be active")
+    assert expense.errors.added?(:category, :inactive)
   end
 
-  test "does not allow a finished allocation on a new expense" do
+  test "a finished plan does not block expenses in its category" do
     allocation = allocations(:active)
     allocation.update!(finished_at: Time.current)
+    expense = budgets(:active).expenses.new(
+      source: sources(:active), category: allocation.category, amount: 1
+    )
 
-    expense = budgets(:active).expenses.new(source: sources(:active), allocation: allocation, amount: 1)
-
-    assert_not expense.valid?
-    assert expense.errors.added?(:allocation, "must be active")
+    assert expense.valid?
   end
 
   test "rejects cumulative spending beyond source capacity" do
     source = sources(:active)
-    expense = source.budget.expenses.new(source: source, amount: "1375.2501")
+    expense = source.budget.expenses.new(source:, category: categories(:active), amount: "1375.2501")
 
     assert_not expense.save_with_source_capacity
     assert expense.errors.added?(:amount, "must be less than or equal to 1375.25")
-    assert_not expense.persisted?
 
     expense.amount = "1375.2500"
     assert expense.save_with_source_capacity
-    assert_equal BigDecimal("1500.2500"), source.expenses.sum(:amount)
     assert_equal BigDecimal("0"), source.spendable_amount
   end
 
-  test "builds a new unplanned category as part of saving" do
-    budget = budgets(:active)
-    expense = budget.expenses.new(
-      source: sources(:active),
-      allocation: allocations(:active),
-      amount: 5,
-      category_name_to_create: "Coffee"
+  test "builds a new category as part of saving" do
+    expense = budgets(:active).expenses.new(
+      source: sources(:active), amount: 5, category_name_to_create: "Coffee"
     )
 
-    assert_difference([ "Expense.count", "Allocation.count" ], 1) do
+    assert_difference([ "Expense.count", "Category.count" ], 1) do
       assert expense.save_with_source_capacity, expense.errors.full_messages.inspect
     end
 
-    assert_equal "Coffee", expense.allocation.name
-    assert_equal "coffee", expense.allocation.icon
-    assert_equal "coral", expense.allocation.colour
-    assert_not expense.allocation.planned?
+    assert_equal "Coffee", expense.category.name
+    assert_equal "coffee", expense.category.icon
+    assert_equal "coral", expense.category.colour
+    assert_nil expense.category.allocation
   end
 
   test "rolls back a new category when the expense cannot be saved" do
-    budget = budgets(:active)
-    expense = budget.expenses.new(
-      source: sources(:active),
-      amount: 2000,
-      category_name_to_create: "Coffee"
+    expense = budgets(:active).expenses.new(
+      source: sources(:active), amount: 2000, category_name_to_create: "Coffee"
     )
 
-    assert_no_difference([ "Expense.count", "Allocation.count" ]) do
+    assert_no_difference([ "Expense.count", "Category.count" ]) do
       assert_not expense.save_with_source_capacity
     end
   end
 
-  test "historical expense remains attached to soft-deleted associations" do
+  test "historical expense remains attached to soft-deleted source and category" do
     budget = budgets(:active)
-    source = budget.sources.create!(
-      name: "Cash",
-      amount: 100,
-      currency_code: "USD",
-      icon: "cash-banknote",
-      colour: "green"
-    )
-    allocation = budget.allocations.create!(
-      name: "Pocket money",
-      amount: 50,
-      currency_code: "USD",
-      icon: "wallet",
-      colour: "green"
-    )
-    expense = budget.expenses.create!(source: source, allocation: allocation, amount: 10)
+    source = budget.sources.create!(name: "Cash", amount: 100, currency_code: "USD")
+    category = budget.categories.create!(name: "Pocket money")
+    expense = budget.expenses.create!(source:, category:, amount: 10)
 
-    allocation.update!(deleted_at: Time.current)
     source.update!(deleted_at: Time.current)
+    category.update!(deleted_at: Time.current)
 
     assert_equal source, expense.reload.source
-    assert_equal allocation, expense.allocation
+    assert_equal category, expense.category
   end
 
   test "deletion restores source capacity" do

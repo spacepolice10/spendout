@@ -36,9 +36,9 @@ class CategoryIconTest < ActiveSupport::TestCase
     assert_equal "wallet", CategoryIcon.matched_name(nil)
   end
 
-  test "only returns icons supported by allocations" do
+  test "only returns icons supported by categories" do
     CategoryIcon::KEYWORDS.each_key do |icon|
-      assert_includes Allocation.icon_catalog, icon
+      assert_includes Category.icon_catalog, icon
     end
   end
 
@@ -51,7 +51,7 @@ class CategoryIconTest < ActiveSupport::TestCase
     assert_equal Colourable::DEFAULT_COLOUR, CategoryIcon.matched_colour("Unknown")
 
     CategoryIcon::COLOURS.each_value do |colour|
-      assert_includes Allocation.colour_catalog, colour
+      assert_includes Category.colour_catalog, colour
     end
   end
 

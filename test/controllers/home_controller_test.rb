@@ -113,20 +113,24 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   test "landing distinguishes available behavior from planned work" do
     get landing_path
 
-    assert_select "[data-currency-story] [data-rate-board]", count: 1
+    assert_select "[data-currency-story] .rate-info[data-rate-board]", count: 1
     assert_select "[data-currency-story] > [data-landing-demo-frame] > [data-rate-board]", count: 1
     assert_select "[data-rate-board][data-controller]", count: 0
     assert_select "[data-rate-board] table", count: 1
     assert_select "[data-rate-board] caption", count: 0
     assert_select "[data-rate-board-status]", count: 0
     assert_select "[data-rate-board] tbody tr", count: 4
+    assert_select "[data-rate-board] [data-rate-code]", text: "EUR"
+    assert_select "[data-rate-board] [data-rate-name]", count: 0
     assert_select "[data-rate-board]", text: /Pound sterling/, count: 0
+    assert_select "[data-rate-board]", text: /Euro/, count: 0
     assert_select "[data-rate-display]", text: "26,300"
     assert_select "[data-rate-board-snapshots-value]", count: 0
     assert_select "[data-currency-story] [data-rate-copy] article", count: 1
     assert_select "[data-currency-story] [data-rate-copy] h3", text: "Real currencies. Honest history."
     assert_select "[data-landing-chapter] > header h2", text: "Speaks your currency."
     assert_select "[data-currency-story] [data-rate-copy]", text: /base currency stays fixed/
+    assert_select "[data-currency-story] [data-rate-copy]", text: /up to four quotes/
     assert_select "[data-currency-story] [data-rate-copy]", text: /saved amounts never revalue themselves/
     assert_select "[data-landing-letter]" do
       assert_select "h2", text: "Why I made Spendout"

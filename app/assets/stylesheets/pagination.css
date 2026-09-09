@@ -1,0 +1,19 @@
+@layer components {
+    [data-controller="pagination"] > turbo-frame {
+        display: grid;
+        gap: var(--space-v-2);
+    }
+
+    .pagination-link--active-when-observed {
+        display: block;
+        block-size: 1px;
+        inline-size: 1px;
+        overflow: clip;
+        pointer-events: none;
+        color: transparent;
+
+        turbo-frame:has(&):has(~ turbo-frame) & {
+            display: none;
+        }
+    }
+}

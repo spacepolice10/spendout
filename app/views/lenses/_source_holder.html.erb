@@ -1,0 +1,30 @@
+<article class="source-holder lens-content" data-controller="source-holder" data-empty="<%= snapshot.records.empty? %>" data-testid="source-holder-lens">
+  <main>
+    <% if snapshot.records.any? %>
+      <header class="source-holder-total">
+        <small><%= t(".total") %></small>
+        <strong><%= formatted_amount(snapshot.total_balance, snapshot.currency_code) %></strong>
+      </header>
+
+      <div class="source-holder-stack" data-testid="source-holder-stack" role="region" aria-label="<%= t(".stack") %>">
+        <% snapshot.records.each do |record| %>
+          <%= link_to source_path(record.id), class: "source-holder-card" do %>
+            <%= render "sources/design", design: record.design, colour: record.colour %>
+            <strong><%= record.name %></strong>
+            <span><%= formatted_amount(record.balance, record.currency_code) %> <small><%= record.currency_code %></small></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <article data-elevation="1" data-lens-empty-tip data-testid="source-holder-tip" style="border-color: var(--color-accent); color: var(--color-accent);">
+        <header>
+          <h2><%= t(".tip_name") %></h2>
+        </header>
+        <main>
+          <p><%= t(".tip_description") %></p>
+          <p><%= t(".tip_examples") %></p>
+        </main>
+      </article>
+    <% end %>
+  </main>
+</article>

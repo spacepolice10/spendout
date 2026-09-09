@@ -1,0 +1,74 @@
+active_expense:
+  budget: active
+  feature_type: new_expense
+  favorite: false
+
+active_income:
+  budget: active
+  feature_type: new_income
+  favorite: false
+
+active_source:
+  budget: active
+  feature_type: new_source
+  favorite: false
+
+active_allocation:
+  budget: active
+  feature_type: new_allocation
+  favorite: false
+
+active_laboratory:
+  budget: active
+  feature_type: lens_laboratory
+  favorite: false
+
+archived_expense:
+  budget: archived
+  feature_type: new_expense
+  favorite: false
+
+archived_income:
+  budget: archived
+  feature_type: new_income
+  favorite: false
+
+archived_source:
+  budget: archived
+  feature_type: new_source
+  favorite: false
+
+archived_allocation:
+  budget: archived
+  feature_type: new_allocation
+  favorite: false
+
+archived_laboratory:
+  budget: archived
+  feature_type: lens_laboratory
+  favorite: false
+
+other_expense:
+  budget: other
+  feature_type: new_expense
+  favorite: false
+
+other_income:
+  budget: other
+  feature_type: new_income
+  favorite: false
+
+other_source:
+  budget: other
+  feature_type: new_source
+  favorite: false
+
+other_allocation:
+  budget: other
+  feature_type: new_allocation
+  favorite: false
+
+other_laboratory:
+  budget: other
+  feature_type: lens_laboratory
+  favorite: false

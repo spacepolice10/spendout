@@ -1,7 +1,7 @@
 active:
   budget: active
   source: active
-  allocation: active
+  category: active
   currency_code: USD
   amount: 125.0000
   source_amount: 125.0000
@@ -12,7 +12,7 @@ active:
 archived:
   budget: archived
   source: archived
-  allocation: archived
+  category: archived
   currency_code: EUR
   amount: 50.0000
   source_amount: 50.0000
@@ -23,7 +23,7 @@ archived:
 other:
   budget: other
   source: other
-  allocation: other
+  category: other
   currency_code: VND
   amount: 100000.0000
   source_amount: 100000.0000

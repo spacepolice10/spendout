@@ -1,18 +1,16 @@
-<%# locals: (form:, open: false, input_data: {}) %>
+<%# locals: (form:, open: false, input_data: {}, colour_attribute: :colour, colour_options: form.object.class.colour_options, colour_value: form.object.public_send(colour_attribute)) %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
-  <summary data-form-target="summary">
+  <summary>
     <span><%= t(".name") %>:</span>
-    <small data-form-target="summaryContent"><%= form.object.colour %></small>
+    <small data-form-target="summaryContent"><%= colour_value %></small>
   </summary>
 
   <fieldset data-layout="flex">
     <legend class="utilities--sr-only"><%= t(".name") %></legend>
     <div>
-      <%= form.collection_radio_buttons :colour, form.object.class.colour_options, :second, :first do |radio| %>
+      <%= form.collection_radio_buttons colour_attribute, colour_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text, style: "--form-checked-background: var(--color-palette-#{radio.value}); --form-checked-color: var(--color-invert-1);" do %>
-          <%= radio.radio_button aria: { label: radio.text }, data: input_data.merge({
-                form_target: "toBeFocused"
-              }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
+          <%= radio.radio_button aria: { label: radio.text }, data: input_data %>
           <%= icon("circle-dot", style: "color: var(--color-palette-#{radio.value});") %>
         <% end %>
       <% end %>
@@ -20,9 +18,6 @@
     <% unless mobile_variant? %>
       <small>
         <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
-      </small>
-      <small>
-        <%= t("shared.form_navigation.back_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
       </small>
     <% end %>
   </fieldset>

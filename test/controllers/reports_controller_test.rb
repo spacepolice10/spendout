@@ -36,20 +36,17 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
       assert_select "[data-report-category-total] + progress", count: 1
     end
     assert_select "[data-testid='allocations-vs-expenses']", count: 0
-    assert_select "nav[aria-label='Budget sections'] a[aria-current='page']", text: /Reports/
-    assert_select "nav[data-navigation-layout='rail']"
+    assert_select "nav[aria-label='Add']", count: 0
     assert_select "dialog#budget-menu[data-turbo-temporary]", count: 0
   end
 
-  test "shows the mobile tabbar for mobile user agents" do
+  test "does not show the add menu outside the lenses page on mobile" do
     sign_in_as(@user)
 
     get budget_report_path(@budget), headers: { "User-Agent" => "Mozilla/5.0 (iPhone) Mobile" }
 
     assert_response :success
-    assert_select "nav[aria-label='Budget sections']"
-    assert_select "nav[aria-label='Budget sections'] > div > a", count: 4
-    assert_select "nav[aria-label='Budget sections'] a[aria-current='page']", text: /Reports/
+    assert_select "nav[aria-label='Add']", count: 0
     assert_select "dialog#budget-menu[data-turbo-temporary]", count: 0
   end
 

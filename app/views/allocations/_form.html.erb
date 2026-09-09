@@ -1,11 +1,8 @@
 <%= form_with model: [ budget, allocation ], data: {
       allocation_form: true,
-      controller: "form currency-fields category-icon",
-      form_focused_on_toggle_value: !mobile_variant?,
+      controller: "form category-icon",
       category_icon_keywords_value: CategoryIcon::KEYWORDS,
-      category_icon_colours_value: CategoryIcon::COLOURS,
-      currency_fields_base_currency_value: budget.base_currency_code,
-      currency_fields_reference_link_value: currency_reference_path
+      category_icon_colours_value: CategoryIcon::COLOURS
     } do |form| %>
   <% if allocation.errors.any? %>
     <section role="alert" data-form-errors>
@@ -21,45 +18,17 @@
     </section>
   <% end %>
 
-  <%= render "shared/name_fields", form: form, question: t(".name_question"), placeholder: t(".name_placeholder"),
-        input_data: {
-          category_icon_target: "name",
-          action: "input->category-icon#suggest"
-        } %>
-  <%= render "shared/amount_currency_fields", form: form, question: t(".amount_question"),
-        amount_attribute: :amount,
-        currency_attribute: :currency_code, rate_attribute: :rate,
-        base_currency_code: budget.base_currency_code %>
+  <%= render "shared/name_fields", form:, name_attribute: :category_name_to_create,
+        question: t(".name_question"), placeholder: t(".name_placeholder"),
+        input_data: { category_icon_target: "name", action: "input->category-icon#suggest" } %>
+  <%= render "shared/icon_fields", form:, icon_attribute: :category_icon,
+        icon_options: Category.icon_options, icon_value: allocation.category_icon || Iconable::DEFAULT_ICON,
+        input_data: { category_icon_target: "icon", action: "input->category-icon#chooseIcon" } %>
+  <%= render "shared/colour_fields", form:, colour_attribute: :category_colour,
+        colour_options: Category.colour_options, colour_value: allocation.category_colour || Colourable::DEFAULT_COLOUR,
+        input_data: { category_icon_target: "colour", action: "input->category-icon#chooseColour" } %>
+  <%= render "shared/amount_with_currency_fields", form: form %>
 
-  <%= render "shared/icon_fields", form: form, input_data: {
-        category_icon_target: "icon",
-        action: "input->category-icon#chooseIcon"
-      } %>
-  <%= render "shared/colour_fields", form: form, input_data: {
-        category_icon_target: "colour",
-        action: "input->category-icon#chooseColour"
-      } %>
-
-  <div data-layout="flex">
-    <%= link_to budget_allocations_path(budget), role: "button", data: {
-          appearance: "keycap", intent: "secondary", size: "lg",
-          controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
-        } do %>
-      <%= icon("chevron-left") %>
-      <span><%= t(".cancel") %></span>
-      <% unless mobile_variant? %>
-        <kbd aria-hidden="true">Shift + Escape</kbd>
-      <% end %>
-    <% end %>
-    <%= form.button type: "submit", data: {
-          appearance: "keycap", intent: "primary", size: "lg",
-          controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
-        } do %>
-      <span><%= t(".submit") %></span>
-      <%= icon("chevron-right") %>
-      <% unless mobile_variant? %>
-        <kbd aria-hidden="true">Cmd + Enter</kbd>
-      <% end %>
-    <% end %>
-  </div>
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
 <% end %>

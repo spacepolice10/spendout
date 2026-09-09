@@ -1,13 +1,8 @@
-<%# locals: (design:, colour:, alt: "", variant: "thumbnail", loading: "eager") %>
+<%# locals: (design:, colour:, alt: "", variant: "thumbnail") %>
 <span
   data-source-design="<%= variant %>"
+  data-source-pattern="<%= design.fetch(:pattern) %>"
   role="<%= alt.present? ? "img" : "presentation" %>"
   aria-label="<%= alt %>"
   style="--source-colour: var(--color-palette-<%= colour %>);"
->
-  <span data-source-design-accent aria-hidden="true"></span>
-  <% if design.fetch(:face) %>
-    <%= image_tag design.fetch(:face), alt: "", width: 1254, height: 1254,
-          loading: loading, data: { source_design_face: true } %>
-  <% end %>
-</span>
+></span>

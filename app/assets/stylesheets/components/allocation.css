@@ -61,6 +61,89 @@
         scale: 1.06;
     }
 
+    [data-plan-overview] > main {
+        gap: var(--space-v-half);
+        align-content: start;
+        overflow-y: auto;
+    }
+
+    [data-plan-overview] > main:has([data-allocation-compact]) {
+        padding: 0;
+        border: var(--border-subtle);
+        border-radius: var(--radius-2);
+        background: var(--color-1);
+    }
+
+    [data-allocation-compact] {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: var(--space-h-half);
+        row-gap: var(--space-v-half);
+        padding: var(--space-v-half) var(--space-h-half);
+        border: 0;
+        background: var(--color-1);
+        color: inherit;
+        text-decoration: none;
+    }
+
+    [data-allocation-compact] { border-block-end: var(--border-subtle); }
+
+    [data-allocation-compact] > [data-allocation-progress] {
+        grid-column: 1 / -1;
+    }
+
+    [data-allocation-progress] {
+        display: grid;
+        grid-template-columns: repeat(20, minmax(0, 1fr));
+        gap: var(--radius-1);
+        width: 100%;
+        height: var(--space-v);
+    }
+
+    [data-allocation-progress] > span {
+        min-width: 0;
+        background: var(--color-3);
+    }
+
+    [data-allocation-progress] > span[data-filled="true"] {
+        background: var(--progress-colour, var(--color-accent));
+    }
+
+    [data-allocation-compact] [data-allocation-envelope-thumbnail] {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    [data-allocation-compact] [data-allocation-envelope-thumbnail] [data-allocation-envelope] {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    [data-allocation-compact] [data-allocation-envelope-thumbnail] > .icon-wrap {
+        width: 0.7rem;
+        height: 0.7rem;
+    }
+
+    [data-allocation-compact] strong {
+        overflow: hidden;
+        font-size: var(--font-size-sm);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    [data-allocation-compact] > span:last-of-type {
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-bold);
+        white-space: nowrap;
+    }
+
+    [data-allocation-compact] > [data-finished-stamp] {
+        padding: 0 var(--space-h-half);
+        font-size: var(--font-size-sm);
+    }
+
     [data-allocation-title] {
         display: grid;
         justify-items: center;

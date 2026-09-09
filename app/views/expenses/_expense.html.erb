@@ -2,11 +2,7 @@
   <article class="expense" data-testid="expense-card">
     <main>
       <div data-expense-line>
-        <% if expense.allocation %>
-          <%= icon(expense.allocation.icon, style: icon_colour_styles(expense.allocation.colour)) %>
-        <% else %>
-          <%= icon(expense.source.icon, style: icon_colour_styles(expense.source.colour)) %>
-        <% end %>
+        <%= icon(expense.category.icon, style: icon_colour_styles(expense.category.colour)) %>
 
         <% if expense.note.present? %>
           <span data-expense-note data-testid="expense-note" aria-label="<%= t(".with_note") %>" title="<%= t(".with_note") %>">
@@ -16,11 +12,7 @@
 
         <div data-expense-description>
           <strong data-expense-name>
-            <% if expense.allocation %>
-              <%= expense.allocation.name %>
-            <% else %>
-              <%= t(".unallocated") %>
-            <% end %>
+            <%= expense.category.name %>
           </strong>
         </div>
 

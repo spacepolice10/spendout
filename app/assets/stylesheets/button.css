@@ -61,6 +61,17 @@
             --button-color: var(--color-invert-1);
         }
 
+        &[data-intent="ghost"] {
+            --button-background: transparent;
+            --button-background-hovered: transparent;
+            --button-background-active: transparent;
+            --button-color: var(--color-invert-2);
+        }
+
+        &[data-intent="ghost"]:hover:not(:disabled, [aria-disabled="true"]) {
+            --button-color: var(--color-invert-1);
+        }
+
         &[data-intent="accent"] {
             --button-background: var(--color-palette-blue);
             --button-background-hovered: color-mix(
@@ -182,5 +193,48 @@
             outline: 2px solid var(--keycap-base);
             outline-offset: 3px;
         }
+    }
+
+    [data-pill-group] {
+        display: flex;
+        width: fit-content;
+        gap: 0;
+        border-radius: var(--radius-full);
+        box-shadow: 0 var(--space-v-half) var(--space-v) color-mix(in oklch, var(--color-invert-1) 18%, transparent);
+    }
+
+    [data-pill-group] form {
+        display: flex;
+        min-width: 0;
+    }
+
+    [data-pill-group] :is(button, [role="button"]) {
+        min-width: auto;
+        padding: calc(var(--space-v-half) + 0.2rem) var(--space-h);
+        border: var(--border-subtle);
+        border-radius: 0;
+    }
+
+    [data-pill-group] form:first-child :is(button, [role="button"]) {
+        border-start-start-radius: var(--radius-full);
+        border-end-start-radius: var(--radius-full);
+    }
+
+    [data-pill-group] form:last-child :is(button, [role="button"]) {
+        border-start-end-radius: var(--radius-full);
+        border-end-end-radius: var(--radius-full);
+    }
+
+    [data-pill-group] form:not(:first-child) :is(button, [role="button"]) {
+        margin-inline-start: -0.5px;
+    }
+
+    [data-pill-group] :is(button)[aria-pressed="true"] {
+        opacity: var(--opacity-100);
+        --button-background: var(--color-invert-1);
+        --button-background-hovered: var(--color-invert-1);
+        --button-background-active: var(--color-invert-1);
+        --button-color: var(--color-1);
+        cursor: default;
     }
 }

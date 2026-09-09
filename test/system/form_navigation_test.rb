@@ -6,39 +6,9 @@ class FormNavigationTest < ApplicationSystemTestCase
     visit new_budget_source_path(budgets(:active))
   end
 
-  test "enter moves between form details inputs" do
-    name = find("input[name='source[name]']")
-    name.fill_in with: "Cash"
-    name.send_keys(:enter)
+  test "tab moves between form inputs in document order" do
+    find("input[name='source[name]']").send_keys(:tab)
 
-    assert_selector "details[open] input[name='source[amount]']:focus"
-
-    find("input[name='source[amount]']").send_keys([ :shift, :enter ])
-
-    assert_selector "details[open] input[name='source[name]']:focus"
-  end
-
-  test "enter does not advance past an invalid input" do
-    find("input[name='source[name]']").send_keys(:enter)
-
-    assert_selector "details[open] input[name='source[name]']:focus"
-  end
-
-  test "submission opens the section containing the first invalid field" do
-    find("details[data-amount-currency-section]").find("summary").click
-
-    click_button "Confirm"
-
-    assert_selector "details[open] input[name='source[name]']:focus"
-  end
-
-  test "enter moves through expense details" do
-    visit new_budget_expense_path(budgets(:active))
-
-    amount = find("input[name='expense[amount]']")
-    amount.fill_in with: "10"
-    amount.send_keys(:enter)
-
-    assert_selector "details[open] textarea[name='expense[note]']:focus"
+    assert_selector "input[name='source[amount]']:focus"
   end
 end

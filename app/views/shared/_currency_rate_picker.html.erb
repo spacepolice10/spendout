@@ -6,17 +6,19 @@
       currency_rate_picker_base_currency_value: base_currency_code,
       currency_rate_picker_currency_value: currency_code,
       currency_rate_picker_prompt_template_value: t(".prompt", currency: "__currency__", base_currency: "__base_currency__"),
+      currency_rate_fields: true,
       currency_fields_target: "rateFields",
       expense_fields_target: "fields"
     }, hidden: !available do %>
-  <label for="<%= form.field_id(attribute) %>" data-currency-rate-picker-target="prompt">
+  <%= form.label attribute, t(".name") %>
+  <small id="<%= form.field_id(attribute, :description) %>" data-currency-rate-picker-target="prompt">
     <%= t(".prompt", currency: currency_code, base_currency: base_currency_code) %>
-  </label>
+  </small>
   <%= form.text_field attribute, inputmode: "decimal", required: true,
     placeholder: t(".change_rate"),
+    aria: { describedby: form.field_id(attribute, :description) },
     data: { controller: "amount-fields", amount_fields_start_value: rate&.to_s("F"),
       amount_fields_fraction_digits_value: 12, amount_fields_minimum_value: "0",
       amount_fields_minimum_exclusive_value: true,
-      expense_fields_target: "rate", currency_fields_target: "rate",
-      form_target: "toBeFocused" } %>
+      expense_fields_target: "rate", currency_fields_target: "rate" } %>
 <% end %>

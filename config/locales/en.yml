@@ -28,6 +28,19 @@
 #       enabled: "ON"
 
 en:
+  features:
+    add: "Add"
+    dialog_label: "Add to budget"
+    favorite: "Add %{feature} to favorites"
+    unfavorite: "Remove %{feature} from favorites"
+    income: "Income"
+    expense: "Expense"
+    types:
+      new_expense: "New expense"
+      new_income: "New income"
+      new_source: "New source"
+      new_allocation: "New allocation"
+      lens_laboratory: "Lens laboratory"
   sessions:
     new:
       logo_description: "Cybercat"
@@ -98,6 +111,8 @@ en:
       exchanges: "Exchanges"
       exchange_records: "exchanges"
       create_source: "Add source"
+      create_income: "Add income"
+      income_history: "Income history"
     new:
       name: "New wallet"
     show:
@@ -115,8 +130,6 @@ en:
       remove_confirmation: "Are you sure you want to remove this source?"
     form:
       errors: "%{count} errors prevented this source from being saved:"
-      name_question: "What should this source be called?"
-      amount_question: "How much money is in this source?"
       name_placeholder: "Credit card, cash, loan, etc."
       cancel: "Cancel"
       submit: "Confirm"
@@ -127,13 +140,12 @@ en:
     design_fields:
       name: "Design"
       arrows_navigation_html: "Use %{arrows} to switch."
-      continue_html: "Press %{enter} to continue or %{shift} + %{enter} to go back."
     designs:
-      americat_express: "No cat"
-      mastercat: "Friendly"
-      meowisa: "Sleepy"
-      unipaw: "Curious"
-      cash: "Grumpy"
+      americat_express: "Wash"
+      mastercat: "Split"
+      meowisa: "Fade"
+      unipaw: "Band"
+      cash: "Stripe"
       bank: "Bank"
       savings: "Savings"
       digital_wallet: "Digital wallet"
@@ -145,7 +157,7 @@ en:
 
   allocations:
     index:
-      name: "Categories"
+      name: "Plan"
       remainder: "Remaining: %{amount} %{currency}"
       overallocation: "Planned allocations exceed available sources by %{amount} %{currency}."
       no_data:
@@ -156,11 +168,11 @@ en:
         bill: "— Bills"
         emergency_fund: "— Emergencies fund"
         spending_explanation: "The rest of the money will be used to calculate daily overall. This will help to spend freely without putting your plans at risk."
-      create_allocation: "New category"
+      create_allocation: "New plan item"
     new:
-      name: "New allocation"
+      name: "New plan item"
     form:
-      errors: "%{count} errors prevented this allocation from being saved:"
+      errors: "%{count} errors prevented this plan item from being saved:"
       name_question: "What should this category be called?"
       amount_question: "How much money should be set aside for this category?"
       name_placeholder: "Rent, groceries, emergency fund, etc."
@@ -177,51 +189,42 @@ en:
       finish: "Finish"
       finish_confirmation: "Finish %{name} and release %{amount}?"
     show:
-      back: "Back to allocations"
+      back: "Back to plan"
       back_name: "Back"
       deleted: "Deleted"
       finished: "Finished"
-      summary_name: "Allocation summary"
+      summary_name: "Plan item summary"
       planned: "Planned:"
       used: "Spent:"
       remaining: "Remaining:"
       unplanned: "Unplanned"
       expenses: "Expenses"
-      expense_records: "allocation expenses"
-      finish: "Finish allocation"
+      expense_records: "plan item expenses"
+      finish: "Finish plan item"
       finish_confirmation: "Finish %{name} and release %{amount}?"
-      reopen: "Reopen allocation"
+      reopen: "Reopen plan item"
       reopen_confirmation: "Reopen %{name} and reserve its remaining amount again?"
-      remove: "Remove allocation"
-      remove_confirmation: "Are you sure you want to remove this allocation?"
+      remove: "Remove plan item"
+      remove_confirmation: "Are you sure you want to remove this plan item?"
     create:
-      success: "Allocation was created."
-      overallocated: "Allocation was created. Planned allocations now exceed available sources."
+      success: "Plan item was created."
+      overallocated: "Plan item was created. Planned amounts now exceed available sources."
     finish:
-      success: "Allocation was finished."
-      failure: "Allocation could not be finished."
+      success: "Plan item was finished."
+      failure: "Plan item could not be finished."
     reopen:
-      success: "Allocation was reopened."
-      failure: "Allocation could not be reopened."
+      success: "Plan item was reopened."
+      failure: "Plan item could not be reopened."
     destroy:
-      success: "Allocation was removed."
-      failure: "Allocation was not removed."
+      success: "Plan item was removed."
+      failure: "Plan item was not removed."
 
   expenses:
     index:
       name: "Expenses"
-      user: "User"
-      cybercat_description: "Cybercat"
       expenses: "Expenses"
       expense_records: "expenses"
       create_expense: "Add expense"
-      answers:
-        no_expenses: "Nothing spent yet—nice."
-        "0": "That’s enough spending for today."
-        "25": "You can, but tomorrow will be tighter."
-        "50": "Better save some for tomorrow."
-        "80": "Yep, still good to go."
-        "100": "You’re ahead today—nice."
     new:
       name: "New expense"
       no_sources:
@@ -246,7 +249,6 @@ en:
         creation_html: "Category named %{name} will be created"
         remaining: "%{amount} %{currency} remaining"
         unplanned: "Unplanned category"
-        submit_and_create: "Confirm & create category"
       date: "Date:"
       note: "Note:"
       note_added: "Added"
@@ -279,6 +281,7 @@ en:
   users:
     show:
       name: "User"
+      back: "Back to dashboard"
       account: "Account"
       language: "Language"
       language_description: "Choose the language Spendout uses."
@@ -291,7 +294,12 @@ en:
 
   exchanges:
     form:
+      from: "From wallet"
+      name: "Name"
+      name_placeholder: "Travel cash, foreign account, etc."
       name_question: "What should the new source be called?"
+      cancel: "Cancel"
+      submit: "Confirm"
 
   shared:
     locale_switcher:
@@ -307,15 +315,13 @@ en:
       no_data: "No currencies found"
     name_fields:
       name: "Name"
-    amount_currency_fields:
+    amount_fields:
       name: "Amount"
       arrows_navigation_html: "Use %{arrows} to switch."
     currency_rate_picker:
+      name: "Exchange rate"
       change_rate: "Enter rate"
       prompt: "Enter how many units of %{currency} are in 1 %{base_currency}"
-    form_navigation:
-      continue_html: "Press %{enter} to continue or %{shift} + %{enter} to go back."
-      back_html: "Press %{shift} + %{enter} to go back."
     icon_fields:
       name: "Icon"
       arrows_navigation_html: "Use %{arrows} to switch."
@@ -331,6 +337,326 @@ en:
       name: "Safe spending available today"
       remaining: "%{percentage}% of today's safe spending remains"
       amount: "Safe to spend today: %{amount} %{currency}"
+
+  categories:
+    index:
+      name: "Categories"
+      spent: "%{amount} %{currency} spent"
+      planned: "%{amount} %{currency} planned"
+      empty: "Create a category before recording an expense."
+      create: "New category"
+    new:
+      name: "New category"
+    form:
+      errors: "%{count} errors prevented this category from being saved:"
+      name_question: "What is this spending for?"
+      name_placeholder: "Coffee, rent, groceries…"
+      cancel: "Cancel"
+      submit: "Confirm"
+    show:
+      remove: "Remove category"
+      remove_confirmation: "Remove this category from future forms?"
+    create:
+      success: "Category was created."
+    update:
+      success: "Category was updated."
+    destroy:
+      success: "Category was removed."
+
+  incomes:
+    index:
+      name: "Income"
+      empty: "No income recorded yet."
+      create: "Add income"
+    new:
+      name: "New income"
+      no_sources: "Add a wallet before recording income."
+      create_source: "New wallet"
+    form:
+      errors: "%{count} errors prevented this income from being saved:"
+      amount_question: "How much arrived?"
+      direction: "Direction"
+      from: "From"
+      from_placeholder: "Salary, client, refund…"
+      to: "To wallet"
+      date: "Date"
+      note: "Note"
+      note_placeholder: "Add an optional note…"
+      cancel: "Cancel"
+      submit: "Confirm"
+    income:
+      view: "View income"
+      with_note: "Has note"
+      to: "To %{source}"
+    show:
+      delete: "Delete income"
+      delete_confirmation: "Delete this income record?"
+    create:
+      success: "Income was recorded."
+    destroy:
+      success: "Income was deleted."
+      failure: "Income cannot be deleted while its wallet uses that money."
+
+  records:
+    timeline:
+      empty: "No records yet."
+      load_more: "Load more records"
+      unusual_day: "%{multiple}× a usual spending day"
+      repeated_category_over_plan: "%{category} repeated %{count} times — %{spent} spent against %{planned} planned"
+
+  recurrences:
+    index:
+      name: "Recurrences"
+      empty: "No recurrences yet."
+      create: "New recurrence"
+    new:
+      name: "New recurrence"
+      no_categories: "Create a category first."
+      create_category: "New category"
+    edit:
+      name: "Edit recurrence"
+    form:
+      errors: "%{count} errors prevented this recurrence from being saved:"
+      name_question: "What repeats?"
+      name_placeholder: "Rent, Netflix, insurance…"
+      details: "Expense details"
+      category:
+        name: "Category:"
+        search: "Find or add category"
+        choose: "Choose a category"
+        close: "Close category picker"
+        confirm: "Confirm"
+        creation_html: "Category named %{name} will be created"
+      amount: "Amount"
+      currency: "Currency"
+      occurs_on: "Next:"
+      period: "Days:"
+      note: "Note:"
+      note_added: "Note added"
+      note_placeholder: "Optional"
+      cancel: "Cancel"
+      submit: "Confirm"
+    recurrence:
+      schedule: "%{date}, every %{days} days"
+      record: "Record expense"
+    show:
+      record: "Record expense"
+      edit: "Edit"
+      finish: "Stop recurrence"
+      finish_confirmation: "Stop this recurrence?"
+    create:
+      success: "Recurrence was created."
+    update:
+      success: "Recurrence was updated."
+    finish:
+      success: "Recurrence was stopped."
+
+  lenses:
+    types:
+      source_holder: "Wallet holder"
+      plan_overview: "Plan"
+      rollover: "Daily rollover"
+      most_expensive_categories: "Top categories"
+      upcoming_recurrences: "Upcoming subs"
+      money_weather: "Money weather"
+      tiny_leaks: "Tiny leaks"
+      spree_detector: "Spree detector"
+      payday_gravity: "Payday gravity"
+      repeat_offenders: "Repeat offenders"
+      parallel_you: "Parallel you"
+      weekday_fingerprint: "Weekday fingerprint"
+      rate_info: "Rate info"
+    index:
+      name: "Budget dashboard"
+      navigation_label: "Budget sections"
+      money: "Money"
+      categories: "Categories"
+      plan: "Plan"
+      expenses: "Expenses"
+      income: "Income"
+      recurring: "Recurrences"
+      report: "Report"
+      account: "Account"
+      inactive: "This lens is outside its configured dates."
+      create_expense: "Add expense"
+      create_income: "Add income"
+      widgets: "Widgets"
+      lenses: "Lenses"
+      configure: "Configure lenses"
+      recent_records: "Recent records"
+      arrange: "Arrange lenses"
+    edit:
+      name: "Arrange lenses"
+      description: "Choose the order lenses appear on your dashboard."
+      back: "Back to dashboard"
+      list_label: "Active lenses"
+      controls: "Move %{name}"
+      move_up: "Move up"
+      move_down: "Move down"
+      remove: "Remove %{name}"
+      remove_confirmation: "Remove %{name} from your dashboard?"
+    move:
+      success: "Lens order was updated."
+    new:
+      name: "Lens Lab"
+      description: "Choose how you want to work with this budget."
+      eyebrow: "Budget instruments"
+      back: "Back to dashboard"
+      question: "What should this lens answer?"
+      add: "Add %{name}"
+      preview: "Preview"
+      configure: "Configure"
+      add_now: "Add to dashboard"
+      all_active: "Every lens is already active."
+      rollover_question: "How much is safe today?"
+      most_expensive_categories_question: "Where does the money go?"
+      upcoming_recurrences_question: "What payment comes next?"
+      money_weather_question: "Is a storm coming?"
+      tiny_leaks_question: "Which small expenses keep returning?"
+      spree_detector_question: "Which days bite?"
+      payday_gravity_question: "How quickly does income disappear?"
+      repeat_offenders_question: "What looks recurring?"
+      parallel_you_question: "What if I spent a little less?"
+      weekday_fingerprint_question: "Which weekday costs me most?"
+      rate_info_question: "What are my currencies worth today?"
+      rollover: "Paces discretionary spending across the budget dates."
+      most_expensive_categories: "Ranks spending categories."
+      upcoming_recurrences: "Shows subscription payments for the month ahead."
+      money_weather_answer: "The next week looks calm — for now."
+      money_weather: "Projects near-term spending from your recent pace and scheduled expenses."
+      tiny_leaks_answer: "A few small purchases add up to something visible."
+      tiny_leaks: "Finds repeated expenses smaller than your usual purchase."
+      spree_detector_answer: "One expensive day stands out from your normal rhythm."
+      spree_detector: "Compares daily spending with your typical spending day."
+      payday_gravity_answer: "Your income loses altitude fastest in its first week."
+      payday_gravity: "Shows spending during the seven days after each income."
+      repeat_offenders_answer: "Some expenses already behave like subscriptions."
+      repeat_offenders: "Detects similarly named and priced expenses at recurring intervals."
+      parallel_you_answer: "A slightly thriftier you keeps the difference."
+      parallel_you: "Models a 20% reduction in spending outside planned categories."
+      weekday_fingerprint_answer: "Every weekday leaves a different spending trace."
+      weekday_fingerprint: "Compares average spending across weekdays."
+      rate_info_answer: "Wallet currencies move even when records do not."
+      rate_info: "Shows dated reference quotes without rewriting historical records."
+      cybercat_answer: "Good morning. Your budget is still on its paws."
+      sample_home: "Home"
+      sample_food: "Food"
+      sample_coffee: "Coffee"
+      sample_today: "Today"
+      sample_tomorrow: "Tomorrow"
+      sample_gym: "Gym"
+      sample_later: "In five days"
+    source_holder:
+      controls: "Source controls"
+      stack: "Wallets"
+      total: "Available total"
+      create: "Add wallet"
+      create_label: "Wallet"
+      exchange: "Add exchange"
+      exchange_label: "Exchange"
+      tip_name: "Add your wallets or cards"
+      tip_description: "Add a source to track the money available to this budget and where you keep it."
+      tip_examples: "For example: cash, a bank account, or a debit or credit card."
+    plan_overview:
+      controls: "Plan controls"
+      create: "Add allocation"
+      create_label: "Allocation"
+      tip_name: "Plan important spending first"
+      tip_description: "Set money aside for essentials you already know about, so the rest is safe to spend more freely."
+    most_expensive_categories:
+      empty: "No categorized spending yet."
+    upcoming_recurrences:
+      controls: "Recurrence controls"
+      empty: "No upcoming subs."
+      record: "Record"
+      create: "Add subscription"
+      create_label: "Subscription"
+      view_sub: "View %{name}, %{amount}"
+    money_weather:
+      conditions: { clear: "Clear", cloudy: "Clouds ahead", storm: "Storm warning" }
+      projection: "%{amount} %{currency} projected over %{days} days"
+      scheduled: "%{amount} %{currency} already scheduled"
+    tiny_leaks:
+      empty: "No repeated tiny leaks detected yet."
+      total: "%{amount} %{currency} leaked through these patterns"
+    spree_detector:
+      empty: "No unusually expensive days detected."
+      multiple: "%{multiple}× a usual spending day"
+    payday_gravity:
+      empty: "Record income to measure its gravity."
+      spent: "%{percentage}% spent in %{days} days"
+    repeat_offenders:
+      empty: "No reliable repeating patterns yet."
+      pattern: "%{count} times, roughly every %{days} days"
+      next: "Possible next date: %{date}"
+    parallel_you:
+      assumption: "If discretionary spending were %{percentage}% lower"
+      saved: "kept by parallel you"
+      alternative: "Alternative total: %{amount} %{currency}"
+    weekday_fingerprint:
+      empty: "More spending days are needed for a fingerprint."
+      highest: "%{day} currently has the highest daily average."
+    rate_info:
+      board_title: "Exchange rates"
+      currency: "Currency"
+      rate: "Rate"
+      reference: "Latest quote %{date}"
+      unavailable: "Reference rates are temporarily unavailable."
+      controls: "Rate controls"
+      edit: "Choose currencies"
+    cybercat:
+      description: "Cybercat"
+      messages:
+        morning: "Good morning. Let’s see how the budget woke up."
+        afternoon: "Afternoon check-in. Here’s where your budget stands."
+        evening: "Evening scan. Let’s land the day softly."
+        add_first_source: "Add the money you want to spend or keep under control in this budget."
+        add_first_allocation: "Before you start spending, add the expenses you already know about to your plan."
+        remaining_today: "%{amount} is still safe for today."
+        over_pace: "Today is %{amount} over its comfortable pace."
+        available: "%{amount} remains available in this budget."
+        spent_today:
+          one: "%{count} expense today adds up to %{amount}."
+          other: "%{count} expenses today add up to %{amount}."
+        quiet_today: "No expenses recorded today. Quiet paws."
+    destroy:
+      success: "Lens was removed."
+
+  rollovers:
+    create:
+      success: "Rollover lens was added."
+      failure: "Rollover lens could not be added."
+
+  most_expensive_categories:
+    new:
+      name: "Top categories"
+    form:
+      starts_on: "Count expenses since"
+      cancel: "Cancel"
+      submit: "Confirm"
+    create:
+      success: "Top categories lens was added."
+
+  upcoming_recurrences:
+    create:
+      success: "Upcoming subs lens was added."
+      failure: "That lens is already present."
+
+  rate_infos:
+    new:
+      name: "Exchange rates"
+    edit:
+      name: "Exchange rates"
+    form:
+      currencies: "Currencies to watch"
+      hint: "Choose up to four currencies. Quotes are shown against this budget's %{currency}."
+      blank: "None"
+      cancel: "Cancel"
+      submit: "Confirm"
+    create:
+      success: "Rate info lens was added."
+    update:
+      success: "Watched currencies were updated."
 
   activerecord:
     errors:
@@ -356,6 +682,9 @@ en:
           attributes:
             currency_code:
               unavailable: "is not supported"
+            category:
+              wrong_budget: "must belong to this budget"
+              inactive: "must be active"
         expense:
           attributes:
             occurred_on:
@@ -366,6 +695,31 @@ en:
             allocation:
               wrong_budget: "must belong to this budget"
               inactive: "must be active"
+            category:
+              wrong_budget: "must belong to this budget"
+              inactive: "must be active"
+        income:
+          attributes:
+            occurred_on:
+              outside_budget_period: "must be within the budget period"
+            source:
+              wrong_budget: "must belong to this budget"
+              inactive: "must be active"
+            base:
+              immutable: "income cannot be changed"
+              would_overdraw: "cannot be deleted while its wallet uses that money"
+        recurrence:
+          attributes:
+            category:
+              wrong_budget: "must belong to this budget"
+              inactive: "must be active"
+        rate_info:
+          attributes:
+            currency_codes:
+              blank: "choose at least one currency"
+              inclusion: "includes an unsupported currency"
+              exclusion: "cannot include the budget's base currency"
+              too_many: "choose at most %{count} currencies"
 
   date:
     formats:

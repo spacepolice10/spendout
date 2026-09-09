@@ -7,10 +7,11 @@ class CurrencyTest < ActiveSupport::TestCase
     assert_equal "US Dollar", currency[:name]
     assert_equal "840", currency[:numeric_code]
     assert_equal "$", currency[:symbol]
+    assert_equal "US", currency[:country_code]
   end
 
   test "provides the catalog as form options" do
-    assert_includes Currency.options, [ "USD US Dollar, 🇺🇸", "USD" ]
+    assert_includes Currency.options, [ "USD US Dollar", "USD" ]
   end
 
   test "exposes popular currencies" do
@@ -19,9 +20,9 @@ class CurrencyTest < ActiveSupport::TestCase
 
   test "provides popular currencies as form options" do
     assert_equal [
-      [ "USD US Dollar, 🇺🇸", "USD" ],
-      [ "EUR Euro, 🇪🇺", "EUR" ],
-      [ "GBP Pound Sterling, 🇬🇧", "GBP" ]
+      [ "USD US Dollar", "USD" ],
+      [ "EUR Euro", "EUR" ],
+      [ "GBP Pound Sterling", "GBP" ]
     ], Currency.popular_options
   end
 

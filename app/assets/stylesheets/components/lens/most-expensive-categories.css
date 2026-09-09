@@ -1,0 +1,93 @@
+@layer components {
+  .most-expensive-categories > main {
+    align-content: center;
+    gap: var(--space-v-half);
+    padding: var(--space-v) var(--space-h);
+  }
+
+  .most-expensive-categories svg {
+    display: block;
+    width: min(100%, 20rem);
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .most-expensive-categories path {
+    fill: none;
+    stroke-width: 23;
+    stroke-linecap: round;
+  }
+
+  .most-expensive-categories [data-category-arc-track] {
+    stroke: color-mix(in oklch, var(--category-arc-colour) 14%, var(--color-1));
+  }
+
+  .most-expensive-categories [data-category-arc-value] {
+    stroke: var(--category-arc-colour);
+    stroke-dasharray: var(--category-arc-value) 100;
+  }
+
+  .most-expensive-categories [data-category-arc-border] {
+    stroke: color-mix(in oklch, var(--category-arc-colour) 72%, var(--color-invert-1));
+    stroke-width: 27;
+    stroke-dasharray: var(--category-arc-value) 100;
+  }
+
+  .most-expensive-categories ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-v-half) var(--space-h-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .most-expensive-categories li {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: var(--space-h-half);
+    padding: 0.6em 1em 0.6em 0.75em;
+    border: 1px solid color-mix(in oklch, var(--color-invert-1) 18%, transparent);
+    border-radius: var(--radius-full);
+    background: color-mix(in oklch, var(--color-1) 86%, transparent);
+    color: var(--color-invert-1);
+    font-family: var(--font-family-mono);
+    line-height: 1.2;
+  }
+
+  .most-expensive-categories [data-category-arc-icon] {
+    display: grid;
+    place-items: center;
+    width: 1.6em;
+    height: 1.6em;
+    flex: 0 0 1.6em;
+    color: var(--category-arc-colour);
+  }
+
+  .most-expensive-categories [data-category-arc-icon] .icon-wrap {
+    width: 100%;
+    height: 100%;
+  }
+
+  .most-expensive-categories li > span:last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .most-expensive-categories li :is(strong, small) {
+    display: block;
+  }
+
+  .most-expensive-categories li strong {
+    font-size: var(--font-size-xs);
+  }
+
+  .most-expensive-categories li small {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-2xs);
+    opacity: var(--opacity-75);
+  }
+}

@@ -11,23 +11,23 @@
       <br>
       <small><%= @budget.date_period %></small>
     <main>
-      <% category = @report.most_expensive_category %>
+      <% category = @most_expensive_category %>
       <section data-layout="grid" data-report-summary aria-label="Spending summary">
         <% if category %>
           <article data-elevation="2" data-testid="most-expensive-category">
             <header>
               <nav>
-                <%= icon(category.allocation&.icon || "category", style: icon_colour_styles(category.allocation&.colour)) %>
+                <%= icon(category[:category].icon, style: icon_colour_styles(category[:category].colour)) %>
                 <h2>Most expensive category</h2>
               </nav>
             </header>
             <main>
               <h3 data-report-category-name>
-                <%= category.name %>
-                <%= render "category_status", allocation: category.allocation %>
+                <%= category[:name] %>
+                <%= render "category_status", allocation: category[:allocation] %>
               </h3>
-              <p><strong><%= formatted_amount(category.amount, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
-              <small><%= pluralize(category.expense_number, "expense") %></small>
+              <p><strong><%= formatted_amount(category[:amount], @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+              <small><%= pluralize(category[:expense_number], "expense") %></small>
             </main>
           </article>
         <% end %>
@@ -35,7 +35,7 @@
         <article data-elevation="2" data-testid="report-total-spent">
           <header><h2>Total spent</h2></header>
           <main>
-            <p><strong><%= formatted_amount(@report.totals_expenses, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <p><strong><%= formatted_amount(@totals_expenses, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
             <small>Across the budget period</small>
           </main>
         </article>
@@ -43,7 +43,7 @@
         <article data-elevation="2" data-testid="report-everyday-average">
           <header><h2>Everyday average</h2></header>
           <main>
-            <p><strong><%= formatted_amount(@report.everyday_average, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <p><strong><%= formatted_amount(@everyday_average, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
             <small>Per elapsed budget day</small>
           </main>
         </article>
@@ -51,9 +51,9 @@
         <article data-elevation="2" data-testid="report-largest-expense">
           <header><h2>Largest expense</h2></header>
           <main>
-            <% if @report.largest_expense %>
-              <p><strong><%= formatted_amount(@report.largest_expense.amount_in_base_currency, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
-              <small><%= @report.largest_expense.occurred_on.to_fs(:long) %></small>
+            <% if @largest_expense %>
+              <p><strong><%= formatted_amount(@largest_expense.amount_in_base_currency, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+              <small><%= @largest_expense.occurred_on.to_fs(:long) %></small>
             <% else %>
               <p><strong>—</strong></p>
               <small>No expenses recorded</small>
@@ -64,15 +64,15 @@
         <article data-elevation="2" data-testid="report-transaction-number">
           <header><h2>Transactions</h2></header>
           <main>
-            <p><strong><%= @report.transaction_number %></strong></p>
-            <small><%= pluralize(@report.transaction_number, "expense") %> recorded</small>
+            <p><strong><%= @expenses.size %></strong></p>
+            <small><%= pluralize(@expenses.size, "expense") %> recorded</small>
           </main>
         </article>
 
         <article data-elevation="2" data-testid="report-general-sources">
           <header><h2>General sources</h2></header>
           <main>
-            <p><strong><%= formatted_amount(@report.remaining_general_sources, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
+            <p><strong><%= formatted_amount(@budget.sources_remainder_in_base, @budget.base_currency_code) %> <%= @budget.base_currency_code %></strong></p>
             <small>Available after planned reservations</small>
           </main>
         </article>
@@ -88,21 +88,21 @@
                 <small role="columnheader"><%= weekday.first %></small>
               <% end %>
 
-              <% @report.spending_calendar.each_with_index do |day, index| %>
+              <% @spending_calendar.each_with_index do |day, index| %>
                 <section
                   role="gridcell"
                   data-calendar-date
-                  data-intensity="<%= day.intensity %>"
-                  data-future="<%= day.date > Date.current ? true : false %>"
-                  style="grid-column: <%= day.date.cwday %>;"
-                  aria-label="<%= day.date.to_fs(:long) %>: <%= formatted_amount(day.amount, @budget.base_currency_code) %> spent"
+                  data-intensity="<%= day[:intensity] %>"
+                  data-future="<%= day[:date] > Date.current ? true : false %>"
+                  style="grid-column: <%= day[:date].cwday %>;"
+                  aria-label="<%= day[:date].to_fs(:long) %>: <%= formatted_amount(day[:amount], @budget.base_currency_code) %> spent"
                 >
-                  <% if index.zero? || day.date.day == 1 %>
-                    <small data-calendar-month><%= day.date.strftime("%b") %></small>
+                  <% if index.zero? || day[:date].day == 1 %>
+                    <small data-calendar-month><%= day[:date].strftime("%b") %></small>
                   <% end %>
-                  <time datetime="<%= day.date.iso8601 %>"><%= day.date.day %></time>
-                  <% if day.amount.positive? %>
-                    <strong><%= compact_formatted_amount(day.amount, @budget.base_currency_code) %></strong>
+                  <time datetime="<%= day[:date].iso8601 %>"><%= day[:date].day %></time>
+                  <% if day[:amount].positive? %>
+                    <strong><%= compact_formatted_amount(day[:amount], @budget.base_currency_code) %></strong>
                   <% end %>
                 </section>
               <% end %>
@@ -113,18 +113,18 @@
         <article data-elevation="2" data-testid="spending-by-category">
           <header><h2>Spending by category</h2></header>
           <main>
-            <% @report.spending_by_category.each do |item| %>
+            <% @spending_by_category.each do |item| %>
               <section data-report-section>
                 <header>
-                  <%= icon(item.allocation&.icon || "category", style: icon_colour_styles(item.allocation&.colour)) %>
-                  <strong><%= item.name %></strong>
-                  <%= render "category_status", allocation: item.allocation %>
+                  <%= icon(item[:category].icon, style: icon_colour_styles(item[:category].colour)) %>
+                  <strong><%= item[:name] %></strong>
+                  <%= render "category_status", allocation: item[:allocation] %>
                 </header>
                 <p data-report-category-total>
-                  <strong><%= formatted_amount(item.amount, @budget.base_currency_code) %></strong>
-                  <small><%= pluralize(item.expense_number, "expense") %></small>
+                  <strong><%= formatted_amount(item[:amount], @budget.base_currency_code) %></strong>
+                  <small><%= pluralize(item[:expense_number], "expense") %></small>
                 </p>
-                <progress value="<%= item.amount %>" max="<%= category.amount %>"><%= item.amount %></progress>
+                <progress value="<%= item[:amount] %>" max="<%= category[:amount] %>"><%= item[:amount] %></progress>
               </section>
             <% end %>
           </main>

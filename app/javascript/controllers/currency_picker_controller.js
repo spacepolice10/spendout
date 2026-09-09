@@ -2,7 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "select", "currencyTrigger", "selection", "currencyDialog", "filter", "option", "emptyState"
+    "select", "currencyTrigger", "selection", "selectionFlag", "selectionText",
+    "currencyDialog", "filter", "option", "emptyState"
   ]
   static values = { autofocus: Boolean }
 
@@ -41,11 +42,6 @@ export default class extends Controller {
   }
 
   keydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault()
-      this.currencyDialogTarget.close("cancel")
-      return
-    }
     if (!["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) return
 
     if (event.key === "Enter") {
@@ -113,7 +109,12 @@ export default class extends Controller {
       option.setAttribute("aria-selected", String(selected))
       if (selected) selectedOption = option
     })
-    this.selectionTarget.textContent = selectedOption?.dataset.selectionValue || "Choose a currency"
+    this.selectionTarget.dataset.empty = String(!selectedOption)
+    this.selectionTextTarget.textContent = selectedOption?.dataset.selectionValue || "Choose a currency"
+    if (selectedOption) {
+      this.selectionFlagTarget.src = selectedOption.dataset.flagSrc
+      this.selectionFlagTarget.dataset.countryCode = selectedOption.dataset.countryCode
+    }
   }
 
   get visibleOptions() { return this.optionTargets.filter((option) => !option.hidden) }

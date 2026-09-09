@@ -1,0 +1,20 @@
+<%# locals: (form:) %>
+<% record = form.object %>
+<% attribute = record.is_a?(Exchange) ? :sender_amount : :amount %>
+<% amount = record.public_send(attribute) %>
+<% default_amount = record.is_a?(Source) %>
+<% minimum_exclusive = record.is_a?(Income) || record.is_a?(Expense) || record.is_a?(Exchange) || record.is_a?(Recurrence) %>
+
+<%= form.label attribute, t("shared.amount_fields.name"), class: "utilities--sr-only" %>
+<%= form.text_field attribute, inputmode: "decimal", placeholder: "0",
+  autofocus: (record.is_a?(Income) || record.is_a?(Expense)) && !mobile_variant?, required: true,
+  value: default_amount ? amount || 0 : amount,
+  data: {
+    controller: "amount-fields",
+    form_summary: "amount",
+    amount_fields_start_value: amount ? amount.to_s("F") : (default_amount ? "0" : nil),
+    amount_fields_minimum_value: "0",
+    amount_fields_minimum_exclusive_value: minimum_exclusive,
+    currency_fields_target: "amount",
+    action: "input->currency-fields#calculate"
+  } %>

@@ -20,7 +20,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "body > main[data-anchor='footer']"
-    assert_select "body > footer[data-budget-action]" do
+    assert_select "body > footer.floating-actions[data-budget-action]" do
       assert_select "a[href='#{new_budget_source_path(@budget)}']", text: /Add source/
     end
     assert_select "body > main > article > footer", count: 0
@@ -88,31 +88,32 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[name='source[design]'][type='radio']", count: Source.design_options.size
-    assert_select "input[name='source[design]'][value='americat_express'][checked][aria-label='No cat']"
-    assert_select "label[title='No cat'] [data-source-design='thumbnail']"
+    assert_select "input[name='source[design]'][value='americat_express'][checked][aria-label='Wash']"
+    assert_select "label[title='Wash'] [data-source-design='thumbnail'][data-source-pattern='wash']"
+    assert_select "[data-source-designs] img", count: 0
     assert_select "input[name='source[icon]']", count: 0
     assert_select "input[name='source[colour]'][type='radio']", count: Source.colour_options.size
     assert_select "input[name='source[colour]'][value='green'][checked]"
     assert_select "input[name='source[amount]'][type='text'][inputmode='decimal'][placeholder='0'][data-controller='amount-fields']"
     assert_select "input[name='source[amount]'][value='0']"
     assert_select "input[name='source[amount]'][data-amount-fields-start-value='0']"
-    assert_select "details[data-amount-currency-section]", count: 1 do
+    assert_select "section[data-amount-currency-section]", count: 1 do
       assert_select "[data-amount-currency-row] > input[name='source[amount]']"
       assert_select "[data-amount-currency-row] > .currency-picker"
-      assert_select "summary [data-form-summary-content='amount']", text: "0"
-      assert_select "summary [data-form-summary-content='currency']", text: "USD"
     end
+    assert_select "details input[name='source[name]'], details input[name='source[amount]']", count: 0
     assert_select "select[name='source[currency_code]'] option[value='USD'][selected]"
     assert_select "select[name='source[currency_code]'] option[value='EUR']"
     assert_select "select[name='source[currency_code]'][data-currency-picker-target='select']"
     assert_select "input[type='search'][placeholder='Search by name or code'][data-currency-picker-target='filter']"
     assert_select "input[role='combobox'][aria-autocomplete='list'][aria-expanded='true']"
     assert_select "[data-currency-search-icon] .icon[style*='--icon-search']"
-    assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency']"
+    assert_select "dialog#currency-picker-dialog[data-currency-picker-target='currencyDialog'][aria-label='Choose a currency'][closedby='any']"
     assert_select "button[data-currency-picker-target='currencyTrigger'][aria-haspopup='dialog']"
-    assert_select "button[data-currency-picker-target='currencyTrigger']", text: "🇺🇸 USD"
+    assert_select "button[data-currency-picker-target='currencyTrigger']", text: "USD"
+    assert_select "button[data-currency-picker-target='currencyTrigger'] img.currency-flag[data-country-code='US']"
     assert_select "input[type='radio'][value='USD'][checked]"
-    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar, 🇺🇸']:not([hidden])"
+    assert_select "label[data-currency-picker-target='option'][data-filter-value='USD US Dollar']:not([hidden])"
     assert_select "[data-currency-picker-option]:first-child > label input[value='USD'][checked]"
     assert_select "label[data-currency-picker-target='option']:not([hidden])", count: Currency.options.size
     assert_select "[data-currency-picker-target='emptyState'][hidden]"
@@ -120,11 +121,12 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source[rate]'][data-amount-fields-fraction-digits-value='12']"
     assert_select "output[data-currency-fields-target='converted']", count: 0
     assert_select "[data-currency-fields-target='rateFields'][hidden]"
-    assert_select "[data-controller~='currency-rate-picker'] > label[data-currency-rate-picker-target='prompt']"
-    assert_select "form[data-controller~='form'][data-controller~='currency-fields'][data-currency-fields-base-currency-value='USD']"
-    assert_select "form[data-controller~='currency-fields'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
+    assert_select "[data-controller~='currency-rate-picker'] > small[data-currency-rate-picker-target='prompt']"
+    assert_select "form[data-controller='form']"
+    assert_select "[data-amount-currency-fields][data-controller='currency-fields'][data-currency-fields-base-currency-value='USD'][data-currency-fields-reference-link-value='#{currency_reference_path}']"
     assert_select "[data-currency-fields-target='rateStatus']", count: 0
     assert_select "input[name='source[amount]'][data-currency-fields-target='amount']"
+    assert_select "a[href='#{budget_lenses_path(@budget)}'][data-action*='history#back']", text: /Cancel/
   end
 
   test "new hides keyboard tips on mobile devices" do
@@ -137,7 +139,6 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "form kbd", count: 0
     assert_select "form input[autofocus]", count: 0
-    assert_select "form[data-form-focused-on-toggle-value='false']"
   end
 
   test "new shows keyboard tips on desktop devices" do
@@ -149,7 +150,6 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "form kbd"
-    assert_select "form[data-form-focused-on-toggle-value='true']"
   end
 
   test "creates a source from catalog values" do
@@ -169,7 +169,7 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     end
 
     source = @budget.sources.order(:created_at, :id).last
-    assert_redirected_to budget_sources_path(@budget)
+    assert_redirected_to budget_lenses_path(@budget)
     assert_equal "Emergency fund", source.name
     assert_equal BigDecimal("125.5000"), source.amount
     assert_equal BigDecimal("1"), source.rate
@@ -204,7 +204,8 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "main[data-size='lg'] > article:not([data-elevation])[style*='--source-colour: var(--color-palette-green)']"
     assert_select "main[data-size='lg'] > article > header", count: 0
-    assert_select "article > main > [data-source-design='hero'][role='img'][style*='--source-colour: var(--color-palette-green)']"
+    assert_select "article > main > [data-source-design='hero'][data-source-pattern][role='img'][style*='--source-colour: var(--color-palette-green)']"
+    assert_select "[data-source-design='hero'] img", count: 0
     assert_select "[data-source-design='hero'] + hgroup[data-source-title] h1", text: @source.name
     assert_select "section[data-source-summary][aria-label='Source summary']", text: /Initial amount:.*1,500.25 USD.*Rest:.*1,375.25 USD/m
     assert_select "section[data-source-summary] article, section[data-source-summary] small", count: 0
@@ -225,10 +226,12 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
   test "show paginates expenses connected to the source" do
     sign_in_as(@user)
     other_source = create_secondary_source
-    @budget.expenses.create!(source: other_source, amount: 1, occurred_on: @budget.period_from)
+    @budget.expenses.create!(source: other_source, category: categories(:active), amount: 1,
+      occurred_on: @budget.period_from)
     15.times do |index|
       @budget.expenses.create!(
         source: @source,
+        category: categories(:active),
         amount: 1,
         occurred_on: @budget.period_from + index.days,
         note: "Source expense #{index}"
@@ -261,6 +264,17 @@ class SourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-source-actions] a[role='button'][aria-label='Back to sources'][href='#{budget_sources_path(@budget)}']", text: "Back"
     assert_select "a[href='#{new_source_exchange_path(deleted_source)}']", count: 0
     assert_select "button[aria-label='Remove source']", count: 0
+  end
+
+  test "soft removes a source and redirects to lenses" do
+    sign_in_as(@user)
+
+    assert_no_difference("Source.count") do
+      delete source_path(@source)
+    end
+
+    assert_redirected_to budget_lenses_path(@budget)
+    assert_predicate @source.reload, :deleted?
   end
 
   test "cannot access another user's budget or source" do

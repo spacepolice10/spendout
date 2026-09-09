@@ -10,7 +10,7 @@ class LocalesControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_select "h2", text: "Введите адрес электронной почты"
-    assert_select "form[action='#{locale_path}'] button[disabled]", text: "Русский"
+    assert_select "form[action='#{locale_path}'] button[disabled][aria-pressed='true']", text: "Русский"
   end
 
   test "rejects an unsupported locale" do

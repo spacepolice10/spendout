@@ -1,10 +1,10 @@
 <%= form_with model: [ budget, expense ], data: {
       expense_form: true,
       controller: "form expense-fields",
-      form_focused_on_toggle_value: !mobile_variant?,
       expense_fields_sources_value: expense_currency_context.to_json,
       expense_fields_reference_link_value: currency_reference_path
     } do |form| %>
+  <%= form.hidden_field :recurrence_id %>
   <% if expense.errors.any? %>
     <section role="alert" data-form-errors>
       <h2>
@@ -19,11 +19,7 @@
     </section>
   <% end %>
 
-  <%= render "shared/amount_currency_fields", form: form, question: t(".amount_question"),
-        amount_attribute: :amount, currency_attribute: :currency_code, rate_attribute: :conversion_rate,
-        base_currency_code: expense.source&.currency_code, open: true, disclosure: false, minimum_exclusive: true,
-        preferred_currencies: [ budget.last_expense_currency_code,
-          budget.base_currency_code, expense.source&.currency_code ] %>
+  <%= render "shared/amount_with_currency_fields", form: form %>
 
   <div data-expense-options>
     <div>
@@ -34,7 +30,7 @@
           <small data-source-picker-target="summary"><%= expense.source&.name %></small>
         </button>
 
-        <dialog id="source-picker-dialog" aria-label="<%= t(".source.choose") %>" tabindex="-1"
+        <dialog id="source-picker-dialog" aria-label="<%= t(".source.choose") %>" tabindex="-1" closedby="any"
           data-source-picker-target="dialog" data-action="close->source-picker#closed keydown->source-picker#keydown">
           <header>
             <h2><%= t(".source.choose") %></h2>
@@ -65,18 +61,16 @@
       </div>
 
       <div data-category-picker data-controller="category-fields"
-        data-category-fields-no-allocation-value="<%= t(".category.no_allocation") %>"
-        data-category-fields-submit-value="<%= t(".submit") %>"
-        data-category-fields-create-submit-value="<%= t(".category.submit_and_create") %>">
+        data-category-fields-no-allocation-value="<%= t(".category.no_allocation") %>">
         <%= form.hidden_field :category_name_to_create, data: { category_fields_target: "pendingNameTextform" } %>
 
         <button type="button" aria-haspopup="dialog" aria-controls="category-picker-dialog"
           data-expense-picker-trigger data-category-fields-target="trigger" data-action="category-fields#open">
           <span><%= t(".category.name") %></span>
-          <small data-category-fields-target="summary"><%= expense.category_name_to_create.presence || expense.allocation&.name || t(".category.no_allocation") %></small>
+          <small data-category-fields-target="summary"><%= expense.category_name_to_create.presence || expense.category&.name || t(".category.choose") %></small>
         </button>
 
-        <dialog id="category-picker-dialog" aria-label="<%= t(".category.choose") %>"
+        <dialog id="category-picker-dialog" aria-label="<%= t(".category.choose") %>" closedby="any"
           data-category-fields-target="dialog" data-action="close->category-fields#closed">
           <header>
             <h2><%= t(".category.choose") %></h2>
@@ -92,22 +86,27 @@
               data-action="input->category-fields#filter keydown->category-fields#keydown">
           </div>
 
-          <small data-category-fields-target="creationTip" hidden><%= t(".category.creation_html", name: tag.strong("", data: { category_fields_target: "creationTipName" })) %></small>
+          <label data-category-fields-target="creationTip" hidden>
+            <%= form.radio_button :category_id, "", required: true,
+                  data: { category_fields_target: "allocation creation" } %>
+            <small><%= t(".category.creation_html", name: tag.strong("", data: { category_fields_target: "creationTipName" })) %></small>
+          </label>
 
           <div id="category-picker-listbox" role="listbox" data-category-fields-target="options">
-            <% active_allocations.each do |allocation| %>
+            <% active_categories.each do |category| %>
               <div data-category-picker-option>
-                <%= form.label :allocation_id, value: allocation.id, id: "expense-allocation-option-#{allocation.id}",
-                      role: "option", aria: { selected: allocation == expense.allocation },
-                      style: "--allocation-colour: var(--color-palette-#{allocation.colour});",
-                      data: { category_fields_target: "option", filter_value: allocation.name,
-                        selection_value: allocation.name, action: "click->category-fields#selectAllocation" } do %>
-                  <%= form.radio_button :allocation_id, allocation.id, data: { category_fields_target: "allocation" } %>
-                  <%= icon(allocation.icon, style: icon_colour_styles(allocation.colour)) %>
+                <%= form.label :category_id, value: category.id, id: "expense-category-option-#{category.id}",
+                      role: "option", aria: { selected: category == expense.category },
+                      style: "--allocation-colour: var(--color-palette-#{category.colour});",
+                      data: { category_fields_target: "option", filter_value: category.name,
+                        selection_value: category.name, action: "click->category-fields#selectAllocation" } do %>
+                  <%= form.radio_button :category_id, category.id, required: true,
+                        data: { category_fields_target: "allocation" } %>
+                  <%= icon(category.icon, style: icon_colour_styles(category.colour)) %>
                   <span>
-                    <strong><%= allocation.name %></strong>
-                    <% if allocation.planned? %>
-                      <small><%= t(".category.remaining", amount: formatted_amount(allocation.remaining_amount, allocation.currency_code), currency: allocation.currency_code) %></small>
+                    <strong><%= category.name %></strong>
+                    <% if category.allocation&.active? %>
+                      <small><%= t(".category.remaining", amount: formatted_amount(category.allocation.remaining_amount, category.allocation.currency_code), currency: category.allocation.currency_code) %></small>
                     <% else %>
                       <small><%= t(".category.unplanned") %></small>
                     <% end %>
@@ -132,48 +131,13 @@
             required: true %>
       <% end %>
 
-      <%= tag.details name: "form-details", data: {
-            optional_item: true,
-            form_target: "section"
-          }, open: expense.note.present? do %>
-        <summary data-form-target="summary">
-          <span><%= t(".note") %></span>
-          <%= tag.small(t(".note_added"), hidden: expense.note.blank?) %>
-        </summary>
-
-        <div data-optional-item-control>
-          <%= form.label :note do %>
-            <%= form.text_area :note, maxlength: 200, placeholder: t(".note_placeholder"),
-                  data: { form_target: "toBeFocused" } %>
-          <% end %>
-        </div>
+      <%= form.label :note, data: { expense_note: true } do %>
+        <span><%= t(".note") %></span>
+        <%= form.text_field :note, maxlength: 200, placeholder: t(".note_placeholder") %>
       <% end %>
     </div>
   </div>
 
-  <footer>
-    <div data-layout="flex">
-      <%= link_to budget_expenses_path(budget), role: "button", data: {
-          appearance: "keycap", intent: "secondary", size: "lg",
-          controller: "pressable", action: "keydown.shift+esc@document->pressable#click"
-        } do %>
-        <%= icon("chevron-left") %>
-        <span><%= t(".cancel") %></span>
-        <% unless mobile_variant? %>
-          <kbd aria-hidden="true">Shift + Escape</kbd>
-        <% end %>
-      <% end %>
-
-      <%= form.button type: "submit", data: {
-          appearance: "keycap", intent: "primary", size: "lg",
-          controller: "pressable", action: "keydown.meta+enter@document->pressable#click"
-        } do %>
-        <span data-category-fields-target="submitLabel"><%= expense.category_name_to_create.present? ? t(".category.submit_and_create") : t(".submit") %></span>
-        <%= icon("chevron-right") %>
-        <% unless mobile_variant? %>
-          <kbd aria-hidden="true">Cmd + Enter</kbd>
-        <% end %>
-      <% end %>
-    </div>
-  </footer>
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
 <% end %>

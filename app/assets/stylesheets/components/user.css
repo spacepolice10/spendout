@@ -1,7 +1,5 @@
 @layer components {
-    [data-language-settings] > nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-h);
+    article:has([data-language-settings]) > footer {
+        justify-content: center;
     }
 }

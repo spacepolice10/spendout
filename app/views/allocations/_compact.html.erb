@@ -1,0 +1,24 @@
+<% used_amount = allocation.used_amount %>
+
+<%= link_to allocation_path(allocation), data: {
+      testid: "allocation-compact",
+      allocation_card: true,
+      allocation_compact: true,
+      finished_allocation: allocation.finished? || nil
+    } do %>
+  <% if allocation.finished? %>
+    <mark data-finished-stamp><%= t("allocations.allocation.finished") %></mark>
+  <% end %>
+
+  <span data-allocation-envelope-thumbnail>
+    <%= render "allocations/envelope", variant: "closed" %>
+    <%= icon(allocation.icon, style: icon_colour_styles(allocation.colour)) %>
+  </span>
+  <strong><%= allocation.name %></strong>
+  <span><%= formatted_amount(allocation.amount, allocation.currency_code) %></span>
+  <%= render "allocations/progress",
+        allocation: allocation,
+        used_amount: used_amount,
+        label: t("allocations.allocation.spending", used: formatted_amount(used_amount, allocation.currency_code), planned: formatted_amount(allocation.amount, allocation.currency_code)),
+        testid: "allocation-compact-progress" %>
+<% end %>

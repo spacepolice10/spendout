@@ -1,0 +1,15 @@
+<turbo-frame id="records-pagination-contents-<%= page.number %>" target="_top" role="presentation">
+  <%= render "records/days", snapshot: snapshot %>
+
+  <% if page.before_last? %>
+    <a
+      href="<%= budget_records_path(@budget, page: page.next_param) %>"
+      rel="next"
+      class="pagination-link pagination-link--active-when-observed"
+      aria-label="<%= t("records.timeline.load_more") %>"
+      data-testid="records-load-more"
+      data-pagination-target="paginationLink"
+      data-pagination-frame-param="records-pagination-contents-<%= page.number + 1 %>"
+    ><%= t("records.timeline.load_more") %></a>
+  <% end %>
+</turbo-frame>

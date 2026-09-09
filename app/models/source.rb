@@ -3,14 +3,14 @@ class Source < ApplicationRecord
   include Currencyable
 
   DESIGNS = {
-    "americat_express" => { face: nil, selectable: true },
-    "mastercat" => { face: "cat-face-friendly-v2.png", selectable: true },
-    "meowisa" => { face: "cat-face-sleepy-v2.png", selectable: true },
-    "unipaw" => { face: "cat-face-curious-v2.png", selectable: true },
-    "cash" => { face: "cat-face-grumpy-v2.png", selectable: true },
-    "bank" => { face: "cat-face-friendly-v2.png", selectable: false },
-    "savings" => { face: "cat-face-sleepy-v2.png", selectable: false },
-    "digital_wallet" => { face: "cat-face-curious-v2.png", selectable: false }
+    "americat_express" => { pattern: "wash", selectable: true },
+    "mastercat" => { pattern: "split", selectable: true },
+    "meowisa" => { pattern: "fade", selectable: true },
+    "unipaw" => { pattern: "band", selectable: true },
+    "cash" => { pattern: "stripe", selectable: true },
+    "bank" => { pattern: "split", selectable: false },
+    "savings" => { pattern: "fade", selectable: false },
+    "digital_wallet" => { pattern: "band", selectable: false }
   }.freeze
 
   enum :design, {
@@ -21,6 +21,7 @@ class Source < ApplicationRecord
 
   belongs_to :budget, inverse_of: :sources
   has_many :expenses, inverse_of: :source
+  has_many :incomes, inverse_of: :source
   has_many :outgoing_exchanges, class_name: "Exchange", foreign_key: :sender_source_id, inverse_of: :sender_source
   has_one :incoming_exchange, class_name: "Exchange", foreign_key: :receiver_source_id, inverse_of: :receiver_source
 
@@ -37,7 +38,8 @@ class Source < ApplicationRecord
     recorded_expenses = recorded_expenses.where.not(id: excluding.id) if excluding&.persisted?
     recorded_exchanges = outgoing_exchanges
     recorded_exchanges = recorded_exchanges.where.not(id: excluding_exchange.id) if excluding_exchange&.persisted?
-    amount - recorded_expenses.sum(:source_amount) - recorded_exchanges.sum(:sender_amount)
+    received = incomes.sum(:source_amount)
+    amount + received - recorded_expenses.sum(:source_amount) - recorded_exchanges.sum(:sender_amount)
   end
 
   def deleted?
@@ -48,8 +50,8 @@ class Source < ApplicationRecord
     I18n.t("sources.designs.#{design}", default: design.to_s.humanize)
   end
 
-  def design_face
-    DESIGNS.fetch(design, DESIGNS.fetch("americat_express")).fetch(:face)
+  def design_pattern
+    DESIGNS.fetch(design, DESIGNS.fetch("americat_express")).fetch(:pattern)
   end
 
   def self.design_options

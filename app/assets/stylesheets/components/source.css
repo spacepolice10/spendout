@@ -35,29 +35,54 @@
         position: relative;
         overflow: hidden;
         aspect-ratio: 720 / 464;
-        border: 1px solid color-mix(in oklch, var(--source-colour) 68%, var(--color-invert-1));
-        border-radius: 0.45rem;
+        border: var(--border-subtle);
+        border-radius: var(--radius-2);
         background: var(--source-colour);
-        box-shadow:
-            0 1px 0 color-mix(in oklch, var(--source-colour) 22%, transparent),
-            0 2px 5px color-mix(in oklch, var(--color-invert-1) 8%, transparent);
-        transition: none;
     }
 
-    [data-source-design-accent] {
-        position: absolute;
-        inset: 0 0 0 58%;
-        background: color-mix(in oklch, var(--source-colour) 42%, var(--color-1));
+    [data-source-pattern="wash"] {
+        background: linear-gradient(
+            135deg,
+            var(--source-colour),
+            color-mix(in oklch, var(--source-colour) 52%, var(--color-1))
+        );
     }
 
-    [data-source-design-face] {
-        position: absolute;
-        z-index: 1;
-        inset: 19% 7% 19% auto;
-        width: auto;
-        height: 62%;
-        image-rendering: pixelated;
-        object-fit: contain;
+    [data-source-pattern="split"] {
+        background: linear-gradient(
+            90deg,
+            var(--source-colour) 58%,
+            color-mix(in oklch, var(--source-colour) 42%, var(--color-1)) 58%
+        );
+    }
+
+    [data-source-pattern="fade"] {
+        background: linear-gradient(
+            105deg,
+            var(--source-colour),
+            color-mix(in oklch, var(--source-colour) 18%, var(--color-1))
+        );
+    }
+
+    [data-source-pattern="band"] {
+        background:
+            linear-gradient(
+                color-mix(in oklch, var(--color-1) 82%, var(--source-colour)),
+                color-mix(in oklch, var(--color-1) 82%, var(--source-colour))
+            ) 0 64% / 100% 16% no-repeat,
+            linear-gradient(
+                180deg,
+                color-mix(in oklch, var(--source-colour) 72%, var(--color-1)),
+                var(--source-colour)
+            );
+    }
+
+    [data-source-pattern="stripe"] {
+        background: repeating-linear-gradient(
+            -32deg,
+            var(--source-colour) 0 12%,
+            color-mix(in oklch, var(--source-colour) 42%, var(--color-1)) 12% 24%
+        );
     }
 
     [data-source-design="thumbnail"] {
@@ -68,7 +93,7 @@
     [data-source-design="hero"] {
         justify-self: center;
         width: min(100%, 36rem);
-        border-radius: clamp(0.65rem, 2vw, 1.5rem);
+        border-radius: var(--radius-2);
     }
 
     [data-source-title] {
@@ -115,16 +140,4 @@
         }
     }
 
-    [data-source-form]:has(input[name="source[colour]"][value="green"]:checked) [data-source-design] { --source-colour: var(--color-palette-green) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="red"]:checked) [data-source-design] { --source-colour: var(--color-palette-red) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="blue"]:checked) [data-source-design] { --source-colour: var(--color-palette-blue) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="yellow"]:checked) [data-source-design] { --source-colour: var(--color-palette-yellow) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="violet"]:checked) [data-source-design] { --source-colour: var(--color-palette-violet) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="pink"]:checked) [data-source-design] { --source-colour: var(--color-palette-pink) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="orange"]:checked) [data-source-design] { --source-colour: var(--color-palette-orange) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="lime"]:checked) [data-source-design] { --source-colour: var(--color-palette-lime) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="teal"]:checked) [data-source-design] { --source-colour: var(--color-palette-teal) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="cyan"]:checked) [data-source-design] { --source-colour: var(--color-palette-cyan) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="indigo"]:checked) [data-source-design] { --source-colour: var(--color-palette-indigo) !important; }
-    [data-source-form]:has(input[name="source[colour]"][value="coral"]:checked) [data-source-design] { --source-colour: var(--color-palette-coral) !important; }
 }

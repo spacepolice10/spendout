@@ -14,6 +14,20 @@ module Frankfurter
 
       assert_equal "2026-08-24", payload["reference_date"]
       assert_equal({ "EUR" => "1", "USD" => "1.175", "VND" => "30912.125" }, payload["rates"])
+      assert_equal({ "USD" => "2026-08-24", "EUR" => "2026-08-24", "VND" => "2026-08-24" }, payload["reference_dates"])
+    end
+
+    test "accepts currencies with different observation dates" do
+      payload = parse(<<~JSON)
+        [
+          {"date":"2026-08-24","base":"EUR","quote":"EUR","rate":1},
+          {"date":"2026-08-24","base":"EUR","quote":"USD","rate":1.175},
+          {"date":"2026-08-22","base":"EUR","quote":"VND","rate":30912.125}
+        ]
+      JSON
+
+      assert_equal "2026-08-24", payload["reference_date"]
+      assert_equal "2026-08-22", payload.dig("reference_dates", "VND")
     end
 
     test "rejects malformed and unsafe rate tables" do
@@ -25,8 +39,7 @@ module Frankfurter
         parse('[{"date":"2026-08-24","base":"EUR","quote":"VND","rate":0}]')
       end
       assert_raises(Client::Error) do
-        parse('[{"date":"2026-08-24","base":"EUR","quote":"USD","rate":1.1},' \
-          '{"date":"2026-08-23","base":"EUR","quote":"VND","rate":2}]')
+        parse('[{"date":"2026-08-24","base":"EUR","quote":"USD","rate":1.1}]')
       end
     end
 

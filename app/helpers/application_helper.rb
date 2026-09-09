@@ -28,21 +28,9 @@ module ApplicationHelper
     "#{Currency.find!(currency_code)[:symbol]}#{compact_number}"
   end
 
-  def cybercat_spending_answer(percentage, no_expenses: false)
-    return t("expenses.index.answers.no_expenses") if no_expenses
-
-    case percentage.to_d
-    when ..0
-      t("expenses.index.answers.0")
-    when ...25
-      t("expenses.index.answers.25")
-    when ...50
-      t("expenses.index.answers.50")
-    when ...80
-      t("expenses.index.answers.80")
-    else
-      t("expenses.index.answers.100")
-    end
+  def formatted_rate(rate)
+    precision = rate < 10 ? 4 : rate < 1_000 ? 2 : 0
+    number_with_precision(rate, precision:, delimiter: ",")
   end
 
   def colour_styles(colour)
@@ -65,5 +53,39 @@ module ApplicationHelper
       class: class_names("icon-wrap", options[:class]),
       style: options[:style]
     )
+  end
+
+  def currency_flag(currency_code, **options)
+    country_code = Currency.find!(currency_code)[:country_code]
+    data = options.delete(:data).to_h.merge(country_code: country_code)
+    image_tag(
+      "currency-flags/#{country_code.downcase}.png",
+      alt: "",
+      width: 32,
+      height: 24,
+      data: data,
+      **options,
+      class: class_names("currency-flag", options[:class])
+    )
+  end
+
+  def feature_path(feature)
+    case feature.feature_type
+    when "new_expense" then new_budget_expense_path(feature.budget)
+    when "new_income" then new_budget_income_path(feature.budget)
+    when "new_source" then new_budget_source_path(feature.budget)
+    when "new_allocation" then new_budget_allocation_path(feature.budget)
+    when "lens_laboratory" then new_budget_lens_path(feature.budget)
+    end
+  end
+
+  def feature_icon(feature)
+    {
+      "new_expense" => "receipt-dollar",
+      "new_income" => "plus",
+      "new_source" => "wallet",
+      "new_allocation" => "category",
+      "lens_laboratory" => "bulb"
+    }.fetch(feature.feature_type)
   end
 end

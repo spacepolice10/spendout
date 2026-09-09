@@ -1,0 +1,74 @@
+<% content_for :title, t(".name") %>
+
+<main data-size="lg">
+  <article data-elevation="1" class="budget">
+    <header>
+      <nav>
+        <%= render "shared/back", path: budget_lenses_path(@budget), label: t(".back") %>
+        <div>
+          <h1><%= t(".name") %></h1>
+          <p><%= t(".description") %></p>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section data-lens-options aria-label="<%= t(".question") %>">
+        <% @lenses.each_with_index do |lens, index| %>
+          <article data-elevation="2" data-lens-option="<%= lens.lensable_name %>" data-active-lens data-lens-id="<%= lens.id %>">
+            <header>
+              <h2><%= t("lenses.types.#{lens.lensable_name}") %></h2>
+            </header>
+            <main>
+              <% if lens.lensable_name == "source_holder" %>
+                <p><%= t("lenses.source_holder.tip_description") %></p>
+              <% elsif lens.lensable_name == "plan_overview" %>
+                <p><%= t("lenses.plan_overview.tip_description") %></p>
+              <% else %>
+                <p><%= t(".#{lens.lensable_name}") %></p>
+              <% end %>
+            </main>
+            <footer aria-label="<%= t("lenses.edit.controls", name: t("lenses.types.#{lens.lensable_name}")) %>">
+              <nav data-pill-group>
+                <%= button_to move_budget_lens_path(@budget, lens), method: :patch, params: { direction: "up" }, disabled: index.zero?, aria: { label: t("lenses.edit.move_up") }, data: { intent: "secondary", size: "sm" } do %>
+                  <%= icon("arrow-up") %>
+                <% end %>
+                <%= button_to move_budget_lens_path(@budget, lens), method: :patch, params: { direction: "down" }, disabled: index == @lenses.length - 1, aria: { label: t("lenses.edit.move_down") }, data: { intent: "secondary", size: "sm" } do %>
+                  <%= icon("arrow-down") %>
+                <% end %>
+                <% if lens.removable? %>
+                  <%= button_to budget_lens_path(@budget, lens), method: :delete, aria: { label: t("lenses.edit.remove", name: t("lenses.types.#{lens.lensable_name}")) }, data: { intent: "negative", size: "sm", turbo_confirm: t("lenses.edit.remove_confirmation", name: t("lenses.types.#{lens.lensable_name}")) } do %>
+                    <%= icon("trash-simple") %>
+                  <% end %>
+                <% end %>
+              </nav>
+            </footer>
+          </article>
+        <% end %>
+
+        <% @lens_facade.available_entries.each do |entry| %>
+          <article data-elevation="2" data-lens-option="<%= entry.name %>">
+            <header>
+              <h2><%= t("lenses.types.#{entry.name}") %></h2>
+            </header>
+            <main>
+              <p><%= t(".#{entry.name}") %></p>
+            </main>
+            <footer>
+              <% case entry.name %>
+              <% when "rollover" %>
+                <%= button_to budget_rollover_path(@budget), aria: { label: t(".add", name: t("lenses.types.#{entry.name}")) }, data: { intent: "primary", size: "sm" } do %><%= icon("plus") %><% end %>
+              <% when "most_expensive_categories" %>
+                <%= link_to new_budget_most_expensive_categories_path(@budget), role: "button", aria: { label: t(".add", name: t("lenses.types.#{entry.name}")) }, data: { intent: "primary", size: "sm" } do %><%= icon("plus") %><% end %>
+              <% when "upcoming_recurrences" %>
+                <%= button_to budget_upcoming_recurrences_path(@budget), aria: { label: t(".add", name: t("lenses.types.#{entry.name}")) }, data: { intent: "primary", size: "sm" } do %><%= icon("plus") %><% end %>
+              <% when "rate_info" %>
+                <%= link_to new_budget_rate_info_path(@budget), role: "button", aria: { label: t(".add", name: t("lenses.types.#{entry.name}")) }, data: { intent: "primary", size: "sm" } do %><%= icon("plus") %><% end %>
+              <% end %>
+            </footer>
+          </article>
+        <% end %>
+      </section>
+    </main>
+  </article>
+</main>

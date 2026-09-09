@@ -41,7 +41,8 @@ class ExchangeTest < ActiveSupport::TestCase
   end
 
   test "expenses and exchanges share sender capacity" do
-    @budget.expenses.create!(source: @sender, amount: @sender.spendable_amount - BigDecimal("0.25"), occurred_on: Date.current)
+    @budget.expenses.create!(source: @sender, category: categories(:active),
+      amount: @sender.spendable_amount - BigDecimal("0.25"), occurred_on: Date.current)
     exchange = build_exchange(sender_amount: "1")
 
     assert_not exchange.save_with_receiver_source

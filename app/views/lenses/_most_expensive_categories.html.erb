@@ -1,0 +1,38 @@
+<article class="most-expensive-categories" data-elevation="2" data-testid="most-expensive-categories-lens">
+  <main>
+    <% if snapshot.records.any? %>
+      <% largest_amount = snapshot.records.first.amount %>
+      <% arc_paths = [
+        "M 22 158 A 138 138 0 0 1 298 158",
+        "M 54 158 A 106 106 0 0 1 266 158",
+        "M 86 158 A 74 74 0 0 1 234 158"
+      ] %>
+
+      <svg viewBox="0 0 320 174" role="img" aria-labelledby="most-expensive-categories-title-<%= lens.id %>">
+        <title id="most-expensive-categories-title-<%= lens.id %>"><%= t("lenses.types.most_expensive_categories") %></title>
+        <% snapshot.records.each_with_index do |record, index| %>
+          <% percentage = largest_amount.positive? ? (record.amount / largest_amount * 100).round(2) : 0 %>
+          <g data-category-arc style="--category-arc-colour: var(--color-palette-<%= record.colour %>); --category-arc-value: <%= percentage %>">
+            <path data-category-arc-track d="<%= arc_paths.fetch(index) %>" pathLength="100" />
+            <path data-category-arc-border d="<%= arc_paths.fetch(index) %>" pathLength="100" />
+            <path data-category-arc-value d="<%= arc_paths.fetch(index) %>" pathLength="100" />
+          </g>
+        <% end %>
+      </svg>
+
+      <ol>
+        <% snapshot.records.each do |record| %>
+          <li data-category-chip style="--category-arc-colour: var(--color-palette-<%= record.colour %>);">
+            <span data-category-arc-icon><%= icon(record.icon) %></span>
+            <span>
+              <strong><%= record.name %></strong>
+              <small><%= formatted_amount(record.amount, snapshot.currency_code) %></small>
+            </span>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p><%= t(".empty") %></p>
+    <% end %>
+  </main>
+</article>

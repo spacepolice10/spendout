@@ -3,7 +3,7 @@ class BudgetsController < ApplicationController
 
   def current
     if budget = Current.user.current_budget
-      redirect_to budget_expenses_path(budget)
+      redirect_to budget_lenses_path(budget)
     else
       redirect_to new_budget_path
     end
@@ -11,7 +11,7 @@ class BudgetsController < ApplicationController
 
   def new
     if budget = Current.user.current_budget
-      redirect_to budget_expenses_path(budget)
+      redirect_to budget_lenses_path(budget)
     else
       @budget = Current.user.budgets.new(starts_date: Date.current)
     end
@@ -21,7 +21,7 @@ class BudgetsController < ApplicationController
     @budget = Current.user.budgets.new(budget_params)
 
     if Current.user.with_lock { @budget.save }
-      redirect_to budget_sources_path(@budget), notice: t("budgets.create.success")
+      redirect_to budget_lenses_path(@budget), notice: t("budgets.create.success")
     else
       render :new, status: :unprocessable_entity
     end

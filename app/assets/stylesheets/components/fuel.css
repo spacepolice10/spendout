@@ -46,51 +46,14 @@
         }
     }
 
-    [data-cybercat-answer] {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-h-half);
-        padding: 0;
-
-        & img {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: var(--radius-full);
-            image-rendering: pixelated;
-        }
-
-        & p {
-            position: relative;
-            max-width: 22ch;
-            margin: 0;
-            padding: var(--space-v-half) var(--space-h);
-            border: 2px solid var(--color-invert-1);
-            background: var(--color-1);
-            box-shadow: 4px 4px 0 var(--color-accent);
-            font-family: var(--font-family-mono);
-            font-size: var(--font-size-2xs);
-            line-height: 1.5;
-            text-transform: uppercase;
-
-            &::before {
-                content: "";
-                position: absolute;
-                inset: auto auto -10px 8px;
-                width: 14px;
-                height: 10px;
-                border-inline: 2px solid var(--color-invert-1);
-                background: var(--color-1);
-                transform: skewX(-35deg);
-            }
-        }
-    }
-
     article.budget [data-daily-gauge] {
         justify-items: center;
         text-align: center;
+    }
+
+    article.budget [data-rollover-lens]>main {
+        display: grid;
+        place-items: center;
     }
 
     article.budget [data-remainder-gauge] {

@@ -1,18 +1,11 @@
-<main data-size="lg" data-anchor="footer">
+<main data-size="sm">
   <article data-elevation="1">
     <header>
-      <nav>
-        <h1>Exchange from <%= @sender_source.name %></h1>
-      </nav>
-      <small>
-        Available:
-        <%= formatted_amount(@sender_source.spendable_amount, @sender_source.currency_code) %>
-        <%= @sender_source.currency_code %>
-      </small>
+      <h1>New exchange</h1>
     </header>
 
     <main>
-      <%= render "form", budget: @budget, sender_source: @sender_source, exchange: @exchange %>
+      <%= render "form", budget: @budget, sources: @sources, exchange: @exchange %>
     </main>
   </article>
 </main>

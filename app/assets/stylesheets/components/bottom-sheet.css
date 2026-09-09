@@ -1,29 +1,91 @@
 @layer components {
-  nav[aria-label="Budget sections"] > div > button[data-bottom-sheet-target="trigger"] {
-    flex: 0 0 auto;
-    min-width: 3rem;
-    padding: calc(var(--space-v-half) + 0.2rem) var(--space-h);
+  nav[aria-label="Add"] > div > a[data-quick-add] {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: auto;
+    padding: calc(var(--space-v-half) + 0.2rem) var(--space-h-2);
+    border: var(--border-subtle);
+    border-radius: var(--radius-full);
     font-size: var(--font-size-base-type);
-    letter-spacing: 0.12em;
+    letter-spacing: 0.04em;
+  }
+
+  nav[aria-label="Add"] > div {
+    gap: 0;
+    border-radius: var(--radius-full);
+    box-shadow: 0 var(--space-v-half) var(--space-v) color-mix(in oklch, var(--color-invert-1) 18%, transparent);
+  }
+
+  nav[aria-label="Add"] > div > a[data-quick-add]:first-child {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  nav[aria-label="Add"] > div > a[data-quick-add]:last-child {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    margin-inline-start: -0.5px;
+  }
+
+  nav[aria-label="Add"] > div > a[data-quick-add="income"] .icon-wrap {
+    color: var(--color-palette-blue);
+  }
+
+  nav[aria-label="Add"] > div > a[data-quick-add="expense"] .icon-wrap {
+    color: var(--color-palette-green);
+  }
+
+  nav[aria-label="Add"] > div > a[data-favorite-feature] {
+    min-width: auto;
+    padding: calc(var(--space-v-half) + 0.2rem) var(--space-h);
+    border: var(--border-subtle);
+    border-radius: var(--radius-full);
+  }
+
+  nav[aria-label="Add"] > [data-bottom-sheet-overlay] {
+    position: fixed;
+    inset: 0 0 env(safe-area-inset-bottom);
+    z-index: 0;
+    display: none;
+    background: transparent;
+    touch-action: none;
+    pointer-events: auto;
+  }
+
+  nav[aria-label="Add"] > [data-bottom-sheet-overlay] > i {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklch, var(--color-invert-1) 45%, transparent);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+
+  nav[aria-label="Add"]:has(dialog[open]) > [data-bottom-sheet-overlay] {
+    display: block;
+    animation: bottom-sheet-backdrop-in 220ms ease-out;
+  }
+
+  nav[aria-label="Add"]:has(dialog[data-closing]) > [data-bottom-sheet-overlay] {
+    animation: bottom-sheet-backdrop-out 180ms ease-in forwards;
   }
 
   dialog[data-bottom-sheet-target="dialog"] {
+    position: fixed;
     inset: auto 0 0;
     z-index: var(--z-dialog);
-    width: min(100%, 32rem);
+    width: 100%;
     max-width: none;
-    margin-inline: auto;
-    padding: var(--space-v-2) var(--space-h-2) calc(var(--space-v-2) + env(safe-area-inset-bottom));
-    border: var(--border-subtle);
-    border-bottom: 0;
-    border-radius: var(--radius-2) var(--radius-2) 0 0;
-    background: var(--color-1);
+    max-height: calc(100dvh - env(safe-area-inset-top) - var(--space-v));
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    pointer-events: auto;
   }
 
   dialog[data-bottom-sheet-target="dialog"][open] {
-    display: grid;
-    gap: var(--space-v-2);
-    animation: bottom-sheet-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    display: block;
+    animation: bottom-sheet-in 240ms ease-out;
   }
 
   dialog[data-bottom-sheet-target="dialog"][open][data-closing] {
@@ -31,42 +93,95 @@
     pointer-events: none;
   }
 
-  dialog[data-bottom-sheet-target="dialog"]::backdrop {
-    background: color-mix(in oklch, var(--color-invert-1) 45%, transparent);
-    animation: bottom-sheet-backdrop-in 220ms ease-out;
-  }
-
-  dialog[data-bottom-sheet-target="dialog"][data-closing]::backdrop {
-    animation: bottom-sheet-backdrop-out 180ms ease-in forwards;
-  }
-
-  dialog[data-bottom-sheet-target="dialog"] > header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-h);
-  }
-
-  dialog[data-bottom-sheet-target="dialog"] > header > button {
-    min-width: var(--space-h-3);
-    min-height: var(--space-v-3);
-    padding: var(--space-v-half) var(--space-h);
-    background: transparent;
-    color: inherit;
-    font-size: var(--font-size-2xl);
-  }
-
-  dialog[data-bottom-sheet-target="dialog"] > nav {
-    display: grid;
-    gap: var(--space-v);
-  }
-
-  dialog[data-bottom-sheet-target="dialog"] > nav > a {
+  dialog[data-bottom-sheet-target="dialog"] > article {
     width: 100%;
+    min-height: min(17rem, calc(100dvh - env(safe-area-inset-top) - var(--space-v)));
+    max-height: calc(100dvh - env(safe-area-inset-top) - var(--space-v));
+    overflow: hidden;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: var(--radius-4) var(--radius-4) 0 0;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] [data-bottom-sheet-drag-region] {
+    touch-action: pan-x;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main {
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    max-height: calc(100dvh - env(safe-area-inset-top) - var(--space-v));
+    padding-block-end: max(var(--space-v), env(safe-area-inset-bottom));
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] [data-bottom-sheet-handle] {
+    width: 2.5rem;
+    height: 0.25rem;
+    margin: 0 auto var(--space-v-half);
+    border-radius: var(--radius-full);
+    background: var(--color-invert-4);
+    cursor: grab;
+    flex: 0 0 auto;
+    touch-action: none;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"][data-dragging] [data-bottom-sheet-handle] {
+    cursor: grabbing;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav {
+    display: grid;
+    gap: var(--space-v-half);
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > div {
+    display: flex;
+    gap: var(--space-h-half);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > div:has(> a[data-feature-favorite]) {
+    gap: 0;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > div > a:not([data-feature-favorite]) {
+    flex: 1;
     justify-content: start;
   }
 
-  dialog[data-bottom-sheet-target="dialog"] > nav > a > kbd {
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > div > a[data-feature-favorite] {
+    flex: 0 0 3rem;
+    align-self: stretch;
+    min-width: 3rem;
+    padding: var(--space-v-half);
+    border-inline-start: var(--border-subtle);
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    line-height: 1;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > div:has(> a[data-feature-favorite]) > a:not([data-feature-favorite]) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > div[data-feature="new_expense"] > a[data-feature-favorite] {
+    --button-background: var(--color-invert-1);
+    --button-background-hovered: var(--color-invert-2);
+    --button-background-active: var(--color-invert-3);
+    --button-color: var(--color-1);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] a[data-feature-favorite="false"] > span[aria-hidden="true"] {
+    filter: grayscale(1);
+    opacity: var(--opacity-50);
+  }
+
+  dialog[data-bottom-sheet-target="dialog"] > article > main > nav > a > kbd {
     margin-inline-start: auto;
   }
 
@@ -76,7 +191,7 @@
   }
 
   @keyframes bottom-sheet-out {
-    from { transform: translateY(0); }
+    from { transform: translateY(var(--bottom-sheet-close-from, 0)); }
     to { transform: translateY(100%); }
   }
 

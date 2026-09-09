@@ -1,0 +1,33 @@
+<% currency_options = RateInfo.currency_options_for(budget, selected: rate_info.currency_codes) %>
+<%= form_with model: rate_info, url: budget_rate_info_path(budget), data: { testid: "rate-info-form", controller: "form" } do |form| %>
+  <% if rate_info.errors.any? %>
+    <section role="alert" data-form-errors>
+      <ul>
+        <% rate_info.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <fieldset data-layout="grid">
+    <legend class="utilities--sr-only"><%= t(".currencies") %></legend>
+    <p><%= t(".hint", currency: budget.base_currency_code) %></p>
+    <div>
+      <% RateInfo::CAPACITY.times do |index| %>
+        <div>
+          <%= render "shared/currency_picker", form: form, attribute: :currency_codes,
+                selected: rate_info.currency_codes[index],
+                options: currency_options,
+                required: false,
+                select_name: "rate_info[currency_codes][]",
+                picker_id: "rate-info-currency-#{index}",
+                preferred_currencies: rate_info.currency_codes %>
+        </div>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <%= render "shared/form_actions", form:, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
+<% end %>

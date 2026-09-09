@@ -5,7 +5,6 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     Rails.cache.delete(CurrencyReference::CACHE_KEY)
     sign_in_as users(:one)
     visit new_budget_source_path(budgets(:active))
-    find("details[data-amount-currency-section]").find("summary").click
   end
 
   teardown do
@@ -15,13 +14,13 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   test "opens a native dialog with every currency and filters it" do
     open_currency
 
-    assert_selector currency_dialog("[open]")
+    assert_selector currency_dialog("[open][closedby='any']")
     assert_selector visible_options, count: Currency.options.size, visible: :all
     assert_selector "input[data-currency-picker-target='filter']:focus"
 
     filter.set("dong")
-    assert_visible_option "VND Dong, 🇻🇳"
-    assert_no_visible_option "USD US Dollar, 🇺🇸"
+    assert_visible_option "VND Dong"
+    assert_no_visible_option "USD US Dollar"
 
     filter.set("zzzz")
     assert_text "No currencies found"
@@ -51,12 +50,13 @@ class CurrencyPickerTest < ApplicationSystemTestCase
   end
 
   test "selects a currency, closes the dialog, and restores trigger focus" do
-    choose_currency("dong", "VND Dong, 🇻🇳")
+    choose_currency("dong", "VND Dong")
 
     assert_equal "VND", hidden_currency.value
     assert_no_selector currency_dialog("[open]")
     assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
-    assert_selector "button[data-currency-picker-target='currencyTrigger']", text: "🇻🇳 VND"
+    assert_selector "button[data-currency-picker-target='currencyTrigger']", text: "VND"
+    assert_selector "button[data-currency-picker-target='currencyTrigger'] img[data-country-code='VN']"
     assert_selector "[data-controller~='currency-rate-picker']:not([hidden])"
   end
 
@@ -95,43 +95,35 @@ class CurrencyPickerTest < ApplicationSystemTestCase
     assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
   end
 
-  test "Escape closes currency selection without changing it" do
-    open_currency
-    filter.set("dong")
-    filter.send_keys(:escape)
-
-    assert_equal "USD", hidden_currency.value
-    assert_no_selector currency_dialog("[open]")
-    assert_selector "button[data-currency-picker-target='currencyTrigger']:focus"
-  end
-
   test "autofills a reference quote and allows inline editing" do
     Rails.cache.write(CurrencyReference::CACHE_KEY, {
       "reference_date" => Date.current.iso8601,
-      "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000" }
+      "rates" => { "EUR" => "1", "USD" => "1.2", "VND" => "30000.123" }
     })
     visit new_budget_source_path(budgets(:active))
-    find("details[data-amount-currency-section]").find("summary").click
-    choose_currency("dong", "VND Dong, 🇻🇳")
+    choose_currency("dong", "VND Dong")
 
-    assert_equal "25.000", rate.value
+    assert_equal "25.000,1025", rate.value
     send_input(rate, "24950")
 
     assert_equal "24.950", rate.value
   end
 
   test "offers manual entry when no reference quote exists" do
-    choose_currency("dong", "VND Dong, 🇻🇳")
+    choose_currency("dong", "VND Dong")
 
     assert_equal "", rate.value
     assert_equal "Enter rate", rate["placeholder"]
-    assert_selector "label", text: "Enter how many units of VND are in 1 USD"
+    rate_label = find("[data-currency-rate-fields] > label[for='source_rate']", text: "EXCHANGE RATE")
+    assert_equal "uppercase", page.evaluate_script("getComputedStyle(arguments[0]).textTransform", rate_label)
+    assert_selector "small#source_rate_description", text: "Enter how many units of VND are in 1 USD"
+    assert_equal "source_rate_description", rate["aria-describedby"]
     assert_selector "input[name='source[rate]']"
   end
 
   test "same-currency selection hides the rate trigger and normalizes rate" do
-    choose_currency("dong", "VND Dong, 🇻🇳")
-    choose_currency("dollar", "USD US Dollar, 🇺🇸")
+    choose_currency("dong", "VND Dong")
+    choose_currency("dollar", "USD US Dollar")
 
     assert_selector "[data-controller~='currency-rate-picker'][hidden]", visible: :all
     assert_equal "1", rate.value

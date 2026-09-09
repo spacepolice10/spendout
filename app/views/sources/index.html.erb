@@ -79,7 +79,13 @@
 </main>
 
 <% content_for :budget_action_footer do %>
-  <footer data-budget-action>
+  <footer class="floating-actions" data-budget-action>
+    <%= link_to new_budget_income_path(@budget), role: "button", data: { intent: "primary" } do %>
+      <%= icon("plus") %><span><%= t(".create_income") %></span>
+    <% end %>
+    <%= link_to budget_incomes_path(@budget), role: "button", data: { intent: "secondary" } do %>
+      <%= icon("history") %><span><%= t(".income_history") %></span>
+    <% end %>
     <%= link_to new_budget_source_path(@budget), role: "button", data: {
           appearance: "keycap",
           intent: "primary",

@@ -1,6 +1,4 @@
 <% used_amount = allocation.used_amount %>
-<% progress_maximum = allocation.amount.positive? ? allocation.amount : 1 %>
-<% progress_amount = allocation.amount.positive? ? [ used_amount, allocation.amount ].min : (used_amount.positive? ? 1 : 0) %>
 
 <%= tag.article data: {
       elevation: "1",
@@ -25,13 +23,11 @@
   </header>
 
   <main>
-    <progress
-      value="<%= progress_amount %>"
-      max="<%= progress_maximum %>"
-      aria-label="<%= t(".spending", used: formatted_amount(used_amount, allocation.currency_code), planned: formatted_amount(allocation.amount, allocation.currency_code)) %>"
-      style="--progress-colour: var(--color-palette-<%= allocation.colour %>);"
-      data-testid="allocation-progress"
-    ></progress>
+    <%= render "allocations/progress",
+          allocation: allocation,
+          used_amount: used_amount,
+          label: t(".spending", used: formatted_amount(used_amount, allocation.currency_code), planned: formatted_amount(allocation.amount, allocation.currency_code)),
+          testid: "allocation-progress" %>
 
     <small>
       <%= t(".spending", used: formatted_amount(used_amount, allocation.currency_code), planned: formatted_amount(allocation.amount, allocation.currency_code)) %>

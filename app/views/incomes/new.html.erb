@@ -1,0 +1,1 @@
+<main data-size="sm"><article data-elevation="1"><header><h1><%= t(".name") %></h1></header><main><% if @sources.any? %><%= render "form", budget: @budget, income: @income, sources: @sources %><% else %><p><%= t(".no_sources") %></p><%= link_to t(".create_source"), new_budget_source_path(@budget) %><% end %></main></article></main>

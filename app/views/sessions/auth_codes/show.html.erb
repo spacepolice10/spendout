@@ -1,8 +1,10 @@
 <main class="session-page" data-size="sm">
   <header>
-    <aside data-cybercat-answer>
-      <%= image_tag "cybercat.png", alt: t(".cybercat_description"), width: 40, height: 40 %>
-      <p><%= t(".instructions", count: AuthCode::CODE_LENGTH, address: session[:email_address_pending_authentication]) %></p>
+    <aside class="cybercat">
+      <span class="cybercat-face">
+        <%= image_tag "cybercat.png", alt: t(".cybercat_description"), width: 64, height: 64 %>
+      </span>
+      <p class="cybercat-text"><%= t(".instructions", count: AuthCode::CODE_LENGTH, address: session[:email_address_pending_authentication]) %></p>
     </aside>
   </header>
 
@@ -14,7 +16,8 @@
     <main>
       <%= form_with url: session_auth_code_path do |form| %>
         <%= form.text_field :code, required: true, autofocus: !mobile_variant?, placeholder: t(".code_placeholder"), autocomplete: "one-time-code", inputmode: "text", maxlength: 7 %>
-        <%= form.button type: "submit", data: { appearance: "keycap", intent: "primary" } do %>
+
+        <%= form.button type: "submit", data: { intent: "primary", radius: "full" } do %>
           <span><%= t(".submit") %></span>
           <%= icon("chevron-right") %>
         <% end %>
@@ -22,7 +25,11 @@
     </main>
 
     <footer>
-      <%= link_to t(".type_another_address"), new_session_path, style: "text-decoration: underline;" %>
+      <p></p>
+      <%= link_to t(".type_another_address"), new_session_path %>
+      <p></p>
     </footer>
   </article>
+
+  <%= render "shared/locale_switcher" %>
 </main>

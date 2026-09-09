@@ -1,0 +1,40 @@
+<% content_for :title, t(".name") %>
+
+<main data-size="lg" data-anchor="footer">
+  <article data-elevation="1">
+    <header>
+      <h1><%= t(".name") %></h1>
+    </header>
+
+    <main>
+      <% if @incomes.any? %>
+        <article data-elevation="1" class="record-list">
+          <main>
+            <% @incomes_by_date.each do |date, incomes| %>
+              <section data-record-day>
+                <header>
+                  <h3>
+                    <time datetime="<%= date.iso8601 %>"><%= l(date, format: :long) %></time>
+                  </h3>
+                </header>
+
+                <main><%= render incomes %></main>
+              </section>
+            <% end %>
+          </main>
+        </article>
+      <% else %>
+        <p><%= t(".empty") %></p>
+      <% end %>
+    </main>
+  </article>
+</main>
+
+<% content_for :budget_action_footer do %>
+  <footer class="floating-actions" data-budget-action>
+    <%= link_to new_budget_income_path(@budget), role: "button", data: { intent: "primary" } do %>
+      <%= icon("plus") %>
+      <span><%= t(".create") %></span>
+    <% end %>
+  </footer>
+<% end %>

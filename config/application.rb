@@ -18,6 +18,7 @@ module Spendout
 
     config.i18n.available_locales = %i[ en ru ]
     config.i18n.default_locale = :en
+    config.x.currency_reference.refresh_on_miss = !Rails.env.test?
 
     # Configuration for the application, engines, and railties goes here.
     #

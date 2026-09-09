@@ -4,7 +4,7 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
   setup do
     Rails.cache.write(CurrencyReference::CACHE_KEY, {
       "reference_date" => Date.current.iso8601,
-      "rates" => { "EUR" => "1", "USD" => "1.2", "RUB" => "96", "VND" => "30720" }
+      "rates" => { "EUR" => "1", "USD" => "1.2", "RUB" => "96", "VND" => "30720.12" }
     })
     @budget = budgets(:active)
     @rubles = @budget.sources.create!(name: "Rubles", amount: 50_000, currency_code: "RUB", rate: 80)
@@ -21,9 +21,9 @@ class CrossCurrencyExpensesTest < ApplicationSystemTestCase
 
     find("button[data-currency-picker-target='currencyTrigger']").click
     find("input[data-currency-picker-target='filter']").set("vnd")
-    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong, 🇻🇳").click
+    find("label[data-currency-picker-target='option']:not([hidden])", text: "VND Dong").click
 
-    assert_field "expense_conversion_rate", with: "25.600", visible: :all
+    assert_field "expense_conversion_rate", with: "25.600,1", visible: :all
 
     find("[data-source-picker] > button").click
     find("label[data-source-picker-target='option']", text: /Rubles/).click

@@ -1,0 +1,15 @@
+<article
+  data-elevation="2"
+  class="record-list"
+  data-testid="recent-records"
+>
+  <% if snapshot.records.any? %>
+    <main data-controller="pagination" data-pagination-paginate-on-intersection-value="true">
+      <%= render "records/page", page:, snapshot: %>
+    </main>
+  <% else %>
+    <main>
+      <p><%= t("records.timeline.empty") %></p>
+    </main>
+  <% end %>
+</article>

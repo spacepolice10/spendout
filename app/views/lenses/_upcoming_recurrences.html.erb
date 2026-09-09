@@ -1,0 +1,28 @@
+<article class="upcoming-recurrences lens-content" data-empty="<%= snapshot.items.empty? %>" data-elevation="2" data-testid="upcoming-recurrences-lens" data-upcoming-subs>
+  <main>
+    <% if snapshot.items.any? %>
+      <% items_by_date = snapshot.items.group_by(&:occurs_on) %>
+      <% calendar_dates = (snapshot.on.beginning_of_week..snapshot.through.end_of_week).to_a %>
+
+      <table data-upcoming-subs-calendar aria-label="<%= t("lenses.types.upcoming_recurrences") %>">
+        <tbody>
+          <% calendar_dates.each_slice(7) do |week| %>
+            <tr>
+              <% week.each do |date| %>
+                <td data-today="<%= date == snapshot.on %>" data-weekend="<%= date.saturday? || date.sunday? %>" data-outside-range="<%= date < snapshot.on || date > snapshot.through %>">
+                  <time datetime="<%= date.iso8601 %>"><abbr title="<%= l(date, format: "%A") %>"><%= l(date, format: "%a").first %></abbr> <%= date.day %></time>
+                  <% items_by_date.fetch(date, []).each do |item| %>
+                    <% view_label = t(".view_sub", name: item.name, amount: formatted_amount(item.amount, item.currency_code)) %>
+                    <a href="<%= recurrence_path(item) %>" title="<%= view_label %>" aria-label="<%= view_label %>" data-upcoming-sub><%= icon(item.category.icon, style: icon_colour_styles(item.category.colour)) %></a>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p><%= t(".empty") %></p>
+    <% end %>
+  </main>
+</article>

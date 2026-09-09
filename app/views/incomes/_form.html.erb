@@ -1,0 +1,81 @@
+<% source_currency_context = sources.each_with_object({}) do |source, context| %>
+  <% context[source.id] = { currency: source.currency_code, rate: source.rate.to_s("F") } %>
+<% end %>
+
+<%= form_with model: [ budget, income ], data: {
+      income_form: true,
+      controller: "form expense-fields",
+      expense_fields_sources_value: source_currency_context.to_json,
+      expense_fields_reference_link_value: currency_reference_path
+    } do |form| %>
+  <% if income.errors.any? %>
+    <section role="alert" data-form-errors>
+      <h2><%= t(".errors", count: income.errors.count) %></h2>
+      <ul>
+        <% income.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= render "shared/amount_with_currency_fields", form: form %>
+
+  <div data-income-options>
+    <div>
+      <%= form.label :source_name, data: { income_from: true } do %>
+        <span><%= t(".from") %></span>
+        <%= form.text_field :source_name, required: true, maxlength: 100, placeholder: t(".from_placeholder") %>
+      <% end %>
+
+      <div data-source-picker data-controller="source-picker">
+        <button type="button" aria-haspopup="dialog" aria-controls="income-source-picker-dialog"
+          data-expense-picker-trigger data-source-picker-target="trigger" data-action="source-picker#open">
+          <span><%= t(".to") %></span>
+          <small data-source-picker-target="summary"><%= income.source&.name %></small>
+        </button>
+
+        <dialog id="income-source-picker-dialog" aria-label="<%= t(".to") %>" tabindex="-1" closedby="any"
+          data-source-picker-target="dialog" data-action="close->source-picker#closed keydown->source-picker#keydown">
+          <header>
+            <h2><%= t(".to") %></h2>
+            <button type="button" aria-label="<%= t("shared.currency_picker.close") %>" data-action="source-picker#close">&times;</button>
+          </header>
+
+          <div role="listbox" data-source-picker-target="options">
+            <% sources.each do |source| %>
+              <div data-source-picker-option>
+                <%= form.label :source_id, value: source.id, id: "income-source-option-#{source.id}",
+                      role: "option", tabindex: -1, aria: { selected: source == income.source },
+                      style: "--source-colour: var(--color-palette-#{source.colour});",
+                      data: { source_picker_target: "option", selection_value: source.name,
+                        action: "click->source-picker#select" } do %>
+                  <%= form.radio_button :source_id, source.id, required: true,
+                        data: { expense_fields_target: "source", action: "change->expense-fields#sourceChanged" } %>
+                  <%= render "sources/design", design: Source::DESIGNS.fetch(source.design), colour: source.colour %>
+                  <span>
+                    <strong><%= source.name %></strong>
+                    <small><%= formatted_amount(source.spendable_amount, source.currency_code) %> <%= source.currency_code %></small>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </dialog>
+      </div>
+
+      <%= form.label :occurred_on, data: { expense_date: true } do %>
+        <span><%= t(".date") %></span>
+        <%= form.date_field :occurred_on, min: budget.period_from, max: budget.period_to, required: true %>
+      <% end %>
+
+      <%= form.label :note, data: { expense_note: true } do %>
+        <span><%= t(".note") %></span>
+        <%= form.text_field :note, maxlength: 200, placeholder: t(".note_placeholder") %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "shared/form_actions", form: form, cancel_path: budget_lenses_path(budget),
+        cancel_label: t(".cancel"), submit_label: t(".submit") %>
+<% end %>

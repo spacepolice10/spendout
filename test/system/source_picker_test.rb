@@ -10,6 +10,7 @@ class ExpenseSourcePickerTest < ApplicationSystemTestCase
 
   test "chooses a source from the dialog and updates the expense currency context" do
     find("[data-source-picker] > button").click
+    assert_selector "dialog#source-picker-dialog[open][closedby='any']"
 
     within("dialog#source-picker-dialog") do
       assert_text sources(:active).name

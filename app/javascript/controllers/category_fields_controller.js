@@ -3,16 +3,16 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "filter", "option", "allocation", "pendingNameTextform", "creationTip",
-    "creationTipName", "summary", "dialog", "trigger", "confirm"
+    "creationTipName", "creation", "summary", "dialog", "trigger", "confirm", "appearance"
   ]
-  static values = { noAllocation: String, submit: String, createSubmit: String }
+  static values = { noAllocation: String }
 
   connect() {
     const pendingName = this.pendingNameTextformTarget.value.trim()
 
     if (pendingName) this.filterTarget.value = pendingName
+    this.updateAppearance()
     this.filter()
-    this.updateSubmitLabel()
   }
 
   open() {
@@ -50,9 +50,11 @@ export default class extends Controller {
     if (!value) return
 
     this.pendingNameTextformTarget.value = value
+    this.pendingNameTextformTarget.dispatchEvent(new Event("input", { bubbles: true }))
     this.allocationTargets.forEach(input => input.checked = false)
+    this.creationTarget.checked = true
     this.summaryTarget.textContent = value
-    this.updateSubmitLabel()
+    this.updateAppearance()
     this.dialogTarget.close()
   }
 
@@ -65,17 +67,12 @@ export default class extends Controller {
     this.creationTipNameTarget.textContent = ""
     this.filter()
     this.summaryTarget.textContent = option.dataset.selectionValue
+    this.updateAppearance()
     this.markSelected(option)
-    this.updateSubmitLabel()
     this.dialogTarget.close()
   }
 
   keydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault()
-      this.dialogTarget.close("cancel")
-      return
-    }
     if (!["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) return
 
     if (event.key === "Enter") {
@@ -113,10 +110,8 @@ export default class extends Controller {
     this.optionTargets.forEach(option => option.setAttribute("aria-selected", String(option === selectedOption)))
   }
 
-  updateSubmitLabel() {
-    const createsCategory = this.pendingNameTextformTarget.value.trim() !== ""
-    this.element.closest("form").querySelector("[data-category-fields-target='submitLabel']").textContent =
-      createsCategory ? this.createSubmitValue : this.submitValue
+  updateAppearance() {
+    if (this.hasAppearanceTarget) this.appearanceTarget.hidden = this.pendingNameTextformTarget.value.trim() === ""
   }
 
   get visibleOptions() {

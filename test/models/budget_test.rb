@@ -4,7 +4,8 @@ class BudgetTest < ActiveSupport::TestCase
   test "finds the currency of the most recently created expense" do
     budget = budgets(:active)
     source = sources(:active)
-    budget.expenses.create!(source: source, amount: 1, currency_code: "THB", conversion_rate: "0.03")
+    budget.expenses.create!(source: source, category: categories(:active), amount: 1,
+      currency_code: "THB", conversion_rate: "0.03")
 
     assert_equal "THB", budget.last_expense_currency_code
   end
@@ -62,7 +63,8 @@ class BudgetTest < ActiveSupport::TestCase
   test "planned allocations in other currencies reduce the base currency remainder" do
     budget = budgets(:active)
     budget.sources.create!(name: "Euro cash", amount: 100, currency_code: "EUR", rate: "0.8")
-    budget.allocations.create!(name: "Euro plan", amount: 50, currency_code: "EUR", rate: "0.8")
+    category = budget.categories.create!(name: "Euro plan")
+    budget.allocations.create!(category:, amount: 50, currency_code: "EUR", rate: "0.8")
 
     assert_equal BigDecimal("1625.25"), budget.sources_amount_in_base
     assert_equal BigDecimal("362.5"), budget.allocations_amount_in_base
@@ -75,9 +77,14 @@ class BudgetTest < ActiveSupport::TestCase
 
     assert_equal BigDecimal("1200.25"), budget.sources_remainder_in_base
 
-    budget.expenses.create!(source: source, amount: 25, occurred_on: Date.current)
+    budget.expenses.create!(source: source, category: categories(:active), amount: 25,
+      occurred_on: Date.current)
 
-    assert_equal BigDecimal("1175.25"), budget.sources_remainder_in_base
+    assert_equal BigDecimal("1200.25"), budget.sources_remainder_in_base
+
+    category = budget.categories.create!(name: "Everyday")
+    budget.expenses.create!(source:, category:, amount: 10, occurred_on: Date.current)
+    assert_equal BigDecimal("1190.25"), budget.sources_remainder_in_base
   end
 
   test "finishing a plan releases its unspent reservation" do
@@ -101,9 +108,10 @@ class BudgetTest < ActiveSupport::TestCase
     budget.sources.where.not(id: source.id).delete_all
     source.update!(amount: 99_000)
     budget.update_columns(period_from: Date.new(2026, 8, 1), period_to: Date.new(2026, 8, 30))
+    category = budget.categories.create!(name: "Everyday")
 
     travel_to Date.new(2026, 8, 1) do
-      budget.expenses.create!(source: source, amount: 1_500, occurred_on: Date.current)
+      budget.expenses.create!(source:, category:, amount: 1_500, occurred_on: Date.current)
 
       assert_equal BigDecimal("1800"), budget.todays_remainder
       assert_in_delta 54.55, budget.todays_remainder_percentage.to_f, 0.01
@@ -112,7 +120,7 @@ class BudgetTest < ActiveSupport::TestCase
     travel_to Date.new(2026, 8, 2) do
       assert_equal BigDecimal("5100"), budget.todays_remainder
       assert_equal BigDecimal("100"), budget.todays_remainder_percentage
-      budget.expenses.create!(source: source, amount: 10_000, occurred_on: Date.current)
+      budget.expenses.create!(source:, category:, amount: 10_000, occurred_on: Date.current)
       assert_equal BigDecimal("0"), budget.todays_remainder_percentage
     end
 
@@ -130,14 +138,15 @@ class BudgetTest < ActiveSupport::TestCase
     budget.sources.where.not(id: source.id).delete_all
     source.update!(amount: 3_300)
     budget.update_columns(period_from: Date.new(2026, 8, 1), period_to: Date.new(2026, 8, 30))
+    planned_category = budget.categories.create!(name: "Rent")
+    everyday_category = budget.categories.create!(name: "Everyday")
 
     travel_to Date.new(2026, 8, 1) do
       planned = budget.allocations.create!(
-        name: "Rent",
+        category: planned_category,
         amount: 300,
         currency_code: "USD",
-        rate: 1,
-        planned: true
+        rate: 1
       )
 
       assert_equal BigDecimal("100"), budget.todays_remainder
@@ -145,7 +154,7 @@ class BudgetTest < ActiveSupport::TestCase
 
       budget.expenses.create!(
         source: source,
-        allocation: planned,
+        category: planned.category,
         amount: 50,
         occurred_on: Date.current
       )
@@ -153,7 +162,8 @@ class BudgetTest < ActiveSupport::TestCase
       assert_equal BigDecimal("100"), budget.todays_remainder
       assert_equal BigDecimal("100"), budget.todays_remainder_percentage
 
-      budget.expenses.create!(source: source, amount: 50, occurred_on: Date.current)
+      budget.expenses.create!(source:, category: everyday_category, amount: 50,
+        occurred_on: Date.current)
 
       assert_equal BigDecimal("50"), budget.todays_remainder
       assert_equal BigDecimal("50"), budget.todays_remainder_percentage

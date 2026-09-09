@@ -1,6 +1,6 @@
 <% content_for :title, "Spendout — Everyday money, under control" %>
 <% content_for :description, "A simple budget that turns your plans, currencies, and expenses into one answer: what is safe to spend today?" %>
-<% content_for :hide_tabbar, true %>
+<% content_for :hide_add_menu, true %>
 <% content_for :head do %>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Handjet:wght@400;600&amp;family=Silkscreen:wght@700&amp;display=swap">
 <% end %>
@@ -15,8 +15,9 @@
       <h1 id="landing-title">Know what you can spend.</h1>
 
       <p>
-        Spendout turns wallets, plans, and everyday spending into one answer:
-        <strong>what's safe to spend today.</strong> No subscription. No lock-in.
+        Spendout turns wallets, income, plans, recurring payments, and everyday spending into a dashboard of useful answers — including
+        <strong>what's safe to spend today.</strong> Recent records stay on the dashboard with useful warnings.
+        Add lenses for upcoming payments, category totals, and currency rates. No subscription. No lock-in.
         Run it yourself. And it has looks, by the way.
       </p>
 
@@ -34,7 +35,7 @@
       <h2 id="control-title">Your daily fuel gauge.</h2>
 
       <p>
-        One glance tells you how much unplanned money is safe to spend today.
+        Add the rollover lens to see how much unplanned money is safe to spend today. Wallets and plan progress stay visible in their own permanent lenses.
       </p>
     </header>
 
@@ -72,21 +73,22 @@
       <h2 id="currency-title">Speaks your currency.</h2>
 
       <p>
-        Choose the currency that fits the money in front of you, exchange
-        between wallet-like sources, and still see one useful budget total.
+        Choose the currency that fits the money in front of you, record income,
+        exchange into a new wallet, and still see one useful budget total.
       </p>
     </header>
 
     <% sample_rates = [
-      { code: "EUR", name: "Euro", rate: "0.8929" },
-      { code: "CAD", name: "Canadian dollar", rate: "1.3800" },
-      { code: "JPY", name: "Japanese yen", rate: "147.20" },
-      { code: "VND", name: "Vietnamese dong", rate: "26,300" }
+      { code: "EUR", rate: "0.8929" },
+      { code: "CAD", rate: "1.3800" },
+      { code: "JPY", rate: "147.20" },
+      { code: "VND", rate: "26,300" }
     ] %>
 
     <div data-currency-story>
       <div data-landing-demo-frame>
         <section
+          class="rate-info"
           data-rate-board
           aria-labelledby="rate-board-title"
         >
@@ -105,11 +107,10 @@
               <% sample_rates.each do |row| %>
                 <tr>
                   <th scope="row">
-                    <strong data-rate-code><%= row[:code] %></strong>
-                    <span data-rate-name><%= row[:name] %></span>
+                    <strong class="rate-info-code" data-rate-code><%= row[:code] %></strong>
                   </th>
                   <td>
-                    <output data-rate-display><%= row[:rate] %></output>
+                    <output class="rate-info-value" data-rate-display><%= row[:rate] %></output>
                   </td>
                 </tr>
               <% end %>
@@ -124,7 +125,8 @@
 
           <p>
             Keep each source and purchase in its real currency while your
-            budget's base currency stays fixed. Exchange money between sources
+            budget's base currency stays fixed. Watch up to four quotes on
+            the exchange-rate board. Exchange money between sources
             and both sides remain together in your history. Reference rates are
             dated, editable suggestions you confirm —
             <strong>saved amounts never revalue themselves.</strong>

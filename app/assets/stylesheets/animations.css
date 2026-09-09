@@ -83,12 +83,32 @@
         }
     }
 
+    @keyframes quick-actions-down {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(calc(100% + var(--space-v-3)));
+        }
+    }
+
     @supports (view-transition-name: budget-section) {
         ::view-transition-old(root),
         ::view-transition-new(root),
-        ::view-transition-old(budget-tabbar),
-        ::view-transition-new(budget-tabbar) {
+        ::view-transition-new(budget-add) {
             animation: none;
+        }
+
+        ::view-transition-group(budget-add) {
+            animation-duration: 220ms;
+            animation-timing-function: ease-in;
+        }
+
+        ::view-transition-old(budget-add) {
+            animation: quick-actions-down 220ms ease-in both;
         }
 
         ::view-transition-group(budget-section) {
@@ -132,7 +152,9 @@
     @media (prefers-reduced-motion: reduce) {
         ::view-transition-group(budget-section),
         ::view-transition-old(budget-section),
-        ::view-transition-new(budget-section) {
+        ::view-transition-new(budget-section),
+        ::view-transition-group(budget-add),
+        ::view-transition-old(budget-add) {
             animation: none;
         }
     }

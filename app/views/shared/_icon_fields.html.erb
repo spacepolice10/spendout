@@ -1,18 +1,16 @@
-<%# locals: (form:, open: false, input_data: {}) %>
+<%# locals: (form:, open: false, input_data: {}, icon_attribute: :icon, icon_options: form.object.class.icon_options, icon_value: form.object.public_send(icon_attribute)) %>
 <details name="form-details" data-form-target="section"<%= " open" if open %>>
-  <summary data-form-target="summary">
+  <summary>
     <span><%= t(".name") %>:</span>
-    <small data-form-target="summaryContent"><%= form.object.icon %></small>
+    <small data-form-target="summaryContent"><%= icon_value %></small>
   </summary>
 
   <fieldset data-layout="flex">
     <legend class="utilities--sr-only"><%= t(".name") %></legend>
     <div>
-      <%= form.collection_radio_buttons :icon, form.object.class.icon_options, :second, :first do |radio| %>
+      <%= form.collection_radio_buttons icon_attribute, icon_options, :second, :first do |radio| %>
         <%= radio.label title: radio.text do %>
-          <%= radio.radio_button aria: { label: radio.text }, data: input_data.merge({
-                form_target: "toBeFocused"
-              }) { |_key, original, extra| [ original, extra ].compact.join(" ") } %>
+          <%= radio.radio_button aria: { label: radio.text }, data: input_data %>
           <%= icon(radio.value) %>
         <% end %>
       <% end %>
@@ -20,9 +18,6 @@
     <% unless mobile_variant? %>
       <small>
         <%= t(".arrows_navigation_html", arrows: tag.kbd("arrow keys")) %>
-      </small>
-      <small>
-        <%= t("shared.form_navigation.continue_html", enter: tag.kbd("Enter"), shift: tag.kbd("Shift")) %>
       </small>
     <% end %>
   </fieldset>
